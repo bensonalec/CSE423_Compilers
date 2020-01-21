@@ -48,7 +48,7 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
-            python ./src/frontend/run.py
+            python ./src/frontend/run_test.py
       - store_artifacts:
           path: test-reports
           destination: test-reports
