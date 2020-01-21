@@ -48,11 +48,7 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
-            pwd
-            ls
-            cd src
-            ls
-
+            python /src/frontend/run.py
       - store_artifacts:
           path: test-reports
           destination: test-reports
