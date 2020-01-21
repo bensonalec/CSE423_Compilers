@@ -9,5 +9,5 @@ class MyFirstTests(unittest.TestCase):
     self.assertEqual(hello_world(), 'yello world')
 
 if __name__ == '__main__':
-  unittest.main()
+ # unittest.main()
   print(syspath)
