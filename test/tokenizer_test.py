@@ -1,6 +1,6 @@
 import unittest, sys
-sys.path.insert(0,'../src/frontend')
-from run import *
+
+from ../src.frontend.run import *
 
 
 
