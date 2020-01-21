@@ -48,7 +48,8 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
-            python ./test/tokenizer_test.py
+            cd ./test/
+            python tokenizer_test.py
       - store_artifacts:
           path: test-reports
           destination: test-reports
