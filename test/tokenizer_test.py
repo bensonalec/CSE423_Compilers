@@ -1,6 +1,6 @@
 import unittest, sys
 
-sys.path.append('../src/')
+sys.path.append('../src')
 print(sys.path)
 import run
 
