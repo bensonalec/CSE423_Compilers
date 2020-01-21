@@ -50,6 +50,8 @@ jobs:
             . venv/bin/activate
             pwd
             ls
+            cd src
+            ls
 
       - store_artifacts:
           path: test-reports
