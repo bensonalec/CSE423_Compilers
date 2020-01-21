@@ -8,7 +8,7 @@ import run
 
 class MyFirstTests(unittest.TestCase):
   def test_hello(self):
-    self.assertEqual(run.hello_world(), 'yello world')
+    self.assertEqual(run.hello_world(), 'hello world')
 
 if __name__ == '__main__':
   unittest.main()
