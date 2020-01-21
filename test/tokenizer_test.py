@@ -1,13 +1,15 @@
 import unittest, sys
 
-#from ../src.frontend.run import *
+sys.path.append('../src/')
+print(sys.path)
+import run
 
 
 
 class MyFirstTests(unittest.TestCase):
   def test_hello(self):
-    self.assertEqual(hello_world(), 'yello world')
+    self.assertEqual(run.hello_world(), 'yello world')
 
 if __name__ == '__main__':
- # unittest.main()
-  print(syspath)
+  unittest.main()
+
