@@ -21,7 +21,6 @@ int main() {
 	p = "\""
 	e = 12.123
 	a = 'b'
-	l = true
 	
 	return 1;
 }

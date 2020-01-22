@@ -1,3 +1,6 @@
+# For verbose output use the following command:
+# python -m unittest -v master_test.py
+
 from rply import LexerGenerator
 
 class Lexer():
@@ -5,31 +8,37 @@ class Lexer():
 		self.lexer = LexerGenerator()
 
 	def _add_tokens(self):
-		self.lexer.add("COMMENT",r"(\/\/.*|\/\*.*\*\/|/\*[^*]*\*+(?:[^/*][^*]*\*+)*/)")
-		self.lexer.add("STRING",r"(\"[\w+\;\\ \%\"\']*\")")
-		self.lexer.add("PREPROCESSOR",r"(#include|#define|#undef|#if|#ifdef|#ifndef|#error|__FILE__|__LINE__|__DATE__|__TIME__|__TIMESTRAMP|pragma|# macro operator|## macro operator)")
-		self.lexer.add("KEYWORDS",r"(auto|break|case|char|const|continue|default|do|double|else|enum|extern|float|for|goto|if|int|long|register|return|short|signed|sizeof|static|struct|switch|typedef|union|unsigned|void|volatile|while)")
-		self.lexer.add("BINARY_OPS", r"(\&|\||\^|\~|\<\<|\>\>)")
-		self.lexer.add("ADVANCED_ARITHMETIC",r"(\+\+|\-\-|\-\=|\+\=|\*\=|\/\=)")
-		self.lexer.add("BOOLEAN",r"(true|false)")
-		self.lexer.add("FLOATORDOUBLE",r"(\d+\.\d+)")
-		self.lexer.add("CHARACTER", r"('[\w]')")
-		self.lexer.add("FUNCTION",r"([a-zA-Z_]\w+\(|[a-zA-Z_]\()")
-		self.lexer.add("ARITHMETIC_OPERATOR", r"(\+|\-|\/|\*|\%)")
-		self.lexer.add("INTEGER",r"(\d+)")
-		self.lexer.add("COMPARISON_OPERATOR",r"(==|<=|>=|<|>)")
-		self.lexer.add("LOGIC_OPERATOR",r"(&&|\|\|)")
-		self.lexer.add("VARIABLE", r"([a-zA-Z_]\w+|[a-zA-Z_])")
-		self.lexer.add("ASSIGNMENT", r"(=)")
-		self.lexer.add("OPENPAREN",r'\(')
-		self.lexer.add("CLOSEPAREN",r'\)')
-		self.lexer.add("LEFT_BRACKET", r"(\{)")
-		self.lexer.add("RIGHT_BRACKET",r"(\})")
-		self.lexer.add("SEMICOLON",r";")
+		self.lexer.add("COMMENT",      r"(\/\/.*|\/\*.*\*\/|/\*[^*]*\*+(?:[^/*][^*]*\*+)*/)") # Catches both multi-line and single line comments
+		self.lexer.add("LIBRARY",      r"<\w+\.h>|\"\w+\.h\"")
+		self.lexer.add("STRING",       r"(([\"\'])[\w+\;\\ \%\"\']*\2)") # Classifies single characters and multiple characters as a string
+		self.lexer.add("HEX",          r"0x[\dA-Fa-f]+")
+		self.lexer.add("OCT",          r"0[0-7]{1,3}")
+		self.lexer.add("BIN",          r"0b[01]+")
+		self.lexer.add("PRECISION",    r"\-{0,1}(\d\.\d+|[1-9]\d*\.\d+)")
+		self.lexer.add("INTEGER",      r"([1-9]\d*|\d)")
+		self.lexer.add("COMPARISON",   r"[=<>!]=|[<>]")
+		self.lexer.add("ASSIGNMENT",   r"[+*/-]{0,1}=")
+		self.lexer.add("LOGICAL",      r"&{2}|\|{2}")
+		self.lexer.add("ACCESS",       r"->|\.|\[|\]")
+		self.lexer.add("BITWISE",      r"<{2}|>{2}|[|&^~]")
+		self.lexer.add("ARITHMETIC",   r"\+{2}|\-{2}|[%*/+-]")
+		self.lexer.add("MODIFIER",     r"\b(const|register|signed|static|unsigned|volatile|typedef|extern|sizeof)\b")
+		self.lexer.add("BEHAVIOR",     r"\b(break|continue|goto|return)\b")
+		self.lexer.add("LOOPING",      r"\b(do|for|while)\b")
+		self.lexer.add("BRANCHING",    r"\b(if|else|switch|case|default)\b")
+		self.lexer.add("TYPE",         r"\b(NULL|void|char|short|int|long|float|double|struct|union|enum|auto)\b")
+		self.lexer.add("PREPROCESSOR", r"\#\s*(include|pragma|define|error|warning|undef|if|else|elif|endif|ifdef|ifndef|line)")
+		self.lexer.add("SELF_DEFINED", r"[a-zA-Z_]\w*")
+		self.lexer.add("OPENPAREN",    r"\(")
+		self.lexer.add("CLOSEPAREN",   r"\)")
+		self.lexer.add("LEFT_BRACE",   r"\{")
+		self.lexer.add("RIGHT_BRACE",  r"\}")
+		self.lexer.add("SEMICOLON",    r";")
+		self.lexer.add("COLON",        r":")
+		self.lexer.add("COMMA",        r",")
+		self.lexer.add("OTHERS",       r".+?") # Just to catch stuff we havent thought about yet
 		
 		self.lexer.ignore(r'\s+')
-		self.lexer.ignore(r'\n')
-		self.lexer.ignore(r'\t')
 
 	def get_lexer(self):
 		self._add_tokens()
