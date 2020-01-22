@@ -34,3 +34,9 @@ class Lexer():
 	def get_lexer(self):
 		self._add_tokens()
 		return self.lexer.build()
+
+def tokensToString(tokens):
+	out = ""
+	for tok in tokens:
+		out+= str(tok) + "\n"
+	return out
