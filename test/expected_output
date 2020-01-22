@@ -1,0 +1,8 @@
+Token('KEYWORDS', 'int')
+Token('FUNCTION', 'main(')
+Token('CLOSEPAREN', ')')
+Token('LEFT_BRACKET', '{')
+Token('KEYWORDS', 'return')
+Token('INTEGER', '1')
+Token('SEMICOLON', ';')
+Token('RIGHT_BRACKET', '}')
