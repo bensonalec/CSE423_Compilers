@@ -1,6 +1,6 @@
 import sys
 sys.path.append('../src')
-sys.path.append('../src/rplyTest')
+sys.path.append('../src/frontend')
 
 import unittest, run
 from lexer import *
