@@ -1,4 +1,4 @@
-import unittest, sys
+import unittest, sys, run
 sys.path.append('../src')
 sys.path.append('../src/rplyTest')
 from lexer import *
