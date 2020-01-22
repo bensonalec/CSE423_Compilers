@@ -1,45 +1,40 @@
 import sys
-sys.path.append('../src')
 sys.path.append('../src/frontend')
 
-import unittest, run
+import unittest
 from lexer import *
-from rply import errors
 
+path_to_C_files = "./C_testing_code/programs/"
+path_to_output_files = "./expected_output/programs/"
 
-class TokenizeTests(unittest.TestCase):
+class SimpleTokenizerTests(unittest.TestCase):
 
     maxDiff = None
 
-    def test_SimpleReturn(self):
-        text_input = '''
-        int main() {
-            return 1;
-        }'''
-        lexer = Lexer().get_lexer()
-        tokens = lexer.lex(text_input)
-        fi = open("./expected_output")
-        expected = fi.read()
-        fi.close()
-
-        self.assertEqual(tokensToString(tokens), expected)
-
-    def test_ComplexReturn(self):
-        fi = open("./complex.c")
+    def test_SimpleReturnOne(self):
+        fi = open(path_to_C_files + "return_one.c")
         text_input = fi.read()
         fi.close()
         lexer = Lexer().get_lexer()
         tokens = lexer.lex(text_input)
-        fi = open("./expected_complex_output")
+        fi = open(path_to_output_files + "return_one")
         expected = fi.read()
         fi.close()
 
         self.assertEqual(tokensToString(tokens), expected)
 
-class MyFirstTests(unittest.TestCase):
-  def test_hello(self):
-    self.assertEqual(run.hello_world(), 'hello world')
+    def test_ComplexRandom(self):
+        fi = open(path_to_C_files + "complex_random.c")
+        text_input = fi.read()
+        fi.close()
+        lexer = Lexer().get_lexer()
+        tokens = lexer.lex(text_input)
+        fi = open(path_to_output_files + "complex_random")
+        expected = fi.read()
+        fi.close()
 
-	
+        self.assertEqual(tokensToString(tokens), expected)
+
+
 if __name__ == '__main__':
 	unittest.main()

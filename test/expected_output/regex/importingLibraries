@@ -1,0 +1,4 @@
+Token('PREPROCESSOR', '#include')
+Token('LIBRARY', '<stdio.h>')
+Token('PREPROCESSOR', '#include')
+Token('LIBRARY', '"library.h"')
