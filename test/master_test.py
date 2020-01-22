@@ -8,8 +8,14 @@ from rply import errors
 
 
 class TokenizeTests(unittest.TestCase):
+
+    maxDiff = None
+
     def test_SimpleReturn(self):
-        text_input = "int main() { return 1; }"
+        text_input = '''
+        int main() {
+            return 1;
+        }'''
         lexer = Lexer().get_lexer()
         tokens = lexer.lex(text_input)
         fi = open("./expected_output")
