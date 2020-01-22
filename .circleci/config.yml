@@ -49,7 +49,7 @@ jobs:
           command: |
             . venv/bin/activate
             cd ./test/
-            python tokenizer_test.py
+            python lexer_test.py
       - store_artifacts:
           path: test-reports
           destination: test-reports
