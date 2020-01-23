@@ -28,7 +28,6 @@ class Parser():
 		@self.pg.production('content : content content')
 		def contentExpand(p):
 			newNode = AbstractSyntaxTree("content",p)
-			newNode.addChild([p[0],p[1]])
 			return newNode
 		
 		@self.pg.production('content : BEHAVIOR INTEGER SEMICOLON')
@@ -62,7 +61,6 @@ class Parser():
 			operator = p[1]
 
 			newNode = AbstractSyntaxTree("EXPRESSION",p)
-			newNode.addChild([p[0],p[2]])
 			return newNode
 
 		#default error handling function
