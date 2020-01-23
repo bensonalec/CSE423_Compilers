@@ -49,7 +49,10 @@ jobs:
           command: |
             . venv/bin/activate
             cd ./test/
-            python master_test.py
+
+            # Run ALL Python unit tests
+            python -m unittest
+
       - store_artifacts:
           path: test-reports
           destination: test-reports
