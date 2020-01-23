@@ -6,7 +6,9 @@ class Parser():
 	def __init__(self):
 		#tell the parser what tokens to expect
 		self.pg = ParserGenerator(
-			['INTEGER','SELF_DEFINED','OPENPAREN','CLOSEPAREN','SEMICOLON','ARITHMETIC','LEFT_BRACE','RIGHT_BRACE','TYPE','BEHAVIOR']
+			['INTEGER','SELF_DEFINED','OPENPAREN','CLOSEPAREN','SEMICOLON',
+			'ARITHMETIC','LEFT_BRACE','RIGHT_BRACE','TYPE','BEHAVIOR',
+			'LOOPING']
 		)
 		#initialzie head and current node
 		self.Head = None
@@ -43,6 +45,11 @@ class Parser():
 		@self.pg.production('content : SELF_DEFINED OPENPAREN expression CLOSEPAREN SEMICOLON')
 		def function(p):
 			newNode = AbstractSyntaxTree("function",p)
+			return newNode
+
+		@self.pg.production('content : LOOPING OPENPAREN expression CLOSEPAREN LEFT_BRACE content RIGHT_BRACE')
+		def whileLoop_definition(p):
+			newNode = AbstractSyntaxTree("whileLoop_definition", p)
 			return newNode
 			
 		#set up the base case for expressions, when it's just a number
