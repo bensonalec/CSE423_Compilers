@@ -21,6 +21,11 @@ class Parser():
 			self.Head = newNode
 			return newNode
 		
+		@self.pg.production('function_definition : function_definition function_definition')
+		def function_def_list(p):
+			newNode = AbstractSyntaxTree("function_def_list",p)
+			return newNode
+
 		@self.pg.production('function_definition : TYPE SELF_DEFINED OPENPAREN CLOSEPAREN LEFT_BRACE content RIGHT_BRACE')
 		def function_definition(p):
 			newNode = AbstractSyntaxTree("function_definition",p)
