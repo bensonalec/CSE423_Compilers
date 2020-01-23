@@ -1,0 +1,5 @@
+Token('COMMENT', '//Comment')
+Token('COMMENT', '/* this is a comment */')
+Token('COMMENT', '/* this is a comment // */')
+Token('COMMENT', '/* this is a comment /* */')
+Token('COMMENT', '/* \n* this\n* is\n* a\n* multi-line\n* comment\n*/')
