@@ -48,20 +48,20 @@ def printTree(head,level):
 
 
 #open file for testing
-fi = open("./test_files/parsertest.c","r")
-text_input = fi.read()
-fi.close()
+def runParser():
+	fi = open("./test_files/parsertest.c","r")
+	text_input = fi.read()
+	fi.close()
 
-#setup lexer, produce tokens
-lexer = Lexer().get_lexer()
-tokens = lexer.lex(text_input)
-#print(tokensToString(tokens))
-#set up parser, pares the given tokens and retrieve the head of the ast
-pg = Parser()
-pg.parse()
-parser = pg.get_parser()
-parser.parse(tokens)
-head = pg.getTree()
-#print the tree starting at the head
-(printTree(head,0))
-
+	#setup lexer, produce tokens
+	lexer = Lexer().get_lexer()
+	tokens = lexer.lex(text_input)
+	#print(tokensToString(tokens))
+	#set up parser, pares the given tokens and retrieve the head of the ast
+	pg = Parser()
+	pg.parse()
+	parser = pg.get_parser()
+	parser.parse(tokens)
+	head = pg.getTree()
+	#print the tree starting at the head
+	print(getTree(head,0))

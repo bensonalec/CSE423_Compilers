@@ -1,0 +1,1 @@
+(1, ['function_definition'], 2, [Token('TYPE', 'int'), Token('SELF_DEFINED', 'main'), Token('OPENPAREN', '('), Token('CLOSEPAREN', ')'), Token('LEFT_BRACE', '{'), 'return', Token('RIGHT_BRACE', '}')], 3, [Token('BEHAVIOR', 'return'), Token('INTEGER', '1'), Token('SEMICOLON', ';')])
