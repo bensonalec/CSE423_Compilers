@@ -51,7 +51,7 @@ jobs:
             cd ./test/
 
             # Run ALL Python unit tests
-            python -m unittest
+            python -m unittest -v
 
       - store_artifacts:
           path: test-reports
