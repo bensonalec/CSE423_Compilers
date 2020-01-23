@@ -9,7 +9,6 @@ def printTree(head,level):
 	level += 1
 	token = head.token
 	content = head.content
-	children = head.children
 	print("Level: ",level,"Node: ",content, "Type: ",token)
 	#iterate through the components of the BNF
 	for node in content:
