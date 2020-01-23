@@ -1,5 +1,4 @@
-Token('PREPROCESSOR', '#include')
-Token('LIBRARY', '<stdio.h>')
+Token('PREPROCESSOR', '#include <stdio.h>')
 Token('TYPE', 'int')
 Token('SELF_DEFINED', 'main')
 Token('OPENPAREN', '(')
