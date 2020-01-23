@@ -64,4 +64,4 @@ def runParser():
 	parser.parse(tokens)
 	head = pg.getTree()
 	#print the tree starting at the head
-	print(getTree(head,0))
+	printTree(head,0)
