@@ -58,7 +58,7 @@ class Parser():
 			newNode = AbstractSyntaxTree("integer_assignment",p)
 			return newNode
 
-		@self.pg.production('content : SELF_DEFINED OPENPAREN expression CLOSEPAREN SEMICOLON')
+		@self.pg.production('content : SELF_DEFINED OPENPAREN arithmeticExpression CLOSEPAREN SEMICOLON')
 		def function(p):
 			newNode = AbstractSyntaxTree("function",p)
 			return newNode
