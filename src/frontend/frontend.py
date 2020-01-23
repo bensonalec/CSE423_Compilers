@@ -35,6 +35,7 @@ def main():
 	#Print all output from lexer, parser, etc....
 	cmd_options.add_argument('-a','--all', help='Prints out all intermediate ouputs.', action="store_true")
 
+	#generate arguements
 	args = cmd_options.parse_args()
 
 
@@ -47,8 +48,7 @@ def main():
 		cmd_options.print_help()
 		exit()
 
-	print(args.lex)
-
+	#Read in file
 	text_input = fi.read()
 	fi.close()
 
@@ -56,11 +56,14 @@ def main():
 	lexer = Lexer().get_lexer()
 
 	tokens = lexer.lex(text_input)
-	if args.lex:
-		temp_print = lexer.lex(text_input)
+	
+	#if -l or --lex is true print the tokens from the lexer 
+	if args.lex or args.all:
+		temp_print = lexer.lex(text_input) #need to run lexer so that tokens are deleted for parser
 		for i in temp_print:
 			print(i)
-	#print(tokensToString(tokens))
+		#print(tokensToString(tokens))
+
 	#set up parser, pares the given tokens and retrieve the head of the ast
 	pg = Parser()
 	pg.parse()
