@@ -6,7 +6,7 @@ class Lexer():
 	
 	def _add_tokens(self):
 		self.lexer.add("COMMENT",      r"(\/\/.*|\/\*.*\*\/|/\*[^*]*\*+(?:[^/*][^*]*\*+)*/)") # Catches both multi-line and single line comments
-		self.lexer.add("LIBRARY",      r"<\w+\.h>|\"\w+\.h\"")
+		self.lexer.add("PREPROCESSOR", r"#\s*(warning|else|endif|include|undef|ifdef|ifndef|if|elif|pragma|define|if|elif|error|pragma|line)([\t\f ]+[^\s]+)*")
 		self.lexer.add("STRING",       r"(([\"\'])[\w+\;\\ \%\"\']*\2)") # Classifies single characters and multiple characters as a string
 		self.lexer.add("HEX",          r"0x[\dA-Fa-f]+")
 		self.lexer.add("OCT",          r"0[0-7]{1,3}")
@@ -24,9 +24,6 @@ class Lexer():
 		self.lexer.add("LOOPING",      r"\b(do|for|while)\b")
 		self.lexer.add("BRANCHING",    r"\b(if|else|switch|case|default)\b")
 		self.lexer.add("TYPE",         r"\b(NULL|void|char|short|int|long|float|double|struct|union|enum|auto)\b")
-#TODO: Lexer doesnt pick up #error macro correctly, fix regex for this token
-#		self.lexer.add("MACRO",		   r"\#\s*error \w+$")
-		self.lexer.add("PREPROCESSOR", r"\#\s*(include|pragma|define|error|warning|undef|ifdef|ifndef|if|else|elif|endif|line)")
 		self.lexer.add("SELF_DEFINED", r"[a-zA-Z_]\w*")
 		self.lexer.add("OPENPAREN",    r"\(")
 		self.lexer.add("CLOSEPAREN",   r"\)")

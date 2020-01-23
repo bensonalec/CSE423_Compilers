@@ -1,4 +1,2 @@
-Token('PREPROCESSOR', '#include')
-Token('LIBRARY', '<stdio.h>')
-Token('PREPROCESSOR', '#include')
-Token('LIBRARY', '"library.h"')
+Token('PREPROCESSOR', '#include <stdio.h>')
+Token('PREPROCESSOR', '#include "library.h"')
