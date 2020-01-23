@@ -8,10 +8,13 @@ content : BEHAVIOR INTEGER
 content : SELF_DEFINED OPENPAREN expression CLOSEPAREN SEMICOLON
 #Integer
 expression : INTEGER
+#Integer variable assignment
+TYPE SELF_DEFINED ASSIGNMENT INTEGER SEMICOLON
 #Arithmetic Expression
 expression : expression ARITHMETIC expression
 #Variable in function
 expression : SELF_DEFINED
+
 
 DESIGN DESCRIPTION:
 	Basically, at this point it has a program that is the top level, this expects a single function definition. Inside of this function definition, 
