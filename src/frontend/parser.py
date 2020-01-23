@@ -6,9 +6,7 @@ class Parser():
 	def __init__(self):
 		#tell the parser what tokens to expect
 		self.pg = ParserGenerator(
-			['INTEGER','SELF_DEFINED','OPENPAREN','CLOSEPAREN','SEMICOLON',
-			'ARITHMETIC','LEFT_BRACE','RIGHT_BRACE','TYPE','BEHAVIOR',
-			'LOOPING']
+			['INTEGER','SELF_DEFINED','OPENPAREN','CLOSEPAREN','SEMICOLON','ARITHMETIC','LEFT_BRACE','RIGHT_BRACE','TYPE','BEHAVIOR', 'LOOPING', 'ASSIGNMENT']
 		)
 		#initialzie head and current node
 		self.Head = None
@@ -40,6 +38,11 @@ class Parser():
 		@self.pg.production('content : BEHAVIOR INTEGER SEMICOLON')
 		def return_statement(p):
 			newNode = AbstractSyntaxTree("return",p)
+			return newNode
+
+		@self.pg.production('content : TYPE SELF_DEFINED ASSIGNMENT INTEGER SEMICOLON')
+		def integerAssignment(p):
+			newNode = AbstractSyntaxTree("integer_assignment",p)
 			return newNode
 
 		@self.pg.production('content : SELF_DEFINED OPENPAREN expression CLOSEPAREN SEMICOLON')
