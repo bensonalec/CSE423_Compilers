@@ -10,14 +10,14 @@ def printTree(head,level):
 	token = head.token
 	content = head.content
 	children = head.children
-	print("Level: ",level,"Node: ",content)
+	print("Level: ",level,"Node: ",content, "Type: ",token)
 	#iterate through the components of the BNF
 	for node in content:
 		if(type(node) == type(AbstractSyntaxTree("sample","sample"))):
 			printTree(node,level)
 
 #open file for testing
-fi = open("test.c","r")
+fi = open("./test_files/parsertest.c","r")
 text_input = fi.read()
 fi.close()
 

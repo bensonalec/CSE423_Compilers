@@ -6,7 +6,7 @@ class Parser():
 	def __init__(self):
 		#tell the parser what tokens to expect
 		self.pg = ParserGenerator(
-			['INTEGER','SELF_DEFINED','OPENPAREN','CLOSEPAREN','SEMICOLON','ARITHMETIC','KEYWORD','LEFT_BRACE','RIGHT_BRACE','TYPE','BEHAVIOR']
+			['INTEGER','SELF_DEFINED','OPENPAREN','CLOSEPAREN','SEMICOLON','ARITHMETIC','LEFT_BRACE','RIGHT_BRACE','TYPE','BEHAVIOR']
 		)
 		#initialzie head and current node
 		self.Head = None
@@ -21,12 +21,17 @@ class Parser():
 			self.Head = newNode
 			return newNode
 		
-		@self.pg.production('function_definition : TYPE SELF_DEFINED OPENPAREN CLOSEPAREN LEFT_BRACE content content RIGHT_BRACE')
+		@self.pg.production('function_definition : TYPE SELF_DEFINED OPENPAREN CLOSEPAREN LEFT_BRACE content RIGHT_BRACE')
 		def function_definition(p):
 			newNode = AbstractSyntaxTree("function_definition",p)
 			return newNode
-
-		@self.pg.production('content : BEHAVIOR INTEGER')
+		@self.pg.production('content : content content')
+		def contentExpand(p):
+			newNode = AbstractSyntaxTree("content",p)
+			newNode.addChild([p[0],p[1]])
+			return newNode
+		
+		@self.pg.production('content : BEHAVIOR INTEGER SEMICOLON')
 		def return_statement(p):
 			newNode = AbstractSyntaxTree("return",p)
 			return newNode
@@ -36,11 +41,16 @@ class Parser():
 			newNode = AbstractSyntaxTree("function",p)
 			return newNode
 			
-
 		#set up the base case for expressions, when it's just a number
 		@self.pg.production('expression : INTEGER')
 		def number(p):
-			newNode = AbstractSyntaxTree("NUMBER",p)
+			newNode = AbstractSyntaxTree("number",p)
+			return newNode
+
+		#setup the function for variables inside of function calls
+		@self.pg.production('expression : SELF_DEFINED')
+		def variable(p):
+			newNode = AbstractSyntaxTree("variable",p)
 			return newNode
 
 		#build BNF for expressions, since each side is an expression it can either take in another equation or a number
