@@ -49,7 +49,6 @@ def printTree(head,level):
 			printTree(node,level)
 
 
-<<<<<<< HEAD
 #main function to control the frontend with different command line options.
 def main():
 
@@ -108,13 +107,6 @@ def main():
 
 if __name__ == "__main__":
 	main()
-=======
-#open file for testing
-def runParser():
-	fi = open("./test_files/parsertest.c","r")
-	text_input = fi.read()
-	fi.close()
->>>>>>> master
 
 	#setup lexer, produce tokens
 	lexer = Lexer().get_lexer()
