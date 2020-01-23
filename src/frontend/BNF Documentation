@@ -1,0 +1,54 @@
+#Program
+program : function_definition
+#Definition of a function
+function_definition : TYPE SELF_DEFINED OPENPAREN CLOSEPAREN LEFT_BRACE content content RIGHT_BRACE
+#Return statement
+content : BEHAVIOR INTEGER
+#Function call
+content : SELF_DEFINED OPENPAREN expression CLOSEPAREN SEMICOLON
+#Integer
+expression : INTEGER
+#Arithmetic Expression
+expression : expression ARITHMETIC expression
+
+DESIGN DESCRIPTION:
+	Basically, at this point it has a program that is the top level, this expects a single function definition. Inside of this function definition, 
+	currently this supports return statements and function calls. Inside of these function calls, currently only arithmetic expressions are supported
+
+Clarification on something: Content is stuff that is inside of function definitions, expression is stuff that is inside of function calls. Obviously 
+when implementing stuff like if/else, etc you might need to build another case other than content or expression
+
+
+
+TODO:
+	-Figure out how to make stuff variatic (Ex. in the program definition above, make it take in multiple function definitions)
+	-Change program definition to take in other stuff (Preprocessors, etc.)
+	BASE FEATURES (REQUIRED)
+	-Implement content for variable definition
+	-Implement content for Arithmetic expressions (Kind of exists now, need to make it a content section)
+	-Implement content for boolean expressions
+	-Implement content for Goto statements
+	-Implement content for If/Else Control Flow
+	-Implement content for Unary Operators
+	-Implement content for break statements
+	-Implement content for while loops
+	-Implement expression for variables
+	SUPLEMENTAL FEATURES (OPTIONAL)
+	-Implement content for variatic functions
+	-Implement content for chars
+	-Implement content for float/double
+	-Implement content for ++, —, -=, +=, *=, /=
+	-Implement content for For loops
+	-Implement content for Binary operators
+	-Implement content for Switch statements
+	-Implement expression for Strings
+	-Implement expression for integers
+	-Implement expression for characters
+	-Implement expression for float/double
+	SUPER SUPPLEMENTAL FEATURES
+	-Implement content for Pointers, arrays, strings
+	-Implement content for Preprocessor statements
+	-Implement content for Struct, enum
+	-Implement content for Casting, type promotion
+	-Implement content for Type specs
+	
