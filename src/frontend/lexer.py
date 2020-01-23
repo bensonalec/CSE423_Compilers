@@ -1,12 +1,9 @@
-# For verbose output use the following command:
-# python -m unittest -v master_test.py
-
 from rply import LexerGenerator
 
 class Lexer():
 	def __init__(self):
 		self.lexer = LexerGenerator()
-
+	
 	def _add_tokens(self):
 		self.lexer.add("COMMENT",      r"(\/\/.*|\/\*.*\*\/|/\*[^*]*\*+(?:[^/*][^*]*\*+)*/)") # Catches both multi-line and single line comments
 		self.lexer.add("LIBRARY",      r"<\w+\.h>|\"\w+\.h\"")
@@ -22,7 +19,7 @@ class Lexer():
 		self.lexer.add("ACCESS",       r"->|\.|\[|\]")
 		self.lexer.add("BITWISE",      r"<{2}|>{2}|[|&^~]")
 		self.lexer.add("ARITHMETIC",   r"\+{2}|\-{2}|[%*/+-]")
-		self.lexer.add("MODIFIER",     r"\b(const|register|signed|static|unsigned|volatile|typedef|extern|sizeof)\b")
+		self.lexer.add("MODIFIER",     r"\b(const|register|signed|static|unsigned|volatile|typedef|extern|sizeof|inline)\b")
 		self.lexer.add("BEHAVIOR",     r"\b(break|continue|goto|return)\b")
 		self.lexer.add("LOOPING",      r"\b(do|for|while)\b")
 		self.lexer.add("BRANCHING",    r"\b(if|else|switch|case|default)\b")
@@ -38,14 +35,14 @@ class Lexer():
 		self.lexer.add("SEMICOLON",    r";")
 		self.lexer.add("COLON",        r":")
 		self.lexer.add("COMMA",        r",")
-		self.lexer.add("OTHERS",       r".+?") # Just to catch stuff we havent thought about yet
-		
+		self.lexer.add("OTHERS",       r".+?") # Just to catch stuff we havent thought about yet		
 		self.lexer.ignore(r'\s+')
-
+		self.lexer.ignore(r'\n')
+		self.lexer.ignore(r'\t')
 	def get_lexer(self):
 		self._add_tokens()
 		return self.lexer.build()
-
+	
 def tokensToString(tokens):
 	out = ""
 	for tok in tokens:

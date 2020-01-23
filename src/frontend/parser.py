@@ -1,0 +1,77 @@
+from rply import ParserGenerator
+from ast import *
+
+#setup parser class
+class Parser():
+	def __init__(self):
+		#tell the parser what tokens to expect
+		self.pg = ParserGenerator(
+			['INTEGER','SELF_DEFINED','OPENPAREN','CLOSEPAREN','SEMICOLON','ARITHMETIC','LEFT_BRACE','RIGHT_BRACE','TYPE','BEHAVIOR']
+		)
+		#initialzie head and current node
+		self.Head = None
+		self.CurrentNode = None
+
+	def parse(self):
+		#parse for the print statement, this will be our trees head since it's our top level
+		@self.pg.production('program : function_definition')
+		def program(p):
+			
+			newNode = AbstractSyntaxTree("program",p)
+			self.Head = newNode
+			return newNode
+		
+		@self.pg.production('function_definition : TYPE SELF_DEFINED OPENPAREN CLOSEPAREN LEFT_BRACE content RIGHT_BRACE')
+		def function_definition(p):
+			newNode = AbstractSyntaxTree("function_definition",p)
+			return newNode
+		@self.pg.production('content : content content')
+		def contentExpand(p):
+			newNode = AbstractSyntaxTree("content",p)
+			return newNode
+		
+		@self.pg.production('content : BEHAVIOR INTEGER SEMICOLON')
+		def return_statement(p):
+			newNode = AbstractSyntaxTree("return",p)
+			return newNode
+
+		@self.pg.production('content : SELF_DEFINED OPENPAREN expression CLOSEPAREN SEMICOLON')
+		def function(p):
+			newNode = AbstractSyntaxTree("function",p)
+			return newNode
+			
+		#set up the base case for expressions, when it's just a number
+		@self.pg.production('expression : INTEGER')
+		def number(p):
+			newNode = AbstractSyntaxTree("number",p)
+			return newNode
+
+		#setup the function for variables inside of function calls
+		@self.pg.production('expression : SELF_DEFINED')
+		def variable(p):
+			newNode = AbstractSyntaxTree("variable",p)
+			return newNode
+
+		#build BNF for expressions, since each side is an expression it can either take in another equation or a number
+		@self.pg.production('expression : expression ARITHMETIC expression')
+		def expression(p):
+			#print(p[0])
+			left = p[0]
+			right = p[2]
+			operator = p[1]
+
+			newNode = AbstractSyntaxTree("EXPRESSION",p)
+			return newNode
+
+		#default error handling function
+		@self.pg.error
+		def error_handle(token):
+			return ValueError(token)
+	
+	#boilerplate function
+	def get_parser(self):
+		return self.pg.build()
+
+	#retrieve the trees head
+	def getTree(self):
+		return self.Head
