@@ -1,0 +1,13 @@
+program : function_definition #program
+function_definition : function_definition function_definition #function definition
+function_definition : TYPE SELF_DEFINED OPENPAREN CLOSEPAREN LEFT_BRACE content RIGHT_BRACE #function definition
+content : content content #content
+content : arithmeticExpression ARITHMETIC arithmeticExpression SEMICOLON #content
+arithmeticExpression : arithmeticExpression ARITHMETIC arithmeticExpression #arithmeticExpression
+arithmeticExpression : INTEGER #arithmeticExpression
+content : BEHAVIOR INTEGER SEMICOLON #content
+content : TYPE SELF_DEFINED ASSIGNMENT arithmeticExpression SEMICOLON #content
+content : SELF_DEFINED ASSIGNMENT arithmeticExpression SEMICOLON #content
+content : SELF_DEFINED OPENPAREN arithmeticExpression CLOSEPAREN SEMICOLON #content
+expression : SELF_DEFINED #expression
+expression : arithmeticExpression ARITHMETIC arithmeticExpression #expression

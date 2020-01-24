@@ -1,90 +1,93 @@
+
 from rply import ParserGenerator
 from ast import *
 
 #setup parser class
 class Parser():
+
+	
 	def __init__(self):
-		#tell the parser what tokens to expect
 		self.pg = ParserGenerator(
-			['INTEGER','SELF_DEFINED','OPENPAREN','CLOSEPAREN','SEMICOLON','ARITHMETIC','LEFT_BRACE','RIGHT_BRACE','TYPE','BEHAVIOR','ASSIGNMENT']
+			['TYPE','SELF_DEFINED','OPENPAREN','CLOSEPAREN','LEFT_BRACE','RIGHT_BRACE','ARITHMETIC','SEMICOLON','INTEGER','BEHAVIOR','ASSIGNMENT']
 		)
 		#initialzie head and current node
 		self.Head = None
-		self.CurrentNode = None
+
 
 	def parse(self):
-		#parse for the print statement, this will be our trees head since it's our top level
+
+		
 		@self.pg.production('program : function_definition')
 		def program(p):
-			
 			newNode = AbstractSyntaxTree("program",p)
 			self.Head = newNode
 			return newNode
-		
+
 		@self.pg.production('function_definition : function_definition function_definition')
-		def function_def_list(p):
-			newNode = AbstractSyntaxTree("function_def_list",p)
+		def function_definition___function_definition_function_definition(p):
+			newNode = AbstractSyntaxTree("function definition",p)
 			return newNode
 
 		@self.pg.production('function_definition : TYPE SELF_DEFINED OPENPAREN CLOSEPAREN LEFT_BRACE content RIGHT_BRACE')
-		def function_definition(p):
-			newNode = AbstractSyntaxTree("function_definition",p)
+		def function_definition___TYPE_SELF_DEFINED_OPENPAREN_CLOSEPAREN_LEFT_BRACE_content_RIGHT_BRACE(p):
+			newNode = AbstractSyntaxTree("function definition",p)
 			return newNode
 
 		@self.pg.production('content : content content')
-		def contentExpand(p):
+		def content___content_content(p):
 			newNode = AbstractSyntaxTree("content",p)
 			return newNode
-		
+
 		@self.pg.production('content : arithmeticExpression ARITHMETIC arithmeticExpression SEMICOLON')
+		def content___arithmeticExpression_ARITHMETIC_arithmeticExpression_SEMICOLON(p):
+			newNode = AbstractSyntaxTree("content",p)
+			return newNode
+
 		@self.pg.production('arithmeticExpression : arithmeticExpression ARITHMETIC arithmeticExpression')
-		def mathExpression(p):
-			newNode = AbstractSyntaxTree("arithmetic_expression",p)
+		def arithmeticExpression___arithmeticExpression_ARITHMETIC_arithmeticExpression(p):
+			newNode = AbstractSyntaxTree("arithmeticExpression",p)
 			return newNode
 
 		@self.pg.production('arithmeticExpression : INTEGER')
-		def integerAsExpression(p):
-			newNode = AbstractSyntaxTree("integer",p)
+		def arithmeticExpression___INTEGER(p):
+			newNode = AbstractSyntaxTree("arithmeticExpression",p)
 			return newNode
 
 		@self.pg.production('content : BEHAVIOR INTEGER SEMICOLON')
-		def return_statement(p):
-			newNode = AbstractSyntaxTree("return",p)
+		def content___BEHAVIOR_INTEGER_SEMICOLON(p):
+			newNode = AbstractSyntaxTree("content",p)
 			return newNode
 
 		@self.pg.production('content : TYPE SELF_DEFINED ASSIGNMENT arithmeticExpression SEMICOLON')
+		def content___TYPE_SELF_DEFINED_ASSIGNMENT_arithmeticExpression_SEMICOLON(p):
+			newNode = AbstractSyntaxTree("content",p)
+			return newNode
+
 		@self.pg.production('content : SELF_DEFINED ASSIGNMENT arithmeticExpression SEMICOLON')
-		def integerAssignment(p):
-			newNode = AbstractSyntaxTree("integer_assignment",p)
+		def content___SELF_DEFINED_ASSIGNMENT_arithmeticExpression_SEMICOLON(p):
+			newNode = AbstractSyntaxTree("content",p)
 			return newNode
 
 		@self.pg.production('content : SELF_DEFINED OPENPAREN arithmeticExpression CLOSEPAREN SEMICOLON')
-		def function(p):
-			newNode = AbstractSyntaxTree("function",p)
+		def content___SELF_DEFINED_OPENPAREN_arithmeticExpression_CLOSEPAREN_SEMICOLON(p):
+			newNode = AbstractSyntaxTree("content",p)
 			return newNode
-	
-		#setup the function for variables inside of function calls
+
 		@self.pg.production('expression : SELF_DEFINED')
-		def variable(p):
-			newNode = AbstractSyntaxTree("variable",p)
+		def expression___SELF_DEFINED(p):
+			newNode = AbstractSyntaxTree("expression",p)
 			return newNode
 
-		#build BNF for expressions, since each side is an expression it can either take in another equation or a number
 		@self.pg.production('expression : arithmeticExpression ARITHMETIC arithmeticExpression')
-		def expression(p):
-			#print(p[0])
-			left = p[0]
-			right = p[2]
-			operator = p[1]
-
-			newNode = AbstractSyntaxTree("EXPRESSION",p)
+		def expression___arithmeticExpression_ARITHMETIC_arithmeticExpression(p):
+			newNode = AbstractSyntaxTree("expression",p)
 			return newNode
 
-		#default error handling function
+	
 		@self.pg.error
 		def error_handle(token):
 			return ValueError(token)
-	
+
 	#boilerplate function
 	def get_parser(self):
 		return self.pg.build()
@@ -92,3 +95,5 @@ class Parser():
 	#retrieve the trees head
 	def getTree(self):
 		return self.Head
+
+
