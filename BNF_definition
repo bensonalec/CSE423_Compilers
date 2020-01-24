@@ -1,0 +1,59 @@
+program : definitionList
+
+definitionList : definitionList functionDefinition
+
+functionDefinition : TYPE SELF_DEFINED OPEN_PAREN args CLOSE_PAREN block
+
+block : LEFT_BRACE block content RIGHT_BRACE
+block : LEFT_BRACE content RIGHT_BRACE
+
+content : content single_line
+content : 
+
+single_line : TYPE SELF_DEFINED ASSIGNMENT literal SEMI_COLON #variable assignment
+single_line : function_call SEMI_COLON #function call
+single_line : LOOPING OPEN_PAREN boolean CLOSE_PAREN block #loop
+single_line : LOOPING block LOOPING OPEN_PAREN boolean CLOSE_PAREN SEMICOLON #do while
+single_line : BRANCHING OPEN_PAREN boolean CLOSE_PAREN block #if and else
+single_line : BRANCH OPEN_PAREN non_contiguous CLOSE_PAREN block #switch
+single_line : arithmetic SEMICOLON #arithmetic
+single_line : BEHAVIOR literal SEMI_COLON #return statement
+single_line : BEHAVIOR non_contiguous SEMI_COLON #statement
+single_line : BEHAVIOR SEMICOLON #return statement
+single_line : SELF_DEFINED ASSIGNMENT non_contiguous SEMI_COLON
+single_line : SELF_DEFINED ASSIGNMENT literal SEMI_COLON #assignment
+single_line : SELF_DEFINED ASSIGNMENT boolean SEMI_COLON #assignment
+
+
+function_call : SELF_DEFINED OPEN_PAREN param CLOSE_PAREN
+
+
+param : literal
+param : SELF_DEFINED
+param : param COMMA literal
+param : param COMMA SELF_DEFINED
+param : 
+
+literal : INT
+literal : STRING
+literal : CHAR
+literal : PRECISION
+
+args : 
+args : TYPE SELF_DEFINED
+args : args COMMA TYPE SELF_DEFINED
+
+boolean : boolean COMPARISON boolean
+boolean : arithmetic
+boolean : function_call
+
+arithmetic : numeral OPERATOR numeral
+arithmetic : numeral
+
+numeral : INTEGER
+numeral : PRECISION
+
+non_contiguous : PRECISION
+non_contiguous : INT
+non_contiguous : CHAR
+non_contiguous : SELF_DEFINED
