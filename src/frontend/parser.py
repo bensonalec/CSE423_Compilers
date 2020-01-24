@@ -30,32 +30,39 @@ class Parser():
 		def function_definition(p):
 			newNode = AbstractSyntaxTree("function_definition",p)
 			return newNode
+
 		@self.pg.production('content : content content')
 		def contentExpand(p):
 			newNode = AbstractSyntaxTree("content",p)
 			return newNode
 		
+		@self.pg.production('content : arithmeticExpression ARITHMETIC arithmeticExpression SEMICOLON')
+		@self.pg.production('arithmeticExpression : arithmeticExpression ARITHMETIC arithmeticExpression')
+		def mathExpression(p):
+			newNode = AbstractSyntaxTree("arithmetic_expression",p)
+			return newNode
+
+		@self.pg.production('arithmeticExpression : INTEGER')
+		def integerAsExpression(p):
+			newNode = AbstractSyntaxTree("integer",p)
+			return newNode
+
 		@self.pg.production('content : BEHAVIOR INTEGER SEMICOLON')
 		def return_statement(p):
 			newNode = AbstractSyntaxTree("return",p)
 			return newNode
 
-		@self.pg.production('content : TYPE SELF_DEFINED ASSIGNMENT INTEGER SEMICOLON')
+		@self.pg.production('content : TYPE SELF_DEFINED ASSIGNMENT arithmeticExpression SEMICOLON')
+		@self.pg.production('content : SELF_DEFINED ASSIGNMENT arithmeticExpression SEMICOLON')
 		def integerAssignment(p):
 			newNode = AbstractSyntaxTree("integer_assignment",p)
 			return newNode
 
-		@self.pg.production('content : SELF_DEFINED OPENPAREN expression CLOSEPAREN SEMICOLON')
+		@self.pg.production('content : SELF_DEFINED OPENPAREN arithmeticExpression CLOSEPAREN SEMICOLON')
 		def function(p):
 			newNode = AbstractSyntaxTree("function",p)
 			return newNode
-			
-		#set up the base case for expressions, when it's just a number
-		@self.pg.production('expression : INTEGER')
-		def number(p):
-			newNode = AbstractSyntaxTree("number",p)
-			return newNode
-
+	
 		#setup the function for variables inside of function calls
 		@self.pg.production('expression : SELF_DEFINED')
 		def variable(p):
@@ -63,7 +70,7 @@ class Parser():
 			return newNode
 
 		#build BNF for expressions, since each side is an expression it can either take in another equation or a number
-		@self.pg.production('expression : expression ARITHMETIC expression')
+		@self.pg.production('expression : arithmeticExpression ARITHMETIC arithmeticExpression')
 		def expression(p):
 			#print(p[0])
 			left = p[0]
