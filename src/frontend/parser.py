@@ -8,7 +8,7 @@ class Parser():
 	
 	def __init__(self):
 		self.pg = ParserGenerator(
-			['TYPE','SELF_DEFINED','OPENPAREN','CLOSEPAREN','LEFT_BRACE','RIGHT_BRACE','ASSIGNMENT','SEMICOLON','LOOPING','BRANCHING','BEHAVIOR','COMMA','INTEGER','STRING','PRECISION','COMPARISON','LOGICAL','ARITHMETIC']
+			['TYPE','SELF_DEFINED','OPEN_PAREN','CLOSE_PAREN','OPEN_BRACE','CLOSE_BRACE','ASSIGNMENT','SEMICOLON','LOOPING','BRANCHING','BEHAVIOR','COMMA','INTEGER','STRING','PRECISION','COMPARISON','LOGICAL','ARITHMETIC']
 		)
 		#initialzie head and current node
 		self.Head = None
@@ -33,18 +33,18 @@ class Parser():
 			newNode = AbstractSyntaxTree("definitionList",p)
 			return newNode
 
-		@self.pg.production('functionDefinition : TYPE SELF_DEFINED OPENPAREN CLOSEPAREN block ')
-		def functionDefinition___TYPE_SELF_DEFINED_OPENPAREN_CLOSEPAREN_block_(p):
+		@self.pg.production('functionDefinition : TYPE SELF_DEFINED OPEN_PAREN CLOSE_PAREN block ')
+		def functionDefinition___TYPE_SELF_DEFINED_OPEN_PAREN_CLOSE_PAREN_block_(p):
 			newNode = AbstractSyntaxTree("function definition",p)
 			return newNode
 
-		@self.pg.production('block : LEFT_BRACE block content RIGHT_BRACE ')
-		def block___LEFT_BRACE_block_content_RIGHT_BRACE_(p):
+		@self.pg.production('block : OPEN_BRACE block content CLOSE_BRACE ')
+		def block___OPEN_BRACE_block_content_CLOSE_BRACE_(p):
 			newNode = AbstractSyntaxTree("block",p)
 			return newNode
 
-		@self.pg.production('block : LEFT_BRACE content RIGHT_BRACE ')
-		def block___LEFT_BRACE_content_RIGHT_BRACE_(p):
+		@self.pg.production('block : OPEN_BRACE content CLOSE_BRACE ')
+		def block___OPEN_BRACE_content_CLOSE_BRACE_(p):
 			newNode = AbstractSyntaxTree("block",p)
 			return newNode
 
@@ -68,23 +68,23 @@ class Parser():
 			newNode = AbstractSyntaxTree("function call",p)
 			return newNode
 
-		@self.pg.production('single_line : LOOPING OPENPAREN boolean CLOSEPAREN block ')
-		def single_line___LOOPING_OPENPAREN_boolean_CLOSEPAREN_block_(p):
+		@self.pg.production('single_line : LOOPING OPEN_PAREN boolean CLOSE_PAREN block ')
+		def single_line___LOOPING_OPEN_PAREN_boolean_CLOSE_PAREN_block_(p):
 			newNode = AbstractSyntaxTree("loop",p)
 			return newNode
 
-		@self.pg.production('single_line : LOOPING block LOOPING OPENPAREN boolean CLOSEPAREN SEMICOLON ')
-		def single_line___LOOPING_block_LOOPING_OPENPAREN_boolean_CLOSEPAREN_SEMICOLON_(p):
+		@self.pg.production('single_line : LOOPING block LOOPING OPEN_PAREN boolean CLOSE_PAREN SEMICOLON ')
+		def single_line___LOOPING_block_LOOPING_OPEN_PAREN_boolean_CLOSE_PAREN_SEMICOLON_(p):
 			newNode = AbstractSyntaxTree("do while",p)
 			return newNode
 
-		@self.pg.production('single_line : BRANCHING OPENPAREN boolean CLOSEPAREN block ')
-		def single_line___BRANCHING_OPENPAREN_boolean_CLOSEPAREN_block_(p):
+		@self.pg.production('single_line : BRANCHING OPEN_PAREN boolean CLOSE_PAREN block ')
+		def single_line___BRANCHING_OPEN_PAREN_boolean_CLOSE_PAREN_block_(p):
 			newNode = AbstractSyntaxTree("if and else",p)
 			return newNode
 
-		@self.pg.production('single_line : BRANCHING OPENPAREN non_contiguous CLOSEPAREN block ')
-		def single_line___BRANCHING_OPENPAREN_non_contiguous_CLOSEPAREN_block_(p):
+		@self.pg.production('single_line : BRANCHING OPEN_PAREN non_contiguous CLOSE_PAREN block ')
+		def single_line___BRANCHING_OPEN_PAREN_non_contiguous_CLOSE_PAREN_block_(p):
 			newNode = AbstractSyntaxTree("switch",p)
 			return newNode
 
@@ -123,8 +123,8 @@ class Parser():
 			newNode = AbstractSyntaxTree("assignment",p)
 			return newNode
 
-		@self.pg.production('function_call : SELF_DEFINED OPENPAREN param CLOSEPAREN ')
-		def function_call___SELF_DEFINED_OPENPAREN_param_CLOSEPAREN_(p):
+		@self.pg.production('function_call : SELF_DEFINED OPEN_PAREN param CLOSE_PAREN ')
+		def function_call___SELF_DEFINED_OPEN_PAREN_param_CLOSE_PAREN_(p):
 			newNode = AbstractSyntaxTree("function call",p)
 			return newNode
 
