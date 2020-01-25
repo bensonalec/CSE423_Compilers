@@ -24,7 +24,7 @@ initTemp = """
 		self.Head = None
 """
 
-fi = open("oldBNF_definition","r")
+fi = open("BNF_definition","r")
 cont = fi.read()
 fi.close()
 reg = r'([A-Z][A-Z|_]*[A-Z])'
@@ -41,7 +41,7 @@ tokenList += join + "]"
 
 initFunc = initTemp.replace("TOKENSPOT",tokenList)
 
-fi = open("oldBNF_definition","r")
+fi = open("BNF_definition","r")
 cont = fi.readlines()
 fi.close()
 functionList = ""
@@ -50,7 +50,7 @@ for line in cont:
 	if(line != "\n"):
 		
 		spl = line.split("#")
-		bnf = spl[0].strip()
+		bnf = spl[0]
 		funcname = bnf.replace(" ","_")
 		funcname = funcname.replace(":","_")
 		name = spl[1].strip()

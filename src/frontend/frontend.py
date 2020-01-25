@@ -66,6 +66,10 @@ def main():
 	#Print all output from lexer, parser, etc....
 	cmd_options.add_argument('-a','--all', help='Prints out all intermediate ouputs.', action="store_true")
 
+	#Prints string representation of parse tree....
+	cmd_options.add_argument('-t','--tree', help='Prints string representation of parse tree.', action="store_true")
+
+
 	#generate arguements
 	args = cmd_options.parse_args()
 
@@ -101,9 +105,11 @@ def main():
 	parser = pg.get_parser()
 	parser.parse(tokens)
 	head = pg.getTree()
+	if(args.tree):
+		print(getTree(head,0))
 	#print the tree starting at the head
-	printTree(head,0)
-
+	else:
+		printTree(head,0)
 
 if __name__ == "__main__":
 	main()
