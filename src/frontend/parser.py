@@ -6,7 +6,7 @@ class Parser():
 	def __init__(self):
 		#tell the parser what tokens to expect
 		self.pg = ParserGenerator(
-			['INTEGER','SELF_DEFINED','OPENPAREN','CLOSEPAREN','SEMICOLON','ARITHMETIC','LEFT_BRACE','RIGHT_BRACE','TYPE','BEHAVIOR','ASSIGNMENT']
+			['INTEGER','SELF_DEFINED','OPEN_PAREN','CLOSE_PAREN','SEMICOLON','ARITHMETIC','OPEN_BRACE','CLOSE_BRACE','TYPE','BEHAVIOR','ASSIGNMENT']
 		)
 		#initialzie head and current node
 		self.Head = None
@@ -26,7 +26,7 @@ class Parser():
 			newNode = AbstractSyntaxTree("function_def_list",p)
 			return newNode
 
-		@self.pg.production('function_definition : TYPE SELF_DEFINED OPENPAREN CLOSEPAREN LEFT_BRACE content RIGHT_BRACE')
+		@self.pg.production('function_definition : TYPE SELF_DEFINED OPEN_PAREN CLOSE_PAREN OPEN_BRACE content CLOSE_BRACE')
 		def function_definition(p):
 			newNode = AbstractSyntaxTree("function_definition",p)
 			return newNode
@@ -58,7 +58,7 @@ class Parser():
 			newNode = AbstractSyntaxTree("integer_assignment",p)
 			return newNode
 
-		@self.pg.production('content : SELF_DEFINED OPENPAREN arithmeticExpression CLOSEPAREN SEMICOLON')
+		@self.pg.production('content : SELF_DEFINED OPEN_PAREN arithmeticExpression CLOSE_PAREN SEMICOLON')
 		def function(p):
 			newNode = AbstractSyntaxTree("function",p)
 			return newNode
@@ -73,8 +73,8 @@ class Parser():
 		@self.pg.production('expression : arithmeticExpression ARITHMETIC arithmeticExpression')
 		def expression(p):
 			#print(p[0])
-			left = p[0]
-			right = p[2]
+			OPEN = p[0]
+			CLOSE = p[2]
 			operator = p[1]
 
 			newNode = AbstractSyntaxTree("EXPRESSION",p)
