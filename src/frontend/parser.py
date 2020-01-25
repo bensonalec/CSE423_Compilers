@@ -8,7 +8,7 @@ class Parser():
 	
 	def __init__(self):
 		self.pg = ParserGenerator(
-			['TYPE','SELF_DEFINED','OPENPAREN','CLOSEPAREN','LEFT_BRACE','RIGHT_BRACE','ARITHMETIC','SEMICOLON','INTEGER','BEHAVIOR','ASSIGNMENT']
+			['TYPE','SELF_DEFINED','OPENPAREN','CLOSEPAREN','LEFT_BRACE','RIGHT_BRACE','ARITHMETIC','SEMICOLON','INTEGER','BEHAVIOR','ASSIGNMENT','EXPRESSION']
 		)
 		#initialzie head and current node
 		self.Head = None
@@ -25,12 +25,12 @@ class Parser():
 
 		@self.pg.production('function_definition : function_definition function_definition')
 		def function_definition___function_definition_function_definition(p):
-			newNode = AbstractSyntaxTree("function definition",p)
+			newNode = AbstractSyntaxTree("function_def_list",p)
 			return newNode
 
 		@self.pg.production('function_definition : TYPE SELF_DEFINED OPENPAREN CLOSEPAREN LEFT_BRACE content RIGHT_BRACE')
 		def function_definition___TYPE_SELF_DEFINED_OPENPAREN_CLOSEPAREN_LEFT_BRACE_content_RIGHT_BRACE(p):
-			newNode = AbstractSyntaxTree("function definition",p)
+			newNode = AbstractSyntaxTree("function_definition",p)
 			return newNode
 
 		@self.pg.production('content : content content')
@@ -40,47 +40,47 @@ class Parser():
 
 		@self.pg.production('content : arithmeticExpression ARITHMETIC arithmeticExpression SEMICOLON')
 		def content___arithmeticExpression_ARITHMETIC_arithmeticExpression_SEMICOLON(p):
-			newNode = AbstractSyntaxTree("content",p)
+			newNode = AbstractSyntaxTree("arithmetic_expression",p)
 			return newNode
 
 		@self.pg.production('arithmeticExpression : arithmeticExpression ARITHMETIC arithmeticExpression')
 		def arithmeticExpression___arithmeticExpression_ARITHMETIC_arithmeticExpression(p):
-			newNode = AbstractSyntaxTree("arithmeticExpression",p)
+			newNode = AbstractSyntaxTree("arithmetic_expression",p)
 			return newNode
 
 		@self.pg.production('arithmeticExpression : INTEGER')
 		def arithmeticExpression___INTEGER(p):
-			newNode = AbstractSyntaxTree("arithmeticExpression",p)
+			newNode = AbstractSyntaxTree("integer",p)
 			return newNode
 
 		@self.pg.production('content : BEHAVIOR INTEGER SEMICOLON')
 		def content___BEHAVIOR_INTEGER_SEMICOLON(p):
-			newNode = AbstractSyntaxTree("content",p)
+			newNode = AbstractSyntaxTree("return",p)
 			return newNode
 
 		@self.pg.production('content : TYPE SELF_DEFINED ASSIGNMENT arithmeticExpression SEMICOLON')
 		def content___TYPE_SELF_DEFINED_ASSIGNMENT_arithmeticExpression_SEMICOLON(p):
-			newNode = AbstractSyntaxTree("content",p)
+			newNode = AbstractSyntaxTree("integer_assignment",p)
 			return newNode
 
 		@self.pg.production('content : SELF_DEFINED ASSIGNMENT arithmeticExpression SEMICOLON')
 		def content___SELF_DEFINED_ASSIGNMENT_arithmeticExpression_SEMICOLON(p):
-			newNode = AbstractSyntaxTree("content",p)
+			newNode = AbstractSyntaxTree("integer_assignment",p)
 			return newNode
 
 		@self.pg.production('content : SELF_DEFINED OPENPAREN arithmeticExpression CLOSEPAREN SEMICOLON')
 		def content___SELF_DEFINED_OPENPAREN_arithmeticExpression_CLOSEPAREN_SEMICOLON(p):
-			newNode = AbstractSyntaxTree("content",p)
+			newNode = AbstractSyntaxTree("function",p)
 			return newNode
 
 		@self.pg.production('expression : SELF_DEFINED')
 		def expression___SELF_DEFINED(p):
-			newNode = AbstractSyntaxTree("expression",p)
+			newNode = AbstractSyntaxTree("variable",p)
 			return newNode
 
 		@self.pg.production('expression : arithmeticExpression ARITHMETIC arithmeticExpression')
 		def expression___arithmeticExpression_ARITHMETIC_arithmeticExpression(p):
-			newNode = AbstractSyntaxTree("expression",p)
+			newNode = AbstractSyntaxTree("EXPRESSION",p)
 			return newNode
 
 	
