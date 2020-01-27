@@ -33,6 +33,26 @@ class SimpleParserTests(unittest.TestCase):
 
         self.assertEqual(str(frontend.getTree(head,0)), expected)
 
+    def test_WhileLoop(self):
+        fi = open(path_to_C_files + "while_loop.c")
+        text_input = fi.read()
+        fi.close()
+
+        lexer = Lexer().get_lexer()
+        tokens = lexer.lex(text_input)
+
+        pg = Parser()
+        pg.parse()
+        parse = pg.get_parser()
+        parse.parse(tokens)
+        head = pg.getTree()
+
+        fi = open(path_to_output_files + "while_loop")
+        expected = fi.read()
+        fi.close()
+
+        self.assertEqual(str(frontend.getTree(head,0)), expected)
+
 
 if __name__ == '__main__':
 	unittest.main()
