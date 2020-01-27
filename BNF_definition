@@ -1,0 +1,59 @@
+program : definitionList #program
+
+definitionList : definitionList functionDefinition #definitionList
+
+functionDefinition : TYPE SELF_DEFINED OPENPAREN args CLOSEPAREN block #function definition
+
+block : LEFT_BRACE block content RIGHT_BRACE #block
+block : LEFT_BRACE content RIGHT_BRACE #block
+
+content : content single_line #content
+content : #content
+
+single_line : TYPE SELF_DEFINED ASSIGNMENT literal SEMICOLON #variable assignment
+single_line : function_call SEMICOLON #function call
+single_line : LOOPING OPENPAREN boolean CLOSEPAREN block #loop
+single_line : LOOPING block LOOPING OPENPAREN boolean CLOSEPAREN SEMICOLON #do while
+single_line : BRANCHING OPENPAREN boolean CLOSEPAREN block #if and else
+single_line : BRANCHING OPENPAREN non_contiguous CLOSEPAREN block #switch
+single_line : arithmetic SEMICOLON #arithmetic
+single_line : BEHAVIOR literal SEMICOLON #return statement
+single_line : BEHAVIOR non_contiguous SEMICOLON #statement
+single_line : BEHAVIOR SEMICOLON #return statement
+single_line : SELF_DEFINED ASSIGNMENT non_contiguous SEMICOLON #assignment
+single_line : SELF_DEFINED ASSIGNMENT literal SEMICOLON #assignment
+single_line : SELF_DEFINED ASSIGNMENT boolean SEMICOLON #assignment
+
+
+function_call : SELF_DEFINED OPENPAREN param CLOSEPAREN #function call
+
+
+param : literal #parameter
+param : SELF_DEFINED #paramater
+param : param COMMA literal #parameter
+param : param COMMA SELF_DEFINED #parameter
+param : #parameter
+
+literal : INTEGER #literal
+literal : STRING #literal
+literal : STRING #literal
+literal : PRECISION #literal
+
+args : #argument
+args : TYPE SELF_DEFINED #argument
+args : args COMMA TYPE SELF_DEFINED #argument
+
+boolean : boolean COMPARISON boolean #boolean
+boolean : arithmetic #boolean
+boolean : function_call #boolean
+
+arithmetic : numeral ARITHMETIC numeral #arithmetic
+arithmetic : numeral #arithmetic
+
+numeral : INTEGER #numeral
+numeral : PRECISION #numeral
+
+non_contiguous : PRECISION #non contiguous
+non_contiguous : INTEGER #non contiguous
+non_contiguous : STRING #non contiguous
+non_contiguous : SELF_DEFINED #non contiguous

@@ -1,88 +1,273 @@
+
 from rply import ParserGenerator
 from ast import *
 
 #setup parser class
 class Parser():
+
+	
 	def __init__(self):
-		#tell the parser what tokens to expect
 		self.pg = ParserGenerator(
-			['INTEGER','SELF_DEFINED','OPENPAREN','CLOSEPAREN','SEMICOLON','ARITHMETIC','LEFT_BRACE','RIGHT_BRACE','TYPE','BEHAVIOR', 'LOOPING', 'ASSIGNMENT']
+			['TYPE','SELF_DEFINED','OPEN_PAREN','CLOSE_PAREN','OPEN_BRACE','CLOSE_BRACE','ASSIGNMENT','SEMICOLON','LOOPING','BRANCHING','BEHAVIOR','COMMA','INTEGER','STRING','PRECISION','COMPARISON','LOGICAL','ARITHMETIC']
 		)
 		#initialzie head and current node
 		self.Head = None
-		self.CurrentNode = None
+
 
 	def parse(self):
-		#parse for the print statement, this will be our trees head since it's our top level
-		@self.pg.production('program : function_definition')
+
+		
+		@self.pg.production('program : definitionList ')
 		def program(p):
-			
 			newNode = AbstractSyntaxTree("program",p)
 			self.Head = newNode
 			return newNode
-		
-		@self.pg.production('function_definition : function_definition function_definition')
-		def function_def_list(p):
-			newNode = AbstractSyntaxTree("function_def_list",p)
+
+		@self.pg.production('definitionList : definitionList functionDefinition ')
+		def definitionList___definitionList_functionDefinition_(p):
+			newNode = AbstractSyntaxTree("definitionList",p)
 			return newNode
 
-		@self.pg.production('function_definition : TYPE SELF_DEFINED OPENPAREN CLOSEPAREN LEFT_BRACE content RIGHT_BRACE')
-		def function_definition(p):
-			newNode = AbstractSyntaxTree("function_definition",p)
+		@self.pg.production('definitionList : functionDefinition ')
+		def definitionList___functionDefinition_(p):
+			newNode = AbstractSyntaxTree("definitionList",p)
 			return newNode
-		@self.pg.production('content : content content')
-		def contentExpand(p):
+
+		@self.pg.production('functionDefinition : TYPE SELF_DEFINED OPEN_PAREN CLOSE_PAREN block ')
+		def functionDefinition___TYPE_SELF_DEFINED_OPEN_PAREN_CLOSE_PAREN_block_(p):
+			newNode = AbstractSyntaxTree("function definition",p)
+			return newNode
+
+		@self.pg.production('block : OPEN_BRACE block content CLOSE_BRACE ')
+		def block___OPEN_BRACE_block_content_CLOSE_BRACE_(p):
+			newNode = AbstractSyntaxTree("block",p)
+			return newNode
+
+		@self.pg.production('block : OPEN_BRACE content CLOSE_BRACE ')
+		def block___OPEN_BRACE_content_CLOSE_BRACE_(p):
+			newNode = AbstractSyntaxTree("block",p)
+			return newNode
+
+		@self.pg.production('content : content single_line ')
+		def content___content_single_line_(p):
 			newNode = AbstractSyntaxTree("content",p)
 			return newNode
-		
-		@self.pg.production('content : BEHAVIOR INTEGER SEMICOLON')
-		def return_statement(p):
-			newNode = AbstractSyntaxTree("return",p)
+
+		@self.pg.production('content : ')
+		def content___(p):
+			newNode = AbstractSyntaxTree("content",p)
 			return newNode
 
-		@self.pg.production('content : TYPE SELF_DEFINED ASSIGNMENT INTEGER SEMICOLON')
-		def integerAssignment(p):
-			newNode = AbstractSyntaxTree("integer_assignment",p)
+		@self.pg.production('single_line : TYPE SELF_DEFINED ASSIGNMENT literal SEMICOLON ')
+		def single_line___TYPE_SELF_DEFINED_ASSIGNMENT_literal_SEMICOLON_(p):
+			newNode = AbstractSyntaxTree("variable assignment",p)
 			return newNode
 
-		@self.pg.production('content : SELF_DEFINED OPENPAREN expression CLOSEPAREN SEMICOLON')
-		def function(p):
-			newNode = AbstractSyntaxTree("function",p)
+		@self.pg.production('single_line : function_call SEMICOLON ')
+		def single_line___function_call_SEMICOLON_(p):
+			newNode = AbstractSyntaxTree("function call",p)
 			return newNode
 
-		@self.pg.production('content : LOOPING OPENPAREN expression CLOSEPAREN LEFT_BRACE content RIGHT_BRACE')
-		def whileLoop_definition(p):
-			newNode = AbstractSyntaxTree("whileLoop_definition", p)
-			return newNode
-			
-		#set up the base case for expressions, when it's just a number
-		@self.pg.production('expression : INTEGER')
-		def number(p):
-			newNode = AbstractSyntaxTree("number",p)
+		@self.pg.production('single_line : LOOPING OPEN_PAREN boolean CLOSE_PAREN block ')
+		def single_line___LOOPING_OPEN_PAREN_boolean_CLOSE_PAREN_block_(p):
+			newNode = AbstractSyntaxTree("loop",p)
 			return newNode
 
-		#setup the function for variables inside of function calls
-		@self.pg.production('expression : SELF_DEFINED')
-		def variable(p):
-			newNode = AbstractSyntaxTree("variable",p)
+		@self.pg.production('single_line : LOOPING block LOOPING OPEN_PAREN boolean CLOSE_PAREN SEMICOLON ')
+		def single_line___LOOPING_block_LOOPING_OPEN_PAREN_boolean_CLOSE_PAREN_SEMICOLON_(p):
+			newNode = AbstractSyntaxTree("do while",p)
 			return newNode
 
-		#build BNF for expressions, since each side is an expression it can either take in another equation or a number
-		@self.pg.production('expression : expression ARITHMETIC expression')
-		def expression(p):
-			#print(p[0])
-			left = p[0]
-			right = p[2]
-			operator = p[1]
-
-			newNode = AbstractSyntaxTree("EXPRESSION",p)
+		@self.pg.production('single_line : BRANCHING OPEN_PAREN boolean CLOSE_PAREN block ')
+		def single_line___BRANCHING_OPEN_PAREN_boolean_CLOSE_PAREN_block_(p):
+			newNode = AbstractSyntaxTree("if and else",p)
 			return newNode
 
-		#default error handling function
+		@self.pg.production('single_line : BRANCHING OPEN_PAREN non_contiguous CLOSE_PAREN block ')
+		def single_line___BRANCHING_OPEN_PAREN_non_contiguous_CLOSE_PAREN_block_(p):
+			newNode = AbstractSyntaxTree("switch",p)
+			return newNode
+
+		@self.pg.production('single_line : arithmetic SEMICOLON ')
+		def single_line___arithmetic_SEMICOLON_(p):
+			newNode = AbstractSyntaxTree("arithmetic",p)
+			return newNode
+
+		@self.pg.production('single_line : BEHAVIOR literal SEMICOLON ')
+		def single_line___BEHAVIOR_literal_SEMICOLON_(p):
+			newNode = AbstractSyntaxTree("return statement",p)
+			return newNode
+
+		@self.pg.production('single_line : BEHAVIOR non_contiguous SEMICOLON ')
+		def single_line___BEHAVIOR_non_contiguous_SEMICOLON_(p):
+			newNode = AbstractSyntaxTree("statement",p)
+			return newNode
+
+		@self.pg.production('single_line : BEHAVIOR SEMICOLON ')
+		def single_line___BEHAVIOR_SEMICOLON_(p):
+			newNode = AbstractSyntaxTree("return statement",p)
+			return newNode
+
+		@self.pg.production('single_line : SELF_DEFINED ASSIGNMENT literal SEMICOLON ')
+		def single_line___SELF_DEFINED_ASSIGNMENT_literal_SEMICOLON_(p):
+			newNode = AbstractSyntaxTree("assignment",p)
+			return newNode
+
+		@self.pg.production('single_line : SELF_DEFINED ASSIGNMENT boolean SEMICOLON ')
+		def single_line___SELF_DEFINED_ASSIGNMENT_boolean_SEMICOLON_(p):
+			newNode = AbstractSyntaxTree("assignment",p)
+			return newNode
+
+		@self.pg.production('single_line : SELF_DEFINED ASSIGNMENT arithmetic SEMICOLON ')
+		def single_line___SELF_DEFINED_ASSIGNMENT_arithmetic_SEMICOLON_(p):
+			newNode = AbstractSyntaxTree("assignment",p)
+			return newNode
+
+		@self.pg.production('function_call : SELF_DEFINED OPEN_PAREN param CLOSE_PAREN ')
+		def function_call___SELF_DEFINED_OPEN_PAREN_param_CLOSE_PAREN_(p):
+			newNode = AbstractSyntaxTree("function call",p)
+			return newNode
+
+		@self.pg.production('param : literal ')
+		def param___literal_(p):
+			newNode = AbstractSyntaxTree("parameter",p)
+			return newNode
+
+		@self.pg.production('param : SELF_DEFINED ')
+		def param___SELF_DEFINED_(p):
+			newNode = AbstractSyntaxTree("paramater",p)
+			return newNode
+
+		@self.pg.production('param : param COMMA literal ')
+		def param___param_COMMA_literal_(p):
+			newNode = AbstractSyntaxTree("parameter",p)
+			return newNode
+
+		@self.pg.production('param : param COMMA SELF_DEFINED ')
+		def param___param_COMMA_SELF_DEFINED_(p):
+			newNode = AbstractSyntaxTree("parameter",p)
+			return newNode
+
+		@self.pg.production('param : ')
+		def param___(p):
+			newNode = AbstractSyntaxTree("parameter",p)
+			return newNode
+
+		@self.pg.production('literal : INTEGER ')
+		def literal___INTEGER_(p):
+			newNode = AbstractSyntaxTree("literal",p)
+			return newNode
+
+		@self.pg.production('literal : STRING ')
+		def literal___STRING_(p):
+			newNode = AbstractSyntaxTree("literal",p)
+			return newNode
+
+		@self.pg.production('literal : PRECISION ')
+		def literal___PRECISION_(p):
+			newNode = AbstractSyntaxTree("literal",p)
+			return newNode
+
+		@self.pg.production('args : ')
+		def args___(p):
+			newNode = AbstractSyntaxTree("argument",p)
+			return newNode
+
+		@self.pg.production('args : TYPE SELF_DEFINED ')
+		def args___TYPE_SELF_DEFINED_(p):
+			newNode = AbstractSyntaxTree("argument",p)
+			return newNode
+
+		@self.pg.production('args : args COMMA TYPE SELF_DEFINED ')
+		def args___args_COMMA_TYPE_SELF_DEFINED_(p):
+			newNode = AbstractSyntaxTree("argument",p)
+			return newNode
+
+		@self.pg.production('boolean : boolean COMPARISON boolean ')
+		def boolean___boolean_COMPARISON_boolean_(p):
+			newNode = AbstractSyntaxTree("boolean",p)
+			return newNode
+
+		@self.pg.production('boolean : boolean LOGICAL boolean ')
+		def boolean___boolean_LOGICAL_boolean_(p):
+			newNode = AbstractSyntaxTree("boolean",p)
+			return newNode
+
+		@self.pg.production('boolean : arithmetic ')
+		def boolean___arithmetic_(p):
+			newNode = AbstractSyntaxTree("boolean",p)
+			return newNode
+
+		@self.pg.production('boolean : function_call ')
+		def boolean___function_call_(p):
+			newNode = AbstractSyntaxTree("boolean",p)
+			return newNode
+
+		@self.pg.production('boolean : SELF_DEFINED ')
+		def boolean___SELF_DEFINED_(p):
+			newNode = AbstractSyntaxTree("boolean",p)
+			return newNode
+
+		@self.pg.production('boolean : boolean ')
+		def boolean___boolean_(p):
+			newNode = AbstractSyntaxTree("boolean",p)
+			return newNode
+
+		@self.pg.production('boolean : numeral ')
+		def boolean___numeral_(p):
+			newNode = AbstractSyntaxTree("boolean",p)
+			return newNode
+
+		@self.pg.production('arithmetic : arithmetic ARITHMETIC arithmetic ')
+		def arithmetic___arithmetic_ARITHMETIC_arithmetic_(p):
+			newNode = AbstractSyntaxTree("arithmetic",p)
+			return newNode
+
+		@self.pg.production('arithmetic : numeral ')
+		def arithmetic___numeral_(p):
+			newNode = AbstractSyntaxTree("arithmetic",p)
+			return newNode
+
+		@self.pg.production('arithmetic : arithmetic ')
+		def arithmetic___arithmetic_(p):
+			newNode = AbstractSyntaxTree("arithmetic",p)
+			return newNode
+
+		@self.pg.production('numeral : INTEGER ')
+		def numeral___INTEGER_(p):
+			newNode = AbstractSyntaxTree("numeral",p)
+			return newNode
+
+		@self.pg.production('numeral : PRECISION ')
+		def numeral___PRECISION_(p):
+			newNode = AbstractSyntaxTree("numeral",p)
+			return newNode
+
+		@self.pg.production('non_contiguous : PRECISION ')
+		def non_contiguous___PRECISION_(p):
+			newNode = AbstractSyntaxTree("non contiguous",p)
+			return newNode
+
+		@self.pg.production('non_contiguous : INTEGER ')
+		def non_contiguous___INTEGER_(p):
+			newNode = AbstractSyntaxTree("non contiguous",p)
+			return newNode
+
+		@self.pg.production('non_contiguous : STRING ')
+		def non_contiguous___STRING_(p):
+			newNode = AbstractSyntaxTree("non contiguous",p)
+			return newNode
+
+		@self.pg.production('non_contiguous : SELF_DEFINED ')
+		def non_contiguous___SELF_DEFINED_(p):
+			newNode = AbstractSyntaxTree("non contiguous",p)
+			return newNode
+
+	
 		@self.pg.error
 		def error_handle(token):
 			return ValueError(token)
-	
+
 	#boilerplate function
 	def get_parser(self):
 		return self.pg.build()
@@ -90,3 +275,5 @@ class Parser():
 	#retrieve the trees head
 	def getTree(self):
 		return self.Head
+
+
