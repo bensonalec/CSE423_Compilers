@@ -1,9 +1,12 @@
+import sys
+sys.path.append("../error_handling")
+from exceptions import *
 import argparse
 from lexer import *
 from parser import Parser
 from ast import AbstractSyntaxTree
+from rply.errors import LexingError
 
-import sys
 #function to print the tree
 
 
@@ -96,7 +99,10 @@ def main():
 	if args.lex or args.all:
 		temp_print = lexer.lex(text_input) #need to run lexer so that tokens are deleted for parser
 		for i in temp_print:
-			print(i)
+			try:
+				print(i)
+			except LexingError as err:
+				print("--- Invalid Token: ", i, " ---")
 		#print(tokensToString(tokens))
 
 	#set up parser, pares the given tokens and retrieve the head of the ast
@@ -113,3 +119,13 @@ def main():
 
 if __name__ == "__main__":
 	main()
+	# try:
+	# 	main()
+	# except LexingError as err:
+	# 	# TODO: Maybe when we do the command line args before calling main, we'll be
+	# 	# be able to reference the token at the index that is reported in this error.
+	# 	print("Invalid Token: ", err)
+	# except ParserGeneratorError as err:
+	# 	print("Parser Error: ", err)
+	# except ParserGeneratorWarning as warning:
+	# 	print("Parser Warning: ", warning)
