@@ -66,7 +66,13 @@ for line in cont:
 
 totalOutput = """
 from rply import ParserGenerator
+from rply.errors import ParserGeneratorWarning
 from ast import *
+from warnings import simplefilter
+
+#we get werid 'non-descriptive' warnings from ParserGenerator, this ignores those
+simplefilter('ignore', ParserGeneratorWarning)
+
 
 #setup parser class
 class Parser():
