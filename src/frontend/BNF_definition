@@ -3,21 +3,21 @@ program : definitionList #program
 definitionList : definitionList functionDefinition #definitionList
 definitionList : functionDefinition #definitionList
 
-functionDefinition : TYPE SELF_DEFINED OPENPAREN CLOSEPAREN block #function definition
+functionDefinition : TYPE SELF_DEFINED OPEN_PAREN args CLOSE_PAREN block #function definition
 
 
-block : LEFT_BRACE block content RIGHT_BRACE #block
-block : LEFT_BRACE content RIGHT_BRACE #block
+block : OPEN_BRACE block content CLOSE_BRACE #block
+block : OPEN_BRACE content CLOSE_BRACE #block
 
 content : content single_line #content
 content : #content
 
 single_line : TYPE SELF_DEFINED ASSIGNMENT literal SEMICOLON #variable assignment
 single_line : function_call SEMICOLON #function call
-single_line : LOOPING OPENPAREN boolean CLOSEPAREN block #loop
-single_line : LOOPING block LOOPING OPENPAREN boolean CLOSEPAREN SEMICOLON #do while
-single_line : BRANCHING OPENPAREN boolean CLOSEPAREN block #if and else
-single_line : BRANCHING OPENPAREN non_contiguous CLOSEPAREN block #switch
+single_line : LOOPING OPEN_PAREN boolean CLOSE_PAREN block #loop
+single_line : LOOPING block LOOPING OPEN_PAREN boolean CLOSE_PAREN SEMICOLON #do while
+single_line : BRANCHING OPEN_PAREN boolean CLOSE_PAREN block #if and else
+single_line : BRANCHING OPEN_PAREN non_contiguous CLOSE_PAREN block #switch
 single_line : arithmetic SEMICOLON #arithmetic
 single_line : BEHAVIOR literal SEMICOLON #return statement
 single_line : BEHAVIOR non_contiguous SEMICOLON #statement
@@ -26,7 +26,7 @@ single_line : SELF_DEFINED ASSIGNMENT literal SEMICOLON #assignment
 single_line : SELF_DEFINED ASSIGNMENT boolean SEMICOLON #assignment
 single_line : SELF_DEFINED ASSIGNMENT arithmetic SEMICOLON #assignment
 
-function_call : SELF_DEFINED OPENPAREN param CLOSEPAREN #function call
+function_call : SELF_DEFINED OPEN_PAREN param CLOSE_PAREN #function call
 
 param : literal #parameter
 param : SELF_DEFINED #paramater
