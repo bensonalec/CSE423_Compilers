@@ -3,7 +3,7 @@ program : definitionList #program
 definitionList : definitionList functionDefinition #definitionList
 definitionList : functionDefinition #definitionList
 
-functionDefinition : TYPE SELF_DEFINED OPEN_PAREN CLOSE_PAREN block #function definition
+functionDefinition : TYPE SELF_DEFINED OPEN_PAREN args CLOSE_PAREN block #function definition
 
 
 block : OPEN_BRACE block content CLOSE_BRACE #block

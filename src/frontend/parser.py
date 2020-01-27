@@ -33,8 +33,8 @@ class Parser():
 			newNode = AbstractSyntaxTree("definitionList",p)
 			return newNode
 
-		@self.pg.production('functionDefinition : TYPE SELF_DEFINED OPEN_PAREN CLOSE_PAREN block ')
-		def functionDefinition___TYPE_SELF_DEFINED_OPEN_PAREN_CLOSE_PAREN_block_(p):
+		@self.pg.production('functionDefinition : TYPE SELF_DEFINED OPEN_PAREN args CLOSE_PAREN block ')
+		def functionDefinition___TYPE_SELF_DEFINED_OPEN_PAREN_args_CLOSE_PAREN_block_(p):
 			newNode = AbstractSyntaxTree("function definition",p)
 			return newNode
 
