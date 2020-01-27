@@ -1,6 +1,3 @@
-import sys
-sys.path.append("../error_handling")
-from exceptions import *
 import argparse
 from lexer import *
 from parser import Parser
@@ -92,25 +89,32 @@ def main():
 
 	#setup lexer, produce tokens
 	lexer = Lexer().get_lexer()
-
 	tokens = lexer.lex(text_input)
+
+	#check for invalid tokens
+	if (validateTokens(tokens) == "FAIL"):
+		print("Received fail from token validation, exiting...")
+		exit()
 	
 	#if -l or --lex is true print the tokens from the lexer 
 	if args.lex or args.all:
 		temp_print = lexer.lex(text_input) #need to run lexer so that tokens are deleted for parser
 		for i in temp_print:
-			try:
-				print(i)
-			except LexingError as err:
-				print("--- Invalid Token: ", i, " ---")
+			print(i)
 		#print(tokensToString(tokens))
 
 	#set up parser, pares the given tokens and retrieve the head of the ast
 	pg = Parser()
 	pg.parse()
 	parser = pg.get_parser()
+
+	#try:
 	parser.parse(tokens)
+	#except AssertionError as err:
+	#	pass
+
 	head = pg.getTree()
+
 	if(args.tree):
 		print(getTree(head,0))
 	#print the tree starting at the head
@@ -119,13 +123,4 @@ def main():
 
 if __name__ == "__main__":
 	main()
-	# try:
-	# 	main()
-	# except LexingError as err:
-	# 	# TODO: Maybe when we do the command line args before calling main, we'll be
-	# 	# be able to reference the token at the index that is reported in this error.
-	# 	print("Invalid Token: ", err)
-	# except ParserGeneratorError as err:
-	# 	print("Parser Error: ", err)
-	# except ParserGeneratorWarning as warning:
-	# 	print("Parser Warning: ", warning)
+

@@ -1,4 +1,5 @@
 from rply import LexerGenerator
+import copy
 
 class Lexer():
 	def __init__(self):
@@ -32,7 +33,7 @@ class Lexer():
 		self.lexer.add("SEMICOLON",    r";")
 		self.lexer.add("COLON",        r":")
 		self.lexer.add("COMMA",        r",")
-		#self.lexer.add("OTHERS",       r".+?") # Just to catch stuff we havent thought about yet		
+		self.lexer.add("INVALID",       r".+?") # Just to catch stuff we havent thought about yet		
 		self.lexer.ignore(r'\s+')
 		self.lexer.ignore(r'\n')
 		self.lexer.ignore(r'\t')
@@ -45,3 +46,18 @@ def tokensToString(tokens):
 	for tok in tokens:
 		out+= str(tok) + "\n"
 	return out
+
+def validateTokens(tokens):
+	cpy = copy.deepcopy(tokens)
+	status = "PASS"
+
+	for i in cpy:
+		if (i.name == "INVALID"):
+			print_error(i)
+			status = "FAIL"
+
+	return status
+
+def print_error(token):
+	print(f"ERROR -- Invalid Token \'{token.value}\', {token.source_pos}'")
+	print()
