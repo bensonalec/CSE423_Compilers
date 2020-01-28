@@ -123,7 +123,12 @@ def main():
 	pg = Parser()
 	pg.parse()
 	parser = pg.get_parser()
-	parser.parse(tokens)
+	try:
+
+		parser.parse(tokens)
+	except AssertionError:
+		pass
+	
 	head = pg.getTree()
 	if(args.tree):
 		print(getTree(head,0))

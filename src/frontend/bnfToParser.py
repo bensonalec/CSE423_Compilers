@@ -5,6 +5,7 @@ funcTemp = 	"""
 		@self.pg.production('BNFSPOT')
 		def FUNCNAMESPOT(p):
 			newNode = AbstractSyntaxTree("NAMESPOT",p)
+			self.Head = newNode
 			return newNode
 """
 headTemp = 	"""
