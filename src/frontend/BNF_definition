@@ -13,6 +13,7 @@ content : single_line content #content
 content : #content
 
 single_line : TYPE SELF_DEFINED ASSIGNMENT literal SEMICOLON #variable assignment
+single_line : TYPE SELF_DEFINED SEMICOLON #initialization
 single_line : function_call SEMICOLON #function call
 single_line : LOOPING OPEN_PAREN boolean CLOSE_PAREN block #loop
 single_line : LOOPING block LOOPING OPEN_PAREN boolean CLOSE_PAREN SEMICOLON #do while
@@ -25,6 +26,7 @@ single_line : BEHAVIOR SEMICOLON #return statement
 single_line : SELF_DEFINED ASSIGNMENT literal SEMICOLON #assignment
 single_line : SELF_DEFINED ASSIGNMENT boolean SEMICOLON #assignment
 single_line : SELF_DEFINED ASSIGNMENT arithmetic SEMICOLON #assignment
+
 
 function_call : SELF_DEFINED OPEN_PAREN param CLOSE_PAREN #function call
 

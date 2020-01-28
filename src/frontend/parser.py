@@ -71,6 +71,12 @@ class Parser():
 			self.Head = newNode
 			return newNode
 
+		@self.pg.production('single_line : TYPE SELF_DEFINED SEMICOLON ')
+		def single_line___TYPE_SELF_DEFINED_SEMICOLON_(p):
+			newNode = AbstractSyntaxTree("initialization",p)
+			self.Head = newNode
+			return newNode
+
 		@self.pg.production('single_line : function_call SEMICOLON ')
 		def single_line___function_call_SEMICOLON_(p):
 			newNode = AbstractSyntaxTree("function call",p)
