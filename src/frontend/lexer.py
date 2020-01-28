@@ -1,4 +1,5 @@
 from rply import LexerGenerator
+from rply.errors import LexingError
 import copy
 
 class Lexer():
@@ -56,8 +57,11 @@ def validateTokens(tokens):
 			print_error(i)
 			status = "FAIL"
 
-	return status
+	if (status == "FAIL"):
+		raise LexingError("invalid token", i.source_pos)
+	else:
+		return
 
 def print_error(token):
-	print(f"ERROR -- Invalid Token \'{token.value}\', {token.source_pos}'")
+	print(f"LexingError: Invalid Token \'{token.value}\' at, {token.source_pos}")
 	print()

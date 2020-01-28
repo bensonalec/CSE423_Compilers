@@ -5,8 +5,6 @@ from ast import AbstractSyntaxTree
 from rply.errors import LexingError
 
 #function to print the tree
-
-
 def getTree(head,level):
 	level += 1
 	token = head.token
@@ -92,9 +90,11 @@ def main():
 	tokens = lexer.lex(text_input)
 
 	#check for invalid tokens
-	if (validateTokens(tokens) == "FAIL"):
-		print("Received fail from token validation, exiting...")
-		exit()
+	try:
+		validateTokens(tokens)
+	except LexingError as err:
+		print("Received error(s) from token validation, exiting...")
+		exit()		
 	
 	#if -l or --lex is true print the tokens from the lexer 
 	if args.lex or args.all:
