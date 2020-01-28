@@ -2,6 +2,7 @@ import argparse
 from lexer import *
 from parser import Parser
 from ast import AbstractSyntaxTree
+from pptree import *
 
 import sys
 #function to print the tree
@@ -48,6 +49,24 @@ def printTree(head,level):
 		if(type(node) == type(AbstractSyntaxTree("sample","sample"))):
 			printTree(node,level)
 
+def prettyPrint(head,level,parentNode):
+	if(level == 0):
+		headNode = Node(head.token)
+		parentNode = headNode
+	
+	token = head.token
+	content = head.content
+	for ne in content:
+		if(type(ne) == type(AbstractSyntaxTree("sample","sample"))):
+			nodeName = Node(ne.token,parentNode)
+		else:
+			
+			nodeName = Node(ne,parentNode)
+		if(type(ne) == type(AbstractSyntaxTree("sample","sample"))):
+			prettyPrint(ne,level+1,nodeName)
+	if(level == 0):
+		print_tree(headNode)
+	
 
 #main function to control the frontend with different command line options.
 def main():
@@ -69,6 +88,7 @@ def main():
 	#Prints string representation of parse tree....
 	cmd_options.add_argument('-t','--tree', help='Prints string representation of parse tree.', action="store_true")
 
+	cmd_options.add_argument('-p','--pretty',help='Prints a pretty verision of the tree, and does not print the tokens', action="store_true")
 
 	#generate arguements
 	args = cmd_options.parse_args()
@@ -109,7 +129,10 @@ def main():
 		print(getTree(head,0))
 	#print the tree starting at the head
 	else:
-		printTree(head,0)
+		if(args.pretty):
+			prettyPrint(head,0,None)
+		else:
+			printTree(head,0)
 
 if __name__ == "__main__":
 	main()
