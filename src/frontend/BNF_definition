@@ -6,10 +6,10 @@ definitionList : functionDefinition #definitionList
 functionDefinition : TYPE SELF_DEFINED OPEN_PAREN args CLOSE_PAREN block #function definition
 
 
-block : OPEN_BRACE block content CLOSE_BRACE #block
+block : OPEN_BRACE content block CLOSE_BRACE #block
 block : OPEN_BRACE content CLOSE_BRACE #block
 
-content : content single_line #content
+content : single_line content #content
 content : #content
 
 single_line : TYPE SELF_DEFINED ASSIGNMENT literal SEMICOLON #variable assignment
@@ -30,8 +30,8 @@ function_call : SELF_DEFINED OPEN_PAREN param CLOSE_PAREN #function call
 
 param : literal #parameter
 param : SELF_DEFINED #paramater
-param : param COMMA literal #parameter
-param : param COMMA SELF_DEFINED #parameter
+param : literal COMMA param #parameter
+param : SELF_DEFINED COMMA param #parameter
 param : #parameter
 
 literal : INTEGER #literal
@@ -40,7 +40,7 @@ literal : PRECISION #literal
 
 args : #argument
 args : TYPE SELF_DEFINED #argument
-args : args COMMA TYPE SELF_DEFINED #argument
+args : TYPE SELF_DEFINED COMMA args #argument
 
 boolean : boolean COMPARISON boolean #boolean
 boolean : boolean LOGICAL boolean #boolean
