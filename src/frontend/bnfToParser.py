@@ -5,6 +5,7 @@ funcTemp = 	"""
 		@self.pg.production('BNFSPOT')
 		def FUNCNAMESPOT(p):
 			newNode = AbstractSyntaxTree("NAMESPOT",p)
+			self.Head = newNode
 			return newNode
 """
 headTemp = 	"""
@@ -53,6 +54,7 @@ for line in cont:
 		bnf = spl[0]
 		funcname = bnf.replace(" ","_")
 		funcname = funcname.replace(":","_")
+		
 		name = spl[1].strip()
 		if(name == "program"):
 			newFunc = headTemp
