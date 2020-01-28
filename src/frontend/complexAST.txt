@@ -1,0 +1,235 @@
+ program┐
+        └definitionList┐
+                       │                   ┌Token('TYPE', 'int')
+                       │                   ├Token('SELF_DEFINED', 'main')
+                       │                   ├Token('OPEN_PAREN', '(')
+                       │                   ├argument
+                       │                   ├Token('CLOSE_PAREN', ')')
+                       └function definition┤
+                                           │     ┌Token('OPEN_BRACE', '{')
+                                           │     ├Token('CLOSE_BRACE', '}')
+                                           └block┤
+                                                 │                  ┌Token('SELF_DEFINED', 'x')
+                                                 │                  ├Token('ASSIGNMENT', '=')
+                                                 │                  ├Token('SEMICOLON', ';')
+                                                 │       ┌assignment┤
+                                                 │       │          │          ┌Token('ARITHMETIC', '+')
+                                                 │       │          │          ├arithmetic┐
+                                                 │       │          │          │          └numeral┐
+                                                 │       │          │          │                  └Token('INTEGER', '1')
+                                                 │       │          └arithmetic┤
+                                                 │       │                     │          ┌Token('ARITHMETIC', '-')
+                                                 │       │                     │          ├arithmetic┐
+                                                 │       │                     │          │          └numeral┐
+                                                 │       │                     │          │                  └Token('INTEGER', '2')
+                                                 │       │                     └arithmetic┤
+                                                 │       │                                │          ┌Token('ARITHMETIC', '/')
+                                                 │       │                                │          ├arithmetic┐
+                                                 │       │                                │          │          └numeral┐
+                                                 │       │                                │          │                  └Token('INTEGER', '3')
+                                                 │       │                                └arithmetic┤
+                                                 │       │                                           │          ┌Token('ARITHMETIC', '*')
+                                                 │       │                                           │          ├arithmetic┐
+                                                 │       │                                           │          │          └numeral┐
+                                                 │       │                                           │          │                  └Token('INTEGER', '5')
+                                                 │       │                                           └arithmetic┤
+                                                 │       │                                                      │          ┌Token('ARITHMETIC', '+')
+                                                 │       │                                                      │          ├arithmetic┐
+                                                 │       │                                                      │          │          └numeral┐
+                                                 │       │                                                      │          │                  └Token('INTEGER', '6')
+                                                 │       │                                                      └arithmetic┤
+                                                 │       │                                                                 │          ┌Token('ARITHMETIC', '%')
+                                                 │       │                                                                 └arithmetic┤
+                                                 │       │                                                                            ├arithmetic┐
+                                                 │       │                                                                            │          └numeral┐
+                                                 │       │                                                                            │                  └Token('INTEGER', '10')
+                                                 │       │                                                                            └arithmetic┐
+                                                 │       │                                                                                       └numeral┐
+                                                 │       │                                                                                               └Token('INTEGER', '99')
+                                                 └content┤
+                                                         │                  ┌Token('SELF_DEFINED', 'z')
+                                                         │                  ├Token('ASSIGNMENT', '=')
+                                                         │       ┌assignment┤
+                                                         │       │          ├literal┐
+                                                         │       │          │       └Token('INTEGER', '13')
+                                                         │       │          └Token('SEMICOLON', ';')
+                                                         └content┤
+                                                                 │                   ┌Token('BRANCHING', 'if')
+                                                                 │                   ├Token('OPEN_PAREN', '(')
+                                                                 │                   ├Token('CLOSE_PAREN', ')')
+                                                                 │                   │     ┌Token('OPEN_BRACE', '{')
+                                                                 │                   │     ├Token('CLOSE_BRACE', '}')
+                                                                 │                   ├block┤
+                                                                 │                   │     │       ┌content
+                                                                 │                   │     └content┤
+                                                                 │                   │             │          ┌Token('SELF_DEFINED', 'z')
+                                                                 │                   │             │          ├Token('ASSIGNMENT', '=')
+                                                                 │                   │             └assignment┤
+                                                                 │                   │                        ├literal┐
+                                                                 │                   │                        │       └Token('INTEGER', '14')
+                                                                 │                   │                        └Token('SEMICOLON', ';')
+                                                                 │       ┌if and else┤
+                                                                 │       │           │       ┌Token('COMPARISON', '==')
+                                                                 │       │           │       ├boolean┐
+                                                                 │       │           │       │       └Token('SELF_DEFINED', 'x')
+                                                                 │       │           └boolean┤
+                                                                 │       │                   │       ┌Token('LOGICAL', '&&')
+                                                                 │       │                   │       ├boolean┐
+                                                                 │       │                   │       │       └numeral┐
+                                                                 │       │                   │       │               └Token('INTEGER', '13')
+                                                                 │       │                   └boolean┤
+                                                                 │       │                           │       ┌Token('COMPARISON', '<=')
+                                                                 │       │                           │       ├boolean┐
+                                                                 │       │                           │       │       └Token('SELF_DEFINED', 'z')
+                                                                 │       │                           └boolean┤
+                                                                 │       │                                   └boolean┐
+                                                                 │       │                                           └numeral┐
+                                                                 │       │                                                   └Token('INTEGER', '14')
+                                                                 └content┤
+                                                                         │                  ┌Token('SELF_DEFINED', 'x')
+                                                                         │                  ├Token('ASSIGNMENT', '=')
+                                                                         │                  ├Token('SEMICOLON', ';')
+                                                                         │       ┌assignment┤
+                                                                         │       │          │          ┌Token('ARITHMETIC', '+')
+                                                                         │       │          │          ├arithmetic┐
+                                                                         │       │          │          │          └numeral┐
+                                                                         │       │          │          │                  └Token('INTEGER', '1')
+                                                                         │       │          └arithmetic┤
+                                                                         │       │                     │          ┌Token('ARITHMETIC', '-')
+                                                                         │       │                     │          ├arithmetic┐
+                                                                         │       │                     │          │          └numeral┐
+                                                                         │       │                     │          │                  └Token('INTEGER', '2')
+                                                                         │       │                     └arithmetic┤
+                                                                         │       │                                │          ┌Token('ARITHMETIC', '/')
+                                                                         │       │                                │          ├arithmetic┐
+                                                                         │       │                                │          │          └numeral┐
+                                                                         │       │                                │          │                  └Token('INTEGER', '3')
+                                                                         │       │                                └arithmetic┤
+                                                                         │       │                                           │          ┌Token('ARITHMETIC', '*')
+                                                                         │       │                                           │          ├arithmetic┐
+                                                                         │       │                                           │          │          └numeral┐
+                                                                         │       │                                           │          │                  └Token('INTEGER', '5')
+                                                                         │       │                                           └arithmetic┤
+                                                                         │       │                                                      │          ┌Token('ARITHMETIC', '+')
+                                                                         │       │                                                      │          ├arithmetic┐
+                                                                         │       │                                                      │          │          └numeral┐
+                                                                         │       │                                                      │          │                  └Token('INTEGER', '6')
+                                                                         │       │                                                      └arithmetic┤
+                                                                         │       │                                                                 │          ┌Token('ARITHMETIC', '%')
+                                                                         │       │                                                                 └arithmetic┤
+                                                                         │       │                                                                            ├arithmetic┐
+                                                                         │       │                                                                            │          └numeral┐
+                                                                         │       │                                                                            │                  └Token('INTEGER', '10')
+                                                                         │       │                                                                            └arithmetic┐
+                                                                         │       │                                                                                       └numeral┐
+                                                                         │       │                                                                                               └Token('INTEGER', '99')
+                                                                         └content┤
+                                                                                 │                  ┌Token('SELF_DEFINED', 'z')
+                                                                                 │                  ├Token('ASSIGNMENT', '=')
+                                                                                 │       ┌assignment┤
+                                                                                 │       │          ├literal┐
+                                                                                 │       │          │       └Token('INTEGER', '13')
+                                                                                 │       │          └Token('SEMICOLON', ';')
+                                                                                 └content┤
+                                                                                         │                   ┌Token('BRANCHING', 'if')
+                                                                                         │                   ├Token('OPEN_PAREN', '(')
+                                                                                         │                   ├Token('CLOSE_PAREN', ')')
+                                                                                         │                   │     ┌Token('OPEN_BRACE', '{')
+                                                                                         │                   │     ├Token('CLOSE_BRACE', '}')
+                                                                                         │                   ├block┤
+                                                                                         │                   │     │       ┌content
+                                                                                         │                   │     └content┤
+                                                                                         │                   │             │          ┌Token('SELF_DEFINED', 'z')
+                                                                                         │                   │             │          ├Token('ASSIGNMENT', '=')
+                                                                                         │                   │             └assignment┤
+                                                                                         │                   │                        ├literal┐
+                                                                                         │                   │                        │       └Token('INTEGER', '14')
+                                                                                         │                   │                        └Token('SEMICOLON', ';')
+                                                                                         │       ┌if and else┤
+                                                                                         │       │           │       ┌Token('COMPARISON', '==')
+                                                                                         │       │           │       ├boolean┐
+                                                                                         │       │           │       │       └Token('SELF_DEFINED', 'x')
+                                                                                         │       │           └boolean┤
+                                                                                         │       │                   │       ┌Token('LOGICAL', '&&')
+                                                                                         │       │                   │       ├boolean┐
+                                                                                         │       │                   │       │       └numeral┐
+                                                                                         │       │                   │       │               └Token('INTEGER', '13')
+                                                                                         │       │                   └boolean┤
+                                                                                         │       │                           │       ┌Token('COMPARISON', '<=')
+                                                                                         │       │                           │       ├boolean┐
+                                                                                         │       │                           │       │       └Token('SELF_DEFINED', 'z')
+                                                                                         │       │                           └boolean┤
+                                                                                         │       │                                   └boolean┐
+                                                                                         │       │                                           └numeral┐
+                                                                                         │       │                                                   └Token('INTEGER', '14')
+                                                                                         └content┤
+                                                                                                 │                  ┌Token('SELF_DEFINED', 'A')
+                                                                                                 │                  ├Token('ASSIGNMENT', '=')
+                                                                                                 │       ┌assignment┤
+                                                                                                 │       │          ├literal┐
+                                                                                                 │       │          │       └Token('INTEGER', '2')
+                                                                                                 │       │          └Token('SEMICOLON', ';')
+                                                                                                 └content┤
+                                                                                                         │                  ┌Token('SELF_DEFINED', 'AB2')
+                                                                                                         │                  ├Token('ASSIGNMENT', '=')
+                                                                                                         │       ┌assignment┤
+                                                                                                         │       │          ├literal┐
+                                                                                                         │       │          │       └Token('INTEGER', '2')
+                                                                                                         │       │          └Token('SEMICOLON', ';')
+                                                                                                         └content┤
+                                                                                                                 │                  ┌Token('SELF_DEFINED', 'v')
+                                                                                                                 │                  ├Token('ASSIGNMENT', '=')
+                                                                                                                 │       ┌assignment┤
+                                                                                                                 │       │          ├literal┐
+                                                                                                                 │       │          │       └Token('STRING', '"alec"')
+                                                                                                                 │       │          └Token('SEMICOLON', ';')
+                                                                                                                 └content┤
+                                                                                                                         │                  ┌Token('SELF_DEFINED', 'z')
+                                                                                                                         │                  ├Token('ASSIGNMENT', '=')
+                                                                                                                         │       ┌assignment┤
+                                                                                                                         │       │          ├literal┐
+                                                                                                                         │       │          │       └Token('STRING', '"Hello World"')
+                                                                                                                         │       │          └Token('SEMICOLON', ';')
+                                                                                                                         └content┤
+                                                                                                                                 │                  ┌Token('SELF_DEFINED', 'y')
+                                                                                                                                 │                  ├Token('ASSIGNMENT', '=')
+                                                                                                                                 │       ┌assignment┤
+                                                                                                                                 │       │          ├literal┐
+                                                                                                                                 │       │          │       └Token('STRING', '"Hello world"')
+                                                                                                                                 │       │          └Token('SEMICOLON', ';')
+                                                                                                                                 └content┤
+                                                                                                                                         │                  ┌Token('SELF_DEFINED', 'w')
+                                                                                                                                         │                  ├Token('ASSIGNMENT', '=')
+                                                                                                                                         │       ┌assignment┤
+                                                                                                                                         │       │          ├literal┐
+                                                                                                                                         │       │          │       └Token('STRING', '"Gotcha; Alec"')
+                                                                                                                                         │       │          └Token('SEMICOLON', ';')
+                                                                                                                                         └content┤
+                                                                                                                                                 │                  ┌Token('SELF_DEFINED', 'p')
+                                                                                                                                                 │                  ├Token('ASSIGNMENT', '=')
+                                                                                                                                                 │       ┌assignment┤
+                                                                                                                                                 │       │          ├literal┐
+                                                                                                                                                 │       │          │       └Token('STRING', '"\\""')
+                                                                                                                                                 │       │          └Token('SEMICOLON', ';')
+                                                                                                                                                 └content┤
+                                                                                                                                                         │                  ┌Token('SELF_DEFINED', 'e')
+                                                                                                                                                         │                  ├Token('ASSIGNMENT', '=')
+                                                                                                                                                         │       ┌assignment┤
+                                                                                                                                                         │       │          ├literal┐
+                                                                                                                                                         │       │          │       └Token('PRECISION', '12.123')
+                                                                                                                                                         │       │          └Token('SEMICOLON', ';')
+                                                                                                                                                         └content┤
+                                                                                                                                                                 │                  ┌Token('SELF_DEFINED', 'l')
+                                                                                                                                                                 │                  ├Token('ASSIGNMENT', '=')
+                                                                                                                                                                 │       ┌assignment┤
+                                                                                                                                                                 │       │          ├boolean┐
+                                                                                                                                                                 │       │          │       └Token('SELF_DEFINED', 'true')
+                                                                                                                                                                 │       │          └Token('SEMICOLON', ';')
+                                                                                                                                                                 └content┤
+                                                                                                                                                                         │       ┌content
+                                                                                                                                                                         └content┤
+                                                                                                                                                                                 │                ┌Token('BEHAVIOR', 'return')
+                                                                                                                                                                                 │                ├Token('SEMICOLON', ';')
+                                                                                                                                                                                 └return statement┤
+                                                                                                                                                                                                  └literal┐
+                                                                                                                                                                                                          └Token('INTEGER', '1')
