@@ -2,12 +2,10 @@ import argparse
 from lexer import *
 from parser import Parser
 from ast import AbstractSyntaxTree
+from rply.errors import LexingError
 from pptree import *
 
-import sys
 #function to print the tree
-
-
 def getTree(head,level):
 	level += 1
 	token = head.token
@@ -109,8 +107,14 @@ def main():
 
 	#setup lexer, produce tokens
 	lexer = Lexer().get_lexer()
-
 	tokens = lexer.lex(text_input)
+
+	#check for invalid tokens
+	try:
+		validateTokens(tokens)
+	except LexingError as err:
+		print("Received error(s) from token validation, exiting...")
+		exit()		
 	
 	#if -l or --lex is true print the tokens from the lexer 
 	if args.lex or args.all:
@@ -130,6 +134,7 @@ def main():
 		pass
 	
 	head = pg.getTree()
+
 	if(args.tree):
 		print(getTree(head,0))
 	#print the tree starting at the head
@@ -141,3 +146,4 @@ def main():
 
 if __name__ == "__main__":
 	main()
+
