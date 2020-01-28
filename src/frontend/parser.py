@@ -8,7 +8,7 @@ class Parser():
 	
 	def __init__(self):
 		self.pg = ParserGenerator(
-			['TYPE','SELF_DEFINED','OPEN_PAREN','CLOSE_PAREN','OPEN_BRACE','CLOSE_BRACE','ASSIGNMENT','SEMICOLON','LOOPING','BRANCHING','BEHAVIOR','COMMA','INTEGER','STRING','PRECISION','COMPARISON','LOGICAL','ARITHMETIC']
+			['TYPE','SELF_DEFINED','OPEN_PAREN','CLOSE_PAREN','OPEN_BRACE','CLOSE_BRACE','ASSIGNMENT','SEMICOLON','LOOPING','BRANCHING','BEHAVIOR','COLON','COMMA','INTEGER','STRING','PRECISION','COMPARISON','LOGICAL','ARITHMETIC']
 		)
 		#initialzie head and current node
 		self.Head = None
@@ -68,6 +68,12 @@ class Parser():
 		@self.pg.production('single_line : TYPE SELF_DEFINED ASSIGNMENT literal SEMICOLON ')
 		def single_line___TYPE_SELF_DEFINED_ASSIGNMENT_literal_SEMICOLON_(p):
 			newNode = AbstractSyntaxTree("variable assignment",p)
+			self.Head = newNode
+			return newNode
+
+		@self.pg.production('single_line : TYPE SELF_DEFINED SEMICOLON ')
+		def single_line___TYPE_SELF_DEFINED_SEMICOLON_(p):
+			newNode = AbstractSyntaxTree("initialization",p)
 			self.Head = newNode
 			return newNode
 
@@ -140,6 +146,12 @@ class Parser():
 		@self.pg.production('single_line : SELF_DEFINED ASSIGNMENT arithmetic SEMICOLON ')
 		def single_line___SELF_DEFINED_ASSIGNMENT_arithmetic_SEMICOLON_(p):
 			newNode = AbstractSyntaxTree("assignment",p)
+			self.Head = newNode
+			return newNode
+
+		@self.pg.production('single_line : SELF_DEFINED COLON single_line ')
+		def single_line___SELF_DEFINED_COLON_single_line_(p):
+			newNode = AbstractSyntaxTree("goto_label",p)
 			self.Head = newNode
 			return newNode
 
@@ -275,6 +287,12 @@ class Parser():
 			self.Head = newNode
 			return newNode
 
+		@self.pg.production('arithmetic : unary ')
+		def arithmetic___unary_(p):
+			newNode = AbstractSyntaxTree("arithmetic",p)
+			self.Head = newNode
+			return newNode
+
 		@self.pg.production('numeral : INTEGER ')
 		def numeral___INTEGER_(p):
 			newNode = AbstractSyntaxTree("numeral",p)
@@ -308,6 +326,36 @@ class Parser():
 		@self.pg.production('non_contiguous : SELF_DEFINED ')
 		def non_contiguous___SELF_DEFINED_(p):
 			newNode = AbstractSyntaxTree("non contiguous",p)
+			self.Head = newNode
+			return newNode
+
+		@self.pg.production('unary : ARITHMETIC non_contiguous ')
+		def unary___ARITHMETIC_non_contiguous_(p):
+			newNode = AbstractSyntaxTree("unary_op",p)
+			self.Head = newNode
+			return newNode
+
+		@self.pg.production('unary : non_contiguous ARITHMETIC ')
+		def unary___non_contiguous_ARITHMETIC_(p):
+			newNode = AbstractSyntaxTree("unary_op",p)
+			self.Head = newNode
+			return newNode
+
+		@self.pg.production('unary : BEHAVIOR OPEN_PAREN non_contiguous CLOSE_PAREN ')
+		def unary___BEHAVIOR_OPEN_PAREN_non_contiguous_CLOSE_PAREN_(p):
+			newNode = AbstractSyntaxTree("sizeof_self_def",p)
+			self.Head = newNode
+			return newNode
+
+		@self.pg.production('unary : BEHAVIOR OPEN_PAREN TYPE CLOSE_PAREN ')
+		def unary___BEHAVIOR_OPEN_PAREN_TYPE_CLOSE_PAREN_(p):
+			newNode = AbstractSyntaxTree("sizeof_type",p)
+			self.Head = newNode
+			return newNode
+
+		@self.pg.production('unary : OPEN_PAREN TYPE CLOSE_PAREN ')
+		def unary___OPEN_PAREN_TYPE_CLOSE_PAREN_(p):
+			newNode = AbstractSyntaxTree("cast",p)
 			self.Head = newNode
 			return newNode
 
