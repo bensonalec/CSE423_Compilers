@@ -38,8 +38,8 @@ class Parser():
 			newNode = AbstractSyntaxTree("function definition",p)
 			return newNode
 
-		@self.pg.production('block : OPEN_BRACE block content CLOSE_BRACE ')
-		def block___OPEN_BRACE_block_content_CLOSE_BRACE_(p):
+		@self.pg.production('block : OPEN_BRACE content block CLOSE_BRACE ')
+		def block___OPEN_BRACE_content_block_CLOSE_BRACE_(p):
 			newNode = AbstractSyntaxTree("block",p)
 			return newNode
 
@@ -48,8 +48,8 @@ class Parser():
 			newNode = AbstractSyntaxTree("block",p)
 			return newNode
 
-		@self.pg.production('content : content single_line ')
-		def content___content_single_line_(p):
+		@self.pg.production('content : single_line content ')
+		def content___single_line_content_(p):
 			newNode = AbstractSyntaxTree("content",p)
 			return newNode
 
@@ -138,13 +138,13 @@ class Parser():
 			newNode = AbstractSyntaxTree("paramater",p)
 			return newNode
 
-		@self.pg.production('param : param COMMA literal ')
-		def param___param_COMMA_literal_(p):
+		@self.pg.production('param : literal COMMA param ')
+		def param___literal_COMMA_param_(p):
 			newNode = AbstractSyntaxTree("parameter",p)
 			return newNode
 
-		@self.pg.production('param : param COMMA SELF_DEFINED ')
-		def param___param_COMMA_SELF_DEFINED_(p):
+		@self.pg.production('param : SELF_DEFINED COMMA param ')
+		def param___SELF_DEFINED_COMMA_param_(p):
 			newNode = AbstractSyntaxTree("parameter",p)
 			return newNode
 
@@ -178,8 +178,8 @@ class Parser():
 			newNode = AbstractSyntaxTree("argument",p)
 			return newNode
 
-		@self.pg.production('args : args COMMA TYPE SELF_DEFINED ')
-		def args___args_COMMA_TYPE_SELF_DEFINED_(p):
+		@self.pg.production('args : TYPE SELF_DEFINED COMMA args ')
+		def args___TYPE_SELF_DEFINED_COMMA_args_(p):
 			newNode = AbstractSyntaxTree("argument",p)
 			return newNode
 
