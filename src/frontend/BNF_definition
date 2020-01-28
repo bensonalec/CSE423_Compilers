@@ -26,6 +26,7 @@ single_line : BEHAVIOR SEMICOLON #return statement
 single_line : SELF_DEFINED ASSIGNMENT literal SEMICOLON #assignment
 single_line : SELF_DEFINED ASSIGNMENT boolean SEMICOLON #assignment
 single_line : SELF_DEFINED ASSIGNMENT arithmetic SEMICOLON #assignment
+single_line : SELF_DEFINED COLON single_line #goto_label
 
 
 function_call : SELF_DEFINED OPEN_PAREN param CLOSE_PAREN #function call
@@ -55,6 +56,7 @@ boolean : numeral #boolean
 arithmetic : arithmetic ARITHMETIC arithmetic #arithmetic
 arithmetic : numeral #arithmetic
 arithmetic : arithmetic #arithmetic
+arithmetic : unary #arithmetic
 
 numeral : INTEGER #numeral
 numeral : PRECISION #numeral
@@ -63,3 +65,10 @@ non_contiguous : PRECISION #non contiguous
 non_contiguous : INTEGER #non contiguous
 non_contiguous : STRING #non contiguous
 non_contiguous : SELF_DEFINED #non contiguous
+
+
+unary : ARITHMETIC non_contiguous # unary_op
+unary : non_contiguous ARITHMETIC # unary_op
+unary : BEHAVIOR OPEN_PAREN non_contiguous CLOSE_PAREN # sizeof_self_def
+unary : BEHAVIOR OPEN_PAREN TYPE CLOSE_PAREN # sizeof_type
+unary : OPEN_PAREN TYPE CLOSE_PAREN # cast
