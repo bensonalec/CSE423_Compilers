@@ -67,39 +67,9 @@ def prettyPrint(head,level,parentNode):
 	
 
 #main function to control the frontend with different command line options.
-def main():
-
-	#command line arguement
-
-	#decription of the comiler
-	cmd_options = argparse.ArgumentParser(description='Frontend of the compiler. Can produce tokens and syntax tree')
-	
-	#input file option
-	cmd_options.add_argument('input_file', metavar='<filename.c>', type=str, help='Input c file.')
-	
-	#Arguement to print tokens from lexer
-	cmd_options.add_argument('-l','--lex', help='Prints out tokens from lexer', action='store_true')
-	
-	#Print all output from lexer, parser, etc....
-	cmd_options.add_argument('-a','--all', help='Prints out all intermediate ouputs.', action="store_true")
-
-	#Prints string representation of parse tree....
-	cmd_options.add_argument('-t','--tree', help='Prints string representation of parse tree.', action="store_true")
-
-	cmd_options.add_argument('-p','--pretty',help='Prints a pretty verision of the tree, and does not print the tokens', action="store_true")
-
-	#generate arguements
-	args = cmd_options.parse_args()
-
-
-	#open file for testing and make sure file is of the correct type
-	if args.input_file and args.input_file.endswith(".c"):
-		fi = open(args.input_file, "r")
-	else:
-		if not args.input_file.endswith(".c"):
-			print("Error file must end with .c")
-		cmd_options.print_help()
-		exit()
+def main(args, fi):
+	#args contain the output from cmd_options.parse_args() and hold the command line options.
+	#fi is the open file descriptor.
 
 	#Read in file
 	text_input = fi.read()
@@ -128,7 +98,6 @@ def main():
 	pg.parse()
 	parser = pg.get_parser()
 	try:
-
 		parser.parse(tokens)
 	except AssertionError:
 		pass
@@ -145,5 +114,38 @@ def main():
 			printTree(head,0)
 
 if __name__ == "__main__":
-	main()
+	#command line arguements
+
+	#decription of the comiler
+	cmd_options = argparse.ArgumentParser(description='Frontend of the compiler. Can produce tokens and syntax tree')
+	
+	#input file option
+	cmd_options.add_argument('input_file', metavar='<filename.c>', type=str, help='Input c file.')
+	
+	#Arguement to print tokens from lexer
+	cmd_options.add_argument('-l','--lex', help='Prints out tokens from lexer', action='store_true')
+	
+	#Print all output from lexer, parser, etc....
+	cmd_options.add_argument('-a','--all', help='Prints out all intermediate ouputs.', action="store_true")
+
+	#Prints string representation of parse tree....
+	cmd_options.add_argument('-t','--tree', help='Prints string representation of parse tree.', action="store_true")
+
+	cmd_options.add_argument('-p','--pretty',help='Prints a pretty verision of the tree, and does not print the tokens', action="store_true")
+
+	#generate arguements
+	args = cmd_options.parse_args()
+
+
+	#open file and pass into main.
+	if args.input_file and args.input_file.endswith(".c"):
+		fi = open(args.input_file, "r")
+	else:
+		#if not c file.
+		if not args.input_file.endswith(".c"):
+			print("Error file must end with .c")
+		cmd_options.print_help()
+		exit()
+
+	main(args, fi)
 
