@@ -81,6 +81,7 @@ def main(args, fi):
 
 	#check for invalid tokens
 	try:
+		#Expected to raise an error upon finding invalid tokens
 		validateTokens(tokens)
 	except LexingError as err:
 		print("Received error(s) from token validation, exiting...")
