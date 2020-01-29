@@ -67,17 +67,9 @@ def prettyPrint(head,level,parentNode):
 	
 
 #main function to control the frontend with different command line options.
-def main(args):
+def main(args, fi):
 	#args contain the output from cmd_options.parse_args() and hold the command line options.
-
-	#open file for testing and make sure file is of the correct type
-	if args.input_file and args.input_file.endswith(".c"):
-		fi = open(args.input_file, "r")
-	else:
-		if not args.input_file.endswith(".c"):
-			print("Error file must end with .c")
-		cmd_options.print_help()
-		exit()
+	#fi is the open file descriptor.
 
 	#Read in file
 	text_input = fi.read()
@@ -144,5 +136,16 @@ if __name__ == "__main__":
 	#generate arguements
 	args = cmd_options.parse_args()
 
-	main(args)
+
+	#open file and pass into main.
+	if args.input_file and args.input_file.endswith(".c"):
+		fi = open(args.input_file, "r")
+	else:
+		#if not c file.
+		if not args.input_file.endswith(".c"):
+			print("Error file must end with .c")
+		cmd_options.print_help()
+		exit()
+
+	main(args, fi)
 
