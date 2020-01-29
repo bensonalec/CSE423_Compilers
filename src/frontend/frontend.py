@@ -1,6 +1,6 @@
 import argparse
 from lexer import *
-from parser import Parser
+from parser import Parser 
 from ast import AbstractSyntaxTree
 from rply.errors import LexingError
 from pptree import *
@@ -100,11 +100,13 @@ def main(args, fi):
 	parser = pg.get_parser()
 	try:
 		parser.parse(tokens)
-	except AssertionError:
-		pass
+	except AssertionError as err:
+		# parser has it's own detailed error printing
+		pg.print_error()
+		print("Received error(s) from parser, continuing with what was parsed...\n")
+
 
 	head = pg.getTree()
-	print(head)
 
 	if(args.tree):
 		print(getTree(head,0))
