@@ -101,8 +101,9 @@ def main(args, fi):
 		parser.parse(tokens)
 	except AssertionError:
 		pass
-	
+
 	head = pg.getTree()
+	print(head)
 
 	if(args.tree):
 		print(getTree(head,0))
