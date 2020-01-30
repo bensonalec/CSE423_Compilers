@@ -102,8 +102,7 @@ class Parser():
 		\"\"\"
 		Prints parser error message. This function ultimately iterates through the AST that was 
 		returned after the parser found an error. AST's consist of tokens as well as other AST's so 
-		we need to iterate to find the first token and then print its location in the *.c file that
-		was passed in initially.
+		we need to iterate to find the first token and then print its source position.
 		\"\"\"
 		# TODO: add some more in-depth error processing to print
 		# out a more detailed description of what went wrong, and possibly some suggestions 
