@@ -12,7 +12,7 @@ class Parser():
     
     def __init__(self):
         self.pg = ParserGenerator(
-            ['TYPE','SELF_DEFINED','OPEN_PAREN','CLOSE_PAREN','OPEN_BRACE','CLOSE_BRACE','ASSIGNMENT','SEMICOLON','LOOPING','BRANCHING','BEHAVIOR','COLON','COMMA','INTEGER','STRING','PRECISION','COMPARISON','LOGICAL','ARITHMETIC']
+            ['TYPE','SELF_DEFINED','OPEN_PAREN','CLOSE_PAREN','OPEN_BRACE','CLOSE_BRACE','ASSIGNMENT','SEMICOLON','LOOPING','BRANCHING','BEHAVIOR','COLON','CLOSE_PARENT','COMMA','INTEGER','STRING','PRECISION','COMPARISON','LOGICAL','ARITHMETIC']
         )
         #initialzie head and current node
         self.Head = None
@@ -43,6 +43,12 @@ class Parser():
             self.Head = newNode
             return newNode
 
+        @self.pg.production('functionDefinition : TYPE SELF_DEFINED OPEN_PAREN CLOSE_PAREN block ')
+        def functionDefinition___TYPE_SELF_DEFINED_OPEN_PAREN_CLOSE_PAREN_block_(p):
+            newNode = AbstractSyntaxTree("function definition",p)
+            self.Head = newNode
+            return newNode
+
         @self.pg.production('block : OPEN_BRACE content block CLOSE_BRACE ')
         def block___OPEN_BRACE_content_block_CLOSE_BRACE_(p):
             newNode = AbstractSyntaxTree("block",p)
@@ -55,14 +61,20 @@ class Parser():
             self.Head = newNode
             return newNode
 
+        @self.pg.production('block : OPEN_BRACE CLOSE_BRACE ')
+        def block___OPEN_BRACE_CLOSE_BRACE_(p):
+            newNode = AbstractSyntaxTree("block",p)
+            self.Head = newNode
+            return newNode
+
         @self.pg.production('content : single_line content ')
         def content___single_line_content_(p):
             newNode = AbstractSyntaxTree("content",p)
             self.Head = newNode
             return newNode
 
-        @self.pg.production('content : ')
-        def content___(p):
+        @self.pg.production('content : single_line ')
+        def content___single_line_(p):
             newNode = AbstractSyntaxTree("content",p)
             self.Head = newNode
             return newNode
@@ -163,6 +175,12 @@ class Parser():
             self.Head = newNode
             return newNode
 
+        @self.pg.production('function_call : SELF_DEFINED OPEN_PAREN CLOSE_PARENT ')
+        def function_call___SELF_DEFINED_OPEN_PAREN_CLOSE_PARENT_(p):
+            newNode = AbstractSyntaxTree("function call",p)
+            self.Head = newNode
+            return newNode
+
         @self.pg.production('param : literal ')
         def param___literal_(p):
             newNode = AbstractSyntaxTree("parameter",p)
@@ -187,12 +205,6 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production('param : ')
-        def param___(p):
-            newNode = AbstractSyntaxTree("parameter",p)
-            self.Head = newNode
-            return newNode
-
         @self.pg.production('literal : INTEGER ')
         def literal___INTEGER_(p):
             newNode = AbstractSyntaxTree("literal",p)
@@ -208,12 +220,6 @@ class Parser():
         @self.pg.production('literal : PRECISION ')
         def literal___PRECISION_(p):
             newNode = AbstractSyntaxTree("literal",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('args : ')
-        def args___(p):
-            newNode = AbstractSyntaxTree("argument",p)
             self.Head = newNode
             return newNode
 
