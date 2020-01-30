@@ -85,30 +85,30 @@ def main(args, fi):
     tokens = lexer.lex(text_input)
 
     #check for invalid tokens
-	try:
-		#Expected to raise an error upon finding invalid tokens
-		validateTokens(tokens)
-	except LexingError as err:
-		print("Received error(s) from token validation, exiting...")
-		exit()		
-	
-	#if -l or --lex is true print the tokens from the lexer 
-	if args.lex or args.all:
-		temp_print = lexer.lex(text_input) #need to run lexer so that tokens are deleted for parser
-		for i in temp_print:
-			print(i)
-		#print(tokensToString(tokens))
+    try:
+        #Expected to raise an error upon finding invalid tokens
+        validateTokens(tokens)
+    except LexingError as err:
+        print("Received error(s) from token validation, exiting...")
+        exit()		
+    
+    #if -l or --lex is true print the tokens from the lexer 
+    if args.lex or args.all:
+        temp_print = lexer.lex(text_input) #need to run lexer so that tokens are deleted for parser
+        for i in temp_print:
+            print(i)
+        #print(tokensToString(tokens))
 
-	#set up parser, pares the given tokens and retrieve the head of the ast
-	pg = Parser()
-	pg.parse()
-	parser = pg.get_parser()
-	try:
-		parser.parse(tokens)
-	except AssertionError as err:
-		# parser has it's own detailed error printing
-		pg.print_error()
-		print("Received error(s) from parser, continuing with what was parsed...\n")
+    #set up parser, pares the given tokens and retrieve the head of the ast
+    pg = Parser()
+    pg.parse()
+    parser = pg.get_parser()
+    try:
+        parser.parse(tokens)
+    except AssertionError as err:
+        # parser has it's own detailed error printing
+        pg.print_error()
+        print("Received error(s) from parser, continuing with what was parsed...\n")
     
     head = pg.getTree()
 

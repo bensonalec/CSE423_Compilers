@@ -68,38 +68,38 @@ def main(path):
             functionList += newFunc
 
     totalOutput = """
-    from rply import ParserGenerator
-    from rply.errors import ParserGeneratorWarning
-    from ast import *
-    from warnings import simplefilter
-	from rply.token import Token
+from rply import ParserGenerator
+from rply.errors import ParserGeneratorWarning
+from ast import *
+from warnings import simplefilter
+from rply.token import Token
 
-    #we get werid 'non-descriptive' warnings from ParserGenerator, this ignores those
-    simplefilter('ignore', ParserGeneratorWarning)
+#we get werid 'non-descriptive' warnings from ParserGenerator, this ignores those
+simplefilter('ignore', ParserGeneratorWarning)
 
 
-    #setup parser class
-    class Parser():
+#setup parser class
+class Parser():
 
-        INITSPOT
+	INITSPOT
 
-        def parse(self):
+	def parse(self):
 
-            FUNCLISTSPOT
-        
-            @self.pg.error
-            def error_handle(token):
-                return ValueError(token)
+		FUNCLISTSPOT
+	
+		@self.pg.error
+		def error_handle(token):
+			return ValueError(token)
 
-        #boilerplate function
-        def get_parser(self):
-            return self.pg.build()
+	#boilerplate function
+	def get_parser(self):
+		return self.pg.build()
 
-        #retrieve the trees head
-        def getTree(self):
-            return self.Head
+	#retrieve the trees head
+	def getTree(self):
+		return self.Head
 
-		def print_error(self):
+	def print_error(self):
 		\"\"\"
 		Prints parser error message. This function ultimately iterates through the AST that was 
 		returned after the parser found an error. AST's consist of tokens as well as other AST's so 
