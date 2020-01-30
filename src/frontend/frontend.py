@@ -1,6 +1,5 @@
 import argparse
 from lexer import *
-from parser import Parser 
 from ast import AbstractSyntaxTree
 from rply.errors import LexingError
 from pptree import *
@@ -75,7 +74,8 @@ def main(args, fi):
 
     if args.bnf:
         bnfToParser.main(args.bnf)
-
+    from parser import Parser
+    
 
     try:
 
