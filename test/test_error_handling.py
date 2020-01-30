@@ -1,5 +1,5 @@
 import sys
-sys.path.append('../src/frontend')
+sys.path.insert(0, '../src/frontend')
 
 import unittest
 from lexer import *
