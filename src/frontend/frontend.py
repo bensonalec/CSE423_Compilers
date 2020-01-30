@@ -99,16 +99,22 @@ def main(args, fi):
             print(i)
         #print(tokensToString(tokens))
 
-    #set up parser, pares the given tokens and retrieve the head of the ast
-    pg = Parser()
-    pg.parse()
-    parser = pg.get_parser()
     try:
+        
+        #set up parser, pares the given tokens and retrieve the head of the ast
+        pg = Parser()
+        pg.parse()
+        parser = pg.get_parser()
         parser.parse(tokens)
+
     except AssertionError as err:
         # parser has it's own detailed error printing
         pg.print_error()
-        print("Received error(s) from parser, continuing with what was parsed...\n")
+        print("Received AssertionError(s) from parser, continuing with what was parsed...\n")
+    
+    except ValueError as err:
+        print(f"ValueError: {err}. exiting...")
+        exit()
     
     head = pg.getTree()
 
