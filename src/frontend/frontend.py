@@ -76,47 +76,48 @@ def main(args, fi):
     if args.bnf:
         bnfToParser.main(args.bnf)
 
-    #Read in file
-    text_input = fi.read()
-    fi.close()
 
-    #setup lexer, produce tokens
-    lexer = Lexer().get_lexer()
-    tokens = lexer.lex(text_input)
-
-    #check for invalid tokens
     try:
-        #Expected to raise an error upon finding invalid tokens
+
+        #Read in file
+        text_input = fi.read()
+        fi.close()
+
+        #setup lexer, produce tokens, check for invalid tokens
+        lexer = Lexer().get_lexer()
+        tokens = lexer.lex(text_input)
         validateTokens(tokens)
+        
+        #set up parser and parse the given tokens
+        pg = Parser()
+        pg.parse()
+        parser = pg.get_parser()
+        parser.parse(tokens)
+
     except LexingError as err:
-        print("Received error(s) from token validation, exiting...")
-        exit()		
+        print("Received error(s) from token validation. Exiting...")
+        exit()
+
+    except AssertionError as err:
+        # parser has it's own detailed error printing
+        pg.print_error()
+        print("Received AssertionError(s) from parser, continuing with what was parsed...\n")
+
+    except BaseException as err:
+        print(f"BaseException: {err}. Exiting...")
+        exit()
     
+    # Retrieve the head of the AST
+    head = pg.getTree()
+
+
+
     #if -l or --lex is true print the tokens from the lexer 
     if args.lex or args.all:
         temp_print = lexer.lex(text_input) #need to run lexer so that tokens are deleted for parser
         for i in temp_print:
             print(i)
         #print(tokensToString(tokens))
-
-    try:
-        
-        #set up parser, pares the given tokens and retrieve the head of the ast
-        pg = Parser()
-        pg.parse()
-        parser = pg.get_parser()
-        parser.parse(tokens)
-
-    except AssertionError as err:
-        # parser has it's own detailed error printing
-        pg.print_error()
-        print("Received AssertionError(s) from parser, continuing with what was parsed...\n")
-    
-    except ValueError as err:
-        print(f"ValueError: {err}. exiting...")
-        exit()
-    
-    head = pg.getTree()
 
     if(args.tree):
         print(getTree(head,0))

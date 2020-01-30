@@ -1,6 +1,6 @@
 import re
 
-	
+    
 funcTemp = """
         @self.pg.production('BNFSPOT')
         def FUNCNAMESPOT(p):
@@ -81,58 +81,63 @@ simplefilter('ignore', ParserGeneratorWarning)
 #setup parser class
 class Parser():
 
-	INITSPOT
+    INITSPOT
 
-	def parse(self):
+    def parse(self):
 
-		FUNCLISTSPOT
-	
-		@self.pg.error
-		def error_handle(token):
-			return ValueError(token)
+        FUNCLISTSPOT
+    
+        @self.pg.error
+        def error_handle(token):
+            return ValueError(token)
 
-	#boilerplate function
-	def get_parser(self):
-		return self.pg.build()
+    #boilerplate function
+    def get_parser(self):
+        return self.pg.build()
 
-	#retrieve the trees head
-	def getTree(self):
-		return self.Head
+    #retrieve the trees head
+    def getTree(self):
+        return self.Head
 
-	def print_error(self):
-		\"\"\"
-		Prints parser error message. This function ultimately iterates through the AST that was 
-		returned after the parser found an error. AST's consist of tokens as well as other AST's so 
-		we need to iterate to find the first token and then print its source position.
-		\"\"\"
-		# TODO: add some more in-depth error processing to print
-		# out a more detailed description of what went wrong, and possibly some suggestions 
-		# at to why there was a parse/syntax error. (i.e. suggest a missing semicolon)
+    def print_error(self):
+        \"\"\"
+        Prints parser error message. This function ultimately iterates through the AST that was 
+        returned after the parser found an error. AST's consist of tokens as well as other AST's so 
+        we need to iterate to find the first token and then print its source position.
+        \"\"\"
+        # TODO: add some more in-depth error processing to print
+        # out a more detailed description of what went wrong, and possibly some suggestions 
+        # at to why there was a parse/syntax error. (i.e. suggest a missing semicolon)
 
-		head = self.getTree()
-		token = 0 # token hasn't been found yet, so we set value to 0
+        head = self.getTree()
+        token = 0 # token hasn't been found yet, so we set value to 0
 
-		while True:
-			# Iterate through list of elements
-			for i in head.content:
+        while True and head:
+            # Iterate through list of elements
+            for i in head.content:
 
-				# Could be a Token
-				if(type(i) == type(Token("sample", "sample"))):
+                # Could be a Token
+                if(type(i) == type(Token("sample", "sample"))):
 
-					# Found a Token
-					token = i
-					break
+                    # Found a Token
+                    token = i
+                    break
 
-			# Check again (to break out of while loop and not iterate again)		
-			if (type(token) == type(Token("sample", "sample"))):
-				break
-			else:
-				# Set head to last element.
-				# If this code executes then I can assume that the 
-				# last element is an AST.
-				head = head.content[len(head.content)-1]
+            # Check again (to break out of while loop and not iterate again)		
+            if (type(token) == type(Token("sample", "sample"))):
+                break
+            else:
+                # Set head to last element.
+                # If this code executes then I can assume that the 
+                # last element is an AST.
+                head = head.content[len(head.content)-1]
 
-		print(f"ParsingError: Last token  \\\'{token.value}\\\' parsed successfully at, {token.source_pos}\\n")
+        if token:
+            print(f"ParsingError: Last token  \\\'{token.value}\\\' parsed successfully at, {token.source_pos}\\n")
+        else:
+            # Never found a token to report, need to exit
+            print("ParsingError: No AST obtained\\n")
+            exit()
 
 
 

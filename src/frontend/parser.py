@@ -398,7 +398,7 @@ class Parser():
         head = self.getTree()
         token = 0 # token hasn't been found yet, so we set value to 0
 
-        while True:
+        while True and head:
             # Iterate through list of elements
             for i in head.content:
 
@@ -418,7 +418,12 @@ class Parser():
                 # last element is an AST.
                 head = head.content[len(head.content)-1]
 
-        print(f"ParsingError: Last token  \'{token.value}\' parsed successfully at, {token.source_pos}\n")
+        if token:
+            print(f"ParsingError: Last token  \'{token.value}\' parsed successfully at, {token.source_pos}\n")
+        else:
+            # Never found a token to report, need to exit
+            print("ParsingError: No AST obtained\n")
+            exit()
 
 
 
