@@ -1,10 +1,11 @@
 import sys
 sys.path.insert(0, '../src/frontend')
-
+from parser import Parser
+sys.path.remove('../src/frontend')
+sys.path.append('../src/frontend')
 import unittest
 from lexer import *
 from rply.errors import LexingError
-from parser import Parser 
 
 
 path_to_C_files = "./C_testing_code/regex/"
