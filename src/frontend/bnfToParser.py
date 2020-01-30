@@ -1,28 +1,28 @@
 import re
 
 	
-funcTemp = 	"""
-		@self.pg.production('BNFSPOT')
-		def FUNCNAMESPOT(p):
-			newNode = AbstractSyntaxTree("NAMESPOT",p)
-			self.Head = newNode
-			return newNode
+funcTemp = """
+        @self.pg.production('BNFSPOT')
+        def FUNCNAMESPOT(p):
+            newNode = AbstractSyntaxTree("NAMESPOT",p)
+            self.Head = newNode
+            return newNode
 """
-headTemp = 	"""
-		@self.pg.production('BNFSPOT')
-		def program(p):
-			newNode = AbstractSyntaxTree("NAMESPOT",p)
-			self.Head = newNode
-			return newNode
+headTemp = """
+        @self.pg.production('BNFSPOT')
+        def program(p):
+            newNode = AbstractSyntaxTree("NAMESPOT",p)
+            self.Head = newNode
+            return newNode
 """
 
 initTemp = """
-	def __init__(self):
-		self.pg = ParserGenerator(
-			TOKENSPOT
-		)
-		#initialzie head and current node
-		self.Head = None
+    def __init__(self):
+        self.pg = ParserGenerator(
+            TOKENSPOT
+        )
+        #initialzie head and current node
+        self.Head = None
 """
 
 def main(path):
@@ -68,37 +68,32 @@ def main(path):
             functionList += newFunc
 
     totalOutput = """
-    from rply import ParserGenerator
-    from rply.errors import ParserGeneratorWarning
-    from ast import *
-    from warnings import simplefilter
+from rply import ParserGenerator
+from rply.errors import ParserGeneratorWarning
+from ast import *
+from warnings import simplefilter
 
-    #we get werid 'non-descriptive' warnings from ParserGenerator, this ignores those
-    simplefilter('ignore', ParserGeneratorWarning)
+#we get werid 'non-descriptive' warnings from ParserGenerator, this ignores those
+simplefilter('ignore', ParserGeneratorWarning)
 
+#setup parser class
+class Parser():
+    INITSPOT
+    def parse(self):
+        FUNCLISTSPOT
 
-    #setup parser class
-    class Parser():
+        @self.pg.error
+        def error_handle(token):
+            return ValueError(token)
 
-        INITSPOT
+    #boilerplate function
+    def get_parser(self):
+        return self.pg.build()
 
-        def parse(self):
-
-            FUNCLISTSPOT
-        
-            @self.pg.error
-            def error_handle(token):
-                return ValueError(token)
-
-        #boilerplate function
-        def get_parser(self):
-            return self.pg.build()
-
-        #retrieve the trees head
-        def getTree(self):
-            return self.Head
-
-    """
+    #retrieve the trees head
+    def getTree(self):
+        return self.Head
+"""
 
     totalOutput = totalOutput.replace("INITSPOT",initFunc)
     totalOutput = totalOutput.replace("FUNCLISTSPOT",functionList)
