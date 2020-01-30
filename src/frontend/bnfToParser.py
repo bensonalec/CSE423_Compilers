@@ -1,28 +1,28 @@
 import re
 
 	
-funcTemp = 	"""
-		@self.pg.production('BNFSPOT')
-		def FUNCNAMESPOT(p):
-			newNode = AbstractSyntaxTree("NAMESPOT",p)
-			self.Head = newNode
-			return newNode
+funcTemp = """
+        @self.pg.production('BNFSPOT')
+        def FUNCNAMESPOT(p):
+            newNode = AbstractSyntaxTree("NAMESPOT",p)
+            self.Head = newNode
+            return newNode
 """
-headTemp = 	"""
-		@self.pg.production('BNFSPOT')
-		def program(p):
-			newNode = AbstractSyntaxTree("NAMESPOT",p)
-			self.Head = newNode
-			return newNode
+headTemp = """
+        @self.pg.production('BNFSPOT')
+        def program(p):
+            newNode = AbstractSyntaxTree("NAMESPOT",p)
+            self.Head = newNode
+            return newNode
 """
 
 initTemp = """
-	def __init__(self):
-		self.pg = ParserGenerator(
-			TOKENSPOT
-		)
-		#initialzie head and current node
-		self.Head = None
+    def __init__(self):
+        self.pg = ParserGenerator(
+            TOKENSPOT
+        )
+        #initialzie head and current node
+        self.Head = None
 """
 
 def main(path):

@@ -8,7 +8,6 @@ from rply.token import Token
 #we get werid 'non-descriptive' warnings from ParserGenerator, this ignores those
 simplefilter('ignore', ParserGeneratorWarning)
 
-
 #setup parser class
 class Parser():
 
