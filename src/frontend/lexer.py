@@ -49,13 +49,19 @@ def tokensToString(tokens):
 	return out
 
 def validateTokens(tokens):
+	"""
+	Validates the given token list. If an invalid token to found, 
+	then a `LexingError` exception is raised. Otherwise, returns normally.
+	"""
 	cpy = copy.deepcopy(tokens)
 	status = "PASS"
 
+	# Goes through copy list and looks for any "invalid tokens".
+	# The lexer will mark any unknown tokens with the name, "INVALID".
 	for i in cpy:
 		if (i.name == "INVALID"):
 			print_error(i)
-			status = "FAIL"
+			status = "FAIL" # status is changed
 
 	if (status == "FAIL"):
 		raise LexingError("invalid token", i.source_pos)
@@ -63,5 +69,9 @@ def validateTokens(tokens):
 		return
 
 def print_error(token):
-	print(f"LexingError: Invalid Token \'{token.value}\' at, {token.source_pos}")
-	print()
+	"""
+	Prints lexer error message. Currently we only experience invalid token
+	errors. The input `token` is a `Token` object, imported from `rply`.
+	"""
+	print(f"LexingError: Invalid Token \'{token.value}\' at, {token.source_pos}\n")
+		

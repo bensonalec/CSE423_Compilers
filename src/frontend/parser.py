@@ -3,12 +3,15 @@ from rply import ParserGenerator
 from rply.errors import ParserGeneratorWarning
 from ast import *
 from warnings import simplefilter
+from rply.token import Token
 
 #we get werid 'non-descriptive' warnings from ParserGenerator, this ignores those
 simplefilter('ignore', ParserGeneratorWarning)
 
+
 #setup parser class
 class Parser():
+
     
     def __init__(self):
         self.pg = ParserGenerator(
@@ -17,7 +20,9 @@ class Parser():
         #initialzie head and current node
         self.Head = None
 
+
     def parse(self):
+
         
         @self.pg.production('program : definitionList ')
         def program(p):
@@ -367,7 +372,7 @@ class Parser():
             self.Head = newNode
             return newNode
 
-
+    
         @self.pg.error
         def error_handle(token):
             return ValueError(token)
@@ -379,3 +384,47 @@ class Parser():
     #retrieve the trees head
     def getTree(self):
         return self.Head
+
+    def print_error(self):
+        """
+        Prints parser error message. This function ultimately iterates through the AST that was 
+        returned after the parser found an error. AST's consist of tokens as well as other AST's so 
+        we need to iterate to find the first token and then print its source position.
+        """
+        # TODO: add some more in-depth error processing to print
+        # out a more detailed description of what went wrong, and possibly some suggestions 
+        # at to why there was a parse/syntax error. (i.e. suggest a missing semicolon)
+
+        head = self.getTree()
+        token = 0 # token hasn't been found yet, so we set value to 0
+
+        while True and head:
+            # Iterate through list of elements
+            for i in head.content:
+
+                # Could be a Token
+                if(type(i) == type(Token("sample", "sample"))):
+
+                    # Found a Token
+                    token = i
+                    break
+
+            # Check again (to break out of while loop and not iterate again)		
+            if (type(token) == type(Token("sample", "sample"))):
+                break
+            else:
+                # Set head to last element.
+                # If this code executes then I can assume that the 
+                # last element is an AST.
+                head = head.content[len(head.content)-1]
+
+        if token:
+            print(f"ParsingError: Last token  \'{token.value}\' parsed successfully at, {token.source_pos}\n")
+        else:
+            # Never found a token to report, need to exit
+            print("ParsingError: No AST obtained\n")
+            exit()
+
+
+
+    
