@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module frontend</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>frontend</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/bensonalec/Desktop/Compilers/CSE423_Compilers/src/frontend/frontend.py">/Users/bensonalec/Desktop/Compilers/CSE423_Compilers/src/frontend/frontend.py</a></font></td></tr></table>
+    <p><tt>This&nbsp;module&nbsp;acts&nbsp;as&nbsp;the&nbsp;interface&nbsp;for&nbsp;running&nbsp;all&nbsp;the&nbsp;seperate&nbsp;portions&nbsp;of&nbsp;the&nbsp;front&nbsp;end.&nbsp;It&nbsp;allows<br>
+for&nbsp;command&nbsp;line&nbsp;arguments&nbsp;that&nbsp;can&nbsp;be&nbsp;used&nbsp;to&nbsp;determine&nbsp;which&nbsp;portion&nbsp;is&nbsp;run.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="argparse.html">argparse</a><br>
+</td><td width="25%" valign=top><a href="bnfToParser.html">bnfToParser</a><br>
+</td><td width="25%" valign=top><a href="copy.html">copy</a><br>
+</td><td width="25%" valign=top><a href="pptree.pptree.html">pptree.pptree</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-getTree"><strong>getTree</strong></a>(head, level)</dt><dd><tt>Outputs&nbsp;a&nbsp;string&nbsp;version&nbsp;of&nbsp;the&nbsp;Abstract&nbsp;Syntax&nbsp;Tree&nbsp;that&nbsp;can&nbsp;be&nbsp;used&nbsp;in&nbsp;unit&nbsp;testing.&nbsp;Calls&nbsp;itself&nbsp;recursively<br>
+param:&nbsp;head:&nbsp;the&nbsp;head&nbsp;node&nbsp;of&nbsp;the&nbsp;tree<br>
+param:&nbsp;level:&nbsp;the&nbsp;current&nbsp;level&nbsp;of&nbsp;the&nbsp;tree<br>
+:return:&nbsp;A&nbsp;string&nbsp;of&nbsp;the&nbsp;nodes&nbsp;in&nbsp;the&nbsp;tree</tt></dd></dl>
+ <dl><dt><a name="-main"><strong>main</strong></a>(args, fi)</dt><dd><tt>The&nbsp;main&nbsp;function&nbsp;of&nbsp;this,&nbsp;takes&nbsp;in&nbsp;command&nbsp;line&nbsp;input&nbsp;via&nbsp;an&nbsp;object&nbsp;from&nbsp;argparse,&nbsp;and&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;file.<br>
+param:&nbsp;args:&nbsp;the&nbsp;object&nbsp;that&nbsp;contains&nbsp;the&nbsp;command&nbsp;line&nbsp;arguements<br>
+param:&nbsp;fi:&nbsp;the&nbsp;file&nbsp;object&nbsp;that&nbsp;is&nbsp;open</tt></dd></dl>
+ <dl><dt><a name="-prettyPrint"><strong>prettyPrint</strong></a>(head, level, parentNode)</dt><dd><tt>Prints&nbsp;the&nbsp;Abstract&nbsp;Syntax&nbsp;Tree&nbsp;using&nbsp;a&nbsp;tree&nbsp;library&nbsp;(pptree)<br>
+param:&nbsp;head:&nbsp;The&nbsp;head&nbsp;node&nbsp;of&nbsp;the&nbsp;tree<br>
+param:&nbsp;level:&nbsp;the&nbsp;level&nbsp;the&nbsp;tree&nbsp;is&nbsp;on<br>
+param:&nbsp;parentNode:&nbsp;the&nbsp;parent&nbsp;node&nbsp;of&nbsp;the&nbsp;tree<br>
+return:&nbsp;There&nbsp;is&nbsp;no&nbsp;return</tt></dd></dl>
+ <dl><dt><a name="-printTree"><strong>printTree</strong></a>(head, level)</dt><dd><tt>Prints&nbsp;a&nbsp;simple&nbsp;version&nbsp;of&nbsp;the&nbsp;tree&nbsp;for&nbsp;output.&nbsp;Calls&nbsp;itself&nbsp;recursively<br>
+param:&nbsp;head:&nbsp;the&nbsp;head&nbsp;node&nbsp;of&nbsp;the&nbsp;tree<br>
+param:&nbsp;level:&nbsp;the&nbsp;current&nbsp;level&nbsp;of&nbsp;the&nbsp;tree<br>
+:return:&nbsp;Does&nbsp;not&nbsp;return&nbsp;anything</tt></dd></dl>
+</td></tr></table>
+</body></html>
