@@ -1,25 +1,27 @@
 program : definitionList #program
 
-definitionList : definitionList functionDefinition
-definitionList : definitionList functionDeclaration
-definitionList : definitionList initialization SEMICOLON
+definitionList : functionDefinition definitionList
+definitionList : functionDeclaration definitionList
+definitionList : initialization SEMICOLON definitionList
 
 functionDefinition : TYPE SELF_DEFINED OPEN_PAREN args CLOSE_PAREN block #function definition
+functionDefinition : TYPE SELF_DEFINED OPEN_PAREN CLOSE_PAREN block #function definition
 
 functionDeclaration : TYPE SELF_DEFINED OPEN_PAREN args CLOSE_PAREN SEMICOLON
+functionDeclaration : TYPE SELF_DEFINED OPEN_PAREN CLOSE_PAREN SEMICOLON
 
-args : args COMMA TYPE SELF_DEFINED
+args : TYPE SELF_DEFINED COMMA args
 args : TYPE SELF_DEFINED
-args : 
 
 block : OPEN_BRACE block content CLOSE_BRACE
+block : OPEN_BRACE content block CLOSE_BRACE
 block : OPEN_BRACE content CLOSE_BRACE
+block : OPEN_BRACE CLOSE_BRACE
 
-content : content single_line
-content : content loop
-content : content branch
-content : content goto
-content : 
+content : single_line content
+content : loop content
+content : branch content
+content : goto content
 
 single_line : initialization SEMICOLON
 single_line : function_call SEMICOLON
@@ -28,55 +30,77 @@ single_line : response SEMICOLON
 single_line : SEMICOLON
 
 # While loop
-loop : LOOPING OPEN_PAREN boolean CLOSE_PAREN block
-loop : LOOPING OPEN_PAREN boolean CLOSE_PAREN content
+loop : WHILE_LOOP OPEN_PAREN boolean CLOSE_PAREN block
+loop : WHILE_LOOP OPEN_PAREN boolean CLOSE_PAREN content
 # For loop
-loop : LOOPING OPEN_PAREN designation SEMICOLON collation SEMICOLON designation CLOSE_PAREN block
-loop : LOOPING OPEN_PAREN designation SEMICOLON collation SEMICOLON designation CLOSE_PAREN content
-loop : LOOPING OPEN_PAREN initialization SEMICOLON collation SEMICOLON designation CLOSE_PAREN block
-loop : LOOPING OPEN_PAREN initialization SEMICOLON collation SEMICOLON designation CLOSE_PAREN content
+loop : FOR_LOOP OPEN_PAREN designation SEMICOLON collation SEMICOLON designation CLOSE_PAREN block
+loop : FOR_LOOP OPEN_PAREN designation SEMICOLON collation SEMICOLON designation CLOSE_PAREN content
+loop : FOR_LOOP OPEN_PAREN initialization SEMICOLON collation SEMICOLON designation CLOSE_PAREN block
+loop : FOR_LOOP OPEN_PAREN initialization SEMICOLON collation SEMICOLON designation CLOSE_PAREN content
 # Do While loop
-loop : LOOPING block LOOPING OPEN_PAREN boolean CLOSE_PAREN SEMICOLON
-loop : LOOPING content LOOPING OPEN_PAREN boolean CLOSE_PAREN SEMICOLON
+loop : DO_LOOP block WHILE_LOOP OPEN_PAREN boolean CLOSE_PAREN SEMICOLON
+loop : DO_LOOP content WHILE_LOOP OPEN_PAREN boolean CLOSE_PAREN SEMICOLON
 
 # if
-branch : BRANCHING OPEN_PAREN boolean CLOSE_PAREN block
-branch : BRANCHING OPEN_PAREN boolean CLOSE_PAREN content
+branch : IF_BRANCH OPEN_PAREN boolean CLOSE_PAREN block
+branch : IF_BRANCH OPEN_PAREN boolean CLOSE_PAREN content
 # else if
-branch : BRANCHING BRANCHING OPEN_PAREN boolean CLOSE_PAREN block
-branch : BRANCHING BRANCHING OPEN_PAREN boolean CLOSE_PAREN content
+branch : ELSE_BRANCH IF_BRANCH OPEN_PAREN boolean CLOSE_PAREN block
+branch : ELSE_BRANCH IF_BRANCH OPEN_PAREN boolean CLOSE_PAREN content
 # else
-branch : BRANCHING block
-branch : BRANCHING content
+branch : ELSE_BRANCH block
+branch : ELSE_BRANCH content
 # switch
-branch : BRANCHING OPEN_PAREN value CLOSE_PAREN block
+branch : SWITCH_BRANCH OPEN_PAREN value CLOSE_PAREN block
 # case
-branch : BRANCHING literal COLON block
-branch : BRANCHING literal COLON content
+branch : CASE literal COLON block
+branch : CASE literal COLON content
 # default
-branch : BRANCHING COLON block
-branch : BRANCHING COLON content
+branch : DEFAULT COLON block
+branch : DEFAULT COLON content
 
 goto : SELF_DEFINED COLON single_line
 goto : SELF_DEFINED COLON loop
 goto : SELF_DEFINED COLON branch
 goto : SELF_DEFINED COLON block
 
-# break, continue, return, goto
-response : BEHAVIOR value
-response : BEHAVIOR function_call
-response : BEHAVIOR SELF_DEFINED
-response : BEHAVIOR
+# return
+response : RETURN value
+response : RETURN function_call
+response : RETURN SELF_DEFINED
+response : RETURN
+# jump
+response : GOTO SELF_DEFINED
+# break, continue
+response : BREAK
+response : CONTINUE
 
-# no semicolon to allow for use other places than in a single_line
 initialization : TYPE designation
 initialization : TYPE SELF_DEFINED
 
-# no semicolon to allow for use other places than in a single_line
-designation : SELF_DEFINED ASSIGNMENT value
-designation : SELF_DEFINED ASSIGNMENT
+designation : SELF_DEFINED assignment value
+designation : SELF_DEFINED assignment
+
+assignment : AEQ
+assignment : SEQ
+assignment : MEQ
+assignment : DEQ
+assignment : LSEQ
+assignment : RSEQ
+assignment : OEQ
+assignment : AEQ
+assignment : XEQ
+assignment : CEQ
+assignment : SET
+
+//
+//
+// EVERYTHING BELOW THIS LINE HAS YET TO BE DISAMBIGUATED, AND CONTAINS EVERYTHING FROM THE MERGE WITH NO PROSESSING
+//
+//
 
 single_line : TYPE SELF_DEFINED ASSIGNMENT literal SEMICOLON #variable assignment
+single_line : TYPE SELF_DEFINED SEMICOLON #initialization
 single_line : function_call SEMICOLON #function call
 single_line : LOOPING OPEN_PAREN boolean CLOSE_PAREN block #loop
 single_line : LOOPING OPEN_PAREN boolean CLOSE_PAREN single_line #loop with single line
@@ -84,6 +108,9 @@ single_line : LOOPING block LOOPING OPEN_PAREN boolean CLOSE_PAREN SEMICOLON #do
 single_line : BRANCHING OPEN_PAREN boolean CLOSE_PAREN block #if and else
 single_line : BRANCHING OPEN_PAREN boolean CLOSE_PAREN single_line #if and else with single line
 single_line : BRANCH OPEN_PAREN non_contiguous CLOSE_PAREN block #switch
+single_line : LOOPING block LOOPING OPEN_PAREN boolean CLOSE_PAREN SEMICOLON #do while
+single_line : BRANCHING OPEN_PAREN boolean CLOSE_PAREN block #if and else
+single_line : BRANCHING OPEN_PAREN non_contiguous CLOSE_PAREN block #switch
 single_line : arithmetic SEMICOLON #arithmetic
 single_line : BEHAVIOR literal SEMICOLON #return statement
 single_line : BEHAVIOR non_contiguous SEMICOLON # return/goto statement
@@ -123,3 +150,49 @@ arithmetic : numeral OPERATOR numeral
 
 non_contiguous : numeral
 non_contiguous : SELF_DEFINED
+single_line : SELF_DEFINED ASSIGNMENT arithmetic SEMICOLON #assignment
+single_line : SELF_DEFINED COLON single_line #goto_label
+
+
+function_call : SELF_DEFINED OPEN_PAREN param CLOSE_PAREN #function call
+function_call : SELF_DEFINED OPEN_PAREN CLOSE_PARENT #function call
+
+param : literal #parameter
+param : SELF_DEFINED #paramater
+param : literal COMMA param #parameter
+param : SELF_DEFINED COMMA param #parameter
+
+literal : INTEGER #literal
+literal : STRING #literal
+literal : PRECISION #literal
+
+args : TYPE SELF_DEFINED #argument
+args : TYPE SELF_DEFINED COMMA args #argument
+
+boolean : boolean COMPARISON boolean #boolean
+boolean : boolean LOGICAL boolean #boolean
+boolean : arithmetic #boolean
+boolean : function_call #boolean
+boolean : SELF_DEFINED #boolean
+boolean : boolean #boolean
+boolean : numeral #boolean
+
+arithmetic : arithmetic ARITHMETIC arithmetic #arithmetic
+arithmetic : numeral #arithmetic
+arithmetic : arithmetic #arithmetic
+arithmetic : unary #arithmetic
+
+numeral : INTEGER #numeral
+numeral : PRECISION #numeral
+
+non_contiguous : PRECISION #non contiguous
+non_contiguous : INTEGER #non contiguous
+non_contiguous : STRING #non contiguous
+non_contiguous : SELF_DEFINED #non contiguous
+
+
+unary : ARITHMETIC non_contiguous # unary_op
+unary : non_contiguous ARITHMETIC # unary_op
+unary : BEHAVIOR OPEN_PAREN non_contiguous CLOSE_PAREN # sizeof_self_def
+unary : BEHAVIOR OPEN_PAREN TYPE CLOSE_PAREN # sizeof_type
+unary : OPEN_PAREN TYPE CLOSE_PAREN # cast
