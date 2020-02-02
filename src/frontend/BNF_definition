@@ -1,63 +1,125 @@
 program : definitionList #program
 
-definitionList : definitionList functionDefinition #definitionList
-definitionList : functionDefinition #definitionList
+definitionList : definitionList functionDefinition
+definitionList : definitionList functionDeclaration
+definitionList : definitionList initialization SEMICOLON
 
-functionDefinition : TYPE SELF_DEFINED OPENPAREN CLOSEPAREN block #function definition
+functionDefinition : TYPE SELF_DEFINED OPEN_PAREN args CLOSE_PAREN block #function definition
 
+functionDeclaration : TYPE SELF_DEFINED OPEN_PAREN args CLOSE_PAREN SEMICOLON
 
-block : LEFT_BRACE block content RIGHT_BRACE #block
-block : LEFT_BRACE content RIGHT_BRACE #block
+args : args COMMA TYPE SELF_DEFINED
+args : TYPE SELF_DEFINED
+args : 
 
-content : content single_line #content
-content : #content
+block : OPEN_BRACE block content CLOSE_BRACE
+block : OPEN_BRACE content CLOSE_BRACE
+
+content : content single_line
+content : content loop
+content : content branch
+content : content goto
+content : 
+
+single_line : initialization SEMICOLON
+single_line : function_call SEMICOLON
+single_line : designation SEMICOLON
+single_line : response SEMICOLON
+single_line : SEMICOLON
+
+# While loop
+loop : LOOPING OPEN_PAREN boolean CLOSE_PAREN block
+loop : LOOPING OPEN_PAREN boolean CLOSE_PAREN content
+# For loop
+loop : LOOPING OPEN_PAREN designation SEMICOLON collation SEMICOLON designation CLOSE_PAREN block
+loop : LOOPING OPEN_PAREN designation SEMICOLON collation SEMICOLON designation CLOSE_PAREN content
+loop : LOOPING OPEN_PAREN initialization SEMICOLON collation SEMICOLON designation CLOSE_PAREN block
+loop : LOOPING OPEN_PAREN initialization SEMICOLON collation SEMICOLON designation CLOSE_PAREN content
+# Do While loop
+loop : LOOPING block LOOPING OPEN_PAREN boolean CLOSE_PAREN SEMICOLON
+loop : LOOPING content LOOPING OPEN_PAREN boolean CLOSE_PAREN SEMICOLON
+
+# if
+branch : BRANCHING OPEN_PAREN boolean CLOSE_PAREN block
+branch : BRANCHING OPEN_PAREN boolean CLOSE_PAREN content
+# else if
+branch : BRANCHING BRANCHING OPEN_PAREN boolean CLOSE_PAREN block
+branch : BRANCHING BRANCHING OPEN_PAREN boolean CLOSE_PAREN content
+# else
+branch : BRANCHING block
+branch : BRANCHING content
+# switch
+branch : BRANCHING OPEN_PAREN value CLOSE_PAREN block
+# case
+branch : BRANCHING literal COLON block
+branch : BRANCHING literal COLON content
+# default
+branch : BRANCHING COLON block
+branch : BRANCHING COLON content
+
+goto : SELF_DEFINED COLON single_line
+goto : SELF_DEFINED COLON loop
+goto : SELF_DEFINED COLON branch
+goto : SELF_DEFINED COLON block
+
+# break, continue, return, goto
+response : BEHAVIOR value
+response : BEHAVIOR function_call
+response : BEHAVIOR SELF_DEFINED
+response : BEHAVIOR
+
+# no semicolon to allow for use other places than in a single_line
+initialization : TYPE designation
+initialization : TYPE SELF_DEFINED
+
+# no semicolon to allow for use other places than in a single_line
+designation : SELF_DEFINED ASSIGNMENT value
+designation : SELF_DEFINED ASSIGNMENT
 
 single_line : TYPE SELF_DEFINED ASSIGNMENT literal SEMICOLON #variable assignment
 single_line : function_call SEMICOLON #function call
-single_line : LOOPING OPENPAREN boolean CLOSEPAREN block #loop
-single_line : LOOPING block LOOPING OPENPAREN boolean CLOSEPAREN SEMICOLON #do while
-single_line : BRANCHING OPENPAREN boolean CLOSEPAREN block #if and else
-single_line : BRANCHING OPENPAREN non_contiguous CLOSEPAREN block #switch
+single_line : LOOPING OPEN_PAREN boolean CLOSE_PAREN block #loop
+single_line : LOOPING OPEN_PAREN boolean CLOSE_PAREN single_line #loop with single line
+single_line : LOOPING block LOOPING OPEN_PAREN boolean CLOSE_PAREN SEMICOLON #do while
+single_line : BRANCHING OPEN_PAREN boolean CLOSE_PAREN block #if and else
+single_line : BRANCHING OPEN_PAREN boolean CLOSE_PAREN single_line #if and else with single line
+single_line : BRANCH OPEN_PAREN non_contiguous CLOSE_PAREN block #switch
 single_line : arithmetic SEMICOLON #arithmetic
 single_line : BEHAVIOR literal SEMICOLON #return statement
-single_line : BEHAVIOR non_contiguous SEMICOLON #statement
+single_line : BEHAVIOR non_contiguous SEMICOLON # return/goto statement
+single_line : BEHAVIOR boolean SEMICOLON # return/goto statement
 single_line : BEHAVIOR SEMICOLON #return statement
+single_line : SELF_DEFINED ASSIGNMENT non_contiguous SEMICOLON
 single_line : SELF_DEFINED ASSIGNMENT literal SEMICOLON #assignment
 single_line : SELF_DEFINED ASSIGNMENT boolean SEMICOLON #assignment
-single_line : SELF_DEFINED ASSIGNMENT arithmetic SEMICOLON #assignment
+single_line : SELF_DEFINED COLON single_line # goto label
 
-function_call : SELF_DEFINED OPENPAREN param CLOSEPAREN #function call
+function_call : SELF_DEFINED OPEN_PAREN param CLOSE_PAREN #function call
 
-param : literal #parameter
-param : SELF_DEFINED #paramater
-param : param COMMA literal #parameter
-param : param COMMA SELF_DEFINED #parameter
-param : #parameter
+param : SELF_DEFINED
+param : literal
+param : function_call
+param : param COMMA SELF_DEFINED
+param : param COMMA literal
+param : param COMMA function_call
+param : 
 
-literal : INTEGER #literal
-literal : STRING #literal
-literal : PRECISION #literal
+literal : numeral
+literal : STRING
+literal : CHAR
 
-args : #argument
-args : TYPE SELF_DEFINED #argument
-args : args COMMA TYPE SELF_DEFINED #argument
+numeral : INTEGER
+numeral : PRECISION
+numeral : HEX
+numeral : OCT
+numeral : BIN
 
-boolean : boolean COMPARISON boolean #boolean
-boolean : boolean LOGICAL boolean #boolean
-boolean : arithmetic #boolean
-boolean : function_call #boolean
-boolean : SELF_DEFINED #boolean
-boolean : boolean #boolean
-boolean : numeral #boolean
+boolean : arithmetic
+boolean : function_call
+boolean : boolean COMPARISON boolean
 
-arithmetic : arithmetic ARITHMETIC arithmetic #arithmetic
-arithmetic : numeral #arithmetic
-arithmetic : arithmetic #arithmetic
+arithmetic : numeral
+arithmetic : numeral OPERATOR numeral
 
-numeral : INTEGER #numeral
-numeral : PRECISION #numeral
-
-non_contiguous : PRECISION #non contiguous
-non_contiguous : INTEGER #non contiguous
-non_contiguous : STRING #non contiguous
-non_contiguous : SELF_DEFINED #non contiguous
+non_contiguous : numeral
+non_contiguous : SELF_DEFINED
