@@ -2,7 +2,11 @@
 Creates pydoc documentation for all files in project
 """
 
-import os
+import sys
+sys.path.pop(0)
+from mako.template import Template
+
+import os, glob
 
 from os import listdir
 
@@ -19,7 +23,8 @@ def main():
     #files to be ignored
     ignore_files = [
                 "__init__.py",
-                "run.py"       
+                "run.py",
+                "makoTest.py"
     ]
 
 
@@ -30,6 +35,15 @@ def main():
         if i.endswith(".py"):
             print(i)
             os.system("python3 -m pydoc -w " + i.replace(".py", ""))
+
+    indFile = open("index.html","w")
+    mytemplate = Template(filename='sampleTemplate.tmpl')
+    links = []
+    for file in glob.glob("*.html"):
+        links.append(file.replace(".html",""))
+
+    indFile.write(mytemplate.render(ToFill = "SampleName",Sli = links))
+    indFile.close()
 
     os.system("mv *.html ../../docs")
 
