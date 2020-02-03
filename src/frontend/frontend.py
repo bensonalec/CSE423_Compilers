@@ -1,3 +1,7 @@
+"""
+This module acts as the interface for running all the seperate portions of the front end. It allows
+for command line arguments that can be used to determine which portion is run.
+"""
 import argparse
 from lexer import *
 from ast import AbstractSyntaxTree
@@ -6,8 +10,13 @@ from pptree import *
 
 import bnfToParser
 
-#function to print the tree
 def getTree(head,level):
+    """
+    Outputs a string version of the Abstract Syntax Tree that can be used in unit testing. Calls itself recursively
+    param: head: the head node of the tree
+    param: level: the current level of the tree
+    :return: A string of the nodes in the tree
+    """
     level += 1
     token = head.token
     content = head.content
@@ -29,6 +38,12 @@ def getTree(head,level):
     return out
 
 def printTree(head,level):
+    """
+    Prints a simple version of the tree for output. Calls itself recursively
+    param: head: the head node of the tree
+    param: level: the current level of the tree
+    :return: Does not return anything
+    """
     level += 1
     token = head.token
     content = head.content
@@ -49,6 +64,13 @@ def printTree(head,level):
             printTree(node,level)
 
 def prettyPrint(head,level,parentNode):
+    """
+    Prints the Abstract Syntax Tree using a tree library (pptree)
+    param: head: The head node of the tree
+    param: level: the level the tree is on
+    param: parentNode: the parent node of the tree
+    :return: There is no return 
+    """
     if(level == 0):
         headNode = Node(head.token)
         parentNode = headNode
@@ -64,13 +86,17 @@ def prettyPrint(head,level,parentNode):
         if(type(ne) == type(AbstractSyntaxTree("sample","sample"))):
             prettyPrint(ne,level+1,nodeName)
     if(level == 0):
+        #this is a function from the pptree
         print_tree(headNode)
     
 
 #main function to control the frontend with different command line options.
 def main(args, fi):
-    #args contain the output from cmd_options.parse_args() and hold the command line options.
-    #fi is the open file descriptor.
+    """
+    The main function of this, takes in command line input via an object from argparse, and the name of the file.
+    param: args: the object that contains the command line arguements
+    param: fi: the file object that is open
+    """
 
     if args.bnf:
         bnfToParser.main(args.bnf)

@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module parser</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>parser</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/bensonalec/Desktop/Compilers/CSE423_Compilers/src/frontend/parser.py">/Users/bensonalec/Desktop/Compilers/CSE423_Compilers/src/frontend/parser.py</a></font></td></tr></table>
+    <p></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="builtins.html#object">builtins.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="parser.html#Parser">Parser</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Parser">class <strong>Parser</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Parser">Parser</a>&nbsp;is&nbsp;an&nbsp;<a href="builtins.html#object">object</a>&nbsp;that&nbsp;contains&nbsp;the&nbsp;rules&nbsp;for&nbsp;the&nbsp;aprser<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Parser-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Initializes&nbsp;the&nbsp;parser&nbsp;and&nbsp;tells&nbsp;it&nbsp;the&nbsp;allowed&nbsp;tokens<br>
+:return:&nbsp;This&nbsp;does&nbsp;not&nbsp;return&nbsp;anything</tt></dd></dl>
+
+<dl><dt><a name="Parser-getTree"><strong>getTree</strong></a>(self)</dt><dd><tt>Getter&nbsp;for&nbsp;the&nbsp;head&nbsp;of&nbsp;the&nbsp;tree<br>
+:return:&nbsp;This&nbsp;returns&nbsp;the&nbsp;head&nbsp;of&nbsp;the&nbsp;tree</tt></dd></dl>
+
+<dl><dt><a name="Parser-get_parser"><strong>get_parser</strong></a>(self)</dt><dd><tt>Returns&nbsp;the&nbsp;built&nbsp;version&nbsp;of&nbsp;the&nbsp;parser<br>
+:return:&nbsp;Returns&nbsp;the&nbsp;built&nbsp;parser</tt></dd></dl>
+
+<dl><dt><a name="Parser-parse"><strong>parse</strong></a>(self)</dt><dd><tt>The&nbsp;list&nbsp;of&nbsp;BNF&nbsp;functions&nbsp;and&nbsp;their&nbsp;behavior<br>
+:return:&nbsp;This&nbsp;does&nbsp;not&nbsp;return&nbsp;anything</tt></dd></dl>
+
+<dl><dt><a name="Parser-print_error"><strong>print_error</strong></a>(self)</dt><dd><tt>Prints&nbsp;parser&nbsp;error&nbsp;message.&nbsp;This&nbsp;function&nbsp;ultimately&nbsp;iterates&nbsp;through&nbsp;the&nbsp;AST&nbsp;that&nbsp;was&nbsp;<br>
+returned&nbsp;after&nbsp;the&nbsp;parser&nbsp;found&nbsp;an&nbsp;error.&nbsp;AST's&nbsp;consist&nbsp;of&nbsp;tokens&nbsp;as&nbsp;well&nbsp;as&nbsp;other&nbsp;AST's&nbsp;so&nbsp;<br>
+we&nbsp;need&nbsp;to&nbsp;iterate&nbsp;to&nbsp;find&nbsp;the&nbsp;first&nbsp;token&nbsp;and&nbsp;then&nbsp;print&nbsp;its&nbsp;source&nbsp;position.<br>
+:return:&nbsp;This&nbsp;does&nbsp;not&nbsp;return&nbsp;anything</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table></td></tr></table>
+</body></html>

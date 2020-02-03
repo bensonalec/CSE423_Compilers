@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module lexer</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>lexer</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/bensonalec/Desktop/Compilers/CSE423_Compilers/src/frontend/lexer.py">/Users/bensonalec/Desktop/Compilers/CSE423_Compilers/src/frontend/lexer.py</a></font></td></tr></table>
+    <p><tt>This&nbsp;module&nbsp;contains&nbsp;the&nbsp;<a href="#Lexer">Lexer</a>&nbsp;class&nbsp;and&nbsp;it's&nbsp;token&nbsp;name&nbsp;and&nbsp;regexes,&nbsp;as&nbsp;well&nbsp;as&nbsp;some&nbsp;error&nbsp;checking&nbsp;for&nbsp;tokens</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="copy.html">copy</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="builtins.html#object">builtins.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="lexer.html#Lexer">Lexer</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Lexer">class <strong>Lexer</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Lexer">Lexer</a>&nbsp;is&nbsp;the&nbsp;<a href="builtins.html#object">object</a>&nbsp;that&nbsp;contains&nbsp;all&nbsp;of&nbsp;the&nbsp;token&nbsp;name,&nbsp;regexes,and&nbsp;functionality&nbsp;of&nbsp;the&nbsp;<a href="#Lexer">Lexer</a><br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Lexer-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Creates&nbsp;a&nbsp;new&nbsp;<a href="#Lexer">Lexer</a>&nbsp;<a href="builtins.html#object">object</a>&nbsp;and&nbsp;creates&nbsp;an&nbsp;attribute&nbsp;of&nbsp;the&nbsp;class&nbsp;called&nbsp;<a href="#Lexer">Lexer</a>&nbsp;from&nbsp;rply<br>
+:return:&nbsp;Does&nbsp;not&nbsp;return&nbsp;anything</tt></dd></dl>
+
+<dl><dt><a name="Lexer-get_lexer"><strong>get_lexer</strong></a>(self)</dt><dd><tt>Calls&nbsp;_add_tokens&nbsp;to&nbsp;the&nbsp;initial&nbsp;lexer&nbsp;attribute,&nbsp;and&nbsp;then&nbsp;returns&nbsp;a&nbsp;built&nbsp;version&nbsp;of&nbsp;that&nbsp;lexer&nbsp;attribute<br>
+:return:&nbsp;The&nbsp;built&nbsp;lexer</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-print_error"><strong>print_error</strong></a>(token)</dt><dd><tt>Prints&nbsp;lexer&nbsp;error&nbsp;message.&nbsp;Currently&nbsp;we&nbsp;only&nbsp;experience&nbsp;invalid&nbsp;token<br>
+errors.&nbsp;The&nbsp;input&nbsp;token&nbsp;is&nbsp;a&nbsp;Token&nbsp;<a href="builtins.html#object">object</a>,&nbsp;imported&nbsp;from&nbsp;rply.<br>
+:param&nbsp;token:&nbsp;The&nbsp;token&nbsp;to&nbsp;be&nbsp;printed<br>
+:return:&nbsp;This&nbsp;does&nbsp;not&nbsp;return&nbsp;anything</tt></dd></dl>
+ <dl><dt><a name="-tokensToString"><strong>tokensToString</strong></a>(tokens)</dt><dd><tt>Returns&nbsp;a&nbsp;string&nbsp;version&nbsp;of&nbsp;all&nbsp;of&nbsp;the&nbsp;tokens.&nbsp;Used&nbsp;for&nbsp;output&nbsp;and&nbsp;error&nbsp;checking<br>
+:param&nbsp;tokens:&nbsp;The&nbsp;lsit&nbsp;of&nbsp;tokens&nbsp;to&nbsp;be&nbsp;printed<br>
+:return:&nbsp;the&nbsp;string&nbsp;representation&nbsp;of&nbsp;the&nbsp;tokens</tt></dd></dl>
+ <dl><dt><a name="-validateTokens"><strong>validateTokens</strong></a>(tokens)</dt><dd><tt>Validates&nbsp;the&nbsp;given&nbsp;token&nbsp;list.&nbsp;If&nbsp;an&nbsp;invalid&nbsp;token&nbsp;to&nbsp;found,&nbsp;<br>
+then&nbsp;a&nbsp;LexingError&nbsp;exception&nbsp;is&nbsp;raised.&nbsp;Otherwise,&nbsp;returns&nbsp;normally.<br>
+:param&nbsp;tokens:&nbsp;the&nbsp;list&nbsp;of&nbsp;tokens&nbsp;to&nbsp;be&nbsp;validated<br>
+:return:&nbsp;This&nbsp;does&nbsp;not&nbsp;return&nbsp;anything</tt></dd></dl>
+</td></tr></table>
+</body></html>
