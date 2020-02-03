@@ -3,14 +3,14 @@ Creates pydoc documentation for all files in project
 """
 
 import sys
-sys.path.pop(0)
+#sys.path.pop(0)
 from mako.template import Template
 
 import os, glob
 
 from os import listdir
 
-import pydoc
+import pdoc
 
 def main():
     """
@@ -18,7 +18,9 @@ def main():
     :return: Does not return anything
     """
 
-    #need to check for python files in src and then write html pages in ./docs
+    #adds current directory to pdoc path
+    path = os.getcwd()
+    pdoc.import_path.append(path)
 
     #files to be ignored
     ignore_files = [
@@ -27,14 +29,28 @@ def main():
                 "makoTest.py"
     ]
 
-
+    #for every file in the current directory
     for i in listdir("./"):
         if i in ignore_files:
             continue
 
         if i.endswith(".py"):
             print(i)
-            os.system("python3 -m pydoc -w " + i.replace(".py", ""))
+
+            #run pdoc to generate html
+            doc = pdoc.Module(pdoc.import_module(i.replace(".py", "")))
+
+            #generate html
+            out_html = doc.html()
+            
+            #get output filename
+            out_file = i.replace(".py", ".html")
+
+            #open and write file
+            fd = open(out_file, "w+")
+            fd.write(out_html)
+            fd.close()
+
 
     indFile = open("index.html","w")
     mytemplate = Template(filename='sampleTemplate.tmpl')
@@ -46,6 +62,8 @@ def main():
     indFile.write(mytemplate.render(ToFill = "SampleName",Sli = links))
     indFile.close()
 
+
+    #move all .html files to docs location in the github.
     os.system("mv *.html ../../docs")
 
 
