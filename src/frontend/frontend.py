@@ -4,9 +4,9 @@ for command line arguments that can be used to determine which portion is run.
 """
 import argparse
 from lexer import *
-from ast import AbstractSyntaxTree
 from rply.errors import LexingError
 from pptree import *
+from parser import AbstractSyntaxTree
 
 import bnfToParser
 
@@ -78,6 +78,7 @@ def prettyPrint(head,level,parentNode):
     token = head.token
     content = head.content
     for ne in content:
+        print(type(AbstractSyntaxTree("sample","sample")))
         if(type(ne) == type(AbstractSyntaxTree("sample","sample"))):
             nodeName = Node(ne.token,parentNode)
         else:
@@ -135,7 +136,7 @@ def main(args, fi):
     
     # Retrieve the head of the AST
     head = pg.getTree()
-
+    print(type(head))
 
 
     #if -l or --lex is true print the tokens from the lexer 

@@ -1,12 +1,25 @@
 
 from rply import ParserGenerator
 from rply.errors import ParserGeneratorWarning
-from ast import *
 from warnings import simplefilter
 from rply.token import Token
 
 #we get werid 'non-descriptive' warnings from ParserGenerator, this ignores those
 simplefilter('ignore', ParserGeneratorWarning)
+
+class AbstractSyntaxTree():
+    """
+    AbstractSyntaxTree is a class that acts as each node in an Abstract Syntax Tree
+    """
+    def __init__(self, token, content):
+        """
+        Construct a new AbstractSyntaxTree object
+        :param token: the token type of the node
+        :param content: the content of that is tokenized
+        :return: this returns nothing
+        """
+        self.token = token
+        self.content = content
 
 
 #setup parser class
