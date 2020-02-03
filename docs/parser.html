@@ -1,64 +1,3207 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html><head><title>Python: module parser</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-</head><body bgcolor="#f0f0f8">
+<!doctype html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 
-<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
-<tr bgcolor="#7799ee">
-<td valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>parser</strong></big></big></font></td
-><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/bensonalec/Desktop/Compilers/CSE423_Compilers/src/frontend/parser.py">/Users/bensonalec/Desktop/Compilers/CSE423_Compilers/src/frontend/parser.py</a></font></td></tr></table>
-    <p></p>
-<p>
-<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
-<tr bgcolor="#ee77aa">
-<td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    <title>parser API documentation</title>
+    <meta name="description" content="" />
+
+  <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
+  
+  <style type="text/css">
+  
+* {
+  box-sizing: border-box;
+}
+/*! normalize.css v1.1.1 | MIT License | git.io/normalize */
+
+/* ==========================================================================
+   HTML5 display definitions
+   ========================================================================== */
+
+/**
+ * Correct `block` display not defined in IE 6/7/8/9 and Firefox 3.
+ */
+
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+nav,
+section,
+summary {
+    display: block;
+}
+
+/**
+ * Correct `inline-block` display not defined in IE 6/7/8/9 and Firefox 3.
+ */
+
+audio,
+canvas,
+video {
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+}
+
+/**
+ * Prevent modern browsers from displaying `audio` without controls.
+ * Remove excess height in iOS 5 devices.
+ */
+
+audio:not([controls]) {
+    display: none;
+    height: 0;
+}
+
+/**
+ * Address styling not present in IE 7/8/9, Firefox 3, and Safari 4.
+ * Known issue: no IE 6 support.
+ */
+
+[hidden] {
+    display: none;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+/**
+ * 1. Prevent system color scheme's background color being used in Firefox, IE,
+ *    and Opera.
+ * 2. Prevent system color scheme's text color being used in Firefox, IE, and
+ *    Opera.
+ * 3. Correct text resizing oddly in IE 6/7 when body `font-size` is set using
+ *    `em` units.
+ * 4. Prevent iOS text size adjust after orientation change, without disabling
+ *    user zoom.
+ */
+
+html {
+    background: #fff; /* 1 */
+    color: #000; /* 2 */
+    font-size: 100%; /* 3 */
+    -webkit-text-size-adjust: 100%; /* 4 */
+    -ms-text-size-adjust: 100%; /* 4 */
+}
+
+/**
+ * Address `font-family` inconsistency between `textarea` and other form
+ * elements.
+ */
+
+html,
+button,
+input,
+select,
+textarea {
+    font-family: sans-serif;
+}
+
+/**
+ * Address margins handled incorrectly in IE 6/7.
+ */
+
+body {
+    margin: 0;
+}
+
+/* ==========================================================================
+   Links
+   ========================================================================== */
+
+/**
+ * Address `outline` inconsistency between Chrome and other browsers.
+ */
+
+a:focus {
+    outline: thin dotted;
+}
+
+/**
+ * Improve readability when focused and also mouse hovered in all browsers.
+ */
+
+a:active,
+a:hover {
+    outline: 0;
+}
+
+/* ==========================================================================
+   Typography
+   ========================================================================== */
+
+/**
+ * Address font sizes and margins set differently in IE 6/7.
+ * Address font sizes within `section` and `article` in Firefox 4+, Safari 5,
+ * and Chrome.
+ */
+
+h1 {
+    font-size: 2em;
+    margin: 0.67em 0;
+}
+
+h2 {
+    font-size: 1.5em;
+    margin: 0.83em 0;
+}
+
+h3 {
+    font-size: 1.17em;
+    margin: 1em 0;
+}
+
+h4 {
+    font-size: 1em;
+    margin: 1.33em 0;
+}
+
+h5 {
+    font-size: 0.83em;
+    margin: 1.67em 0;
+}
+
+h6 {
+    font-size: 0.67em;
+    margin: 2.33em 0;
+}
+
+/**
+ * Address styling not present in IE 7/8/9, Safari 5, and Chrome.
+ */
+
+abbr[title] {
+    border-bottom: 1px dotted;
+}
+
+/**
+ * Address style set to `bolder` in Firefox 3+, Safari 4/5, and Chrome.
+ */
+
+b,
+strong {
+    font-weight: bold;
+}
+
+blockquote {
+    margin: 1em 40px;
+}
+
+/**
+ * Address styling not present in Safari 5 and Chrome.
+ */
+
+dfn {
+    font-style: italic;
+}
+
+/**
+ * Address differences between Firefox and other browsers.
+ * Known issue: no IE 6/7 normalization.
+ */
+
+hr {
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+    height: 0;
+}
+
+/**
+ * Address styling not present in IE 6/7/8/9.
+ */
+
+mark {
+    background: #ff0;
+    color: #000;
+}
+
+/**
+ * Address margins set differently in IE 6/7.
+ */
+
+p,
+pre {
+    margin: 1em 0;
+}
+
+/**
+ * Correct font family set oddly in IE 6, Safari 4/5, and Chrome.
+ */
+
+code,
+kbd,
+pre,
+samp {
+    font-family: monospace, serif;
+    _font-family: 'courier new', monospace;
+    font-size: 1em;
+}
+
+/**
+ * Improve readability of pre-formatted text in all browsers.
+ */
+
+pre {
+    white-space: pre;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/**
+ * Address CSS quotes not supported in IE 6/7.
+ */
+
+q {
+    quotes: none;
+}
+
+/**
+ * Address `quotes` property not supported in Safari 4.
+ */
+
+q:before,
+q:after {
+    content: '';
+    content: none;
+}
+
+/**
+ * Address inconsistent and variable font size in all browsers.
+ */
+
+small {
+    font-size: 80%;
+}
+
+/**
+ * Prevent `sub` and `sup` affecting `line-height` in all browsers.
+ */
+
+sub,
+sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+}
+
+sup {
+    top: -0.5em;
+}
+
+sub {
+    bottom: -0.25em;
+}
+
+/* ==========================================================================
+   Lists
+   ========================================================================== */
+
+/**
+ * Address margins set differently in IE 6/7.
+ */
+
+dl,
+menu,
+ol,
+ul {
+    margin: 1em 0;
+}
+
+dd {
+    margin: 0 0 0 40px;
+}
+
+/**
+ * Address paddings set differently in IE 6/7.
+ */
+
+menu,
+ol,
+ul {
+    padding: 0 0 0 40px;
+}
+
+/**
+ * Correct list images handled incorrectly in IE 7.
+ */
+
+nav ul,
+nav ol {
+    list-style: none;
+    list-style-image: none;
+}
+
+/* ==========================================================================
+   Embedded content
+   ========================================================================== */
+
+/**
+ * 1. Remove border when inside `a` element in IE 6/7/8/9 and Firefox 3.
+ * 2. Improve image quality when scaled in IE 7.
+ */
+
+img {
+    border: 0; /* 1 */
+    -ms-interpolation-mode: bicubic; /* 2 */
+}
+
+/**
+ * Correct overflow displayed oddly in IE 9.
+ */
+
+svg:not(:root) {
+    overflow: hidden;
+}
+
+/* ==========================================================================
+   Figures
+   ========================================================================== */
+
+/**
+ * Address margin not present in IE 6/7/8/9, Safari 5, and Opera 11.
+ */
+
+figure {
+    margin: 0;
+}
+
+/* ==========================================================================
+   Forms
+   ========================================================================== */
+
+/**
+ * Correct margin displayed oddly in IE 6/7.
+ */
+
+form {
+    margin: 0;
+}
+
+/**
+ * Define consistent border, margin, and padding.
+ */
+
+fieldset {
+    border: 1px solid #c0c0c0;
+    margin: 0 2px;
+    padding: 0.35em 0.625em 0.75em;
+}
+
+/**
+ * 1. Correct color not being inherited in IE 6/7/8/9.
+ * 2. Correct text not wrapping in Firefox 3.
+ * 3. Correct alignment displayed oddly in IE 6/7.
+ */
+
+legend {
+    border: 0; /* 1 */
+    padding: 0;
+    white-space: normal; /* 2 */
+    *margin-left: -7px; /* 3 */
+}
+
+/**
+ * 1. Correct font size not being inherited in all browsers.
+ * 2. Address margins set differently in IE 6/7, Firefox 3+, Safari 5,
+ *    and Chrome.
+ * 3. Improve appearance and consistency in all browsers.
+ */
+
+button,
+input,
+select,
+textarea {
+    font-size: 100%; /* 1 */
+    margin: 0; /* 2 */
+    vertical-align: baseline; /* 3 */
+    *vertical-align: middle; /* 3 */
+}
+
+/**
+ * Address Firefox 3+ setting `line-height` on `input` using `!important` in
+ * the UA stylesheet.
+ */
+
+button,
+input {
+    line-height: normal;
+}
+
+/**
+ * Address inconsistent `text-transform` inheritance for `button` and `select`.
+ * All other form control elements do not inherit `text-transform` values.
+ * Correct `button` style inheritance in Chrome, Safari 5+, and IE 6+.
+ * Correct `select` style inheritance in Firefox 4+ and Opera.
+ */
+
+button,
+select {
+    text-transform: none;
+}
+
+/**
+ * 1. Avoid the WebKit bug in Android 4.0.* where (2) destroys native `audio`
+ *    and `video` controls.
+ * 2. Correct inability to style clickable `input` types in iOS.
+ * 3. Improve usability and consistency of cursor style between image-type
+ *    `input` and others.
+ * 4. Remove inner spacing in IE 7 without affecting normal text inputs.
+ *    Known issue: inner spacing remains in IE 6.
+ */
+
+button,
+html input[type="button"], /* 1 */
+input[type="reset"],
+input[type="submit"] {
+    -webkit-appearance: button; /* 2 */
+    cursor: pointer; /* 3 */
+    *overflow: visible;  /* 4 */
+}
+
+/**
+ * Re-set default cursor for disabled elements.
+ */
+
+button[disabled],
+html input[disabled] {
+    cursor: default;
+}
+
+/**
+ * 1. Address box sizing set to content-box in IE 8/9.
+ * 2. Remove excess padding in IE 8/9.
+ * 3. Remove excess padding in IE 7.
+ *    Known issue: excess padding remains in IE 6.
+ */
+
+input[type="checkbox"],
+input[type="radio"] {
+    box-sizing: border-box; /* 1 */
+    padding: 0; /* 2 */
+    *height: 13px; /* 3 */
+    *width: 13px; /* 3 */
+}
+
+/**
+ * 1. Address `appearance` set to `searchfield` in Safari 5 and Chrome.
+ * 2. Address `box-sizing` set to `border-box` in Safari 5 and Chrome
+ *    (include `-moz` to future-proof).
+ */
+
+input[type="search"] {
+    -webkit-appearance: textfield; /* 1 */
+    -moz-box-sizing: content-box;
+    -webkit-box-sizing: content-box; /* 2 */
+    box-sizing: content-box;
+}
+
+/**
+ * Remove inner padding and search cancel button in Safari 5 and Chrome
+ * on OS X.
+ */
+
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+}
+
+/**
+ * Remove inner padding and border in Firefox 3+.
+ */
+
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+}
+
+/**
+ * 1. Remove default vertical scrollbar in IE 6/7/8/9.
+ * 2. Improve readability and alignment in all browsers.
+ */
+
+textarea {
+    overflow: auto; /* 1 */
+    vertical-align: top; /* 2 */
+}
+
+/* ==========================================================================
+   Tables
+   ========================================================================== */
+
+/**
+ * Remove most spacing between table cells.
+ */
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+  </style>
+
+  <style type="text/css">
+  
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+  }
+  body {
+    background: #fff;
+    font-family: "Source Sans Pro", "Helvetica Neueue", Helvetica, sans;
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 1.6em;
+  }
+  #content {
+    width: 70%;
+    max-width: 850px;
+    float: left;
+    padding: 30px 60px;
+    border-left: 1px solid #ddd;
+  }
+  #sidebar {
+    width: 25%;
+    float: left;
+    padding: 30px;
+    overflow: hidden;
+  }
+  #nav {
+    font-size: 130%;
+    margin: 0 0 15px 0;
+  }
+
+  #top {
+    display: block;
+    position: fixed;
+    bottom: 5px;
+    left: 5px;
+    font-size: .85em;
+    text-transform: uppercase;
+  }
+
+  #footer {
+    font-size: .75em;
+    padding: 5px 30px;
+    border-top: 1px solid #ddd;
+    text-align: right;
+  }
+    #footer p {
+      margin: 0 0 0 30px;
+      display: inline-block;
+    }
+
+  h1, h2, h3, h4, h5 {
+    font-weight: 300;
+  }
+  h1 {
+    font-size: 2.5em;
+    line-height: 1.1em;
+    margin: 0 0 .50em 0;
+  }
+
+  h2 {
+    font-size: 1.75em;
+    margin: 1em 0 .50em 0;
+  }
+
+  h3 {
+    margin: 25px 0 10px 0;
+  }
+
+  h4 {
+    margin: 0;
+    font-size: 105%;
+  }
+
+  a {
+    color: #058;
+    text-decoration: none;
+    transition: color .3s ease-in-out;
+  }
+
+  a:hover {
+    color: #e08524;
+    transition: color .3s ease-in-out;
+  }
+
+  pre, code, .mono, .name {
+    font-family: "Ubuntu Mono", "Cousine", "DejaVu Sans Mono", monospace;
+  }
+
+  .title .name {
+    font-weight: bold;
+  }
+  .section-title {
+    margin-top: 2em;
+  }
+  .ident {
+    color: #900;
+  }
+
+  code {
+    background: #f9f9f9;
+  } 
+
+  pre {
+    background: #fefefe;
+    border: 1px solid #ddd;
+    box-shadow: 2px 2px 0 #f3f3f3;
+    margin: 0 30px;
+    padding: 15px 30px;
+  }
+
+  .codehilite {
+    margin: 0 30px 10px 30px;
+  }
+
+    .codehilite pre {
+      margin: 0;
+    }
+    .codehilite .err { background: #ff3300; color: #fff !important; } 
+
+  table#module-list {
+    font-size: 110%;
+  }
+
+    table#module-list tr td:first-child {
+      padding-right: 10px;
+      white-space: nowrap;
+    }
+
+    table#module-list td {
+      vertical-align: top;
+      padding-bottom: 8px;
+    }
+
+      table#module-list td p {
+        margin: 0 0 7px 0;
+      }
+
+  .def {
+    display: table;
+  }
+
+    .def p {
+      display: table-cell;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    .def p:first-child {
+      white-space: nowrap;
+    }
+
+    .def p:last-child {
+      width: 100%;
+    }
+
+
+  #index {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+    ul#index .class_name {
+      /* font-size: 110%; */
+      font-weight: bold;
+    }
+    #index ul {
+      margin: 0;
+    }
+
+  .item {
+    margin: 0 0 15px 0;
+  }
+
+    .item .class {
+      margin: 0 0 25px 30px;
+    }
+
+      .item .class ul.class_list {
+        margin: 0 0 20px 0;
+      }
+
+    .item .name {
+      background: #fafafa;
+      margin: 0;
+      font-weight: bold;
+      padding: 5px 10px;
+      border-radius: 3px;
+      display: inline-block;
+      min-width: 40%;
+    }
+      .item .name:hover {
+        background: #f6f6f6;
+      }
+
+    .item .empty_desc {
+      margin: 0 0 5px 0;
+      padding: 0;
+    }
+
+    .item .inheritance {
+      margin: 3px 0 0 30px;
+    }
+
+    .item .inherited {
+      color: #666;
+    }
+
+    .item .desc {
+      padding: 0 8px;
+      margin: 0;
+    }
+
+      .item .desc p {
+        margin: 0 0 10px 0;
+      }
+
+    .source_cont {
+      margin: 0;
+      padding: 0;
+    }
+
+    .source_link a {
+      background: #ffc300;
+      font-weight: 400;
+      font-size: .75em;
+      text-transform: uppercase;
+      color: #fff;
+      text-shadow: 1px 1px 0 #f4b700;
+      
+      padding: 3px 8px;
+      border-radius: 2px;
+      transition: background .3s ease-in-out;
+    }
+      .source_link a:hover {
+        background: #FF7200;
+        text-shadow: none;
+        transition: background .3s ease-in-out;
+      }
+
+    .source {
+      display: none;
+      max-height: 600px;
+      overflow-y: scroll;
+      margin-bottom: 15px;
+    }
+
+      .source .codehilite {
+        margin: 0;
+      }
+
+  .desc h1, .desc h2, .desc h3 {
+    font-size: 100% !important;
+  }
+  .clear {
+    clear: both;
+  }
+
+  @media all and (max-width: 950px) {
+    #sidebar {
+      width: 35%;
+    }
+    #content {
+      width: 65%;
+    }
+  }
+  @media all and (max-width: 650px) {
+    #top {
+      display: none;
+    }
+    #sidebar {
+      float: none;
+      width: auto;
+    }
+    #content {
+      float: none;
+      width: auto;
+      padding: 30px;
+    }
+
+    #index ul {
+      padding: 0;
+      margin-bottom: 15px;
+    }
+    #index ul li {
+      display: inline-block;
+      margin-right: 30px;
+    }
+    #footer {
+      text-align: left;
+    }
+    #footer p {
+      display: block;
+      margin: inherit;
+    }
+  }
+
+  /*****************************/
+
+  </style>
+
+
+  <style type="text/css">
+  
+/* ==========================================================================
+   EXAMPLE Media Queries for Responsive Design.
+   These examples override the primary ('mobile first') styles.
+   Modify as content requires.
+   ========================================================================== */
+
+@media only screen and (min-width: 35em) {
+    /* Style adjustments for viewports that meet the condition */
+}
+
+@media print,
+       (-o-min-device-pixel-ratio: 5/4),
+       (-webkit-min-device-pixel-ratio: 1.25),
+       (min-resolution: 120dpi) {
+    /* Style adjustments for high resolution devices */
+}
+
+/* ==========================================================================
+   Print styles.
+   Inlined to avoid required HTTP connection: h5bp.com/r
+   ========================================================================== */
+
+@media print {
+    * {
+        background: transparent !important;
+        color: #000 !important; /* Black prints faster: h5bp.com/s */
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+
+    a,
+    a:visited {
+        text-decoration: underline;
+    }
+
+    a[href]:after {
+        content: " (" attr(href) ")";
+    }
+
+    abbr[title]:after {
+        content: " (" attr(title) ")";
+    }
+
+    /*
+     * Don't show links for images, or javascript/internal links
+     */
+
+    .ir a:after,
+    a[href^="javascript:"]:after,
+    a[href^="#"]:after {
+        content: "";
+    }
+
+    pre,
+    blockquote {
+        border: 1px solid #999;
+        page-break-inside: avoid;
+    }
+
+    thead {
+        display: table-header-group; /* h5bp.com/t */
+    }
+
+    tr,
+    img {
+        page-break-inside: avoid;
+    }
+
+    img {
+        max-width: 100% !important;
+    }
+
+    @page {
+        margin: 0.5cm;
+    }
+
+    p,
+    h2,
+    h3 {
+        orphans: 3;
+        widows: 3;
+    }
+
+    h2,
+    h3 {
+        page-break-after: avoid;
+    }
+}
+
+  </style>
+
+  <script type="text/javascript">
+  function toggle(id, $link) {
+    $node = document.getElementById(id);
+    if (!$node)
+    return;
+    if (!$node.style.display || $node.style.display == 'none') {
+    $node.style.display = 'block';
+    $link.innerHTML = 'Hide source &nequiv;';
+    } else {
+    $node.style.display = 'none';
+    $link.innerHTML = 'Show source &equiv;';
+    }
+  }
+  </script>
+</head>
+<body>
+<a href="#" id="top">Top</a>
+
+<div id="container">
     
-<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><dl>
-<dt><font face="helvetica, arial"><a href="builtins.html#object">builtins.object</a>
-</font></dt><dd>
-<dl>
-<dt><font face="helvetica, arial"><a href="parser.html#Parser">Parser</a>
-</font></dt></dl>
-</dd>
-</dl>
- <p>
-<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
-<tr bgcolor="#ffc8d8">
-<td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="Parser">class <strong>Parser</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
+  
+  <div id="sidebar">
+    <h1>Index</h1>
+    <ul id="index">
+
+
+    <li class="set"><h3><a href="#header-classes">Classes</a></h3>
+      <ul>
+        <li class="mono">
+        <span class="class_name"><a href="#parser.Parser">Parser</a></span>
+        
+          
+  <ul>
+    <li class="mono"><a href="#parser.Parser.__init__">__init__</a></li>
+    <li class="mono"><a href="#parser.Parser.getTree">getTree</a></li>
+    <li class="mono"><a href="#parser.Parser.get_parser">get_parser</a></li>
+    <li class="mono"><a href="#parser.Parser.parse">parse</a></li>
+    <li class="mono"><a href="#parser.Parser.print_error">print_error</a></li>
+  </ul>
+
+        </li>
+      </ul>
+    </li>
+
+    </ul>
+  </div>
+
+    <article id="content">
+      
+  
+
+  
+
+
+  <header id="section-intro">
+  <h1 class="title"><span class="name">parser</span> module</h1>
+  
+  
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-parser', this);">Show source &equiv;</a></p>
+  <div id="source-parser" class="source">
+    <pre><code>rom rply import ParserGenerator
+rom rply.errors import ParserGeneratorWarning
+rom ast import *
+rom warnings import simplefilter
+rom rply.token import Token
+we get werid 'non-descriptive' warnings from ParserGenerator, this ignores those
+implefilter('ignore', ParserGeneratorWarning)
+setup parser class
+lass Parser():
+   """
+   Parser is an object that contains the rules for the aprser
+   """
+   
+   def __init__(self):
+       """
+       Initializes the parser and tells it the allowed tokens
+       :return: This does not return anything
+       """
+       self.pg = ParserGenerator(
+           ['TYPE','SELF_DEFINED','OPEN_PAREN','CLOSE_PAREN','OPEN_BRACE','CLOSE_BRACE','ASSIGNMENT','SEMICOLON','LOOPING','BRANCHING','BEHAVIOR','COLON','CLOSE_PARENT','COMMA','INTEGER','STRING','PRECISION','COMPARISON','LOGICAL','ARITHMETIC']
+       )
+       #initialzie head and current node
+       self.Head = None
+   def parse(self):
+       """
+       The list of BNF functions and their behavior
+       :return: This does not return anything
+       """
+       
+       @self.pg.production('program : definitionList ')
+       def program(p):
+           """
+           Tells the parser which BNF will be the head of the tree
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("program",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('definitionList : definitionList functionDefinition ')
+       def definitionList___definitionList_functionDefinition_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("definitionList",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('definitionList : functionDefinition ')
+       def definitionList___functionDefinition_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("definitionList",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('functionDefinition : TYPE SELF_DEFINED OPEN_PAREN args CLOSE_PAREN block ')
+       def functionDefinition___TYPE_SELF_DEFINED_OPEN_PAREN_args_CLOSE_PAREN_block_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("function definition",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('functionDefinition : TYPE SELF_DEFINED OPEN_PAREN CLOSE_PAREN block ')
+       def functionDefinition___TYPE_SELF_DEFINED_OPEN_PAREN_CLOSE_PAREN_block_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("function definition",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('block : OPEN_BRACE content block CLOSE_BRACE ')
+       def block___OPEN_BRACE_content_block_CLOSE_BRACE_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("block",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('block : OPEN_BRACE content CLOSE_BRACE ')
+       def block___OPEN_BRACE_content_CLOSE_BRACE_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("block",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('block : OPEN_BRACE CLOSE_BRACE ')
+       def block___OPEN_BRACE_CLOSE_BRACE_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("block",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('content : single_line content ')
+       def content___single_line_content_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("content",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('content : single_line ')
+       def content___single_line_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("content",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('single_line : TYPE SELF_DEFINED ASSIGNMENT literal SEMICOLON ')
+       def single_line___TYPE_SELF_DEFINED_ASSIGNMENT_literal_SEMICOLON_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("variable assignment",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('single_line : TYPE SELF_DEFINED SEMICOLON ')
+       def single_line___TYPE_SELF_DEFINED_SEMICOLON_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("initialization",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('single_line : function_call SEMICOLON ')
+       def single_line___function_call_SEMICOLON_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("function call",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('single_line : LOOPING OPEN_PAREN boolean CLOSE_PAREN block ')
+       def single_line___LOOPING_OPEN_PAREN_boolean_CLOSE_PAREN_block_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("loop",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('single_line : LOOPING block LOOPING OPEN_PAREN boolean CLOSE_PAREN SEMICOLON ')
+       def single_line___LOOPING_block_LOOPING_OPEN_PAREN_boolean_CLOSE_PAREN_SEMICOLON_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("do while",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('single_line : BRANCHING OPEN_PAREN boolean CLOSE_PAREN block ')
+       def single_line___BRANCHING_OPEN_PAREN_boolean_CLOSE_PAREN_block_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("if and else",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('single_line : BRANCHING OPEN_PAREN non_contiguous CLOSE_PAREN block ')
+       def single_line___BRANCHING_OPEN_PAREN_non_contiguous_CLOSE_PAREN_block_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("switch",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('single_line : arithmetic SEMICOLON ')
+       def single_line___arithmetic_SEMICOLON_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("arithmetic",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('single_line : BEHAVIOR literal SEMICOLON ')
+       def single_line___BEHAVIOR_literal_SEMICOLON_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("return statement",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('single_line : BEHAVIOR non_contiguous SEMICOLON ')
+       def single_line___BEHAVIOR_non_contiguous_SEMICOLON_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("statement",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('single_line : BEHAVIOR SEMICOLON ')
+       def single_line___BEHAVIOR_SEMICOLON_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("return statement",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('single_line : SELF_DEFINED ASSIGNMENT literal SEMICOLON ')
+       def single_line___SELF_DEFINED_ASSIGNMENT_literal_SEMICOLON_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("assignment",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('single_line : SELF_DEFINED ASSIGNMENT boolean SEMICOLON ')
+       def single_line___SELF_DEFINED_ASSIGNMENT_boolean_SEMICOLON_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("assignment",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('single_line : SELF_DEFINED ASSIGNMENT arithmetic SEMICOLON ')
+       def single_line___SELF_DEFINED_ASSIGNMENT_arithmetic_SEMICOLON_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("assignment",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('single_line : SELF_DEFINED COLON single_line ')
+       def single_line___SELF_DEFINED_COLON_single_line_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("goto_label",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('function_call : SELF_DEFINED OPEN_PAREN param CLOSE_PAREN ')
+       def function_call___SELF_DEFINED_OPEN_PAREN_param_CLOSE_PAREN_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("function call",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('function_call : SELF_DEFINED OPEN_PAREN CLOSE_PARENT ')
+       def function_call___SELF_DEFINED_OPEN_PAREN_CLOSE_PARENT_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("function call",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('param : literal ')
+       def param___literal_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("parameter",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('param : SELF_DEFINED ')
+       def param___SELF_DEFINED_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("paramater",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('param : literal COMMA param ')
+       def param___literal_COMMA_param_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("parameter",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('param : SELF_DEFINED COMMA param ')
+       def param___SELF_DEFINED_COMMA_param_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("parameter",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('literal : INTEGER ')
+       def literal___INTEGER_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("literal",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('literal : STRING ')
+       def literal___STRING_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("literal",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('literal : PRECISION ')
+       def literal___PRECISION_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("literal",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('args : TYPE SELF_DEFINED ')
+       def args___TYPE_SELF_DEFINED_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("argument",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('args : TYPE SELF_DEFINED COMMA args ')
+       def args___TYPE_SELF_DEFINED_COMMA_args_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("argument",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('boolean : boolean COMPARISON boolean ')
+       def boolean___boolean_COMPARISON_boolean_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("boolean",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('boolean : boolean LOGICAL boolean ')
+       def boolean___boolean_LOGICAL_boolean_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("boolean",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('boolean : arithmetic ')
+       def boolean___arithmetic_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("boolean",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('boolean : function_call ')
+       def boolean___function_call_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("boolean",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('boolean : SELF_DEFINED ')
+       def boolean___SELF_DEFINED_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("boolean",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('boolean : boolean ')
+       def boolean___boolean_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("boolean",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('boolean : numeral ')
+       def boolean___numeral_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("boolean",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('arithmetic : arithmetic ARITHMETIC arithmetic ')
+       def arithmetic___arithmetic_ARITHMETIC_arithmetic_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("arithmetic",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('arithmetic : numeral ')
+       def arithmetic___numeral_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("arithmetic",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('arithmetic : arithmetic ')
+       def arithmetic___arithmetic_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("arithmetic",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('arithmetic : unary ')
+       def arithmetic___unary_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("arithmetic",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('numeral : INTEGER ')
+       def numeral___INTEGER_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("numeral",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('numeral : PRECISION ')
+       def numeral___PRECISION_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("numeral",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('non_contiguous : PRECISION ')
+       def non_contiguous___PRECISION_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("non contiguous",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('non_contiguous : INTEGER ')
+       def non_contiguous___INTEGER_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("non contiguous",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('non_contiguous : STRING ')
+       def non_contiguous___STRING_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("non contiguous",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('non_contiguous : SELF_DEFINED ')
+       def non_contiguous___SELF_DEFINED_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("non contiguous",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('unary : ARITHMETIC non_contiguous ')
+       def unary___ARITHMETIC_non_contiguous_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("unary_op",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('unary : non_contiguous ARITHMETIC ')
+       def unary___non_contiguous_ARITHMETIC_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("unary_op",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('unary : BEHAVIOR OPEN_PAREN non_contiguous CLOSE_PAREN ')
+       def unary___BEHAVIOR_OPEN_PAREN_non_contiguous_CLOSE_PAREN_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("sizeof_self_def",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('unary : BEHAVIOR OPEN_PAREN TYPE CLOSE_PAREN ')
+       def unary___BEHAVIOR_OPEN_PAREN_TYPE_CLOSE_PAREN_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("sizeof_type",p)
+           self.Head = newNode
+           return newNode
+       @self.pg.production('unary : OPEN_PAREN TYPE CLOSE_PAREN ')
+       def unary___OPEN_PAREN_TYPE_CLOSE_PAREN_(p):
+           """
+           Boilerplate BNF function
+           param: p: the matching set of tokens
+           :return: The node of the abstract syntax tree
+           """
+           newNode = AbstractSyntaxTree("cast",p)
+           self.Head = newNode
+           return newNode
+   
+       @self.pg.error
+       def error_handle(token):
+           """
+           Boilerplate error handling function
+           param: token: the token that caused an error
+           :return: There is nothing returned
+           """
+           return ValueError(token)
+   #boilerplate function
+   def get_parser(self):
+       """
+       Returns the built version of the parser
+       :return: Returns the built parser
+       """
+       return self.pg.build()
+   #retrieve the trees head
+   def getTree(self):
+       """
+       Getter for the head of the tree
+       :return: This returns the head of the tree
+       """
+       return self.Head
+   def print_error(self):
+       """
+       Prints parser error message. This function ultimately iterates through the AST that was 
+       returned after the parser found an error. AST's consist of tokens as well as other AST's so 
+       we need to iterate to find the first token and then print its source position.
+       :return: This does not return anything
+       """
+       # TODO: add some more in-depth error processing to print
+       # out a more detailed description of what went wrong, and possibly some suggestions 
+       # at to why there was a parse/syntax error. (i.e. suggest a missing semicolon)
+       head = self.getTree()
+       token = 0 # token hasn't been found yet, so we set value to 0
+       while True and head:
+           # Iterate through list of elements
+           for i in head.content:
+               # Could be a Token
+               if(type(i) == type(Token("sample", "sample"))):
+                   # Found a Token
+                   token = i
+                   break
+           # Check again (to break out of while loop and not iterate again)		
+           if (type(token) == type(Token("sample", "sample"))):
+               break
+           else:
+               # Set head to last element.
+               # If this code executes then I can assume that the 
+               # last element is an AST.
+               head = head.content[len(head.content)-1]
+       if token:
+           print(f"ParsingError: Last token  \'{token.value}\' parsed successfully at, {token.source_pos}\n")
+       else:
+           # Never found a token to report, need to exit
+           print("ParsingError: No AST obtained\n")
+           exit()
+   
+</code></pre>
+  </div>
+
+  </header>
+
+  <section id="section-items">
+
+
+    <h2 class="section-title" id="header-classes">Classes</h2>
+      
+      <div class="item">
+      <p id="parser.Parser" class="name">class <span class="ident">Parser</span></p>
+      
+  
+    <div class="desc"><p>Parser is an object that contains the rules for the aprser</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-parser.Parser', this);">Show source &equiv;</a></p>
+  <div id="source-parser.Parser" class="source">
+    <pre><code>class Parser():
+    """
+    Parser is an object that contains the rules for the aprser
+    """
     
-<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#Parser">Parser</a>&nbsp;is&nbsp;an&nbsp;<a href="builtins.html#object">object</a>&nbsp;that&nbsp;contains&nbsp;the&nbsp;rules&nbsp;for&nbsp;the&nbsp;aprser<br>&nbsp;</tt></td></tr>
-<tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="Parser-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Initializes&nbsp;the&nbsp;parser&nbsp;and&nbsp;tells&nbsp;it&nbsp;the&nbsp;allowed&nbsp;tokens<br>
-:return:&nbsp;This&nbsp;does&nbsp;not&nbsp;return&nbsp;anything</tt></dd></dl>
+    def __init__(self):
+        """
+        Initializes the parser and tells it the allowed tokens
+        :return: This does not return anything
+        """
 
-<dl><dt><a name="Parser-getTree"><strong>getTree</strong></a>(self)</dt><dd><tt>Getter&nbsp;for&nbsp;the&nbsp;head&nbsp;of&nbsp;the&nbsp;tree<br>
-:return:&nbsp;This&nbsp;returns&nbsp;the&nbsp;head&nbsp;of&nbsp;the&nbsp;tree</tt></dd></dl>
+        self.pg = ParserGenerator(
+            ['TYPE','SELF_DEFINED','OPEN_PAREN','CLOSE_PAREN','OPEN_BRACE','CLOSE_BRACE','ASSIGNMENT','SEMICOLON','LOOPING','BRANCHING','BEHAVIOR','COLON','CLOSE_PARENT','COMMA','INTEGER','STRING','PRECISION','COMPARISON','LOGICAL','ARITHMETIC']
+        )
+        #initialzie head and current node
+        self.Head = None
 
-<dl><dt><a name="Parser-get_parser"><strong>get_parser</strong></a>(self)</dt><dd><tt>Returns&nbsp;the&nbsp;built&nbsp;version&nbsp;of&nbsp;the&nbsp;parser<br>
-:return:&nbsp;Returns&nbsp;the&nbsp;built&nbsp;parser</tt></dd></dl>
 
-<dl><dt><a name="Parser-parse"><strong>parse</strong></a>(self)</dt><dd><tt>The&nbsp;list&nbsp;of&nbsp;BNF&nbsp;functions&nbsp;and&nbsp;their&nbsp;behavior<br>
-:return:&nbsp;This&nbsp;does&nbsp;not&nbsp;return&nbsp;anything</tt></dd></dl>
+    def parse(self):
+        """
+        The list of BNF functions and their behavior
+        :return: This does not return anything
+        """
+        
+        @self.pg.production('program : definitionList ')
+        def program(p):
+            """
+            Tells the parser which BNF will be the head of the tree
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("program",p)
+            self.Head = newNode
+            return newNode
 
-<dl><dt><a name="Parser-print_error"><strong>print_error</strong></a>(self)</dt><dd><tt>Prints&nbsp;parser&nbsp;error&nbsp;message.&nbsp;This&nbsp;function&nbsp;ultimately&nbsp;iterates&nbsp;through&nbsp;the&nbsp;AST&nbsp;that&nbsp;was&nbsp;<br>
-returned&nbsp;after&nbsp;the&nbsp;parser&nbsp;found&nbsp;an&nbsp;error.&nbsp;AST's&nbsp;consist&nbsp;of&nbsp;tokens&nbsp;as&nbsp;well&nbsp;as&nbsp;other&nbsp;AST's&nbsp;so&nbsp;<br>
-we&nbsp;need&nbsp;to&nbsp;iterate&nbsp;to&nbsp;find&nbsp;the&nbsp;first&nbsp;token&nbsp;and&nbsp;then&nbsp;print&nbsp;its&nbsp;source&nbsp;position.<br>
-:return:&nbsp;This&nbsp;does&nbsp;not&nbsp;return&nbsp;anything</tt></dd></dl>
+        @self.pg.production('definitionList : definitionList functionDefinition ')
+        def definitionList___definitionList_functionDefinition_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("definitionList",p)
+            self.Head = newNode
+            return newNode
 
-<hr>
-Data descriptors defined here:<br>
-<dl><dt><strong>__dict__</strong></dt>
-<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
-</dl>
-<dl><dt><strong>__weakref__</strong></dt>
-<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
-</dl>
-</td></tr></table></td></tr></table>
-</body></html>
+        @self.pg.production('definitionList : functionDefinition ')
+        def definitionList___functionDefinition_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("definitionList",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('functionDefinition : TYPE SELF_DEFINED OPEN_PAREN args CLOSE_PAREN block ')
+        def functionDefinition___TYPE_SELF_DEFINED_OPEN_PAREN_args_CLOSE_PAREN_block_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("function definition",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('functionDefinition : TYPE SELF_DEFINED OPEN_PAREN CLOSE_PAREN block ')
+        def functionDefinition___TYPE_SELF_DEFINED_OPEN_PAREN_CLOSE_PAREN_block_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("function definition",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('block : OPEN_BRACE content block CLOSE_BRACE ')
+        def block___OPEN_BRACE_content_block_CLOSE_BRACE_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("block",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('block : OPEN_BRACE content CLOSE_BRACE ')
+        def block___OPEN_BRACE_content_CLOSE_BRACE_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("block",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('block : OPEN_BRACE CLOSE_BRACE ')
+        def block___OPEN_BRACE_CLOSE_BRACE_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("block",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('content : single_line content ')
+        def content___single_line_content_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("content",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('content : single_line ')
+        def content___single_line_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("content",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('single_line : TYPE SELF_DEFINED ASSIGNMENT literal SEMICOLON ')
+        def single_line___TYPE_SELF_DEFINED_ASSIGNMENT_literal_SEMICOLON_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("variable assignment",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('single_line : TYPE SELF_DEFINED SEMICOLON ')
+        def single_line___TYPE_SELF_DEFINED_SEMICOLON_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("initialization",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('single_line : function_call SEMICOLON ')
+        def single_line___function_call_SEMICOLON_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("function call",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('single_line : LOOPING OPEN_PAREN boolean CLOSE_PAREN block ')
+        def single_line___LOOPING_OPEN_PAREN_boolean_CLOSE_PAREN_block_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("loop",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('single_line : LOOPING block LOOPING OPEN_PAREN boolean CLOSE_PAREN SEMICOLON ')
+        def single_line___LOOPING_block_LOOPING_OPEN_PAREN_boolean_CLOSE_PAREN_SEMICOLON_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("do while",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('single_line : BRANCHING OPEN_PAREN boolean CLOSE_PAREN block ')
+        def single_line___BRANCHING_OPEN_PAREN_boolean_CLOSE_PAREN_block_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("if and else",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('single_line : BRANCHING OPEN_PAREN non_contiguous CLOSE_PAREN block ')
+        def single_line___BRANCHING_OPEN_PAREN_non_contiguous_CLOSE_PAREN_block_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("switch",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('single_line : arithmetic SEMICOLON ')
+        def single_line___arithmetic_SEMICOLON_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("arithmetic",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('single_line : BEHAVIOR literal SEMICOLON ')
+        def single_line___BEHAVIOR_literal_SEMICOLON_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("return statement",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('single_line : BEHAVIOR non_contiguous SEMICOLON ')
+        def single_line___BEHAVIOR_non_contiguous_SEMICOLON_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("statement",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('single_line : BEHAVIOR SEMICOLON ')
+        def single_line___BEHAVIOR_SEMICOLON_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("return statement",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('single_line : SELF_DEFINED ASSIGNMENT literal SEMICOLON ')
+        def single_line___SELF_DEFINED_ASSIGNMENT_literal_SEMICOLON_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("assignment",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('single_line : SELF_DEFINED ASSIGNMENT boolean SEMICOLON ')
+        def single_line___SELF_DEFINED_ASSIGNMENT_boolean_SEMICOLON_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("assignment",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('single_line : SELF_DEFINED ASSIGNMENT arithmetic SEMICOLON ')
+        def single_line___SELF_DEFINED_ASSIGNMENT_arithmetic_SEMICOLON_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("assignment",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('single_line : SELF_DEFINED COLON single_line ')
+        def single_line___SELF_DEFINED_COLON_single_line_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("goto_label",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('function_call : SELF_DEFINED OPEN_PAREN param CLOSE_PAREN ')
+        def function_call___SELF_DEFINED_OPEN_PAREN_param_CLOSE_PAREN_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("function call",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('function_call : SELF_DEFINED OPEN_PAREN CLOSE_PARENT ')
+        def function_call___SELF_DEFINED_OPEN_PAREN_CLOSE_PARENT_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("function call",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('param : literal ')
+        def param___literal_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("parameter",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('param : SELF_DEFINED ')
+        def param___SELF_DEFINED_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("paramater",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('param : literal COMMA param ')
+        def param___literal_COMMA_param_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("parameter",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('param : SELF_DEFINED COMMA param ')
+        def param___SELF_DEFINED_COMMA_param_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("parameter",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('literal : INTEGER ')
+        def literal___INTEGER_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("literal",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('literal : STRING ')
+        def literal___STRING_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("literal",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('literal : PRECISION ')
+        def literal___PRECISION_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("literal",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('args : TYPE SELF_DEFINED ')
+        def args___TYPE_SELF_DEFINED_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("argument",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('args : TYPE SELF_DEFINED COMMA args ')
+        def args___TYPE_SELF_DEFINED_COMMA_args_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("argument",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('boolean : boolean COMPARISON boolean ')
+        def boolean___boolean_COMPARISON_boolean_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("boolean",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('boolean : boolean LOGICAL boolean ')
+        def boolean___boolean_LOGICAL_boolean_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("boolean",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('boolean : arithmetic ')
+        def boolean___arithmetic_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("boolean",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('boolean : function_call ')
+        def boolean___function_call_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("boolean",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('boolean : SELF_DEFINED ')
+        def boolean___SELF_DEFINED_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("boolean",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('boolean : boolean ')
+        def boolean___boolean_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("boolean",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('boolean : numeral ')
+        def boolean___numeral_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("boolean",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('arithmetic : arithmetic ARITHMETIC arithmetic ')
+        def arithmetic___arithmetic_ARITHMETIC_arithmetic_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("arithmetic",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('arithmetic : numeral ')
+        def arithmetic___numeral_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("arithmetic",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('arithmetic : arithmetic ')
+        def arithmetic___arithmetic_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("arithmetic",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('arithmetic : unary ')
+        def arithmetic___unary_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("arithmetic",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('numeral : INTEGER ')
+        def numeral___INTEGER_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("numeral",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('numeral : PRECISION ')
+        def numeral___PRECISION_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("numeral",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('non_contiguous : PRECISION ')
+        def non_contiguous___PRECISION_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("non contiguous",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('non_contiguous : INTEGER ')
+        def non_contiguous___INTEGER_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("non contiguous",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('non_contiguous : STRING ')
+        def non_contiguous___STRING_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("non contiguous",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('non_contiguous : SELF_DEFINED ')
+        def non_contiguous___SELF_DEFINED_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("non contiguous",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('unary : ARITHMETIC non_contiguous ')
+        def unary___ARITHMETIC_non_contiguous_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("unary_op",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('unary : non_contiguous ARITHMETIC ')
+        def unary___non_contiguous_ARITHMETIC_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("unary_op",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('unary : BEHAVIOR OPEN_PAREN non_contiguous CLOSE_PAREN ')
+        def unary___BEHAVIOR_OPEN_PAREN_non_contiguous_CLOSE_PAREN_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("sizeof_self_def",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('unary : BEHAVIOR OPEN_PAREN TYPE CLOSE_PAREN ')
+        def unary___BEHAVIOR_OPEN_PAREN_TYPE_CLOSE_PAREN_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("sizeof_type",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('unary : OPEN_PAREN TYPE CLOSE_PAREN ')
+        def unary___OPEN_PAREN_TYPE_CLOSE_PAREN_(p):
+            """
+            Boilerplate BNF function
+            param: p: the matching set of tokens
+            :return: The node of the abstract syntax tree
+            """
+            newNode = AbstractSyntaxTree("cast",p)
+            self.Head = newNode
+            return newNode
+
+    
+        @self.pg.error
+        def error_handle(token):
+            """
+            Boilerplate error handling function
+            param: token: the token that caused an error
+            :return: There is nothing returned
+            """
+            return ValueError(token)
+
+    #boilerplate function
+    def get_parser(self):
+        """
+        Returns the built version of the parser
+        :return: Returns the built parser
+        """
+        return self.pg.build()
+
+    #retrieve the trees head
+    def getTree(self):
+        """
+        Getter for the head of the tree
+        :return: This returns the head of the tree
+        """
+
+        return self.Head
+
+    def print_error(self):
+        """
+        Prints parser error message. This function ultimately iterates through the AST that was 
+        returned after the parser found an error. AST's consist of tokens as well as other AST's so 
+        we need to iterate to find the first token and then print its source position.
+        :return: This does not return anything
+        """
+        # TODO: add some more in-depth error processing to print
+        # out a more detailed description of what went wrong, and possibly some suggestions 
+        # at to why there was a parse/syntax error. (i.e. suggest a missing semicolon)
+
+        head = self.getTree()
+        token = 0 # token hasn't been found yet, so we set value to 0
+
+        while True and head:
+            # Iterate through list of elements
+            for i in head.content:
+
+                # Could be a Token
+                if(type(i) == type(Token("sample", "sample"))):
+
+                    # Found a Token
+                    token = i
+                    break
+
+            # Check again (to break out of while loop and not iterate again)		
+            if (type(token) == type(Token("sample", "sample"))):
+                break
+            else:
+                # Set head to last element.
+                # If this code executes then I can assume that the 
+                # last element is an AST.
+                head = head.content[len(head.content)-1]
+
+        if token:
+            print(f"ParsingError: Last token  \'{token.value}\' parsed successfully at, {token.source_pos}\n")
+        else:
+            # Never found a token to report, need to exit
+            print("ParsingError: No AST obtained\n")
+            exit()
+</code></pre>
+  </div>
+</div>
+
+
+      <div class="class">
+          <h3>Ancestors (in MRO)</h3>
+          <ul class="class_list">
+          <li><a href="#parser.Parser">Parser</a></li>
+          <li>builtins.object</li>
+          </ul>
+          <h3>Static methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="parser.Parser.__init__">
+    <p>def <span class="ident">__init__</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Initializes the parser and tells it the allowed tokens
+:return: This does not return anything</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-parser.Parser.__init__', this);">Show source &equiv;</a></p>
+  <div id="source-parser.Parser.__init__" class="source">
+    <pre><code>def __init__(self):
+    """
+    Initializes the parser and tells it the allowed tokens
+    :return: This does not return anything
+    """
+    self.pg = ParserGenerator(
+        ['TYPE','SELF_DEFINED','OPEN_PAREN','CLOSE_PAREN','OPEN_BRACE','CLOSE_BRACE','ASSIGNMENT','SEMICOLON','LOOPING','BRANCHING','BEHAVIOR','COLON','CLOSE_PARENT','COMMA','INTEGER','STRING','PRECISION','COMPARISON','LOGICAL','ARITHMETIC']
+    )
+    #initialzie head and current node
+    self.Head = None
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="parser.Parser.getTree">
+    <p>def <span class="ident">getTree</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Getter for the head of the tree
+:return: This returns the head of the tree</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-parser.Parser.getTree', this);">Show source &equiv;</a></p>
+  <div id="source-parser.Parser.getTree" class="source">
+    <pre><code>def getTree(self):
+    """
+    Getter for the head of the tree
+    :return: This returns the head of the tree
+    """
+    return self.Head
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="parser.Parser.get_parser">
+    <p>def <span class="ident">get_parser</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Returns the built version of the parser
+:return: Returns the built parser</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-parser.Parser.get_parser', this);">Show source &equiv;</a></p>
+  <div id="source-parser.Parser.get_parser" class="source">
+    <pre><code>def get_parser(self):
+    """
+    Returns the built version of the parser
+    :return: Returns the built parser
+    """
+    return self.pg.build()
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="parser.Parser.parse">
+    <p>def <span class="ident">parse</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>The list of BNF functions and their behavior
+:return: This does not return anything</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-parser.Parser.parse', this);">Show source &equiv;</a></p>
+  <div id="source-parser.Parser.parse" class="source">
+    <pre><code>def parse(self):
+    """
+    The list of BNF functions and their behavior
+    :return: This does not return anything
+    """
+    
+    @self.pg.production('program : definitionList ')
+    def program(p):
+        """
+        Tells the parser which BNF will be the head of the tree
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("program",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('definitionList : definitionList functionDefinition ')
+    def definitionList___definitionList_functionDefinition_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("definitionList",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('definitionList : functionDefinition ')
+    def definitionList___functionDefinition_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("definitionList",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('functionDefinition : TYPE SELF_DEFINED OPEN_PAREN args CLOSE_PAREN block ')
+    def functionDefinition___TYPE_SELF_DEFINED_OPEN_PAREN_args_CLOSE_PAREN_block_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("function definition",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('functionDefinition : TYPE SELF_DEFINED OPEN_PAREN CLOSE_PAREN block ')
+    def functionDefinition___TYPE_SELF_DEFINED_OPEN_PAREN_CLOSE_PAREN_block_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("function definition",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('block : OPEN_BRACE content block CLOSE_BRACE ')
+    def block___OPEN_BRACE_content_block_CLOSE_BRACE_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("block",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('block : OPEN_BRACE content CLOSE_BRACE ')
+    def block___OPEN_BRACE_content_CLOSE_BRACE_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("block",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('block : OPEN_BRACE CLOSE_BRACE ')
+    def block___OPEN_BRACE_CLOSE_BRACE_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("block",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('content : single_line content ')
+    def content___single_line_content_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("content",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('content : single_line ')
+    def content___single_line_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("content",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('single_line : TYPE SELF_DEFINED ASSIGNMENT literal SEMICOLON ')
+    def single_line___TYPE_SELF_DEFINED_ASSIGNMENT_literal_SEMICOLON_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("variable assignment",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('single_line : TYPE SELF_DEFINED SEMICOLON ')
+    def single_line___TYPE_SELF_DEFINED_SEMICOLON_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("initialization",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('single_line : function_call SEMICOLON ')
+    def single_line___function_call_SEMICOLON_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("function call",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('single_line : LOOPING OPEN_PAREN boolean CLOSE_PAREN block ')
+    def single_line___LOOPING_OPEN_PAREN_boolean_CLOSE_PAREN_block_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("loop",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('single_line : LOOPING block LOOPING OPEN_PAREN boolean CLOSE_PAREN SEMICOLON ')
+    def single_line___LOOPING_block_LOOPING_OPEN_PAREN_boolean_CLOSE_PAREN_SEMICOLON_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("do while",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('single_line : BRANCHING OPEN_PAREN boolean CLOSE_PAREN block ')
+    def single_line___BRANCHING_OPEN_PAREN_boolean_CLOSE_PAREN_block_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("if and else",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('single_line : BRANCHING OPEN_PAREN non_contiguous CLOSE_PAREN block ')
+    def single_line___BRANCHING_OPEN_PAREN_non_contiguous_CLOSE_PAREN_block_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("switch",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('single_line : arithmetic SEMICOLON ')
+    def single_line___arithmetic_SEMICOLON_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("arithmetic",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('single_line : BEHAVIOR literal SEMICOLON ')
+    def single_line___BEHAVIOR_literal_SEMICOLON_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("return statement",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('single_line : BEHAVIOR non_contiguous SEMICOLON ')
+    def single_line___BEHAVIOR_non_contiguous_SEMICOLON_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("statement",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('single_line : BEHAVIOR SEMICOLON ')
+    def single_line___BEHAVIOR_SEMICOLON_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("return statement",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('single_line : SELF_DEFINED ASSIGNMENT literal SEMICOLON ')
+    def single_line___SELF_DEFINED_ASSIGNMENT_literal_SEMICOLON_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("assignment",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('single_line : SELF_DEFINED ASSIGNMENT boolean SEMICOLON ')
+    def single_line___SELF_DEFINED_ASSIGNMENT_boolean_SEMICOLON_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("assignment",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('single_line : SELF_DEFINED ASSIGNMENT arithmetic SEMICOLON ')
+    def single_line___SELF_DEFINED_ASSIGNMENT_arithmetic_SEMICOLON_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("assignment",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('single_line : SELF_DEFINED COLON single_line ')
+    def single_line___SELF_DEFINED_COLON_single_line_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("goto_label",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('function_call : SELF_DEFINED OPEN_PAREN param CLOSE_PAREN ')
+    def function_call___SELF_DEFINED_OPEN_PAREN_param_CLOSE_PAREN_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("function call",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('function_call : SELF_DEFINED OPEN_PAREN CLOSE_PARENT ')
+    def function_call___SELF_DEFINED_OPEN_PAREN_CLOSE_PARENT_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("function call",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('param : literal ')
+    def param___literal_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("parameter",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('param : SELF_DEFINED ')
+    def param___SELF_DEFINED_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("paramater",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('param : literal COMMA param ')
+    def param___literal_COMMA_param_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("parameter",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('param : SELF_DEFINED COMMA param ')
+    def param___SELF_DEFINED_COMMA_param_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("parameter",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('literal : INTEGER ')
+    def literal___INTEGER_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("literal",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('literal : STRING ')
+    def literal___STRING_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("literal",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('literal : PRECISION ')
+    def literal___PRECISION_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("literal",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('args : TYPE SELF_DEFINED ')
+    def args___TYPE_SELF_DEFINED_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("argument",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('args : TYPE SELF_DEFINED COMMA args ')
+    def args___TYPE_SELF_DEFINED_COMMA_args_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("argument",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('boolean : boolean COMPARISON boolean ')
+    def boolean___boolean_COMPARISON_boolean_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("boolean",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('boolean : boolean LOGICAL boolean ')
+    def boolean___boolean_LOGICAL_boolean_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("boolean",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('boolean : arithmetic ')
+    def boolean___arithmetic_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("boolean",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('boolean : function_call ')
+    def boolean___function_call_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("boolean",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('boolean : SELF_DEFINED ')
+    def boolean___SELF_DEFINED_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("boolean",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('boolean : boolean ')
+    def boolean___boolean_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("boolean",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('boolean : numeral ')
+    def boolean___numeral_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("boolean",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('arithmetic : arithmetic ARITHMETIC arithmetic ')
+    def arithmetic___arithmetic_ARITHMETIC_arithmetic_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("arithmetic",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('arithmetic : numeral ')
+    def arithmetic___numeral_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("arithmetic",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('arithmetic : arithmetic ')
+    def arithmetic___arithmetic_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("arithmetic",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('arithmetic : unary ')
+    def arithmetic___unary_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("arithmetic",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('numeral : INTEGER ')
+    def numeral___INTEGER_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("numeral",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('numeral : PRECISION ')
+    def numeral___PRECISION_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("numeral",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('non_contiguous : PRECISION ')
+    def non_contiguous___PRECISION_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("non contiguous",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('non_contiguous : INTEGER ')
+    def non_contiguous___INTEGER_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("non contiguous",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('non_contiguous : STRING ')
+    def non_contiguous___STRING_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("non contiguous",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('non_contiguous : SELF_DEFINED ')
+    def non_contiguous___SELF_DEFINED_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("non contiguous",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('unary : ARITHMETIC non_contiguous ')
+    def unary___ARITHMETIC_non_contiguous_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("unary_op",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('unary : non_contiguous ARITHMETIC ')
+    def unary___non_contiguous_ARITHMETIC_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("unary_op",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('unary : BEHAVIOR OPEN_PAREN non_contiguous CLOSE_PAREN ')
+    def unary___BEHAVIOR_OPEN_PAREN_non_contiguous_CLOSE_PAREN_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("sizeof_self_def",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('unary : BEHAVIOR OPEN_PAREN TYPE CLOSE_PAREN ')
+    def unary___BEHAVIOR_OPEN_PAREN_TYPE_CLOSE_PAREN_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("sizeof_type",p)
+        self.Head = newNode
+        return newNode
+    @self.pg.production('unary : OPEN_PAREN TYPE CLOSE_PAREN ')
+    def unary___OPEN_PAREN_TYPE_CLOSE_PAREN_(p):
+        """
+        Boilerplate BNF function
+        param: p: the matching set of tokens
+        :return: The node of the abstract syntax tree
+        """
+        newNode = AbstractSyntaxTree("cast",p)
+        self.Head = newNode
+        return newNode
+
+    @self.pg.error
+    def error_handle(token):
+        """
+        Boilerplate error handling function
+        param: token: the token that caused an error
+        :return: There is nothing returned
+        """
+        return ValueError(token)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="parser.Parser.print_error">
+    <p>def <span class="ident">print_error</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Prints parser error message. This function ultimately iterates through the AST that was 
+returned after the parser found an error. AST's consist of tokens as well as other AST's so 
+we need to iterate to find the first token and then print its source position.
+:return: This does not return anything</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-parser.Parser.print_error', this);">Show source &equiv;</a></p>
+  <div id="source-parser.Parser.print_error" class="source">
+    <pre><code>def print_error(self):
+    """
+    Prints parser error message. This function ultimately iterates through the AST that was 
+    returned after the parser found an error. AST's consist of tokens as well as other AST's so 
+    we need to iterate to find the first token and then print its source position.
+    :return: This does not return anything
+    """
+    # TODO: add some more in-depth error processing to print
+    # out a more detailed description of what went wrong, and possibly some suggestions 
+    # at to why there was a parse/syntax error. (i.e. suggest a missing semicolon)
+    head = self.getTree()
+    token = 0 # token hasn't been found yet, so we set value to 0
+    while True and head:
+        # Iterate through list of elements
+        for i in head.content:
+            # Could be a Token
+            if(type(i) == type(Token("sample", "sample"))):
+                # Found a Token
+                token = i
+                break
+        # Check again (to break out of while loop and not iterate again)		
+        if (type(token) == type(Token("sample", "sample"))):
+            break
+        else:
+            # Set head to last element.
+            # If this code executes then I can assume that the 
+            # last element is an AST.
+            head = head.content[len(head.content)-1]
+    if token:
+        print(f"ParsingError: Last token  \'{token.value}\' parsed successfully at, {token.source_pos}\n")
+    else:
+        # Never found a token to report, need to exit
+        print("ParsingError: No AST obtained\n")
+        exit()
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+      </div>
+      </div>
+
+  </section>
+
+    </article>
+  <div class="clear"> </div>
+  <footer id="footer">
+    <p>
+      Documentation generated by
+      <a href="https://github.com/BurntSushi/pdoc">pdoc 0.3.2</a>
+    </p>
+
+    <p>pdoc is in the public domain with the
+      <a href="http://unlicense.org">UNLICENSE</a></p>
+
+    <p>Design by <a href="http://nadh.in">Kailash Nadh</a></p>
+  </footer>
+</div>
+</body>
+</html>
