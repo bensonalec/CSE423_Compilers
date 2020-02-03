@@ -40,7 +40,8 @@ def main():
     mytemplate = Template(filename='sampleTemplate.tmpl')
     links = []
     for file in glob.glob("*.html"):
-        links.append(file.replace(".html",""))
+        if(file != "index.html"):
+            links.append(file.replace(".html",""))
 
     indFile.write(mytemplate.render(ToFill = "SampleName",Sli = links))
     indFile.close()
