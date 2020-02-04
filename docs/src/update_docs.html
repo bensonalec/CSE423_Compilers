@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.4" />
 <title>src.update_docs API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="This module is only supposed to generate the documentation for the compiler as a whole including User Manual." />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,11 +20,16 @@
 <h1 class="title">Module <code>src.update_docs</code></h1>
 </header>
 <section id="section-intro">
+<p>This module is only supposed to generate the documentation for the compiler as a whole including User Manual.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import os
+<pre><code class="python">&#34;&#34;&#34;
+This module is only supposed to generate the documentation for the compiler as a whole including User Manual. 
+&#34;&#34;&#34;
+
+import os
 
 if __name__ == &#34;__main__&#34;:
     os.system(&#34;pdoc --html -o ../docs ../src --force&#34;)

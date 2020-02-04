@@ -36,6 +36,7 @@ import importlib
 
 from rply.errors import LexingError
 from pptree import *
+from copy import deepcopy
 
 lex = importlib.import_module(&#34;lexer&#34;, &#34;.&#34;)
 par = importlib.import_module(&#34;parser&#34;, &#34;.&#34;)
@@ -154,6 +155,11 @@ def main(args, fi):
         tokens = lexer.lex(text_input)
         lex.validateTokens(tokens)
         
+        #if -l or --lex is true print the tokens from the lexer 
+        if args.lex or args.all:
+            # temp_print = lexer.lex(text_input) #need to run lexer so that tokens are deleted for parser
+            print(lex.tokensToString(deepcopy(tokens)))
+
         #set up parser and parse the given tokens
         pg = par.Parser()
         pg.parse()
@@ -176,22 +182,14 @@ def main(args, fi):
     # Retrieve the head of the AST
     head = pg.getTree()
 
-
-    #if -l or --lex is true print the tokens from the lexer 
-    if args.lex or args.all:
-        temp_print = lexer.lex(text_input) #need to run lexer so that tokens are deleted for parser
-        for i in temp_print:
-            print(i)
-        #print(tokensToString(tokens))
-
-    if(args.tree):
+    if args.tree or args.all:
         print(getTree(head,0))
-    #print the tree starting at the head
-    else:
-        if(args.pretty):
-            prettyPrint(head,0,None)
-        else:
-            printTree(head,0)
+    
+    if args.pretty or args.all:
+        prettyPrint(head,0,None)
+
+    if args.all:
+        printTree(head, 0)
 
 if __name__ == &#34;__main__&#34;:
     #command line arguements
@@ -329,6 +327,11 @@ if __name__ == &#34;__main__&#34;:
         tokens = lexer.lex(text_input)
         lex.validateTokens(tokens)
         
+        #if -l or --lex is true print the tokens from the lexer 
+        if args.lex or args.all:
+            # temp_print = lexer.lex(text_input) #need to run lexer so that tokens are deleted for parser
+            print(lex.tokensToString(deepcopy(tokens)))
+
         #set up parser and parse the given tokens
         pg = par.Parser()
         pg.parse()
@@ -351,22 +354,14 @@ if __name__ == &#34;__main__&#34;:
     # Retrieve the head of the AST
     head = pg.getTree()
 
-
-    #if -l or --lex is true print the tokens from the lexer 
-    if args.lex or args.all:
-        temp_print = lexer.lex(text_input) #need to run lexer so that tokens are deleted for parser
-        for i in temp_print:
-            print(i)
-        #print(tokensToString(tokens))
-
-    if(args.tree):
+    if args.tree or args.all:
         print(getTree(head,0))
-    #print the tree starting at the head
-    else:
-        if(args.pretty):
-            prettyPrint(head,0,None)
-        else:
-            printTree(head,0)</code></pre>
+    
+    if args.pretty or args.all:
+        prettyPrint(head,0,None)
+
+    if args.all:
+        printTree(head, 0)</code></pre>
 </details>
 </dd>
 <dt id="src.frontend.frontend.prettyPrint"><code class="name flex">
