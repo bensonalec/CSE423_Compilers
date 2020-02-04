@@ -117,8 +117,15 @@ assignment : XEQ #assignment
 assignment : CEQ #assignment
 assignment : SET #assignment
 
+collation : collation comparison collation #collation
 collation : arithmetic #collation
 
+comparison : EQ #comparison
+comparison : LEQ #comparison
+comparison : GEQ #comparison
+comparison : NEQ #comparison
+comparison : LT #comparison
+comparison : GT #comparison
 
 arithmetic : arithmetic OR arithmetic #arithmetic
 arithmetic : arithmetic AND arithmetic #arithmetic
