@@ -1,72 +1,93 @@
-"""
-This module contains the Lexer class and it's token name and regexes, as well as some error checking for tokens
-"""
 from rply import LexerGenerator
 from rply.errors import LexingError
 import copy
 
 class Lexer():
-	"""
-	Lexer is the object that contains all of the token name, regexes,and functionality of the Lexer
-	"""
 	def __init__(self):
-		"""
-		Creates a new Lexer object and creates an attribute of the class called Lexer from rply
-		:return: Does not return anything
-		"""
 		self.lexer = LexerGenerator()
 	
 	def _add_tokens(self):
-		"""
-		Adds all of the necessary token names and regexes to the lexer attribute, as well as telling the lexer 
-		what to ignore
-		:return: Does not return anything
-		"""
-		self.lexer.add("COMMENT",      r"(\/\/.*|\/\*.*\*\/|/\*[^*]*\*+(?:[^/*][^*]*\*+)*/)") # Catches both multi-line and single line comments
-		self.lexer.add("PREPROCESSOR", r"#\s*(warning|else|endif|include|undef|ifdef|ifndef|if|elif|pragma|define|if|elif|error|pragma|line)([\t\f ]+[^\s]+)*")
+		self.lexer.add("COMMENT",       r"(\/\/.*|\/\*.*\*\/|/\*[^*]*\*+(?:[^/*][^*]*\*+)*/)") # Catches both multi-line and single line comments
+		self.lexer.add("PREPROCESSOR",  r"#\s*(warning|else|endif|include|undef|ifdef|ifndef|if|elif|pragma|define|if|elif|error|pragma|line)([\t\f ]+[^\s]+)*")
 		self.lexer.add("CHAR",          r"\'[\w\;\\ \%\"\']\'")
-		self.lexer.add("STRING",       r"(\"[\w+\;\\ \%\"\']*\")") # Classifies single characters and multiple characters as a string
-		self.lexer.add("HEX",          r"0x[\dA-Fa-f]+")
-		self.lexer.add("OCT",          r"0[0-7]{1,3}")
-		self.lexer.add("BIN",          r"0b[01]+")
-		self.lexer.add("PRECISION",    r"\-?(\d\.\d+|[1-9]\d*\.\d+)")
-		self.lexer.add("INTEGER",      r"\-?([1-9]\d*|\d)")
-		self.lexer.add("COMPARISON",   r"[=<>!]=|[<>]")
-		self.lexer.add("ASSIGNMENT",   r"([+*/-]|<{2}|>{2}|[|&^~])?=|\+{2}|\-{2}")
-		self.lexer.add("LOGICAL",      r"&{2}|\|{2}")
-		self.lexer.add("ACCESS",       r"->|\.|\[|\]")
-		self.lexer.add("ARITHMETIC",   r"[%*/+-]|<{2}|>{2}|[|&^~]")
-		self.lexer.add("MODIFIER",     r"\b(const|register|signed|static|unsigned|volatile|typedef|extern|sizeof|inline)\b")
-		self.lexer.add("BEHAVIOR",     r"\b(break|continue|goto|return)\b")
-		self.lexer.add("LOOPING",      r"\b(do|for|while)\b")
-		self.lexer.add("BRANCHING",    r"\b(if|else|switch|case|default)\b")
-		self.lexer.add("TYPE",         r"\b(NULL|void|char|short|int|long|float|double|struct|union|enum|auto)\b")
-		self.lexer.add("SELF_DEFINED", r"[a-zA-Z_]\w*")
-		self.lexer.add("OPEN_PAREN",   r"\(")
-		self.lexer.add("CLOSE_PAREN",  r"\)")
-		self.lexer.add("OPEN_BRACE",   r"\{")
-		self.lexer.add("CLOSE_BRACE",  r"\}")
-		self.lexer.add("SEMICOLON",    r";")
-		self.lexer.add("COLON",        r":")
-		self.lexer.add("COMMA",        r",")
+		self.lexer.add("STRING",        r"(\"[\w+\;\\ \%\"\']*\")") # Classifies single characters and multiple characters as a string
+		self.lexer.add("HEX",           r"0x[\dA-Fa-f]+")
+		self.lexer.add("OCT",           r"0[0-7]{1,3}")
+		self.lexer.add("BIN",           r"0b[01]+")
+		self.lexer.add("PRECISION",     r"\-?(\d\.\d+|[1-9]\d*\.\d+)")
+		self.lexer.add("INTEGER",       r"\-?(\d+|[1-9]\d*)")
+		self.lexer.add("EQ",            r"={2}")
+		self.lexer.add("LEQ",           r"<=")
+		self.lexer.add("GEQ",           r">=")
+		self.lexer.add("NEQ",           r"!=")
+		self.lexer.add("LT",            r"<")
+		self.lexer.add("GT",            r">")
+		self.lexer.add("AEQ",           r"\+=")
+		self.lexer.add("SEQ",           r"-=")
+		self.lexer.add("MEQ",           r"\*=")
+		self.lexer.add("DEQ",           r"/=")
+		self.lexer.add("MODEQ",         r"%=")
+		self.lexer.add("LSEQ",          r"<{2}=")
+		self.lexer.add("RSEQ",          r">{2}=")
+		self.lexer.add("BOEQ",           r"\|=")
+		self.lexer.add("BAEQ",           r"&=")
+		self.lexer.add("XEQ",           r"\^=")
+		self.lexer.add("CEQ",           r"~=")
+		self.lexer.add("SET",           r"=")
+		self.lexer.add("INC",           r"\+{2}")
+		self.lexer.add("DEC",           r"-{2}")
+		self.lexer.add("AND",           r"&{2}")
+		self.lexer.add("OR",            r"\|{2}")
+		self.lexer.add("MOD",           r"%")
+		self.lexer.add("MUL",           r"\*")
+		self.lexer.add("DIV",           r"/")
+		self.lexer.add("ADD",           r"\+")
+		self.lexer.add("SUB",           r"-")
+		self.lexer.add("NOT",           r"!")
+		self.lexer.add("LSH",           r"<{2}")
+		self.lexer.add("RSH",           r">{2}")
+		self.lexer.add("BOR",           r"\|")
+		self.lexer.add("BAND",          r"&")
+		self.lexer.add("XOR",           r"\^")
+		self.lexer.add("COMP",          r"~")
+		self.lexer.add("ACCESS",        r"->|\.|\[|\]")
+		self.lexer.add("SIZEOF",        r"\bsizeof\b")
+		self.lexer.add("TYPEDEF",       r"\btypedef\b")
+		self.lexer.add("FUNC_MODIF",    r"\binline\b")
+		self.lexer.add("VAR_MODIF",     r"\b(register|volatile)\b")
+		self.lexer.add("BOTH_MODIF",    r"\b(const|signed|static|unsigned|extern)\b")
+		self.lexer.add("GOTO",          r"\bgoto\b")
+		self.lexer.add("RETURN",        r"\breturn\b")
+		self.lexer.add("BREAK",         r"\bbreak\b")
+		self.lexer.add("CONTINUE",      r"\bcontinue\b")
+		self.lexer.add("FOR_LOOP",      r"\bfor\b")
+		self.lexer.add("WHILE_LOOP",    r"\bwhile\b")
+		self.lexer.add("DO_LOOP",       r"\bdo\b")
+		self.lexer.add("IF_BRANCH",     r"\bif\b")
+		self.lexer.add("ELSE_BRANCH",   r"\belse\b")
+		self.lexer.add("SWITCH_BRANCH", r"\bswitch\b")
+		self.lexer.add("CASE",	        r"\bcase\b")
+		self.lexer.add("DEFAULT",       r"\bdefault\b")
+		self.lexer.add("NULL",          r"\bNULL\b")
+		self.lexer.add("TYPE",          r"\b(auto|long double|double|float|long long (int)?|long|int|short|char|void)\b")
+		self.lexer.add("MEM_STRUCT",    r"\b(struct|union|enum)\b")
+		self.lexer.add("SELF_DEFINED",  r"[a-zA-Z_]\w*")
+		self.lexer.add("OPEN_PAREN",    r"\(")
+		self.lexer.add("CLOSE_PAREN",   r"\)")
+		self.lexer.add("OPEN_BRACE",    r"\{")
+		self.lexer.add("CLOSE_BRACE",   r"\}")
+		self.lexer.add("SEMICOLON",     r";")
+		self.lexer.add("COLON",         r":")
+		self.lexer.add("COMMA",         r",")
 		self.lexer.add("INVALID",       r".+?") # Just to catch stuff we havent thought about yet		
 		self.lexer.ignore(r'\s+')
 		self.lexer.ignore(r'\n')
 		self.lexer.ignore(r'\t')
 	def get_lexer(self):
-		"""
-		Calls _add_tokens to the initial lexer attribute, and then returns a built version of that lexer attribute
-		:return: The built lexer
-		"""
 		self._add_tokens()
 		return self.lexer.build()
 	
 def tokensToString(tokens):
-	"""
-	Returns a string version of all of the tokens. Used for output and error checking
-	:param tokens: The lsit of tokens to be printed
-	:return: the string representation of the tokens
-	"""
 	out = ""
 	for tok in tokens:
 		out+= str(tok) + "\n"
@@ -75,9 +96,7 @@ def tokensToString(tokens):
 def validateTokens(tokens):
 	"""
 	Validates the given token list. If an invalid token to found, 
-	then a LexingError exception is raised. Otherwise, returns normally.
-	:param tokens: the list of tokens to be validated
-	:return: This does not return anything
+	then a `LexingError` exception is raised. Otherwise, returns normally.
 	"""
 	cpy = copy.deepcopy(tokens)
 	status = "PASS"
@@ -89,16 +108,16 @@ def validateTokens(tokens):
 			print_error(i)
 			status = "FAIL" # status is changed
 
+	
 	if (status == "FAIL"):
 		raise LexingError("invalid token", i.source_pos)
+	else:
+		return tokens
 
 def print_error(token):
 	"""
 	Prints lexer error message. Currently we only experience invalid token
-	errors. The input token is a Token object, imported from rply.
-	:param token: The token to be printed
-	:return: This does not return anything
+	errors. The input `token` is a `Token` object, imported from `rply`.
 	"""
 	print(f"LexingError: Invalid Token \'{token.value}\' at, {token.source_pos}\n")
-	
 		

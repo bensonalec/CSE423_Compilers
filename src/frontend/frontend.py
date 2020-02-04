@@ -78,7 +78,6 @@ def prettyPrint(head,level,parentNode):
     token = head.token
     content = head.content
     for ne in content:
-        print(type(AbstractSyntaxTree("sample","sample")))
         if(type(ne) == type(AbstractSyntaxTree("sample","sample"))):
             nodeName = Node(ne.token,parentNode)
         else:
@@ -136,7 +135,6 @@ def main(args, fi):
     
     # Retrieve the head of the AST
     head = pg.getTree()
-    print(type(head))
 
 
     #if -l or --lex is true print the tokens from the lexer 

@@ -34,7 +34,22 @@ initTemp = """
         \"\"\"
 
         self.pg = ParserGenerator(
-            TOKENSPOT
+            TOKENSPOT , 
+            precedence=[
+                ('right', ['SET', 'AEQ', 'SEQ', 'MEQ', 'DEQ', 'MODEQ', 'LSEQ', 'RSEQ', 'BAEQ', 'XEQ', 'BOEQ']),
+                ('left',  ['OR']),
+                ('left',  ['AND']),
+                ('left',  ['BOR']),
+                ('left',  ['XOR']),
+                ('left',  ['BAND']),
+                ('left',  ['EQ', 'NEQ']),
+                ('left',  ['GE', 'GEQ']),
+                ('left',  ['LE', 'LEQ']),
+                ('left',  ['LSH', 'RSH']),
+                ('left',  ['ADD', 'SUB']),
+                ('left',  ['MUL', 'DIV', 'MOD']),
+                ('right', ['INC', 'DEC', 'NOT', 'COMP']),
+            ]
         )
         #initialzie head and current node
         self.Head = None
@@ -63,7 +78,7 @@ def main(path):
 
     initFunc = initTemp.replace("TOKENSPOT",tokenList)
 
-    fi = open("BNF_definition","r")
+    fi = open(path,"r")
     cont = fi.readlines()
     fi.close()
     functionList = ""
@@ -200,6 +215,8 @@ class Parser():
     totalOutput = totalOutput.replace("FUNCLISTSPOT",functionList)
 
     # print (totalOutput)
+
+    print("Overwriting ")
 
     with open("parser.py", 'w') as f:
         f.write(totalOutput)
