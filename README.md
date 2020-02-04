@@ -5,4 +5,4 @@ CSE 423 Compilers Repository
 
 Langauge: Python
 
-Documentation made using PyDoc
+Documentation made using pdoc can be found [here](https://bensonalec.github.io/CSE423_Compilers/)

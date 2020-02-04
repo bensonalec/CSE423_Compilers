@@ -1,0 +1,60 @@
+<section>
+<strong>CSE 423 Compilers</strong><br>
+<div style="display: flex; flex-wrap: wrap; justify-content: center;">
+<span style="flex-grow: 1;">Alexander Benson</span>
+<span style="flex-grow: 1;">Jacob Garcia</span>
+<span style="flex-grow: 1;">Ole Jeger Hoffstuen</span>
+<span style="flex-grow: 1;">Keaton Jones</span>
+</div>
+<h2>User Manual</h2>
+<div class="section">
+        <h3 id="intro_header" class="section_header">Introduction</h3>
+        <p>We are tasked with creating a compiler for a subset of the C programming
+                language. With this challenge includes figuring out how to implement the
+                three fundamental parts of any compiler: Frontend, Optimization, and the
+                Backend. Our goal with this project is not only to design and implement
+                an optimizing compiler, but to strengthen our ability to design and create
+                software that achieves its purpose and provides adequate documentation to
+                explain how it operates.</p>
+</div>
+<h3>How to use the compiler</h3>
+The compiler is split up into three modules, the frontend, the optimizer, and the backend.<br>
+So far only the frontend is implemented, and can so far only be executed by running the <code>frontend.py</code> located in <code>./src/frontend</code>.<br>
+The frontend supports a variety of commandline options such as:
+<dl>
+        <dt><code>-a</code></dt>
+        <dd>Displays all intermediate outputs produced by both the lexer and parser.</dd>
+        <dt><code>-b</code></dt>
+        <dd>Allows for rebuilding of BNF grammar and parser before the frontend touches the input.</dd>
+        <dt><code>-h</code></dt>
+        <dd>Displays the help message.</dd>
+        <dt><code>-l</code></dt>
+        <dd>Prints out the tokens produced by the lexer in a list.</dd>
+        <dt><code>-p</code></dt>
+        <dd>Prints a tree structure of the tokens after they have been parsed.</dd>
+        <dt><code>-t</code></dt>
+        <dd>Prints a list like tree structure of the tokens after they have been parsed.</dd>
+</dl>
+<h3>Subset of C supported</h3>
+The plan is to support the whole set of C instructions for as much of the compilation process as possible. As such here is a table of what parts of the compiler supports what features:<br>
+<table>
+        <tr>
+                <th>Feature</th>
+                <th>Preprocessor</th>
+                <th>Lexer</th>
+                <th>Parser</th>
+        </tr>
+        <tr>
+                <td>Variable declaration</td>
+                <td>NA</td>
+                <td>&#x2714;</td>
+                <td>&#x2714;</td>
+        </tr>
+        <tr>
+                <td>Pointer declaration</td>
+                <td>NA</td>
+                <td>&#x2715;</td>
+                <td>&#x2715;</td>
+        </tr>
+</table>
+</section>
