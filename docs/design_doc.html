@@ -1,0 +1,176 @@
+<html>
+    <head>
+        <title>The Gucci -- Design Document -- Gang</title>
+        <link rel="stylesheet" type="text/css" href="design_doc.css" />
+    </head>
+    <body>
+
+        <div id="our_names">
+            <ul>
+                <li><strong>CSE 423 Compilers</strong></li>
+                <li>Alexander Benson</li>
+                <li>Jacob Garcia</li>
+                <li>Ole Jeger Hoffstuen</li>
+                <li>Keaton Jones</li>
+            </ul>
+        </div>
+
+        <h1 id="design_doc_header">The Gucci -- Design Document -- Gang</h1>
+
+        <div class="section">
+            <h2 id="intro_header" class="section_header">Introduction</h2>
+            <p>We are tasked with creating a compiler for a subset of the C programming 
+            language. With this challenge includes figuring out how to implement the 
+            three fundamental parts of any compiler: Frontend, Optimization, and the 
+            Backend. Our goal with this project is not only to design and implement 
+            an optimizing compiler, but to strengthen our ability to design and create 
+            software that achieves its purpose and provides adequate documentation to 
+            explain how it operates.</p>
+        </div>
+
+        <div class="section">
+            <h2 id="lang_lib_header" class="section_header">Language / Libraries</h2>
+            <ul>
+                <li>Python 3.7+</li>
+                <li>Rply library, Python's re-implimentation of Lex-and-Yacc</li>
+                <li>pdoc library, used for documentation</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h2 id="architecture" class="section_header">Architecture</h2>
+            <p>Our compiler can be split into three major stages that takes 
+                in a C program and converts this "High-Level" language into 
+                many different forms of Intermediate Representations (IR's) 
+                until it reaches the point of assembly code.</p>
+            <div class="img_container">
+                <img id="architecture_img" src="architecture.png" />
+            </div>
+        </div>
+
+        <div class="section">
+            <h1>Frontend</h1>
+            <a href="frontend.html">Docs</a>
+
+            <div class="section">
+                <h2>Lexer</h2>
+                <a href="lexer.html">Docs</a>
+                <p>Responsible for scanning and assigning tokens to 
+                    different elements of our C program, this module was 
+                    designed using RPLY's lexer class. By simply adding in 
+                    tokens to our lexer we are able to give it a string version 
+                    of our C program and get a list of all valid tokens. </p>
+                <div class="section">
+                    <h2>Token Format / Examples</h2>
+                    <p id="monospace">
+                        Token("TOKEN_NAME", "ELEMENT")<br>
+                        <span id="arrow">&#8595;</span><br>
+                        Token("INTEGER", "1")<br>
+                        Token("COMPARISON", ">")<br>
+                        Token("SELF_DEFINED", "some-variable-name")<br>
+                        Token("LOGICAL", "&&")<br>
+                        Token("ACCESS", "->")<br><br>
+                    </p>
+                    <p class="note">NOTE: These token names will possibly change 
+                        in the future but the token structure should remain the 
+                        same throughout the implementation of our tokenizer.</p>
+                </div>
+                <div class="section">
+                    <h2>Sample Tokenizing of a C Program</h2>
+                    <div class="row">
+                        <div class="column">
+                            <h2>C Program: </h2>
+                            <img src="c_program_ex.png" />
+                        </div>
+                        <div class="column">
+                            <h2>List of Tokens: </h2>
+                            <img src="tokens.png" />
+                        </div>
+                    </div>
+                </div>
+                <div class="section">
+                    <h2>Error Handling</h2>
+                    <p>Currently the only known errors we can experience 
+                        while using RPLY's lexer library is when we encounter 
+                        an element that isn't recognized. By adding an "INVALID" 
+                        token type, and having it match to any string combination, 
+                        we eliminate the possibility of the imported lexer code to 
+                        fail, and are able to report any invalid tokens to the user.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Parser</h2>
+                <a href="parser.html">Docs</a>
+                <p>This sub-module relies on RPLY's parser generator but still 
+                    requires a grammar. After defining a grammar is a separate 
+                    file we can construct a parser using RPLY syntax that will 
+                    take in the grammar and build our Abstract Syntax Tree.</p>
+                <div class="section">
+                    <h2 id="bnf_examples">BNF Example of our Grammar - </h2>
+                    <p id="monospace">
+                    program : definitionList #program<br><br>
+
+                    definitionList : functionDefinition definitionList #definitionList<br>
+                    definitionList : functionDeclaration definitionList #definitionList<br>
+                    definitionList : initialization SEMICOLON definitionList #definitionList<br>
+                    definitionList : #definitionList<br><br>
+                    
+                    functionDefinition : TYPE SELF_DEFINED OPEN_PAREN args CLOSE_PAREN block #function definition<br>
+                    functionDefinition : TYPE SELF_DEFINED OPEN_PAREN CLOSE_PAREN block #function definition<br><br>
+                    
+                    functionDeclaration : TYPE SELF_DEFINED OPEN_PAREN args CLOSE_PAREN SEMICOLON #functionDeclaration<br>
+                    functionDeclaration : TYPE SELF_DEFINED OPEN_PAREN CLOSE_PAREN SEMICOLON #functionDeclaration<br><br>
+                    
+                    args : TYPE SELF_DEFINED COMMA args #args<br>
+                    args : TYPE SELF_DEFINED #args<br>
+                    args : TYPE #args<br>
+                    args : TYPE COMMA args #args<br><br>
+                    
+                    block : OPEN_BRACE block content CLOSE_BRACE #block<br>
+                    block : OPEN_BRACE content block CLOSE_BRACE #block<br>
+                    ...<br>
+                    <a href="https://github.com/bensonalec/CSE423_Compilers/blob/master/src/frontend/BNF_definition">Our Full BNF</a>
+                    </p>
+                </div>
+                <div class="section">
+                    <h2>Error Handling</h2>
+                    <p>We feel that our parser is required to do some handling 
+                        over syntax as well as some semantic errors from the 
+                        given tokens. Currently we can handle instances of missing 
+                        parenthesis, brackets, semi-colons, missing boolean, etc...Basically 
+                        anything not described in our grammar will be recognized as a 
+                        syntax error. We have implemented a way of reporting the 
+                        line#/index#/col# where the last successful token was parsed.
+                        </p>
+                    <p class="todo">
+                        TODO: 
+                        <ul class="todo">
+                            <li>We are only reporting the last successful token parsed 
+                                but not giving a detailed and more "useful" message. 
+                                We should work on this.</li>
+                            <li>There is currently no more error handling beyond 
+                                syntax errors. (i.e. more semantic style errors by the 
+                                user are not recognized nor caught)</li>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+            <p class="note">NOTE: The Frontend module can be ran individually 
+                    from the command line.</p>
+        </div>
+
+        <div class="section">
+            <h1>Optimization: </h1>
+            <a href="LINK_TO_OPTIMIZ_DOC_PAGE">Docs</a>
+            <p>TBD</p>
+        </div>
+
+        <div class="section">
+            <h1>Backend: </h1>
+            <a href="LINK_TO_BACKEND_DOC_PAGE">Docs</a>
+            <p>TBD</p>
+        </div>
+
+    </body>
+</html>
