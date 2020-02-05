@@ -14,9 +14,10 @@ class AbstractSyntaxTree():
     def __init__(self, token, content):
         """
         Construct a new AbstractSyntaxTree object
-        :param token: the token type of the node
-        :param content: the content of that is tokenized
-        :return: this returns nothing
+
+        Args:
+            token: The token type of the node.
+            content: The content of that is tokenized.
         """
         self.token = token
         self.content = content
@@ -31,7 +32,7 @@ class Parser():
     def __init__(self):
         """
         Initializes the parser and tells it the allowed tokens
-        :return: This does not return anything
+
         """
 
         self.pg = ParserGenerator(
@@ -59,15 +60,18 @@ class Parser():
     def parse(self):
         """
         The list of BNF functions and their behavior
-        :return: This does not return anything
         """
         
         @self.pg.production('program : definitionList ')
         def program(p):
             """
             Tells the parser which BNF will be the head of the tree
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("program",p)
             self.Head = newNode
@@ -77,8 +81,12 @@ class Parser():
         def definitionList___functionDefinition_definitionList_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("definitionList",p)
             self.Head = newNode
@@ -88,8 +96,12 @@ class Parser():
         def definitionList___functionDeclaration_definitionList_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("definitionList",p)
             self.Head = newNode
@@ -99,8 +111,12 @@ class Parser():
         def definitionList___initialization_SEMICOLON_definitionList_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("definitionList",p)
             self.Head = newNode
@@ -110,8 +126,12 @@ class Parser():
         def definitionList___(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("definitionList",p)
             self.Head = newNode
@@ -121,8 +141,12 @@ class Parser():
         def functionDefinition___TYPE_SELF_DEFINED_OPEN_PAREN_args_CLOSE_PAREN_block_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("function definition",p)
             self.Head = newNode
@@ -132,8 +156,12 @@ class Parser():
         def functionDefinition___TYPE_SELF_DEFINED_OPEN_PAREN_CLOSE_PAREN_block_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("function definition",p)
             self.Head = newNode
@@ -143,8 +171,12 @@ class Parser():
         def functionDeclaration___TYPE_SELF_DEFINED_OPEN_PAREN_args_CLOSE_PAREN_SEMICOLON_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("functionDeclaration",p)
             self.Head = newNode
@@ -154,8 +186,12 @@ class Parser():
         def functionDeclaration___TYPE_SELF_DEFINED_OPEN_PAREN_CLOSE_PAREN_SEMICOLON_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("functionDeclaration",p)
             self.Head = newNode
@@ -165,8 +201,12 @@ class Parser():
         def args___TYPE_SELF_DEFINED_COMMA_args_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("args",p)
             self.Head = newNode
@@ -176,8 +216,12 @@ class Parser():
         def args___TYPE_SELF_DEFINED_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("args",p)
             self.Head = newNode
@@ -187,8 +231,12 @@ class Parser():
         def args___TYPE_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("args",p)
             self.Head = newNode
@@ -198,8 +246,12 @@ class Parser():
         def args___TYPE_COMMA_args_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("args",p)
             self.Head = newNode
@@ -209,8 +261,12 @@ class Parser():
         def block___OPEN_BRACE_block_content_CLOSE_BRACE_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("block",p)
             self.Head = newNode
@@ -220,8 +276,12 @@ class Parser():
         def block___OPEN_BRACE_content_block_CLOSE_BRACE_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("block",p)
             self.Head = newNode
@@ -231,8 +291,12 @@ class Parser():
         def block___OPEN_BRACE_content_CLOSE_BRACE_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("block",p)
             self.Head = newNode
@@ -242,8 +306,12 @@ class Parser():
         def block___OPEN_BRACE_CLOSE_BRACE_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("block",p)
             self.Head = newNode
@@ -253,8 +321,12 @@ class Parser():
         def content___single_line_content_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("content",p)
             self.Head = newNode
@@ -264,8 +336,12 @@ class Parser():
         def content___loop_content_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("content",p)
             self.Head = newNode
@@ -275,8 +351,12 @@ class Parser():
         def content___branch_content_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("content",p)
             self.Head = newNode
@@ -286,8 +366,12 @@ class Parser():
         def content___goto_content_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("content",p)
             self.Head = newNode
@@ -297,8 +381,12 @@ class Parser():
         def content___goto_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("content",p)
             self.Head = newNode
@@ -308,8 +396,12 @@ class Parser():
         def content___branch_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("content",p)
             self.Head = newNode
@@ -319,8 +411,12 @@ class Parser():
         def content___loop_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("content",p)
             self.Head = newNode
@@ -330,8 +426,12 @@ class Parser():
         def content___single_line_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("content",p)
             self.Head = newNode
@@ -341,8 +441,12 @@ class Parser():
         def content___COMMENT_content_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("content",p)
             self.Head = newNode
@@ -352,8 +456,12 @@ class Parser():
         def content___COMMENT_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("content",p)
             self.Head = newNode
@@ -363,8 +471,12 @@ class Parser():
         def single_line___initialization_SEMICOLON_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("single_line",p)
             self.Head = newNode
@@ -374,8 +486,12 @@ class Parser():
         def single_line___function_call_SEMICOLON_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("single_line",p)
             self.Head = newNode
@@ -385,8 +501,12 @@ class Parser():
         def single_line___designation_SEMICOLON_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("single_line",p)
             self.Head = newNode
@@ -396,8 +516,12 @@ class Parser():
         def single_line___response_SEMICOLON_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("single_line",p)
             self.Head = newNode
@@ -407,8 +531,12 @@ class Parser():
         def single_line___SEMICOLON_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("single_line",p)
             self.Head = newNode
@@ -418,8 +546,12 @@ class Parser():
         def function_call___SELF_DEFINED_OPEN_PAREN_param_CLOSE_PAREN_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("function call",p)
             self.Head = newNode
@@ -429,8 +561,12 @@ class Parser():
         def function_call___SELF_DEFINED_OPEN_PAREN_CLOSE_PAREN_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("function call",p)
             self.Head = newNode
@@ -440,8 +576,12 @@ class Parser():
         def param___arithmetic_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("parameter",p)
             self.Head = newNode
@@ -451,8 +591,12 @@ class Parser():
         def param___SELF_DEFINED_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("paramater",p)
             self.Head = newNode
@@ -462,8 +606,12 @@ class Parser():
         def param___arithmetic_COMMA_param_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("parameter",p)
             self.Head = newNode
@@ -473,8 +621,12 @@ class Parser():
         def param___SELF_DEFINED_COMMA_param_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("parameter",p)
             self.Head = newNode
@@ -484,8 +636,12 @@ class Parser():
         def loop___WHILE_LOOP_OPEN_PAREN_arithmetic_CLOSE_PAREN_block_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("while loop",p)
             self.Head = newNode
@@ -495,8 +651,12 @@ class Parser():
         def loop___WHILE_LOOP_OPEN_PAREN_arithmetic_CLOSE_PAREN_content_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("while loop",p)
             self.Head = newNode
@@ -506,8 +666,12 @@ class Parser():
         def loop___FOR_LOOP_OPEN_PAREN_for_part_1_SEMICOLON_for_part_2_SEMICOLON_for_part_3_CLOSE_PAREN_block_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("for loop",p)
             self.Head = newNode
@@ -517,8 +681,12 @@ class Parser():
         def loop___FOR_LOOP_OPEN_PAREN_for_part_1_SEMICOLON_for_part_2_SEMICOLON_for_part_3_CLOSE_PAREN_content_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("for loop",p)
             self.Head = newNode
@@ -528,8 +696,12 @@ class Parser():
         def loop___DO_LOOP_block_WHILE_LOOP_OPEN_PAREN_arithmetic_CLOSE_PAREN_SEMICOLON_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("loop",p)
             self.Head = newNode
@@ -539,8 +711,12 @@ class Parser():
         def loop___DO_LOOP_content_WHILE_LOOP_OPEN_PAREN_arithmetic_CLOSE_PAREN_SEMICOLON_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("loop",p)
             self.Head = newNode
@@ -550,8 +726,12 @@ class Parser():
         def branch___IF_BRANCH_OPEN_PAREN_arithmetic_CLOSE_PAREN_block_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("if",p)
             self.Head = newNode
@@ -561,8 +741,12 @@ class Parser():
         def branch___IF_BRANCH_OPEN_PAREN_arithmetic_CLOSE_PAREN_content_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("if",p)
             self.Head = newNode
@@ -572,8 +756,12 @@ class Parser():
         def branch___ELSE_BRANCH_IF_BRANCH_OPEN_PAREN_arithmetic_CLOSE_PAREN_block_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("elif",p)
             self.Head = newNode
@@ -583,8 +771,12 @@ class Parser():
         def branch___ELSE_BRANCH_IF_BRANCH_OPEN_PAREN_arithmetic_CLOSE_PAREN_content_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("elif",p)
             self.Head = newNode
@@ -594,8 +786,12 @@ class Parser():
         def branch___ELSE_BRANCH_block_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("else",p)
             self.Head = newNode
@@ -605,8 +801,12 @@ class Parser():
         def branch___ELSE_BRANCH_content_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("else",p)
             self.Head = newNode
@@ -616,8 +816,12 @@ class Parser():
         def branch___SWITCH_BRANCH_OPEN_PAREN_value_CLOSE_PAREN_block_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("switch",p)
             self.Head = newNode
@@ -627,8 +831,12 @@ class Parser():
         def branch___CASE_value_COLON_block_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("case",p)
             self.Head = newNode
@@ -638,8 +846,12 @@ class Parser():
         def branch___CASE_value_COLON_content_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("case",p)
             self.Head = newNode
@@ -649,8 +861,12 @@ class Parser():
         def branch___DEFAULT_COLON_block_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("default",p)
             self.Head = newNode
@@ -660,8 +876,12 @@ class Parser():
         def branch___DEFAULT_COLON_content_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("default",p)
             self.Head = newNode
@@ -671,8 +891,12 @@ class Parser():
         def goto___SELF_DEFINED_COLON_single_line_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("goto",p)
             self.Head = newNode
@@ -682,8 +906,12 @@ class Parser():
         def goto___SELF_DEFINED_COLON_loop_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("goto",p)
             self.Head = newNode
@@ -693,8 +921,12 @@ class Parser():
         def goto___SELF_DEFINED_COLON_branch_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("goto",p)
             self.Head = newNode
@@ -704,8 +936,12 @@ class Parser():
         def goto___SELF_DEFINED_COLON_block_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("goto",p)
             self.Head = newNode
@@ -715,8 +951,12 @@ class Parser():
         def response___RETURN_arithmetic_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("return",p)
             self.Head = newNode
@@ -726,8 +966,12 @@ class Parser():
         def response___RETURN_function_call_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("return",p)
             self.Head = newNode
@@ -737,8 +981,12 @@ class Parser():
         def response___RETURN_SELF_DEFINED_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("return",p)
             self.Head = newNode
@@ -748,8 +996,12 @@ class Parser():
         def response___RETURN_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("return",p)
             self.Head = newNode
@@ -759,8 +1011,12 @@ class Parser():
         def response___GOTO_SELF_DEFINED_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("jump",p)
             self.Head = newNode
@@ -770,8 +1026,12 @@ class Parser():
         def response___BREAK_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("break",p)
             self.Head = newNode
@@ -781,8 +1041,12 @@ class Parser():
         def response___CONTINUE_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("continue",p)
             self.Head = newNode
@@ -792,8 +1056,12 @@ class Parser():
         def initialization___TYPE_designation_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("initialization",p)
             self.Head = newNode
@@ -803,8 +1071,12 @@ class Parser():
         def initialization___TYPE_SELF_DEFINED_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("initialization",p)
             self.Head = newNode
@@ -814,8 +1086,12 @@ class Parser():
         def for_part_1___initialization_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("for param 1",p)
             self.Head = newNode
@@ -825,8 +1101,12 @@ class Parser():
         def for_part_1___(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("for param 1",p)
             self.Head = newNode
@@ -836,8 +1116,12 @@ class Parser():
         def for_part_1___designation_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("for param 1",p)
             self.Head = newNode
@@ -847,8 +1131,12 @@ class Parser():
         def for_part_2___collation_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("for param 2",p)
             self.Head = newNode
@@ -858,8 +1146,12 @@ class Parser():
         def for_part_2___(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("for param 2",p)
             self.Head = newNode
@@ -869,8 +1161,12 @@ class Parser():
         def for_part_3___designation_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("for param 3",p)
             self.Head = newNode
@@ -880,8 +1176,12 @@ class Parser():
         def for_part_3___(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("for param 3",p)
             self.Head = newNode
@@ -891,8 +1191,12 @@ class Parser():
         def designation___SELF_DEFINED_assignment_arithmetic_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("designation",p)
             self.Head = newNode
@@ -902,8 +1206,12 @@ class Parser():
         def designation___SELF_DEFINED_assignment_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("designation",p)
             self.Head = newNode
@@ -913,8 +1221,12 @@ class Parser():
         def designation___SELF_DEFINED_assignment_function_call_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("designation",p)
             self.Head = newNode
@@ -924,8 +1236,12 @@ class Parser():
         def designation___SELF_DEFINED_assignment_arithmetic_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("designation",p)
             self.Head = newNode
@@ -935,8 +1251,12 @@ class Parser():
         def assignment___AEQ_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("assignment",p)
             self.Head = newNode
@@ -946,8 +1266,12 @@ class Parser():
         def assignment___SEQ_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("assignment",p)
             self.Head = newNode
@@ -957,8 +1281,12 @@ class Parser():
         def assignment___MEQ_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("assignment",p)
             self.Head = newNode
@@ -968,8 +1296,12 @@ class Parser():
         def assignment___DEQ_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("assignment",p)
             self.Head = newNode
@@ -979,8 +1311,12 @@ class Parser():
         def assignment___LSEQ_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("assignment",p)
             self.Head = newNode
@@ -990,8 +1326,12 @@ class Parser():
         def assignment___RSEQ_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("assignment",p)
             self.Head = newNode
@@ -1001,8 +1341,12 @@ class Parser():
         def assignment___BOEQ_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("assignment",p)
             self.Head = newNode
@@ -1012,8 +1356,12 @@ class Parser():
         def assignment___BAEQ_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("assignment",p)
             self.Head = newNode
@@ -1023,8 +1371,12 @@ class Parser():
         def assignment___XEQ_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("assignment",p)
             self.Head = newNode
@@ -1034,8 +1386,12 @@ class Parser():
         def assignment___CEQ_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("assignment",p)
             self.Head = newNode
@@ -1045,8 +1401,12 @@ class Parser():
         def assignment___SET_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("assignment",p)
             self.Head = newNode
@@ -1056,8 +1416,12 @@ class Parser():
         def collation___arithmetic_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("collation",p)
             self.Head = newNode
@@ -1067,8 +1431,12 @@ class Parser():
         def arithmetic___arithmetic_OR_arithmetic_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("arithmetic",p)
             self.Head = newNode
@@ -1078,8 +1446,12 @@ class Parser():
         def arithmetic___arithmetic_AND_arithmetic_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("arithmetic",p)
             self.Head = newNode
@@ -1089,8 +1461,12 @@ class Parser():
         def arithmetic___arithmetic_BOR_arithmetic_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("arithmetic",p)
             self.Head = newNode
@@ -1100,8 +1476,12 @@ class Parser():
         def arithmetic___arithmetic_XOR_arithmetic_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("arithmetic",p)
             self.Head = newNode
@@ -1111,8 +1491,12 @@ class Parser():
         def arithmetic___arithmetic_BAND_arithmetic_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("arithmetic",p)
             self.Head = newNode
@@ -1122,8 +1506,12 @@ class Parser():
         def arithmetic___arithmetic_LSH_arithmetic_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("arithmetic",p)
             self.Head = newNode
@@ -1133,8 +1521,12 @@ class Parser():
         def arithmetic___arithmetic_RSH_arithmetic_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("arithmetic",p)
             self.Head = newNode
@@ -1144,8 +1536,12 @@ class Parser():
         def arithmetic___arithmetic_ADD_arithmetic_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("arithmetic",p)
             self.Head = newNode
@@ -1155,8 +1551,12 @@ class Parser():
         def arithmetic___arithmetic_SUB_arithmetic_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("arithmetic",p)
             self.Head = newNode
@@ -1166,8 +1566,12 @@ class Parser():
         def arithmetic___arithmetic_MUL_arithmetic_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("arithmetic",p)
             self.Head = newNode
@@ -1177,8 +1581,12 @@ class Parser():
         def arithmetic___arithmetic_DIV_arithmetic_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("arithmetic",p)
             self.Head = newNode
@@ -1188,8 +1596,12 @@ class Parser():
         def arithmetic___arithmetic_MOD_arithmetic_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("arithmetic",p)
             self.Head = newNode
@@ -1199,8 +1611,12 @@ class Parser():
         def arithmetic___ADD_arithmetic_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("arithmetic",p)
             self.Head = newNode
@@ -1210,8 +1626,12 @@ class Parser():
         def arithmetic___SUB_arithmetic_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("arithmetic",p)
             self.Head = newNode
@@ -1221,8 +1641,12 @@ class Parser():
         def arithmetic___NOT_arithmetic_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("arithmetic",p)
             self.Head = newNode
@@ -1232,8 +1656,12 @@ class Parser():
         def arithmetic___COMP_arithmetic_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("arithmetic",p)
             self.Head = newNode
@@ -1243,8 +1671,12 @@ class Parser():
         def arithmetic___OPEN_PAREN_TYPE_CLOSE_PAREN_arithmetic_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("arithmetic",p)
             self.Head = newNode
@@ -1254,8 +1686,12 @@ class Parser():
         def arithmetic___INC_SELF_DEFINED_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("arithmetic",p)
             self.Head = newNode
@@ -1265,8 +1701,12 @@ class Parser():
         def arithmetic___DEC_SELF_DEFINED_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("arithmetic",p)
             self.Head = newNode
@@ -1276,8 +1716,12 @@ class Parser():
         def arithmetic___SELF_DEFINED_INC_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("arithmetic",p)
             self.Head = newNode
@@ -1287,8 +1731,12 @@ class Parser():
         def arithmetic___SELF_DEFINED_DEC_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("arithmetic",p)
             self.Head = newNode
@@ -1298,8 +1746,12 @@ class Parser():
         def arithmetic___value_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("arithmetic",p)
             self.Head = newNode
@@ -1309,8 +1761,12 @@ class Parser():
         def arithmetic___SELF_DEFINED_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("arithmetic",p)
             self.Head = newNode
@@ -1320,8 +1776,12 @@ class Parser():
         def arithmetic___function_call_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("arithmetic",p)
             self.Head = newNode
@@ -1331,8 +1791,12 @@ class Parser():
         def value___INTEGER_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("value",p)
             self.Head = newNode
@@ -1342,8 +1806,12 @@ class Parser():
         def value___PRECISION_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("value",p)
             self.Head = newNode
@@ -1353,8 +1821,12 @@ class Parser():
         def value___CHAR_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("value",p)
             self.Head = newNode
@@ -1364,8 +1836,12 @@ class Parser():
         def value___HEX_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("value",p)
             self.Head = newNode
@@ -1375,8 +1851,12 @@ class Parser():
         def value___OCT_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("value",p)
             self.Head = newNode
@@ -1386,8 +1866,12 @@ class Parser():
         def value___BIN_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("value",p)
             self.Head = newNode
@@ -1397,8 +1881,12 @@ class Parser():
         def value___NULL_(p):
             """
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("value",p)
             self.Head = newNode
@@ -1409,34 +1897,33 @@ class Parser():
         def error_handle(token):
             """
             Boilerplate error handling function
-            param: token: the token that caused an error
-            :return: There is nothing returned
+            
+            Args:
+                token: The token that caused an error.
+
+            Returns:
+                There is nothing returned
             """
             return ValueError(token)
 
     #boilerplate function
     def get_parser(self):
         """
-        Returns the built version of the parser
-        :return: Returns the built parser
+        Retrieves the built version of the parser.
         """
         return self.pg.build()
 
     #retrieve the trees head
     def getTree(self):
         """
-        Getter for the head of the tree
-        :return: This returns the head of the tree
+        Getter for the head of the tree.
         """
 
         return self.Head
 
     def print_error(self):
         """
-        Prints parser error message. This function ultimately iterates through the AST that was 
-        returned after the parser found an error. AST's consist of tokens as well as other AST's so 
-        we need to iterate to find the first token and then print its source position.
-        :return: This does not return anything
+        Prints parser error message. This function ultimately iterates through the AST that was returned after the parser found an error. AST's consist of tokens as well as other AST's so we need to iterate to find the first token and then print its source position.
         """
         # TODO: add some more in-depth error processing to print
         # out a more detailed description of what went wrong, and possibly some suggestions 

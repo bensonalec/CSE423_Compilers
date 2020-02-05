@@ -6,8 +6,12 @@ funcTemp = """
         def FUNCNAMESPOT(p):
             \"\"\"
             Boilerplate BNF function
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             \"\"\"
             newNode = AbstractSyntaxTree("NAMESPOT",p)
             self.Head = newNode
@@ -18,8 +22,12 @@ headTemp = """
         def program(p):
             \"\"\"
             Tells the parser which BNF will be the head of the tree
-            param: p: the matching set of tokens
-            :return: The node of the abstract syntax tree
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
             \"\"\"
             newNode = AbstractSyntaxTree("NAMESPOT",p)
             self.Head = newNode
@@ -30,7 +38,7 @@ initTemp = """
     def __init__(self):
         \"\"\"
         Initializes the parser and tells it the allowed tokens
-        :return: This does not return anything
+
         \"\"\"
 
         self.pg = ParserGenerator(
@@ -58,8 +66,9 @@ initTemp = """
 def main(path):
     """
     Creates a parser.py file from input (assumed to be BNF_definition)
-    param: path: the path to the input file
-    :return: This returns nothing
+
+    Args:
+        path: the path to the input file
     """
     fi = open(path,"r")
     cont = fi.read()
@@ -118,9 +127,10 @@ class AbstractSyntaxTree():
     def __init__(self, token, content):
         \"\"\"
         Construct a new AbstractSyntaxTree object
-        :param token: the token type of the node
-        :param content: the content of that is tokenized
-        :return: this returns nothing
+
+        Args:
+            token: The token type of the node.
+            content: The content of that is tokenized.
         \"\"\"
         self.token = token
         self.content = content
@@ -136,7 +146,6 @@ class Parser():
     def parse(self):
         \"\"\"
         The list of BNF functions and their behavior
-        :return: This does not return anything
         \"\"\"
         FUNCLISTSPOT
     
@@ -144,34 +153,36 @@ class Parser():
         def error_handle(token):
             \"\"\"
             Boilerplate error handling function
-            param: token: the token that caused an error
-            :return: There is nothing returned
+            
+            Args:
+                token: The token that caused an error.
             \"\"\"
             return ValueError(token)
 
     #boilerplate function
     def get_parser(self):
         \"\"\"
-        Returns the built version of the parser
-        :return: Returns the built parser
+        Retrieves the built version of the parser.
+
+        Returns:
+            The built parser.
         \"\"\"
         return self.pg.build()
 
     #retrieve the trees head
     def getTree(self):
         \"\"\"
-        Getter for the head of the tree
-        :return: This returns the head of the tree
+        Getter for the head of the tree.
+
+        Returns:
+            The head of the tree.
         \"\"\"
 
         return self.Head
 
     def print_error(self):
         \"\"\"
-        Prints parser error message. This function ultimately iterates through the AST that was 
-        returned after the parser found an error. AST's consist of tokens as well as other AST's so 
-        we need to iterate to find the first token and then print its source position.
-        :return: This does not return anything
+        Prints parser error message. This function ultimately iterates through the AST that was returned after the parser found an error. AST's consist of tokens as well as other AST's so we need to iterate to find the first token and then print its source position.
         \"\"\"
         # TODO: add some more in-depth error processing to print
         # out a more detailed description of what went wrong, and possibly some suggestions 
