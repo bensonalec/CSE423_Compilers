@@ -23,16 +23,14 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
 block : OPEN_BRACE content CLOSE_BRACE #block
 block : OPEN_BRACE CLOSE_BRACE #block
 
-content : single_line content #content
-content : loop content #content
-content : branch content #content
-content : goto content #content
-content : goto #content
-content : branch #content
-content : loop #content
-content : single_line #content
-content : COMMENT content #content
-content : COMMENT #content
+content : content_terminal content #content
+content : content_terminal #content
+
+content_terminal : single_line #content_terminal
+content_terminal : loop #content_terminal
+content_terminal : branch #content_terminal
+content_terminal : goto #content_terminal
+content_terminal : COMMENT #content_terminal
 
 single_line : initialization SEMICOLON #single_line
 single_line : function_call SEMICOLON #single_line
@@ -151,6 +149,7 @@ arithmetic : INC SELF_DEFINED #arithmetic
 arithmetic : DEC SELF_DEFINED #arithmetic
 arithmetic : SELF_DEFINED INC #arithmetic
 arithmetic : SELF_DEFINED DEC #arithmetic
+arithmetic : OPEN_PAREN arithmetic CLOSE_PAREN #arithmetic
 arithmetic : value #arithmetic
 arithmetic : SELF_DEFINED #arithmetic
 arithmetic : function_call #arithmetic
