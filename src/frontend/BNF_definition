@@ -11,11 +11,13 @@ functionDefinition : TYPE SELF_DEFINED OPEN_PAREN CLOSE_PAREN block #function de
 functionDeclaration : TYPE SELF_DEFINED OPEN_PAREN args CLOSE_PAREN SEMICOLON #functionDeclaration
 functionDeclaration : TYPE SELF_DEFINED OPEN_PAREN CLOSE_PAREN SEMICOLON #functionDeclaration
 
-args : TYPE SELF_DEFINED COMMA args #args
-args : TYPE SELF_DEFINED #args
-args : TYPE #args
-args : TYPE COMMA args #args
+args : arg_terminal COMMA args #args
+args : arg_terminal #args
 
+arg_terminal : TYPE SELF_DEFINED #arg_terminal
+arg_terminal : TYPE #arg_terminal
+
+block : OPEN_BRACE block block CLOSE_BRACE #block
 block : OPEN_BRACE block content CLOSE_BRACE #block
 block : OPEN_BRACE content block CLOSE_BRACE #block
 block : OPEN_BRACE content CLOSE_BRACE #block
@@ -41,30 +43,31 @@ single_line : SEMICOLON #single_line
 function_call : SELF_DEFINED OPEN_PAREN param CLOSE_PAREN #function call
 function_call : SELF_DEFINED OPEN_PAREN CLOSE_PAREN #function call
 
-param : arithmetic #parameter
-param : SELF_DEFINED #paramater
-param : arithmetic COMMA param #parameter
-param : SELF_DEFINED COMMA param #parameter
+param : param_terminal #paramater
+param : param_terminal COMMA param #parameter
 
-loop : WHILE_LOOP OPEN_PAREN arithmetic CLOSE_PAREN block #while loop
-loop : WHILE_LOOP OPEN_PAREN arithmetic CLOSE_PAREN content #while loop
+param_terminal : arithmetic #param_terminal
+param_terminal : SELF_DEFINED #param_terminal
+
+loop : WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN block #while loop
+loop : WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN content #while loop
 
 loop : FOR_LOOP OPEN_PAREN for_part_1 SEMICOLON for_part_2 SEMICOLON for_part_3 CLOSE_PAREN block #for loop
 loop : FOR_LOOP OPEN_PAREN for_part_1 SEMICOLON for_part_2 SEMICOLON for_part_3 CLOSE_PAREN content #for loop
 
-loop : DO_LOOP block WHILE_LOOP OPEN_PAREN arithmetic CLOSE_PAREN SEMICOLON #loop
-loop : DO_LOOP content WHILE_LOOP OPEN_PAREN arithmetic CLOSE_PAREN SEMICOLON #loop
+loop : DO_LOOP block WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN SEMICOLON #loop
+loop : DO_LOOP content WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN SEMICOLON #loop
 
-branch : IF_BRANCH OPEN_PAREN arithmetic CLOSE_PAREN block #if
-branch : IF_BRANCH OPEN_PAREN arithmetic CLOSE_PAREN content #if
+branch : IF_BRANCH OPEN_PAREN collation CLOSE_PAREN block #if
+branch : IF_BRANCH OPEN_PAREN collation CLOSE_PAREN content #if
 
-branch : ELSE_BRANCH IF_BRANCH OPEN_PAREN arithmetic CLOSE_PAREN block #elif
-branch : ELSE_BRANCH IF_BRANCH OPEN_PAREN arithmetic CLOSE_PAREN content #elif
+branch : ELSE_BRANCH IF_BRANCH OPEN_PAREN collation CLOSE_PAREN block #elif
+branch : ELSE_BRANCH IF_BRANCH OPEN_PAREN collation CLOSE_PAREN content #elif
 
 branch : ELSE_BRANCH block #else
 branch : ELSE_BRANCH content #else
 
-branch : SWITCH_BRANCH OPEN_PAREN value CLOSE_PAREN block #switch
+branch : SWITCH_BRANCH OPEN_PAREN arithmetic CLOSE_PAREN block #switch
 
 branch : CASE value COLON block #case
 branch : CASE value COLON content #case
@@ -89,6 +92,7 @@ response : CONTINUE #continue
 
 initialization : TYPE designation #initialization
 initialization : TYPE SELF_DEFINED #initialization
+initialization : TYPE MUL designation #initialization
 
 for_part_1 : initialization #for param 1
 for_part_1 : #for param 1
@@ -101,9 +105,8 @@ for_part_3 : designation #for param 3
 for_part_3 : #for param 3
 
 designation : SELF_DEFINED assignment arithmetic #designation
-designation : SELF_DEFINED assignment #designation
 designation : SELF_DEFINED assignment function_call #designation
-designation : SELF_DEFINED assignment arithmetic #designation
+designation : SELF_DEFINED OPEN_BRACK INTEGER CLOSE_BRACK assignment arithmetic #designation
 
 assignment : AEQ #assignment
 assignment : SEQ #assignment
