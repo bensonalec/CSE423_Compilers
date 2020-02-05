@@ -8,7 +8,7 @@ class Lexer():
 	
 	def _add_tokens(self):
 		self.lexer.add("COMMENT",       r"(\/\/.*|\/\*.*\*\/|/\*[^*]*\*+(?:[^/*][^*]*\*+)*/)") # Catches both multi-line and single line comments
-		self.lexer.add("PREPROCESSOR",  r"#\s*(warning|else|endif|include|undef|ifdef|ifndef|if|elif|pragma|define|if|elif|error|pragma|line)([\t\f ]+[^\s]+)*")
+		self.lexer.add("PREPROCESSOR",  r"#\s*(warning|else|endif|include|undef|ifdef|ifndef|elif|define|if|error|pragma|line)([\t\f ]+[^\s]+)*")
 		self.lexer.add("CHAR",          r"\'[\w\;\\ \%\"\']\'")
 		self.lexer.add("STRING",        r"(\"[\w+\;\\ \%\"\']*\")") # Classifies single characters and multiple characters as a string
 		self.lexer.add("HEX",           r"0x[\dA-Fa-f]+")
