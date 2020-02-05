@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     sections = [m.start() for m in re.finditer('<h3>', des)]
     toc_des = []
-    for idx, heading in enumerate(sections):
+    for idx, heading in enumerate(sections, idx):
         start_point = des.find("<h3>", heading)
         toc_des.append((f"#section-{idx}", des[start_point + len("<h3>"):des.find("</h3>", start_point)]))
         des = des.replace("<h3>", f"<h3 id=\"section-{idx}\">", 1)
