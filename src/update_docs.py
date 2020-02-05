@@ -11,9 +11,11 @@ if __name__ == "__main__":
 
     index = open("../docs/src/index.html", 'r+')
     user = open("User Manual.html", "r")
+    design = open("design_doc.html", "r")
 
     page = index.read()
     usr = user.read()
+    des = design.read()
 
     sections = [m.start() for m in re.finditer('<h3>', usr)]
     toc = []
@@ -48,7 +50,7 @@ if __name__ == "__main__":
     page = page[:i + len("<ul id=\"index\">")] + table + page[i + len("<ul id=\"index\">"):]
 
     i = page.index("<section id=\"section-intro\">")
-    page = page[:i + len("<section id=\"section-intro\">")] + usr + page[i + len("<section id=\"section-intro\">"):]
+    page = page[:i + len("<section id=\"section-intro\">")] + des + usr + page[i + len("<section id=\"section-intro\">"):]
 
     
     index.seek(0)
@@ -56,6 +58,7 @@ if __name__ == "__main__":
 
     index.close()
     user.close()
+    design.close()
 
     os.system("mv ../docs/src/* ../docs/")
     os.system("rm -rf ../docs/src")
