@@ -1767,6 +1767,21 @@ class Parser():
             self.Head = newNode
             return newNode
 
+        @self.pg.production(&#39;arithmetic : OPEN_PAREN arithmetic CLOSE_PAREN &#39;)
+        def arithmetic___OPEN_PAREN_arithmetic_CLOSE_PAREN_(p):
+            &#34;&#34;&#34;
+            Boilerplate BNF function
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
+            &#34;&#34;&#34;
+            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            self.Head = newNode
+            return newNode
+
         @self.pg.production(&#39;arithmetic : value &#39;)
         def arithmetic___value_(p):
             &#34;&#34;&#34;
@@ -1925,9 +1940,6 @@ class Parser():
             
             Args:
                 token: The token that caused an error.
-
-            Returns:
-                There is nothing returned
             &#34;&#34;&#34;
             return ValueError(token)
 
@@ -1935,6 +1947,9 @@ class Parser():
     def get_parser(self):
         &#34;&#34;&#34;
         Retrieves the built version of the parser.
+
+        Returns:
+            The built parser.
         &#34;&#34;&#34;
         return self.pg.build()
 
@@ -1942,6 +1957,9 @@ class Parser():
     def getTree(self):
         &#34;&#34;&#34;
         Getter for the head of the tree.
+
+        Returns:
+            The head of the tree.
         &#34;&#34;&#34;
 
         return self.Head
@@ -3760,6 +3778,21 @@ class Parser():
             self.Head = newNode
             return newNode
 
+        @self.pg.production(&#39;arithmetic : OPEN_PAREN arithmetic CLOSE_PAREN &#39;)
+        def arithmetic___OPEN_PAREN_arithmetic_CLOSE_PAREN_(p):
+            &#34;&#34;&#34;
+            Boilerplate BNF function
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
+            &#34;&#34;&#34;
+            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            self.Head = newNode
+            return newNode
+
         @self.pg.production(&#39;arithmetic : value &#39;)
         def arithmetic___value_(p):
             &#34;&#34;&#34;
@@ -3918,9 +3951,6 @@ class Parser():
             
             Args:
                 token: The token that caused an error.
-
-            Returns:
-                There is nothing returned
             &#34;&#34;&#34;
             return ValueError(token)
 
@@ -3928,6 +3958,9 @@ class Parser():
     def get_parser(self):
         &#34;&#34;&#34;
         Retrieves the built version of the parser.
+
+        Returns:
+            The built parser.
         &#34;&#34;&#34;
         return self.pg.build()
 
@@ -3935,6 +3968,9 @@ class Parser():
     def getTree(self):
         &#34;&#34;&#34;
         Getter for the head of the tree.
+
+        Returns:
+            The head of the tree.
         &#34;&#34;&#34;
 
         return self.Head
@@ -3983,7 +4019,9 @@ class Parser():
 <span>def <span class="ident">getTree</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Getter for the head of the tree.</p></section>
+<section class="desc"><p>Getter for the head of the tree.</p>
+<h2 id="returns">Returns</h2>
+<p>The head of the tree.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -3991,6 +4029,9 @@ class Parser():
 <pre><code class="python">def getTree(self):
     &#34;&#34;&#34;
     Getter for the head of the tree.
+
+    Returns:
+        The head of the tree.
     &#34;&#34;&#34;
 
     return self.Head</code></pre>
@@ -4000,7 +4041,9 @@ class Parser():
 <span>def <span class="ident">get_parser</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Retrieves the built version of the parser.</p></section>
+<section class="desc"><p>Retrieves the built version of the parser.</p>
+<h2 id="returns">Returns</h2>
+<p>The built parser.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -4008,6 +4051,9 @@ class Parser():
 <pre><code class="python">def get_parser(self):
     &#34;&#34;&#34;
     Retrieves the built version of the parser.
+
+    Returns:
+        The built parser.
     &#34;&#34;&#34;
     return self.pg.build()</code></pre>
 </details>
@@ -5706,6 +5752,21 @@ class Parser():
         self.Head = newNode
         return newNode
 
+    @self.pg.production(&#39;arithmetic : OPEN_PAREN arithmetic CLOSE_PAREN &#39;)
+    def arithmetic___OPEN_PAREN_arithmetic_CLOSE_PAREN_(p):
+        &#34;&#34;&#34;
+        Boilerplate BNF function
+        
+        Args:
+            p: The matching set of tokens.
+
+        Returns:
+            The node of the abstract syntax tree.
+        &#34;&#34;&#34;
+        newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+        self.Head = newNode
+        return newNode
+
     @self.pg.production(&#39;arithmetic : value &#39;)
     def arithmetic___value_(p):
         &#34;&#34;&#34;
@@ -5864,9 +5925,6 @@ class Parser():
         
         Args:
             token: The token that caused an error.
-
-        Returns:
-            There is nothing returned
         &#34;&#34;&#34;
         return ValueError(token)</code></pre>
 </details>

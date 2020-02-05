@@ -30,6 +30,7 @@ This module is only supposed to generate the documentation for the compiler as a
 &#34;&#34;&#34;
 
 import os
+import re
 
 if __name__ == &#34;__main__&#34;:
     os.system(&#34;rm -rf ../docs/*&#34;)
@@ -41,12 +42,41 @@ if __name__ == &#34;__main__&#34;:
     page = index.read()
     usr = user.read()
 
+    sections = [m.start() for m in re.finditer(&#39;&lt;h3&gt;&#39;, usr)]
+    toc = []
+    for idx, heading in enumerate(sections):
+        start_point = usr.find(&#34;&lt;h3&gt;&#34;, heading)
+        toc.append((f&#34;#section-{idx}&#34;, usr[start_point + len(&#34;&lt;h3&gt;&#34;):usr.find(&#34;&lt;/h3&gt;&#34;, start_point)]))
+        usr = usr.replace(&#34;&lt;h3&gt;&#34;, f&#34;&lt;h3 id=\&#34;section-{idx}\&#34;&gt;&#34;, 1)
+
+    usr = usr.replace(&#34;&lt;th&gt;&#34;, &#34;&lt;th style=\&#34;padding: 10px\&#34;&gt;&#34;)
+    usr = usr.replace(&#34;&lt;td&gt;&amp;#x2713;&lt;/td&gt;&#34;, &#34;&lt;td style=\&#34;background: rgb(170, 255, 170); text-align: center;\&#34;&gt;&amp;#x2713;&lt;/td&gt;&#34;)
+    usr = usr.replace(&#34;&lt;td&gt;&amp;#x2715;&lt;/td&gt;&#34;, &#34;&lt;td style=\&#34;background: rgb(255, 170, 170); text-align: center;\&#34;&gt;&amp;#x2715;&lt;/td&gt;&#34;)
+    usr = usr.replace(&#34;&lt;pre&gt;&#34;, &#34;&lt;pre style=\&#34;overflow-x:auto;\&#34;&gt;&#34;)
+
+    table = &#34;&#34;&#34;
+&lt;li&gt;
+    &lt;h3&gt;
+        &lt;a href=&#34;#header-usermanual&#34;&gt;User Manual&lt;/a&gt;
+    &lt;/h3&gt;
+    &lt;ul&gt;
+&#34;&#34;&#34;
+    for section in toc:
+        table += f&#34;&#34;&#34;
+        &lt;li&gt;
+            &lt;a href=&#34;{section[0]}&#34;&gt;{section[1]}&lt;/a&gt;
+        &lt;/li&gt;
+&#34;&#34;&#34;
+    table += &#34;&#34;&#34;
+    &lt;/ul&gt;
+&lt;/li&gt;&#34;&#34;&#34;
+
+    i = page.index(&#34;&lt;ul id=\&#34;index\&#34;&gt;&#34;)
+    page = page[:i + len(&#34;&lt;ul id=\&#34;index\&#34;&gt;&#34;)] + table + page[i + len(&#34;&lt;ul id=\&#34;index\&#34;&gt;&#34;):]
+
     i = page.index(&#34;&lt;section id=\&#34;section-intro\&#34;&gt;&#34;)
     page = page[:i + len(&#34;&lt;section id=\&#34;section-intro\&#34;&gt;&#34;)] + usr + page[i + len(&#34;&lt;section id=\&#34;section-intro\&#34;&gt;&#34;):]
 
-    page = page.replace(&#34;&lt;th&gt;&#34;, &#34;&lt;th style=\&#34;padding: 10px\&#34;&gt;&#34;)
-    page = page.replace(&#34;&lt;td&gt;&amp;#x2713;&lt;/td&gt;&#34;, &#34;&lt;td style=\&#34;background: rgb(170, 255, 170); text-align: center;\&#34;&gt;&amp;#x2713;&lt;/td&gt;&#34;)
-    page = page.replace(&#34;&lt;td&gt;&amp;#x2715;&lt;/td&gt;&#34;, &#34;&lt;td style=\&#34;background: rgb(255, 170, 170); text-align: center;\&#34;&gt;&amp;#x2715;&lt;/td&gt;&#34;)
     
     index.seek(0)
     index.write(page)
