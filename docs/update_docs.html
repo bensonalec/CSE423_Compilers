@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.4" />
-<title>src API documentation</title>
-<meta name="description" content="" />
+<title>src.update_docs API documentation</title>
+<meta name="description" content="This module is only supposed to generate the documentation for the compiler as a whole including User Manual." />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -17,85 +17,48 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Namespace <code>src</code></h1>
+<h1 class="title">Module <code>src.update_docs</code></h1>
 </header>
-<section id="section-intro"><section>
-<strong>CSE 423 Compilers</strong><br>
-<div style="display: flex; flex-wrap: wrap; justify-content: center;">
-<span style="flex-grow: 1;">Alexander Benson</span>
-<span style="flex-grow: 1;">Jacob Garcia</span>
-<span style="flex-grow: 1;">Ole Jeger Hoffstuen</span>
-<span style="flex-grow: 1;">Keaton Jones</span>
-</div>
-<h2>User Manual</h2>
-<div class="section">
-        <h3 id="intro_header" class="section_header">Introduction</h3>
-        <p>We are tasked with creating a compiler for a subset of the C programming
-                language. With this challenge includes figuring out how to implement the
-                three fundamental parts of any compiler: Frontend, Optimization, and the
-                Backend. Our goal with this project is not only to design and implement
-                an optimizing compiler, but to strengthen our ability to design and create
-                software that achieves its purpose and provides adequate documentation to
-                explain how it operates.</p>
-</div>
-<h3>How to use the compiler</h3>
-The compiler is split up into three modules, the frontend, the optimizer, and the backend.<br>
-So far only the frontend is implemented, and can so far only be executed by running the <code>frontend.py</code> located in <code>./src/frontend</code>.<br>
-The frontend supports a variety of commandline options such as:
-<dl>
-        <dt><code>-a</code></dt>
-        <dd>Displays all intermediate outputs produced by both the lexer and parser.</dd>
-        <dt><code>-b</code></dt>
-        <dd>Allows for rebuilding of BNF grammar and parser before the frontend touches the input.</dd>
-        <dt><code>-h</code></dt>
-        <dd>Displays the help message.</dd>
-        <dt><code>-l</code></dt>
-        <dd>Prints out the tokens produced by the lexer in a list.</dd>
-        <dt><code>-p</code></dt>
-        <dd>Prints a tree structure of the tokens after they have been parsed.</dd>
-        <dt><code>-t</code></dt>
-        <dd>Prints a list like tree structure of the tokens after they have been parsed.</dd>
-</dl>
-<h3>Subset of C supported</h3>
-The plan is to support the whole set of C instructions for as much of the compilation process as possible. As such here is a table of what parts of the compiler supports what features:<br>
-<table>
-        <tr>
-                <th>Feature</th>
-                <th>Preprocessor</th>
-                <th>Lexer</th>
-                <th>Parser</th>
-        </tr>
-        <tr>
-                <td>Variable declaration</td>
-                <td>NA</td>
-                <td>&#x2714;</td>
-                <td>&#x2714;</td>
-        </tr>
-        <tr>
-                <td>Pointer declaration</td>
-                <td>NA</td>
-                <td>&#x2715;</td>
-                <td>&#x2715;</td>
-        </tr>
-</table>
-</section>
+<section id="section-intro">
+<p>This module is only supposed to generate the documentation for the compiler as a whole including User Manual.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+This module is only supposed to generate the documentation for the compiler as a whole including User Manual. 
+&#34;&#34;&#34;
+
+import os
+
+if __name__ == &#34;__main__&#34;:
+    os.system(&#34;rm -rf ../docs/*&#34;)
+    os.system(&#34;pdoc --html -o ../docs ../src&#34;)
+
+    index = open(&#34;../docs/src/index.html&#34;, &#39;r+&#39;)
+    user = open(&#34;User Manual.html&#34;, &#34;r&#34;)
+
+    page = index.read()
+    usr = user.read()
+
+    i = page.index(&#34;&lt;section id=\&#34;section-intro\&#34;&gt;&#34;)
+    page = page[:i + len(&#34;&lt;section id=\&#34;section-intro\&#34;&gt;&#34;)] + usr + page[i + len(&#34;&lt;section id=\&#34;section-intro\&#34;&gt;&#34;):]
+
+    page = page.replace(&#34;&lt;th&gt;&#34;, &#34;&lt;th style=\&#34;padding: 10px\&#34;&gt;&#34;)
+    page = page.replace(&#34;&lt;td&gt;&amp;#x2713;&lt;/td&gt;&#34;, &#34;&lt;td style=\&#34;background: rgb(170, 255, 170); text-align: center;\&#34;&gt;&amp;#x2713;&lt;/td&gt;&#34;)
+    page = page.replace(&#34;&lt;td&gt;&amp;#x2715;&lt;/td&gt;&#34;, &#34;&lt;td style=\&#34;background: rgb(255, 170, 170); text-align: center;\&#34;&gt;&amp;#x2715;&lt;/td&gt;&#34;)
+    
+    index.seek(0)
+    index.write(page)
+
+    index.close()
+    user.close()
+
+    os.system(&#34;mv ../docs/src/* ../docs/&#34;)
+    os.system(&#34;rm -rf ../docs/src&#34;)</code></pre>
+</details>
 </section>
 <section>
-<h2 class="section-title" id="header-submodules">Sub-modules</h2>
-<dl>
-<dt><code class="name"><a title="src.frontend" href="frontend/index.html">src.frontend</a></code></dt>
-<dd>
-<section class="desc"></section>
-</dd>
-<dt><code class="name"><a title="src.run" href="run.html">src.run</a></code></dt>
-<dd>
-<section class="desc"></section>
-</dd>
-<dt><code class="name"><a title="src.update_docs" href="update_docs.html">src.update_docs</a></code></dt>
-<dd>
-<section class="desc"><p>This module is only supposed to generate the documentation for the compiler as a whole including User Manual.</p></section>
-</dd>
-</dl>
 </section>
 <section>
 </section>
@@ -110,11 +73,9 @@ The plan is to support the whole set of C instructions for as much of the compil
 <ul></ul>
 </div>
 <ul id="index">
-<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<li><h3>Super-module</h3>
 <ul>
-<li><code><a title="src.frontend" href="frontend/index.html">src.frontend</a></code></li>
-<li><code><a title="src.run" href="run.html">src.run</a></code></li>
-<li><code><a title="src.update_docs" href="update_docs.html">src.update_docs</a></code></li>
+<li><code><a title="src" href="index.html">src</a></code></li>
 </ul>
 </li>
 </ul>
