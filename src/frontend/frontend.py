@@ -74,6 +74,7 @@ def printTree(head,level):
 
 def prettyPrint(head,level,parentNode):
     """
+    .. deprecated::
     Prints the Abstract Syntax Tree using a tree library (pptree)
 
     Args:
@@ -101,6 +102,13 @@ def prettyPrint(head,level,parentNode):
 
 
 def pprint_tree(node, file=None, _prefix="", _last=True):
+    """
+    Prints the abstract syntax tree in correct order
+
+    Args:
+        node: The node in the AST being printed
+        file: The file the AST is being printed to
+    """
     if type(node) == type(par.AbstractSyntaxTree("test", "test")):
         print(_prefix, "`-- " if _last else "|-- ", node.token, sep="", file=file)
         _prefix += "    " if _last else "|   "

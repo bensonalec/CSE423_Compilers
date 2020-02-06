@@ -1,12 +1,19 @@
 <section>
+<style>
+    .example_buttons {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .example_buttons a {
+        flex-grow: 1;
+        text-align: center;
+    }
+</style>
 <dl>
     <dt><h2 id="header-usermanual">User Manual</h2></dt>
     <dd>
         <dl>
-            <dt><h3>Introduction</h3></dt>
-            <dd>
-                We are tasked with creating a compiler for a subset of the C programming language. With this challenge includes figuring out how to implement the three fundamental parts of any compiler: Frontend, Optimization, and the Backend. Our goal with this project is not only to design and implement an optimizing compiler, but to strengthen our ability to design and create software that achieves its purpose and provides adequate documentation to explain how it operates.
-            </dd>
             <dt><h3>How to use the compiler</h3></dt>
             <dd>
                 The compiler is split up into three modules, the frontend, the optimizer, and the backend. So far only the frontend is implemented, and can so far only be executed by running the <code>frontend.py</code> located in <code>./src/frontend</code>. The frontend supports a variety of commandline options such as:
@@ -64,6 +71,11 @@
                     </tr>
                     <tr>
                         <td>Defining Functions with Arguments</td>
+                        <td>&#x2713;</td>
+                        <td>&#x2713;</td>
+                    </tr>
+                    <tr>
+                        <td>Calling Functions without Parameters</td>
                         <td>&#x2713;</td>
                         <td>&#x2713;</td>
                     </tr>
@@ -574,11 +586,21 @@
                 <dl>
                     <dt><h4>Minimal C Program</h4></dt>
                     <dd>
-                        <h5>Code:</h5>
+                        <div class="example_buttons">
+                            <a>Program</a>
+                            <a>Token List</a>
+                            <a>Parse Tree</a>
+                            <a>Abstract Syntax Tree</a>
+                        </div>
+                        <div class="example_representations">
+                            <div>
+                                <h5>Code:</h5>
 <pre><code class="C++">int main() {
         return 1;
 }</code></pre>
-                        <h5>Token List:</h5>
+                            </div>
+                            <div>
+                                <h5>Token List:</h5>
 <pre>Token('TYPE', 'int')
 Token('SELF_DEFINED', 'main')
 Token('OPEN_PAREN', '(')
@@ -588,7 +610,9 @@ Token('RETURN', 'return')
 Token('INTEGER', '1')
 Token('SEMICOLON', ';')
 Token('CLOSE_BRACE', '}')</pre>
-                        <h5>Parse Tree:</h5>
+                            </div>
+                            <div>
+                                <h5>Parse Tree:</h5>
 <pre>1 : ['definitionList']
 2 : ['function definition', 'definitionList']
 3 : [Token('TYPE', 'int'), Token('SELF_DEFINED', 'main'), Token('OPEN_PAREN', '('), Token('CLOSE_PAREN', ')'), 'block']
@@ -599,10 +623,42 @@ Token('CLOSE_BRACE', '}')</pre>
 8 : ['value']
 9 : [Token('INTEGER', '1')]
 3 : []</pre>
+                            </div>
+                            <div>
+                                <h5>Abstract Syntax Tree:</h5>
+<pre>`-- program
+    `-- definitionList
+        |-- function definition
+        |   |-- Token('TYPE', 'int')
+        |   |-- Token('SELF_DEFINED', 'main')
+        |   |-- Token('OPEN_PAREN', '(')
+        |   |-- Token('CLOSE_PAREN', ')')
+        |   `-- block
+        |       |-- Token('OPEN_BRACE', '{')
+        |       |-- content
+        |       |   `-- single_line
+        |       |       |-- return
+        |       |       |   |-- Token('RETURN', 'return')
+        |       |       |   `-- arithmetic
+        |       |       |       `-- value
+        |       |       |           `-- Token('INTEGER', '1')
+        |       |       `-- Token('SEMICOLON', ';')
+        |       `-- Token('CLOSE_BRACE', '}')
+        `-- definitionList</pre>
+                            </div>
+                        </div>
                     </dd>
                     <dt><h4>Arithmetical Operations</h4></dt>
                     <dd>
-                        <h5>Code:</h5>
+                        <div class="example_buttons">
+                            <a>Program</a>
+                            <a>Token List</a>
+                            <a>Parse Tree</a>
+                            <a>Abstract Syntax Tree</a>
+                        </div>
+                        <div class="example_representations">
+                            <div>
+                                <h5>Code:</h5>
 <pre><code class="C++">int main() {
         int a = (1 + 2 + 3);
         int b = (56 * 78 * 5 / 20 - 3);
@@ -613,7 +669,9 @@ Token('CLOSE_BRACE', '}')</pre>
         c *= 2;
         c /= 4;
 }</code></pre>
-                        <h5>Token List:</h5>
+                            </div>
+                            <div>
+                                <h5>Token List:</h5>
 <pre>Token('TYPE', 'int')
 Token('SELF_DEFINED', 'main')
 Token('OPEN_PAREN', '(')
@@ -674,7 +732,9 @@ Token('DEQ', '/=')
 Token('INTEGER', '4')
 Token('SEMICOLON', ';')
 Token('CLOSE_BRACE', '}')</pre>
-                        <h5>Parse Tree:</h5>
+                            </div>
+                            <div>
+                                <h5>Parse Tree:</h5>
 <pre>1 : ['definitionList']
 2 : ['function definition', 'definitionList']
 3 : [Token('TYPE', 'int'), Token('SELF_DEFINED', 'main'), Token('OPEN_PAREN', '('), Token('CLOSE_PAREN', ')'), 'block']
@@ -755,6 +815,151 @@ Token('CLOSE_BRACE', '}')</pre>
 15 : ['value']
 16 : [Token('INTEGER', '4')]
 3 : []</pre>
+                            </div>
+                            <div>
+                                <h5>Abstract Syntax Tree:</h5>
+<pre>`-- program
+    `-- definitionList
+        |-- function definition
+        |   |-- Token('TYPE', 'int')
+        |   |-- Token('SELF_DEFINED', 'main')
+        |   |-- Token('OPEN_PAREN', '(')
+        |   |-- Token('CLOSE_PAREN', ')')
+        |   `-- block
+        |       |-- Token('OPEN_BRACE', '{')
+        |       |-- content
+        |       |   |-- single_line
+        |       |   |   |-- initialization
+        |       |   |   |   |-- Token('TYPE', 'int')
+        |       |   |   |   `-- designation
+        |       |   |   |       |-- Token('SELF_DEFINED', 'a')
+        |       |   |   |       |-- assignment
+        |       |   |   |       |   `-- Token('SET', '=')
+        |       |   |   |       `-- arithmetic
+        |       |   |   |           |-- Token('OPEN_PAREN', '(')
+        |       |   |   |           |-- arithmetic
+        |       |   |   |           |   |-- arithmetic
+        |       |   |   |           |   |   |-- arithmetic
+        |       |   |   |           |   |   |   `-- value
+        |       |   |   |           |   |   |       `-- Token('INTEGER', '1')
+        |       |   |   |           |   |   |-- Token('ADD', '+')
+        |       |   |   |           |   |   `-- arithmetic
+        |       |   |   |           |   |       `-- value
+        |       |   |   |           |   |           `-- Token('INTEGER', '2')
+        |       |   |   |           |   |-- Token('ADD', '+')
+        |       |   |   |           |   `-- arithmetic
+        |       |   |   |           |       `-- value
+        |       |   |   |           |           `-- Token('INTEGER', '3')
+        |       |   |   |           `-- Token('CLOSE_PAREN', ')')
+        |       |   |   `-- Token('SEMICOLON', ';')
+        |       |   `-- content
+        |       |       |-- single_line
+        |       |       |   |-- initialization
+        |       |       |   |   |-- Token('TYPE', 'int')
+        |       |       |   |   `-- designation
+        |       |       |   |       |-- Token('SELF_DEFINED', 'b')
+        |       |       |   |       |-- assignment
+        |       |       |   |       |   `-- Token('SET', '=')
+        |       |       |   |       `-- arithmetic
+        |       |       |   |           |-- Token('OPEN_PAREN', '(')
+        |       |       |   |           |-- arithmetic
+        |       |       |   |           |   |-- arithmetic
+        |       |       |   |           |   |   |-- arithmetic
+        |       |       |   |           |   |   |   |-- arithmetic
+        |       |       |   |           |   |   |   |   |-- arithmetic
+        |       |       |   |           |   |   |   |   |   `-- value
+        |       |       |   |           |   |   |   |   |       `-- Token('INTEGER', '56')
+        |       |       |   |           |   |   |   |   |-- Token('MUL', '*')
+        |       |       |   |           |   |   |   |   `-- arithmetic
+        |       |       |   |           |   |   |   |       `-- value
+        |       |       |   |           |   |   |   |           `-- Token('INTEGER', '78')
+        |       |       |   |           |   |   |   |-- Token('MUL', '*')
+        |       |       |   |           |   |   |   `-- arithmetic
+        |       |       |   |           |   |   |       `-- value
+        |       |       |   |           |   |   |           `-- Token('INTEGER', '5')
+        |       |       |   |           |   |   |-- Token('DIV', '/')
+        |       |       |   |           |   |   `-- arithmetic
+        |       |       |   |           |   |       `-- value
+        |       |       |   |           |   |           `-- Token('INTEGER', '20')
+        |       |       |   |           |   |-- Token('SUB', '-')
+        |       |       |   |           |   `-- arithmetic
+        |       |       |   |           |       `-- value
+        |       |       |   |           |           `-- Token('INTEGER', '3')
+        |       |       |   |           `-- Token('CLOSE_PAREN', ')')
+        |       |       |   `-- Token('SEMICOLON', ';')
+        |       |       `-- content
+        |       |           |-- single_line
+        |       |           |   |-- initialization
+        |       |           |   |   |-- Token('TYPE', 'int')
+        |       |           |   |   `-- designation
+        |       |           |   |       |-- Token('SELF_DEFINED', 'c')
+        |       |           |   |       |-- assignment
+        |       |           |   |       |   `-- Token('SET', '=')
+        |       |           |   |       `-- arithmetic
+        |       |           |   |           |-- arithmetic
+        |       |           |   |           |   `-- value
+        |       |           |   |           |       `-- Token('INTEGER', '56')
+        |       |           |   |           |-- Token('MOD', '%')
+        |       |           |   |           `-- arithmetic
+        |       |           |   |               `-- value
+        |       |           |   |                   `-- Token('INTEGER', '2')
+        |       |           |   `-- Token('SEMICOLON', ';')
+        |       |           `-- content
+        |       |               |-- single_line
+        |       |               |   |-- initialization
+        |       |               |   |   |-- Token('TYPE', 'int')
+        |       |               |   |   `-- designation
+        |       |               |   |       |-- Token('SELF_DEFINED', 'd')
+        |       |               |   |       |-- assignment
+        |       |               |   |       |   `-- Token('SET', '=')
+        |       |               |   |       `-- arithmetic
+        |       |               |   |           `-- value
+        |       |               |   |               `-- Token('INTEGER', '-10')
+        |       |               |   `-- Token('SEMICOLON', ';')
+        |       |               `-- content
+        |       |                   |-- single_line
+        |       |                   |   |-- designation
+        |       |                   |   |   |-- Token('SELF_DEFINED', 'c')
+        |       |                   |   |   |-- assignment
+        |       |                   |   |   |   `-- Token('AEQ', '+=')
+        |       |                   |   |   `-- arithmetic
+        |       |                   |   |       `-- value
+        |       |                   |   |           `-- Token('INTEGER', '3')
+        |       |                   |   `-- Token('SEMICOLON', ';')
+        |       |                   `-- content
+        |       |                       |-- single_line
+        |       |                       |   |-- designation
+        |       |                       |   |   |-- Token('SELF_DEFINED', 'c')
+        |       |                       |   |   |-- assignment
+        |       |                       |   |   |   `-- Token('SEQ', '-=')
+        |       |                       |   |   `-- arithmetic
+        |       |                       |   |       `-- value
+        |       |                       |   |           `-- Token('INTEGER', '3')
+        |       |                       |   `-- Token('SEMICOLON', ';')
+        |       |                       `-- content
+        |       |                           |-- single_line
+        |       |                           |   |-- designation
+        |       |                           |   |   |-- Token('SELF_DEFINED', 'c')
+        |       |                           |   |   |-- assignment
+        |       |                           |   |   |   `-- Token('MEQ', '*=')
+        |       |                           |   |   `-- arithmetic
+        |       |                           |   |       `-- value
+        |       |                           |   |           `-- Token('INTEGER', '2')
+        |       |                           |   `-- Token('SEMICOLON', ';')
+        |       |                           `-- content
+        |       |                               `-- single_line
+        |       |                                   |-- designation
+        |       |                                   |   |-- Token('SELF_DEFINED', 'c')
+        |       |                                   |   |-- assignment
+        |       |                                   |   |   `-- Token('DEQ', '/=')
+        |       |                                   |   `-- arithmetic
+        |       |                                   |       `-- value
+        |       |                                   |           `-- Token('INTEGER', '4')
+        |       |                                   `-- Token('SEMICOLON', ';')
+        |       `-- Token('CLOSE_BRACE', '}')
+        `-- definitionList</pre>
+                            </div>
+                        </div>
                     </dd>
                 </dl>
             </dd>

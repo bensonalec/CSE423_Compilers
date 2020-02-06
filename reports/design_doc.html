@@ -10,8 +10,11 @@
 <dl>
     <dt><h2 id="header-design">Design Document</h2></dt>
     <dd>
-
         <dl>
+            <dt><h3>Introduction</h3></dt>
+            <dd>
+                We are tasked with creating a compiler for a subset of the C programming language. With this challenge includes figuring out how to implement the three fundamental parts of any compiler: Frontend, Optimization, and the Backend. Our goal with this project is not only to design and implement an optimizing compiler, but to strengthen our ability to design and create software that achieves its purpose and provides adequate documentation to explain how it operates.
+            </dd>
             <dt><h3>Language / Libraries</h3></dt>
             <dd>
                 <ul>
@@ -31,7 +34,7 @@
                 many different forms of Intermediate Representations (IR's) 
                 until it reaches the point of assembly code.
             </dd>
-            <img id="architecture_img" src="../reports/architecture.png" />
+            <img id="architecture_img" src="./architecture.png" />
         </dl>
 
         <dl>
@@ -79,7 +82,7 @@ Token("ACCESS", "->")</pre>
                             file we can construct a parser using RPLY syntax that will 
                             take in the grammar and build our Abstract Syntax Tree.
                         </dd>
-                        <dt><h3></h3></dt>
+                        <dt><h3>Example of BNF grammar</h3></dt>
                         <dd>
                             <pre>
 program : definitionList #program

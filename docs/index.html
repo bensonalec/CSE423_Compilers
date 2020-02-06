@@ -1,114 +1,201 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.7.4" />
-<title>src API documentation</title>
-<meta name="description" content="" />
-<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
-<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
-<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
-<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
-<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
-</head>
-<body>
-<main>
-<article id="content">
-<header>
-<h1 class="title">CSE 423 Compilers</h1>
-</header>
-<div style="display: flex; flex-wrap: wrap; justify-content: center;">
-<span style="flex-grow: 1;"><h5>Alexander Benson</h5></span>
-<span style="flex-grow: 1;"><h5>Jacob Garcia</h5></span>
-<span style="flex-grow: 1;"><h5>Ole Jeger Hoffstuen</h5></span>
-<span style="flex-grow: 1;"><h5>Keaton Jones</h5></span>
-</div>
-<section id="section-intro"><section>
-<style>
-.note {
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1, minimum-scale=1" name="viewport">
+   <meta content="pdoc 0.7.4" name="generator"/>
+   <title>
+    src API documentation
+   </title>
+   <meta content="" name="description"/>
+   <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" rel="stylesheet"/>
+   <link href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css" rel="stylesheet"/>
+   <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet"/>
+   <style>
+    .flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}
+   </style>
+   <style media="screen and (min-width: 700px)">
+    @media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}
+   </style>
+   <style media="print">
+    @media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}
+   </style>
+  </meta>
+ </head>
+ <body>
+  <main>
+   <article id="content">
+    <header>
+     <h1 class="title">
+      CSE 423 Compilers
+     </h1>
+    </header>
+    <div style="display: flex; flex-wrap: wrap; justify-content: center;">
+     <span style="flex-grow: 1;">
+      <h5>
+       Alexander Benson
+      </h5>
+     </span>
+     <span style="flex-grow: 1;">
+      <h5>
+       Jacob Garcia
+      </h5>
+     </span>
+     <span style="flex-grow: 1;">
+      <h5>
+       Ole Jeger Hoffstuen
+      </h5>
+     </span>
+     <span style="flex-grow: 1;">
+      <h5>
+       Keaton Jones
+      </h5>
+     </span>
+    </div>
+    <section id="section-intro">
+     <section>
+      <style>
+       .note {
      color: #3bb655;
  }
 .todo {
      color: #fc2828;
  }
-</style>
-<dl>
-    <dt><h2 id="header-design">Design Document</h2></dt>
-    <dd>
-
+      </style>
+      <dl>
+       <dt>
+        <h2 id="section 0">
+         Design Document
+        </h2>
+       </dt>
+       <dd>
         <dl>
-            <dt><h3 id="section-3">Language / Libraries</h3></dt>
-            <dd>
-                <ul>
-                    <li>Python 3.7+</li>
-                    <li> <a href="https://github.com/alex/rply">Rply</a>, Python's re-implimentation of Lex-and-Yacc</li>
-                    <li> <a href="https://github.com/pdoc3/pdoc">Pdoc3</a>, used for documentation</li>
-                    <li> <a href="https://github.com/clemtoy/pptree">Pptree</a>, used for pretty printing abstract syntax tree</li>
-                </ul>
-            </dd>
+         <dt>
+          <h3 id="section 1">
+           Introduction
+          </h3>
+         </dt>
+         <dd>
+          We are tasked with creating a compiler for a subset of the C programming language. With this challenge includes figuring out how to implement the three fundamental parts of any compiler: Frontend, Optimization, and the Backend. Our goal with this project is not only to design and implement an optimizing compiler, but to strengthen our ability to design and create software that achieves its purpose and provides adequate documentation to explain how it operates.
+         </dd>
+         <dt>
+          <h3 id="section 2">
+           Language / Libraries
+          </h3>
+         </dt>
+         <dd>
+          <ul>
+           <li>
+            Python 3.7+
+           </li>
+           <li>
+            <a href="https://github.com/alex/rply">
+             Rply
+            </a>
+            , Python's re-implimentation of Lex-and-Yacc
+           </li>
+           <li>
+            <a href="https://github.com/pdoc3/pdoc">
+             Pdoc3
+            </a>
+            , used for documentation
+           </li>
+           <li>
+            <a href="https://github.com/clemtoy/pptree">
+             Pptree
+            </a>
+            , used for pretty printing abstract syntax tree
+           </li>
+          </ul>
+         </dd>
         </dl>
-
         <dl>
-            <dt><h3 id="section-4">Architecture</h3></dt>
-            <dd>
-                Our compiler can be split into three major stages that takes 
+         <dt>
+          <h3 id="section 3">
+           Architecture
+          </h3>
+         </dt>
+         <dd>
+          Our compiler can be split into three major stages that takes 
                 in a C program and converts this "High-Level" language into 
                 many different forms of Intermediate Representations (IR's) 
                 until it reaches the point of assembly code.
-            </dd>
-            <img id="architecture_img" src="../reports/architecture.png" />
+         </dd>
+         <img id="architecture_img" src="./architecture.png"/>
         </dl>
-
         <dl>
-            <dt><h3 id="section-5">Frontend</h3></dt>
-            <dd>
-                <dl>
-                    <dt><h4>Lexer</h4></dt>
-                    <dd>
-                        Responsible for scanning and assigning tokens to 
+         <dt>
+          <h3 id="section 4">
+           Frontend
+          </h3>
+         </dt>
+         <dd>
+          <dl>
+           <dt>
+            <h4>
+             Lexer
+            </h4>
+           </dt>
+           <dd>
+            Responsible for scanning and assigning tokens to 
                         different elements of our C program, this module was 
                         designed using RPLY's lexer class. By simply adding in 
                         tokens to our lexer we are able to give it a string version 
                         of our C program and get a list of all valid tokens.
-                        <dl>
-                            <dt><h5>Token Format / Examples</h5></dt>
-                            <dd>
-                                <pre style="overflow-x:auto;">Token("TOKEN_NAME", "ELEMENT")
+            <dl>
+             <dt>
+              <h5>
+               Token Format / Examples
+              </h5>
+             </dt>
+             <dd>
+              <pre style="overflow-x: auto;">Token("TOKEN_NAME", "ELEMENT")
                                 
 Token("INTEGER", "1")
-Token("COMPARISON", ">")
+Token("COMPARISON", "&gt;")
 Token("SELF_DEFINED", "some-variable-name")
-Token("LOGICAL", "&&")
-Token("ACCESS", "->")</pre>
-                                <p class="note">
-                                    NOTE: These token names will possibly change 
+Token("LOGICAL", "&amp;&amp;")
+Token("ACCESS", "-&gt;")</pre>
+              <p class="note">
+               NOTE: These token names will possibly change 
                                     in the future but the token structure should remain the 
-                                    same throughout the implementation of our tokenizer.</p>
-                            </dd>
-                            <dt><h5>Error Handling</h5></dt>
-                            <dd>
-                                Currently the only known errors we can experience 
+                                    same throughout the implementation of our tokenizer.
+              </p>
+             </dd>
+             <dt>
+              <h5>
+               Error Handling
+              </h5>
+             </dt>
+             <dd>
+              Currently the only known errors we can experience 
                                 while using RPLY's lexer library is when we encounter 
                                 an element that isn't recognized. By adding an "INVALID" 
                                 token type, and having it match to any string combination, 
                                 we eliminate the possibility of the imported lexer code to 
                                 fail, and are able to report any invalid tokens to the user.
-                            </dd>
-                        </dl>
-                    </dd>
-                    <dt><h4>Parser</h4></dt>
-                    <dl>
-                        <dd>
-                            This sub-module relies on RPLY's parser generator but still 
+             </dd>
+            </dl>
+           </dd>
+           <dt>
+            <h4>
+             Parser
+            </h4>
+           </dt>
+           <dl>
+            <dd>
+             This sub-module relies on RPLY's parser generator but still 
                             requires a grammar. After defining a grammar is a separate 
                             file we can construct a parser using RPLY syntax that will 
                             take in the grammar and build our Abstract Syntax Tree.
-                        </dd>
-                        <dt><h3 id="section-6"></h3></dt>
-                        <dd>
-                            <pre style="overflow-x:auto;">
+            </dd>
+            <dt>
+             <h3 id="section 5">
+              Example of BNF grammar
+             </h3>
+            </dt>
+            <dd>
+             <pre style="overflow-x: auto;">
 program : definitionList #program
 
 definitionList : functionDefinition definitionList #definitionList
@@ -130,609 +217,1530 @@ args : TYPE COMMA args #args
 block : OPEN_BRACE block content CLOSE_BRACE #block
 block : OPEN_BRACE content block CLOSE_BRACE #block
 ...</pre>
-                            <a target="_blank" href="https://github.com/bensonalec/CSE423_Compilers/blob/master/src/frontend/BNF_definition">Our Full BNF</a>
-                            <p class="todo">
-                                TODO: 
-                                <ul class="todo">
-                                    <li>We are only reporting the last successful token parsed 
+             <a href="https://github.com/bensonalec/CSE423_Compilers/blob/master/src/frontend/BNF_definition" target="_blank">
+              Our Full BNF
+             </a>
+             <p class="todo">
+              TODO:
+              <ul class="todo">
+               <li>
+                We are only reporting the last successful token parsed 
                                         but not giving a detailed and more "useful" message. 
-                                        We should work on this.</li>
-                                    <li>There is currently no more error handling beyond 
+                                        We should work on this.
+               </li>
+               <li>
+                There is currently no more error handling beyond 
                                         syntax errors. (i.e. more semantic style errors by the 
-                                        user are not recognized nor caught)</li>
-                                </ul>
-                            </p>
-                        </dd>
-                    </dl>
-                </dl>
-                <p class="note">NOTE: The Frontend module can be ran individually 
-                        from the command line.</p>
+                                        user are not recognized nor caught)
+               </li>
+              </ul>
+             </p>
             </dd>
+           </dl>
+          </dl>
+          <p class="note">
+           NOTE: The Frontend module can be ran individually 
+                        from the command line.
+          </p>
+         </dd>
         </dl>
-    </dd>
-</dl>
-</section><section>
-<dl>
-    <dt><h2 id="header-usermanual">User Manual</h2></dt>
-    <dd>
+       </dd>
+      </dl>
+     </section>
+     <section>
+      <style>
+       .example_buttons {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .example_buttons a {
+        flex-grow: 1;
+        text-align: center;
+    }
+      </style>
+      <dl>
+       <dt>
+        <h2 id="section 6">
+         User Manual
+        </h2>
+       </dt>
+       <dd>
         <dl>
-            <dt><h3 id="section-0">Introduction</h3></dt>
-            <dd>
-                We are tasked with creating a compiler for a subset of the C programming language. With this challenge includes figuring out how to implement the three fundamental parts of any compiler: Frontend, Optimization, and the Backend. Our goal with this project is not only to design and implement an optimizing compiler, but to strengthen our ability to design and create software that achieves its purpose and provides adequate documentation to explain how it operates.
-            </dd>
-            <dt><h3 id="section-1">How to use the compiler</h3></dt>
-            <dd>
-                The compiler is split up into three modules, the frontend, the optimizer, and the backend. So far only the frontend is implemented, and can so far only be executed by running the <code>frontend.py</code> located in <code>./src/frontend</code>. The frontend supports a variety of commandline options such as:
-                <dl>
-                    <dt><code>-a</code></dt>
-                    <dd>Displays all intermediate outputs produced by both the lexer and parser.</dd>
-                    <dt><code>-b</code></dt>
-                    <dd>Allows for rebuilding of BNF grammar and parser before the frontend touches the input.</dd>
-                    <dt><code>-h</code></dt>
-                    <dd>Displays the help message.</dd>
-                    <dt><code>-l</code></dt>
-                    <dd>Prints out the tokens produced by the lexer in a list.</dd>
-                    <dt><code>-p</code></dt>
-                    <dd>Prints a tree structure of the tokens after they have been parsed.</dd>
-                    <dt><code>-t</code></dt>
-                    <dd>Prints a list like tree structure of the tokens after they have been parsed.</dd>
-                </dl>
-            </dd>
-            <dt><h3 id="section-2">Subset of C supported</h3></dt>
-            <dd>
-                The plan is to support the whole set of C instructions for as much of the compilation process as possible. As such here is a table of what parts of the compiler supports what features:
-                <table>
-                    <tr>
-                        <th style="padding: 10px">Feature</th>
-                        <th style="padding: 10px">Lexer</th>
-                        <th style="padding: 10px">Parser</th>
-                    </tr>
-                    <tr>
-                        <th colspan="3">Declaration, Definition, and Calling</th>
-                    </tr>
-                    <tr>
-                        <td>Declaring Variables</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td>Defining Variables</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td>Declaring Functions</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td>Defining Functions</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td>Declaring Functions with Arguments</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td>Defining Functions with Arguments</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td>Calling Functions with Parameters</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <th colspan="3">Assignment</th>
-                    </tr>
-                    <tr>
-                        <td><code>=</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>+=</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>-=</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>*=</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>/=</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>%=</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>&lt;&lt;=</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>&gt;&gt;=</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>|=</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>&amp;=</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>^=</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>~=</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <th colspan="3">Keywords</th>
-                    </tr>
-                    <tr>
-                        <td><code>sizeof</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>typedef</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>inline</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>register</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>volatile</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>const</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>signed</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>static</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>unsigned</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>extern</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <th colspan="3">Arithmetic Operations with Precedence</th>
-                    </tr>
-                    <tr>
-                        <td><code>+</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>-</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>*</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>/</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>%</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>&lt;&lt;</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>&gt;&gt;</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>|</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>&amp;</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>^</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>~</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td>Using Integers</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td>Using Floating Point</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td>Using Characters</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td>Using Hex</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td>Using Octal</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td>Using Binary</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <th colspan="3">Comperative Operations</th>
-                    </tr>
-                    <tr>
-                        <td><code>==</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>&lt;=</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>&gt;=</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>!=</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>&lt;</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>&gt;</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <th colspan="3">Branching</th>
-                    </tr>
-                    <tr>
-                        <td><code>If</code> (With a closed scope after it)</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>If</code> (With a single line after it)</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>Else If</code> (With a closed scope after it)</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>Else If</code> (With a single line after it)</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>Else</code> (With a closed scope after it)</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>Else</code> (With a single line after it)</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>Switch</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <th colspan="3">Unary</th>
-                    </tr>
-                    <tr>
-                        <td><code>+</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>-</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>++</code> (Pre)</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>--</code> (Pre)</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>++</code> (Post)</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>--</code> (Post)</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>!</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>~</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td>Casting</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>sizeof</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <th colspan="3">Loops</th>
-                    </tr>
-                    <tr>
-                        <td><code>While</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>For</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>Do While</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <th colspan="3">Jumps</th>
-                    </tr>
-                    <tr>
-                        <td><code>Return</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>Goto</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>Break</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>Continue</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <th colspan="3">Types</th>
-                    </tr>
-                    <tr>
-                        <td><code>auto</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>long double</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>double</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>float</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>long long int</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>long</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>int</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>short</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>char</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>void</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td>Immutable Strings</td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <th colspan="3">Preprocessor Keywords</th>
-                    </tr>
-                    <tr>
-                        <td><code>#Warning</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>#Include</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>#Define</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>#Undef</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>#If</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>#Ifdef</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>#Ifndef</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>#Elif</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>#Else</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>#Endif</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>#Pragma</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>#Error</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>#Line</code></td>
-                        <td style="background: rgb(170, 255, 170); text-align: center;">&#x2713;</td>
-                        <td style="background: rgb(255, 170, 170); text-align: center;">&#x2715;</td>
-                    </tr>
-                </table>
-            </dd>
-            <dt><h3 id="section-3">Examples of C Programs and their Intermediate Representations</h3></dt>
-            <dd>
-                <dl>
-                    <dt><h4>Minimal C Program</h4></dt>
-                    <dd>
-                        <h5>Code:</h5>
-<pre style="overflow-x:auto;"><code class="C++">int main() {
+         <dt>
+          <h3 id="section 7">
+           How to use the compiler
+          </h3>
+         </dt>
+         <dd>
+          The compiler is split up into three modules, the frontend, the optimizer, and the backend. So far only the frontend is implemented, and can so far only be executed by running the
+          <code>
+           frontend.py
+          </code>
+          located in
+          <code>
+           ./src/frontend
+          </code>
+          . The frontend supports a variety of commandline options such as:
+          <dl>
+           <dt>
+            <code>
+             -a
+            </code>
+           </dt>
+           <dd>
+            Displays all intermediate outputs produced by both the lexer and parser.
+           </dd>
+           <dt>
+            <code>
+             -b
+            </code>
+           </dt>
+           <dd>
+            Allows for rebuilding of BNF grammar and parser before the frontend touches the input.
+           </dd>
+           <dt>
+            <code>
+             -h
+            </code>
+           </dt>
+           <dd>
+            Displays the help message.
+           </dd>
+           <dt>
+            <code>
+             -l
+            </code>
+           </dt>
+           <dd>
+            Prints out the tokens produced by the lexer in a list.
+           </dd>
+           <dt>
+            <code>
+             -p
+            </code>
+           </dt>
+           <dd>
+            Prints a tree structure of the tokens after they have been parsed.
+           </dd>
+           <dt>
+            <code>
+             -t
+            </code>
+           </dt>
+           <dd>
+            Prints a list like tree structure of the tokens after they have been parsed.
+           </dd>
+          </dl>
+         </dd>
+         <dt>
+          <h3 id="section 8">
+           Subset of C supported
+          </h3>
+         </dt>
+         <dd>
+          The plan is to support the whole set of C instructions for as much of the compilation process as possible. As such here is a table of what parts of the compiler supports what features:
+          <table>
+           <tr>
+            <th style="padding: 10px;">
+             Feature
+            </th>
+            <th style="padding: 10px;">
+             Lexer
+            </th>
+            <th style="padding: 10px;">
+             Parser
+            </th>
+           </tr>
+           <tr>
+            <th colspan="3" style="padding: 10px;">
+             Declaration, Definition, and Calling
+            </th>
+           </tr>
+           <tr>
+            <td>
+             Declaring Variables
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             Defining Variables
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             Declaring Functions
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             Defining Functions
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             Declaring Functions with Arguments
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             Defining Functions with Arguments
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             Calling Functions without Parameters
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             Calling Functions with Parameters
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <th colspan="3" style="padding: 10px;">
+             Assignment
+            </th>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              =
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              +=
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              -=
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              *=
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              /=
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              %=
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              &lt;&lt;=
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              &gt;&gt;=
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              |=
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              &amp;=
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              ^=
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              ~=
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <th colspan="3" style="padding: 10px;">
+             Keywords
+            </th>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              sizeof
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              typedef
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              inline
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              register
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              volatile
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              const
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              signed
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              static
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              unsigned
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              extern
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <th colspan="3" style="padding: 10px;">
+             Arithmetic Operations with Precedence
+            </th>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              +
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              -
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              *
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              /
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              %
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              &lt;&lt;
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              &gt;&gt;
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              |
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              &amp;
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              ^
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              ~
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             Using Integers
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             Using Floating Point
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             Using Characters
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             Using Hex
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             Using Octal
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             Using Binary
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <th colspan="3" style="padding: 10px;">
+             Comperative Operations
+            </th>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              ==
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              &lt;=
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              &gt;=
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              !=
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              &lt;
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              &gt;
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <th colspan="3" style="padding: 10px;">
+             Branching
+            </th>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              If
+             </code>
+             (With a closed scope after it)
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              If
+             </code>
+             (With a single line after it)
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              Else If
+             </code>
+             (With a closed scope after it)
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              Else If
+             </code>
+             (With a single line after it)
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              Else
+             </code>
+             (With a closed scope after it)
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              Else
+             </code>
+             (With a single line after it)
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              Switch
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <th colspan="3" style="padding: 10px;">
+             Unary
+            </th>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              +
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              -
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              ++
+             </code>
+             (Pre)
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              --
+             </code>
+             (Pre)
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              ++
+             </code>
+             (Post)
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              --
+             </code>
+             (Post)
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              !
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              ~
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             Casting
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              sizeof
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <th colspan="3" style="padding: 10px;">
+             Loops
+            </th>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              While
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              For
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              Do While
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <th colspan="3" style="padding: 10px;">
+             Jumps
+            </th>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              Return
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              Goto
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              Break
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              Continue
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <th colspan="3" style="padding: 10px;">
+             Types
+            </th>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              auto
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              long double
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              double
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              float
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              long long int
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              long
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              int
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              short
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              char
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              void
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+           </tr>
+           <tr>
+            <td>
+             Immutable Strings
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <th colspan="3" style="padding: 10px;">
+             Preprocessor Keywords
+            </th>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              #Warning
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              #Include
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              #Define
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              #Undef
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              #If
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              #Ifdef
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              #Ifndef
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              #Elif
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              #Else
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              #Endif
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              #Pragma
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              #Error
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              #Line
+             </code>
+            </td>
+            <td style="text-align: center; background: rgb(170, 255, 170);">
+             ✓
+            </td>
+            <td style="text-align: center; background: rgb(255, 170, 170);">
+             ✕
+            </td>
+           </tr>
+          </table>
+         </dd>
+         <dt>
+          <h3 id="section 9">
+           Examples of C Programs and their Intermediate Representations
+          </h3>
+         </dt>
+         <dd>
+          <dl>
+           <dt>
+            <h4>
+             Minimal C Program
+            </h4>
+           </dt>
+           <dd>
+            <div class="example_buttons">
+             <a onclick='[...document.getElementsByClassName("representation_0")].forEach(function(elem, index) { if (index === 0.0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Program
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_0")].forEach(function(elem, index) { if (index === 1.0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Token List
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_0")].forEach(function(elem, index) { if (index === 2.0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Parse Tree
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_0")].forEach(function(elem, index) { if (index === 3.0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Abstract Syntax Tree
+             </a>
+            </div>
+            <div class="example_representations">
+             <div class="representation_0" style="display: block;">
+              <h5>
+               Code:
+              </h5>
+              <pre style="overflow-x: auto;"><code class="C++">int main() {
         return 1;
 }</code></pre>
-                        <h5>Token List:</h5>
-<pre style="overflow-x:auto;">Token('TYPE', 'int')
+             </div>
+             <div class="representation_0" style="display: none;">
+              <h5>
+               Token List:
+              </h5>
+              <pre style="overflow-x: auto;">Token('TYPE', 'int')
 Token('SELF_DEFINED', 'main')
 Token('OPEN_PAREN', '(')
 Token('CLOSE_PAREN', ')')
@@ -741,8 +1749,12 @@ Token('RETURN', 'return')
 Token('INTEGER', '1')
 Token('SEMICOLON', ';')
 Token('CLOSE_BRACE', '}')</pre>
-                        <h5>Parse Tree:</h5>
-<pre style="overflow-x:auto;">1 : ['definitionList']
+             </div>
+             <div class="representation_0" style="display: none;">
+              <h5>
+               Parse Tree:
+              </h5>
+              <pre style="overflow-x: auto;">1 : ['definitionList']
 2 : ['function definition', 'definitionList']
 3 : [Token('TYPE', 'int'), Token('SELF_DEFINED', 'main'), Token('OPEN_PAREN', '('), Token('CLOSE_PAREN', ')'), 'block']
 4 : [Token('OPEN_BRACE', '{'), 'content', Token('CLOSE_BRACE', '}')]
@@ -752,11 +1764,59 @@ Token('CLOSE_BRACE', '}')</pre>
 8 : ['value']
 9 : [Token('INTEGER', '1')]
 3 : []</pre>
-                    </dd>
-                    <dt><h4>Arithmetical Operations</h4></dt>
-                    <dd>
-                        <h5>Code:</h5>
-<pre style="overflow-x:auto;"><code class="C++">int main() {
+             </div>
+             <div class="representation_0" style="display: none;">
+              <h5>
+               Abstract Syntax Tree:
+              </h5>
+              <pre style="overflow-x: auto;">`-- program
+    `-- definitionList
+        |-- function definition
+        |   |-- Token('TYPE', 'int')
+        |   |-- Token('SELF_DEFINED', 'main')
+        |   |-- Token('OPEN_PAREN', '(')
+        |   |-- Token('CLOSE_PAREN', ')')
+        |   `-- block
+        |       |-- Token('OPEN_BRACE', '{')
+        |       |-- content
+        |       |   `-- single_line
+        |       |       |-- return
+        |       |       |   |-- Token('RETURN', 'return')
+        |       |       |   `-- arithmetic
+        |       |       |       `-- value
+        |       |       |           `-- Token('INTEGER', '1')
+        |       |       `-- Token('SEMICOLON', ';')
+        |       `-- Token('CLOSE_BRACE', '}')
+        `-- definitionList</pre>
+             </div>
+            </div>
+           </dd>
+           <dt>
+            <h4>
+             Arithmetical Operations
+            </h4>
+           </dt>
+           <dd>
+            <div class="example_buttons">
+             <a onclick='[...document.getElementsByClassName("representation_1")].forEach(function(elem, index) { if (index === 0.0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Program
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_1")].forEach(function(elem, index) { if (index === 1.0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Token List
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_1")].forEach(function(elem, index) { if (index === 2.0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Parse Tree
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_1")].forEach(function(elem, index) { if (index === 3.0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Abstract Syntax Tree
+             </a>
+            </div>
+            <div class="example_representations">
+             <div class="representation_1" style="display: block;">
+              <h5>
+               Code:
+              </h5>
+              <pre style="overflow-x: auto;"><code class="C++">int main() {
         int a = (1 + 2 + 3);
         int b = (56 * 78 * 5 / 20 - 3);
         int c = 56 % 2;
@@ -766,8 +1826,12 @@ Token('CLOSE_BRACE', '}')</pre>
         c *= 2;
         c /= 4;
 }</code></pre>
-                        <h5>Token List:</h5>
-<pre style="overflow-x:auto;">Token('TYPE', 'int')
+             </div>
+             <div class="representation_1" style="display: none;">
+              <h5>
+               Token List:
+              </h5>
+              <pre style="overflow-x: auto;">Token('TYPE', 'int')
 Token('SELF_DEFINED', 'main')
 Token('OPEN_PAREN', '(')
 Token('CLOSE_PAREN', ')')
@@ -827,8 +1891,12 @@ Token('DEQ', '/=')
 Token('INTEGER', '4')
 Token('SEMICOLON', ';')
 Token('CLOSE_BRACE', '}')</pre>
-                        <h5>Parse Tree:</h5>
-<pre style="overflow-x:auto;">1 : ['definitionList']
+             </div>
+             <div class="representation_1" style="display: none;">
+              <h5>
+               Parse Tree:
+              </h5>
+              <pre style="overflow-x: auto;">1 : ['definitionList']
 2 : ['function definition', 'definitionList']
 3 : [Token('TYPE', 'int'), Token('SELF_DEFINED', 'main'), Token('OPEN_PAREN', '('), Token('CLOSE_PAREN', ')'), 'block']
 4 : [Token('OPEN_BRACE', '{'), 'content', Token('CLOSE_BRACE', '}')]
@@ -908,101 +1976,318 @@ Token('CLOSE_BRACE', '}')</pre>
 15 : ['value']
 16 : [Token('INTEGER', '4')]
 3 : []</pre>
-                    </dd>
-                </dl>
-            </dd>
+             </div>
+             <div class="representation_1" style="display: none;">
+              <h5>
+               Abstract Syntax Tree:
+              </h5>
+              <pre style="overflow-x: auto;">`-- program
+    `-- definitionList
+        |-- function definition
+        |   |-- Token('TYPE', 'int')
+        |   |-- Token('SELF_DEFINED', 'main')
+        |   |-- Token('OPEN_PAREN', '(')
+        |   |-- Token('CLOSE_PAREN', ')')
+        |   `-- block
+        |       |-- Token('OPEN_BRACE', '{')
+        |       |-- content
+        |       |   |-- single_line
+        |       |   |   |-- initialization
+        |       |   |   |   |-- Token('TYPE', 'int')
+        |       |   |   |   `-- designation
+        |       |   |   |       |-- Token('SELF_DEFINED', 'a')
+        |       |   |   |       |-- assignment
+        |       |   |   |       |   `-- Token('SET', '=')
+        |       |   |   |       `-- arithmetic
+        |       |   |   |           |-- Token('OPEN_PAREN', '(')
+        |       |   |   |           |-- arithmetic
+        |       |   |   |           |   |-- arithmetic
+        |       |   |   |           |   |   |-- arithmetic
+        |       |   |   |           |   |   |   `-- value
+        |       |   |   |           |   |   |       `-- Token('INTEGER', '1')
+        |       |   |   |           |   |   |-- Token('ADD', '+')
+        |       |   |   |           |   |   `-- arithmetic
+        |       |   |   |           |   |       `-- value
+        |       |   |   |           |   |           `-- Token('INTEGER', '2')
+        |       |   |   |           |   |-- Token('ADD', '+')
+        |       |   |   |           |   `-- arithmetic
+        |       |   |   |           |       `-- value
+        |       |   |   |           |           `-- Token('INTEGER', '3')
+        |       |   |   |           `-- Token('CLOSE_PAREN', ')')
+        |       |   |   `-- Token('SEMICOLON', ';')
+        |       |   `-- content
+        |       |       |-- single_line
+        |       |       |   |-- initialization
+        |       |       |   |   |-- Token('TYPE', 'int')
+        |       |       |   |   `-- designation
+        |       |       |   |       |-- Token('SELF_DEFINED', 'b')
+        |       |       |   |       |-- assignment
+        |       |       |   |       |   `-- Token('SET', '=')
+        |       |       |   |       `-- arithmetic
+        |       |       |   |           |-- Token('OPEN_PAREN', '(')
+        |       |       |   |           |-- arithmetic
+        |       |       |   |           |   |-- arithmetic
+        |       |       |   |           |   |   |-- arithmetic
+        |       |       |   |           |   |   |   |-- arithmetic
+        |       |       |   |           |   |   |   |   |-- arithmetic
+        |       |       |   |           |   |   |   |   |   `-- value
+        |       |       |   |           |   |   |   |   |       `-- Token('INTEGER', '56')
+        |       |       |   |           |   |   |   |   |-- Token('MUL', '*')
+        |       |       |   |           |   |   |   |   `-- arithmetic
+        |       |       |   |           |   |   |   |       `-- value
+        |       |       |   |           |   |   |   |           `-- Token('INTEGER', '78')
+        |       |       |   |           |   |   |   |-- Token('MUL', '*')
+        |       |       |   |           |   |   |   `-- arithmetic
+        |       |       |   |           |   |   |       `-- value
+        |       |       |   |           |   |   |           `-- Token('INTEGER', '5')
+        |       |       |   |           |   |   |-- Token('DIV', '/')
+        |       |       |   |           |   |   `-- arithmetic
+        |       |       |   |           |   |       `-- value
+        |       |       |   |           |   |           `-- Token('INTEGER', '20')
+        |       |       |   |           |   |-- Token('SUB', '-')
+        |       |       |   |           |   `-- arithmetic
+        |       |       |   |           |       `-- value
+        |       |       |   |           |           `-- Token('INTEGER', '3')
+        |       |       |   |           `-- Token('CLOSE_PAREN', ')')
+        |       |       |   `-- Token('SEMICOLON', ';')
+        |       |       `-- content
+        |       |           |-- single_line
+        |       |           |   |-- initialization
+        |       |           |   |   |-- Token('TYPE', 'int')
+        |       |           |   |   `-- designation
+        |       |           |   |       |-- Token('SELF_DEFINED', 'c')
+        |       |           |   |       |-- assignment
+        |       |           |   |       |   `-- Token('SET', '=')
+        |       |           |   |       `-- arithmetic
+        |       |           |   |           |-- arithmetic
+        |       |           |   |           |   `-- value
+        |       |           |   |           |       `-- Token('INTEGER', '56')
+        |       |           |   |           |-- Token('MOD', '%')
+        |       |           |   |           `-- arithmetic
+        |       |           |   |               `-- value
+        |       |           |   |                   `-- Token('INTEGER', '2')
+        |       |           |   `-- Token('SEMICOLON', ';')
+        |       |           `-- content
+        |       |               |-- single_line
+        |       |               |   |-- initialization
+        |       |               |   |   |-- Token('TYPE', 'int')
+        |       |               |   |   `-- designation
+        |       |               |   |       |-- Token('SELF_DEFINED', 'd')
+        |       |               |   |       |-- assignment
+        |       |               |   |       |   `-- Token('SET', '=')
+        |       |               |   |       `-- arithmetic
+        |       |               |   |           `-- value
+        |       |               |   |               `-- Token('INTEGER', '-10')
+        |       |               |   `-- Token('SEMICOLON', ';')
+        |       |               `-- content
+        |       |                   |-- single_line
+        |       |                   |   |-- designation
+        |       |                   |   |   |-- Token('SELF_DEFINED', 'c')
+        |       |                   |   |   |-- assignment
+        |       |                   |   |   |   `-- Token('AEQ', '+=')
+        |       |                   |   |   `-- arithmetic
+        |       |                   |   |       `-- value
+        |       |                   |   |           `-- Token('INTEGER', '3')
+        |       |                   |   `-- Token('SEMICOLON', ';')
+        |       |                   `-- content
+        |       |                       |-- single_line
+        |       |                       |   |-- designation
+        |       |                       |   |   |-- Token('SELF_DEFINED', 'c')
+        |       |                       |   |   |-- assignment
+        |       |                       |   |   |   `-- Token('SEQ', '-=')
+        |       |                       |   |   `-- arithmetic
+        |       |                       |   |       `-- value
+        |       |                       |   |           `-- Token('INTEGER', '3')
+        |       |                       |   `-- Token('SEMICOLON', ';')
+        |       |                       `-- content
+        |       |                           |-- single_line
+        |       |                           |   |-- designation
+        |       |                           |   |   |-- Token('SELF_DEFINED', 'c')
+        |       |                           |   |   |-- assignment
+        |       |                           |   |   |   `-- Token('MEQ', '*=')
+        |       |                           |   |   `-- arithmetic
+        |       |                           |   |       `-- value
+        |       |                           |   |           `-- Token('INTEGER', '2')
+        |       |                           |   `-- Token('SEMICOLON', ';')
+        |       |                           `-- content
+        |       |                               `-- single_line
+        |       |                                   |-- designation
+        |       |                                   |   |-- Token('SELF_DEFINED', 'c')
+        |       |                                   |   |-- assignment
+        |       |                                   |   |   `-- Token('DEQ', '/=')
+        |       |                                   |   `-- arithmetic
+        |       |                                   |       `-- value
+        |       |                                   |           `-- Token('INTEGER', '4')
+        |       |                                   `-- Token('SEMICOLON', ';')
+        |       `-- Token('CLOSE_BRACE', '}')
+        `-- definitionList</pre>
+             </div>
+            </div>
+           </dd>
+          </dl>
+         </dd>
         </dl>
-    </dd>
-</dl>
-</section>
-</section>
-<section>
-<h2 class="section-title" id="header-submodules">Sub-modules</h2>
-<dl>
-<dt><code class="name"><a title="src.frontend" href="frontend/index.html">src.frontend</a></code></dt>
-<dd>
-<section class="desc"></section>
-</dd>
-<dt><code class="name"><a title="src.run" href="run.html">src.run</a></code></dt>
-<dd>
-<section class="desc"></section>
-</dd>
-</dl>
-</section>
-<section>
-</section>
-<section>
-</section>
-<section>
-</section>
-</article>
-<nav id="sidebar">
-<h1>Index</h1>
-<div class="toc">
-<ul></ul>
-</div>
-<ul id="index">
-<li>
-    <h3>
-        <a href="#header-design">Design Document</a>
-    </h3>
-    <ul>
-
-        <li>
-            <a href="#section-3">Language / Libraries</a>
-        </li>
-
-        <li>
-            <a href="#section-4">Architecture</a>
-        </li>
-
-        <li>
-            <a href="#section-5">Frontend</a>
-        </li>
-
-        <li>
-            <a href="#section-6"></a>
-        </li>
-
+       </dd>
+      </dl>
+     </section>
+    </section>
+    <section>
+     <h2 class="section-title" id="header-submodules">
+      Sub-modules
+     </h2>
+     <dl>
+      <dt>
+       <code class="name">
+        <a href="frontend/index.html" title="src.frontend">
+         src.frontend
+        </a>
+       </code>
+      </dt>
+      <dd>
+       <section class="desc">
+       </section>
+      </dd>
+      <dt>
+       <code class="name">
+        <a href="run.html" title="src.run">
+         src.run
+        </a>
+       </code>
+      </dt>
+      <dd>
+       <section class="desc">
+       </section>
+      </dd>
+     </dl>
+    </section>
+    <section>
+    </section>
+    <section>
+    </section>
+    <section>
+    </section>
+   </article>
+   <nav id="sidebar">
+    <h1>
+     Index
+    </h1>
+    <div class="toc">
+     <ul>
+      <li>
+       <a href="#section 0">
+        <h3>
+         Design Document
+        </h3>
+       </a>
+      </li>
+      <li>
+       <a href="#section 1">
+        <h4>
+         Introduction
+        </h4>
+       </a>
+      </li>
+      <li>
+       <a href="#section 2">
+        <h4>
+         Language / Libraries
+        </h4>
+       </a>
+      </li>
+      <li>
+       <a href="#section 3">
+        <h4>
+         Architecture
+        </h4>
+       </a>
+      </li>
+      <li>
+       <a href="#section 4">
+        <h4>
+         Frontend
+        </h4>
+       </a>
+      </li>
+      <li>
+       <a href="#section 5">
+        <h4>
+         Example of BNF grammar
+        </h4>
+       </a>
+      </li>
+      <li>
+       <a href="#section 6">
+        <h3>
+         User Manual
+        </h3>
+       </a>
+      </li>
+      <li>
+       <a href="#section 7">
+        <h4>
+         How to use the compiler
+        </h4>
+       </a>
+      </li>
+      <li>
+       <a href="#section 8">
+        <h4>
+         Subset of C supported
+        </h4>
+       </a>
+      </li>
+      <li>
+       <a href="#section 9">
+        <h4>
+         Examples of C Programs and their Intermediate Representations
+        </h4>
+       </a>
+      </li>
+     </ul>
+    </div>
+    <ul id="index">
+     <li>
+      <h3>
+       <a href="#header-submodules">
+        Sub-modules
+       </a>
+      </h3>
+      <ul>
+       <li>
+        <code>
+         <a href="frontend/index.html" title="src.frontend">
+          src.frontend
+         </a>
+        </code>
+       </li>
+       <li>
+        <code>
+         <a href="run.html" title="src.run">
+          src.run
+         </a>
+        </code>
+       </li>
+      </ul>
+     </li>
     </ul>
-</li>
-<li>
-    <h3>
-        <a href="#header-usermanual">User Manual</a>
-    </h3>
-    <ul>
-
-        <li>
-            <a href="#section-0">Introduction</a>
-        </li>
-
-        <li>
-            <a href="#section-1">How to use the compiler</a>
-        </li>
-
-        <li>
-            <a href="#section-2">Subset of C supported</a>
-        </li>
-
-        <li>
-            <a href="#section-3">Examples of C Programs and their Intermediate Representations</a>
-        </li>
-
-    </ul>
-</li>
-<li><h3><a href="#header-submodules">Sub-modules</a></h3>
-<ul>
-<li><code><a title="src.frontend" href="frontend/index.html">src.frontend</a></code></li>
-<li><code><a title="src.run" href="run.html">src.run</a></code></li>
-</ul>
-</li>
-</ul>
-</nav>
-</main>
-<footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.4</a>.</p>
-</footer>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-<script>hljs.initHighlightingOnLoad()</script>
-</body>
+   </nav>
+  </main>
+  <footer id="footer">
+   <p>
+    Generated by
+    <a href="https://pdoc3.github.io/pdoc">
+     <cite>
+      pdoc
+     </cite>
+     0.7.4
+    </a>
+    .
+   </p>
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js">
+  </script>
+  <script>
+   hljs.initHighlightingOnLoad()
+  </script>
+ </body>
 </html>
