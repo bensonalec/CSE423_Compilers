@@ -87,18 +87,29 @@ def prettyPrint(head,level,parentNode):
     
     token = head.token
     content = head.content
+    print(content)
     for ne in content:
         if(type(ne) == type(par.AbstractSyntaxTree("sample","sample"))):
             nodeName = Node(ne.token,parentNode)
-        else:
-            
-            nodeName = Node(ne,parentNode)
-        if(type(ne) == type(par.AbstractSyntaxTree("sample","sample"))):
             prettyPrint(ne,level+1,nodeName)
+        else:
+            nodeName = Node(ne,parentNode)
+
     if(level == 0):
         #this is a function from the pptree
         print_tree(headNode)
-    
+
+
+def pprint_tree(node, file=None, _prefix="", _last=True):
+    if type(node) == type(par.AbstractSyntaxTree("test", "test")):
+        print(_prefix, "`-- " if _last else "|-- ", node.token, sep="", file=file)
+        _prefix += "    " if _last else "|   "
+        child_count = len(node.content)
+        for i, child in enumerate(node.content):
+            _last = i == (child_count - 1)
+            pprint_tree(child, file, _prefix, _last)
+    else:
+        print(_prefix, "`-- " if _last else "|-- ", node, sep="", file=file)
 
 #main function to control the frontend with different command line options.
 def main(args, fi):
@@ -157,7 +168,9 @@ def main(args, fi):
         print(getTree(head,0))
     
     if args.pretty or args.all:
-        prettyPrint(head,0,None)
+        #prettyPrint(head,0,None)
+        pprint_tree(head)
+
 
     if args.all:
         printTree(head, 0)
