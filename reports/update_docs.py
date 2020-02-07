@@ -60,19 +60,19 @@ if __name__ == "__main__":
     idx = -1
 
     for idx, dd in enumerate(des_parser.select("h2"), idx + 1):
-        dd['id'] = f"section {idx}" if 'id' not in dd else dd['id']
+        dd['id'] = f"section_{idx}" if 'id' not in dd else dd['id']
         sections.append(dd)
         
     for idx, h3 in enumerate(des_parser.select("h3"), idx + 1):
-        h3['id'] = f"section {idx}" if 'id' not in h3 else h3['id']
+        h3['id'] = f"section_{idx}" if 'id' not in h3 else h3['id']
         sections.append(h3)
 
     for idx, um in enumerate(usr_parser.select("h2"), idx + 1):
-        um['id'] = f"section {idx}" if 'id' not in um else um['id']
+        um['id'] = f"section_{idx}" if 'id' not in um else um['id']
         sections.append(um)
         
     for idx, h3 in enumerate(usr_parser.select("h3"), idx + 1):
-        h3['id'] = f"section {idx}" if 'id' not in h3 else h3['id']
+        h3['id'] = f"section_{idx}" if 'id' not in h3 else h3['id']
         sections.append(h3)
 
     # Generates and inserts the table of contents into the website
