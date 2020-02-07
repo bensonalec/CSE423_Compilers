@@ -6,7 +6,6 @@ import argparse
 import importlib
 
 from rply.errors import LexingError
-from pptree import *
 from copy import deepcopy
 
 lex = importlib.import_module("lexer", ".")
@@ -71,34 +70,6 @@ def printTree(head,level):
     for node in content:
         if(type(node) == type(par.AbstractSyntaxTree("sample","sample"))):
             printTree(node,level)
-
-def prettyPrint(head,level,parentNode):
-    """
-    .. deprecated::
-    Prints the Abstract Syntax Tree using a tree library (pptree)
-
-    Args:
-        head: The head node of the tree
-        level: The level the tree is on.
-        parentNode: The parent node of the tree.
-    """
-    if(level == 0):
-        headNode = Node(head.token)
-        parentNode = headNode
-    
-    token = head.token
-    content = head.content
-    print(content)
-    for ne in content:
-        if(type(ne) == type(par.AbstractSyntaxTree("sample","sample"))):
-            nodeName = Node(ne.token,parentNode)
-            prettyPrint(ne,level+1,nodeName)
-        else:
-            nodeName = Node(ne,parentNode)
-
-    if(level == 0):
-        #this is a function from the pptree
-        print_tree(headNode)
 
 
 def pprint_tree(node, file=None, _prefix="", _last=True):
