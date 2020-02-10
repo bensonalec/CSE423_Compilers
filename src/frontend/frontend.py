@@ -11,6 +11,7 @@ from copy import deepcopy
 lex = importlib.import_module("lexer", ".")
 par = importlib.import_module("parser", ".")
 btp = importlib.import_module("bnfToParser", ".")
+pre = importlib.import_module("preprocessor", ".")
 
 
 def getTree(head,level):
@@ -110,6 +111,9 @@ def main(args, fi):
         #Read in file
         text_input = fi.read()
         fi.close()
+
+        #Pre-process the text
+        text_input = pre.run(text_input)
 
         #setup lexer, produce tokens, check for invalid tokens
         lexer = lex.Lexer().get_lexer()
