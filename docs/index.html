@@ -345,14 +345,20 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              Feature
             </th>
             <th style="padding: 10px;">
+             Preprocessor
+            </th>
+            <th style="padding: 10px;">
              Lexer
             </th>
             <th style="padding: 10px;">
              Parser
             </th>
+            <th style="padding: 10px;">
+             Semantic Analysis
+            </th>
            </tr>
            <tr>
-            <th colspan="3" style="padding: 10px;">
+            <th colspan="5" style="padding: 10px;">
              Declaration, Definition, and Calling
             </th>
            </tr>
@@ -360,92 +366,140 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
             <td>
              Declaring Variables
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
             <td>
              Defining Variables
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
             <td>
              Declaring Functions
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
             <td>
              Defining Functions
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
             <td>
              Declaring Functions with Arguments
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
             <td>
              Defining Functions with Arguments
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
             <td>
              Calling Functions without Parameters
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
             <td>
              Calling Functions with Parameters
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
-            <th colspan="3" style="padding: 10px;">
+            <th colspan="5" style="padding: 10px;">
              Assignment
             </th>
            </tr>
@@ -455,11 +509,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               =
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -468,11 +528,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               +=
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -481,11 +547,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               -=
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -494,11 +566,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               *=
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -507,11 +585,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               /=
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -520,11 +604,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               %=
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -533,11 +623,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               &lt;&lt;=
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -546,11 +642,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               &gt;&gt;=
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -559,11 +661,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               |=
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -572,11 +680,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               &amp;=
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -585,11 +699,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               ^=
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -598,15 +718,21 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               ~=
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
-            <th colspan="3" style="padding: 10px;">
+            <th colspan="5" style="padding: 10px;">
              Keywords
             </th>
            </tr>
@@ -616,10 +742,16 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               sizeof
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
@@ -629,10 +761,16 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               typedef
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
@@ -642,10 +780,16 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               inline
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
@@ -655,10 +799,16 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               register
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
@@ -668,10 +818,16 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               volatile
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
@@ -681,10 +837,16 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               const
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
@@ -694,10 +856,16 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               signed
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
@@ -707,10 +875,16 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               static
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
@@ -720,10 +894,16 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               unsigned
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
@@ -733,15 +913,21 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               extern
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
            <tr>
-            <th colspan="3" style="padding: 10px;">
+            <th colspan="5" style="padding: 10px;">
              Arithmetic Operations with Precedence
             </th>
            </tr>
@@ -751,11 +937,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               +
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -764,11 +956,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               -
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -777,11 +975,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               *
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -790,11 +994,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               /
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -803,11 +1013,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               %
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -816,11 +1032,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               &lt;&lt;
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -829,11 +1051,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               &gt;&gt;
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -842,11 +1070,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               |
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -855,11 +1089,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               &amp;
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -868,11 +1108,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               ^
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -881,81 +1127,123 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               ~
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
             <td>
              Using Integers
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
             <td>
              Using Floating Point
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
             <td>
              Using Characters
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
             <td>
              Using Hex
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
             <td>
              Using Octal
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
             <td>
              Using Binary
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
-            <th colspan="3" style="padding: 10px;">
+            <th colspan="5" style="padding: 10px;">
              Comperative Operations
             </th>
            </tr>
@@ -965,10 +1253,16 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               ==
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
@@ -978,10 +1272,16 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               &lt;=
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
@@ -991,10 +1291,16 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               &gt;=
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
@@ -1004,10 +1310,16 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               !=
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
@@ -1017,10 +1329,16 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               &lt;
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
@@ -1030,15 +1348,21 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               &gt;
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
            <tr>
-            <th colspan="3" style="padding: 10px;">
+            <th colspan="5" style="padding: 10px;">
              Branching
             </th>
            </tr>
@@ -1049,11 +1373,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              </code>
              (With a closed scope after it)
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -1063,11 +1393,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              </code>
              (With a single line after it)
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -1077,11 +1413,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              </code>
              (With a closed scope after it)
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -1091,11 +1433,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              </code>
              (With a single line after it)
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -1105,11 +1453,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              </code>
              (With a closed scope after it)
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -1119,11 +1473,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              </code>
              (With a single line after it)
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -1132,15 +1492,21 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               Switch
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
-            <th colspan="3" style="padding: 10px;">
+            <th colspan="5" style="padding: 10px;">
              Unary
             </th>
            </tr>
@@ -1150,11 +1516,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               +
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -1163,11 +1535,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               -
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -1177,11 +1555,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              </code>
              (Pre)
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -1191,11 +1575,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              </code>
              (Pre)
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -1205,11 +1595,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              </code>
              (Post)
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -1219,11 +1615,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              </code>
              (Post)
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -1232,11 +1634,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               !
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -1245,22 +1653,34 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               ~
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
             <td>
              Casting
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -1269,15 +1689,21 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               sizeof
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
            <tr>
-            <th colspan="3" style="padding: 10px;">
+            <th colspan="5" style="padding: 10px;">
              Loops
             </th>
            </tr>
@@ -1287,11 +1713,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               While
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -1300,11 +1732,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               For
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -1313,15 +1751,21 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               Do While
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
-            <th colspan="3" style="padding: 10px;">
+            <th colspan="5" style="padding: 10px;">
              Jumps
             </th>
            </tr>
@@ -1331,11 +1775,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               Return
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -1344,11 +1794,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               Goto
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -1357,11 +1813,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               Break
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -1370,15 +1832,21 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               Continue
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
-            <th colspan="3" style="padding: 10px;">
+            <th colspan="5" style="padding: 10px;">
              Types
             </th>
            </tr>
@@ -1388,11 +1856,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               auto
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -1401,11 +1875,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               long double
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -1414,11 +1894,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               double
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -1427,11 +1913,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               float
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -1440,11 +1932,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               long long int
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -1453,11 +1951,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               long
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -1466,11 +1970,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               int
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -1479,11 +1989,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               short
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -1492,11 +2008,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               char
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
@@ -1505,26 +2027,38 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               void
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
             </td>
            </tr>
            <tr>
             <td>
              Immutable Strings
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #bbbbbb">
+             -
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
            <tr>
-            <th colspan="3" style="padding: 10px;">
+            <th colspan="5" style="padding: 10px;">
              Preprocessor Keywords
             </th>
            </tr>
@@ -1534,10 +2068,16 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               #Warning
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
@@ -1546,11 +2086,38 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <code>
               #Include
              </code>
+             (Standard Library)
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #aaffaa;">
+             ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+           </tr>
+           <tr>
+            <td>
+             <code>
+              #Include
+             </code>
+             (Local)
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
+             ✓
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
+             ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
@@ -1560,10 +2127,16 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               #Define
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #aaffaa;">
+             ✓
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
@@ -1573,10 +2146,16 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               #Undef
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
@@ -1586,10 +2165,16 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               #If
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
@@ -1599,10 +2184,16 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               #Ifdef
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
@@ -1612,10 +2203,16 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               #Ifndef
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
@@ -1625,10 +2222,16 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               #Elif
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
@@ -1638,10 +2241,16 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               #Else
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
@@ -1651,10 +2260,16 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               #Endif
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
@@ -1664,10 +2279,16 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               #Pragma
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
@@ -1677,10 +2298,16 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               #Error
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
@@ -1690,10 +2317,16 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               #Line
              </code>
             </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #aaffaa;">
              ✓
             </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
+            <td style="text-align: center; background: #ffaaaa;">
+             ✕
+            </td>
+            <td style="text-align: center; background: #ffaaaa;">
              ✕
             </td>
            </tr>
@@ -1720,10 +2353,10 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               Token List
              </a>
              <a onclick='[...document.getElementsByClassName("representation_0")].forEach(function(elem, index) { if (index === 2.0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Parse Tree
+              Parse Tree (List View)
              </a>
              <a onclick='[...document.getElementsByClassName("representation_0")].forEach(function(elem, index) { if (index === 3.0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Abstract Syntax Tree
+              Parse Tree (Tree View)
              </a>
             </div>
             <div class="example_representations">
@@ -1751,7 +2384,7 @@ Token('CLOSE_BRACE', '}')</pre>
              </div>
              <div class="representation_0" style="display: none;">
               <h5>
-               Parse Tree:
+               Parse Tree (List View):
               </h5>
               <pre style="overflow-x: auto;">1 : ['definitionList']
 2 : ['function definition', 'definitionList']
@@ -1766,7 +2399,7 @@ Token('CLOSE_BRACE', '}')</pre>
              </div>
              <div class="representation_0" style="display: none;">
               <h5>
-               Abstract Syntax Tree:
+               Parse Tree (Tree View):
               </h5>
               <pre style="overflow-x: auto;">`-- program
     `-- definitionList
@@ -1804,10 +2437,10 @@ Token('CLOSE_BRACE', '}')</pre>
               Token List
              </a>
              <a onclick='[...document.getElementsByClassName("representation_1")].forEach(function(elem, index) { if (index === 2.0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Parse Tree
+              Parse Tree (List View)
              </a>
              <a onclick='[...document.getElementsByClassName("representation_1")].forEach(function(elem, index) { if (index === 3.0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Abstract Syntax Tree
+              Parse Tree (Tree View)
              </a>
             </div>
             <div class="example_representations">
@@ -1893,7 +2526,7 @@ Token('CLOSE_BRACE', '}')</pre>
              </div>
              <div class="representation_1" style="display: none;">
               <h5>
-               Parse Tree:
+               Parse Tree (List View):
               </h5>
               <pre style="overflow-x: auto;">1 : ['definitionList']
 2 : ['function definition', 'definitionList']
@@ -1978,7 +2611,7 @@ Token('CLOSE_BRACE', '}')</pre>
              </div>
              <div class="representation_1" style="display: none;">
               <h5>
-               Abstract Syntax Tree:
+               Parse Tree (Tree View):
               </h5>
               <pre style="overflow-x: auto;">`-- program
     `-- definitionList

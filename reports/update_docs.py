@@ -23,6 +23,9 @@ if __name__ == "__main__":
     usr_parser = bs4.BeautifulSoup(user.read(), "html.parser")
     des_parser = bs4.BeautifulSoup(design.read(), "html.parser")
 
+    # Store the number of columns to span for later
+    colspan = len(usr_parser.table.tr.find_all("th"))
+
     # Adds some inline styling to certain tags located within the design document.
     for th in itertools.chain(des_parser.select("th"), usr_parser.select("th")):
         style = "padding: 10px;"
@@ -31,13 +34,20 @@ if __name__ == "__main__":
         else:
             th['style'] = style
 
+        if len(th.parent.find_all("th")) == 1:
+            th['colspan'] = colspan
+
     for td in itertools.chain(des_parser.select("td"), usr_parser.select("td")):
         b = True
+
         style = "text-align: center; "
+        
         if td.string == "✓":
-            style += "background: rgb(170, 255, 170);"
+            style += "background: #aaffaa;"
         elif td.string == "✕":
-            style += "background: rgb(255, 170, 170);"
+            style += "background: #ffaaaa;"
+        elif td.string == "-" and td.code == None:
+            style += "background: #bbbbbb"
 
         else:
             b = False
