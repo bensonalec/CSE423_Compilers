@@ -48,35 +48,33 @@ param_terminal : arithmetic #param_terminal
 param_terminal : SELF_DEFINED #param_terminal
 
 loop : WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN block #while loop
-loop : WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN content #while loop
+loop : WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN content_terminal #while loop
 
 loop : FOR_LOOP OPEN_PAREN for_part_1 SEMICOLON for_part_2 SEMICOLON for_part_3 CLOSE_PAREN block #for loop
-loop : FOR_LOOP OPEN_PAREN for_part_1 SEMICOLON for_part_2 SEMICOLON for_part_3 CLOSE_PAREN content #for loop
+loop : FOR_LOOP OPEN_PAREN for_part_1 SEMICOLON for_part_2 SEMICOLON for_part_3 CLOSE_PAREN content_terminal #for loop
 
 loop : DO_LOOP block WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN SEMICOLON #loop
-loop : DO_LOOP content WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN SEMICOLON #loop
+loop : DO_LOOP content_terminal WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN SEMICOLON #loop
 
 branch : IF_BRANCH OPEN_PAREN collation CLOSE_PAREN block #if
-branch : IF_BRANCH OPEN_PAREN collation CLOSE_PAREN content #if
-
-branch : ELSE_BRANCH IF_BRANCH OPEN_PAREN collation CLOSE_PAREN block #elif
-branch : ELSE_BRANCH IF_BRANCH OPEN_PAREN collation CLOSE_PAREN content #elif
+branch : IF_BRANCH OPEN_PAREN collation CLOSE_PAREN content_terminal #if
 
 branch : ELSE_BRANCH block #else
-branch : ELSE_BRANCH content #else
+branch : ELSE_BRANCH content_terminal #else
+
+branch : ELSE_BRANCH IF_BRANCH OPEN_PAREN collation CLOSE_PAREN block #elif
+branch : ELSE_BRANCH IF_BRANCH OPEN_PAREN collation CLOSE_PAREN content_terminal #elif
 
 branch : SWITCH_BRANCH OPEN_PAREN arithmetic CLOSE_PAREN block #switch
 
 branch : CASE value COLON block #case
-branch : CASE value COLON content #case
+branch : CASE value COLON content_terminal #case
 
 branch : DEFAULT COLON block #default
-branch : DEFAULT COLON content #default
+branch : DEFAULT COLON content_terminal #default
 
-goto : SELF_DEFINED COLON single_line #goto
-goto : SELF_DEFINED COLON loop #goto
-goto : SELF_DEFINED COLON branch #goto
-goto : SELF_DEFINED COLON block #goto
+goto : SELF_DEFINED COLON content_terminal #goto
+goto : SELF_DEFINED COLON #goto
 
 response : RETURN arithmetic #return
 response : RETURN function_call #return
