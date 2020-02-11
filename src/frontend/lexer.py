@@ -15,7 +15,7 @@ class Lexer():
         self.lexer.add("OCT",           r"0[0-7]{1,3}")
         self.lexer.add("BIN",           r"0b[01]+")
         self.lexer.add("PRECISION",     r"\-?(\d\.\d+|[1-9]\d*\.\d+)")
-        self.lexer.add("INTEGER",       r"\-?(\d+|[1-9]\d*)")
+        self.lexer.add("INTEGER",       r"\-?([1-9]\d*|\d)")
         self.lexer.add("EQ",            r"={2}")
         self.lexer.add("LEQ",           r"<=")
         self.lexer.add("GEQ",           r">=")
