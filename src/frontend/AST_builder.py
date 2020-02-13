@@ -6,14 +6,13 @@ def buildAST(parseHead):
     ASTcurrent = None
     ntv = [(head, ASTcurrent)]
     
-
-
     while ntv != []:
         c = ntv[0]
         typ = c[0].token
-        tmpTyp = None
-        sliceIndex = 0
         ASTcurrent = c[1]
+
+        expansion = None
+
         if typ == "program":
             #program : look for initializations and function definitions
             ASTHead = ASTNode("Program")
@@ -21,64 +20,60 @@ def buildAST(parseHead):
 
         elif typ == "initialization":
             #inittialization : Look for TYPE SELF_DEFINED or TYPE designation
-            tmp = ASTNode("=", ASTcurrent,[])
+            # tmp = ASTNode("=", ASTcurrent,[])
 
-            ASTcurrent.children.append(tmp)
+            ASTcurrent.children.append(ASTNode("", ASTcurrent,[]))
+            ASTcurrent = ASTcurrent.children[-1]
             if len([x for x in c[0].content if 'content' in x.__dict__]) == 0:
-                tmp.children.append(ASTNode(f"{c[0].content[0].value} {c[0].content[1].value}",tmp,[]))
-                tmp.children.append(ASTNode("NULL",tmp,[]))
+                ASTcurrent.name = "="
+                ASTcurrent.children.append(ASTNode(f"{c[0].content[0].value} {c[0].content[1].value}", ASTcurrent, []))
+                ASTcurrent.children.append(ASTNode("NULL", ASTcurrent, []))
             else:
-                tmp.children.append(ASTNode(f"{c[0].content[0].value} ",tmp,[]))
-
-            ASTcurrent = tmp
+                ASTcurrent.children.append(ASTNode(f"{c[0].content[0].value} ", ASTcurrent, []))
+            # ASTcurrent = tmp
         elif typ == "designation":
-            if(ASTcurrent.name == "="):
+
+            ASTcurrent.name = c[0].content[1].content[0].value
+
+            if len(ASTcurrent.children) > 0:
                 ASTcurrent.children[0].name += c[0].content[0].value
-                sliceIndex += 1
-                ASTcurrent.children.append(ASTNode("",tmp,[]))
+            else:
+                ASTcurrent.children.append(ASTNode(f"{c[0].content[0].value}"))
 
-                ASTcurrent = ASTcurrent.children[1]
 
+            
+            # if(ASTcurrent.name == "="):
+                # ASTcurrent.children[0].name += c[0].content[0].value
+                # ASTcurrent = ASTcurrent.children[1]
+            # else:
+                # ASTcurrent.children.append(ASTNode(f"{c[0].content[1].content[0].value}"))
+                # ASTcurrent = ASTcurrent.children[-1]
+
+            expansion = [(x, ASTcurrent) for x in c[0].content[1:] if 'content' in x.__dict__]
 
             #designation : Look for SELF_DEFINED SET and value
             
         elif typ == "value":
             #value : Look for INTEGER CHAR PRECISION
-            ASTcurrent.children[-1].name += c[0].content[0].value
+            ASTcurrent.children.append(ASTNode(f"{c[0].content[0].value}", ASTcurrent, []))
             pass
         elif typ == "function definition":
             #function definition : Look for TYPE SELF_DEFINED ARGS block or TYPE SELF_DEFINED block
-            newNode = ASTNode(f"{c[0].content[0].value} {c[0].content[1].value}",ASTcurrent,[])
-            ASTcurrent.children.append(newNode)
-            ASTcurrent = newNode
-            ASTcurrent.children.append(ASTNode("param",ASTcurrent,[]))
-            ASTcurrent.children.append(ASTNode("body",ASTcurrent,[]))
-            if (not(len([x for x in c[0].content if "content" in x.__dict__ and x.token == "args"]))):
-                ASTcurrent = ASTcurrent.children[1]
-            pass
-        elif typ == "args":
-            
-            ASTcurrent = ASTcurrent.children[0]
-
-            li = [x for x in c[0].content if 'content' in x.__dict__]
-            for node in li:
-                li += [x for x in node.content if 'content' in x.__dict__]
-            
-            for term in [x for x in li if x.token == 'arg_terminal']:
-                param_name = ""
-                for token in term.content:
-                    param_name += token.value + " "
-                ASTcurrent.children.append(ASTNode(param_name, ASTcurrent, []))
-
-            sliceIndex += 3
-
-            ntv[1] = (ntv[1][0], ASTcurrent.parent.children[1]) # TODO: USE DEDICATED COMMAND
-            pass
-        elif typ == "if":
-            ASTcurrent.children.append(ASTNode("if",ASTcurrent,[]))
+            ASTcurrent.children.append(ASTNode(f"{c[0].content[0].value} {c[0].content[1].value}", ASTcurrent, []))
             ASTcurrent = ASTcurrent.children[-1]
-            ASTcurrent.children.append(ASTNode("",ASTcurrent,[]))
-            ASTcurrent.children.append(ASTNode("body",ASTcurrent,[]))
+            ASTcurrent.children.append(ASTNode("param", ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode("body", ASTcurrent, []))
+
+            expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if 'content' in x.__dict__ and x.token == 'args'] + [(x, ASTcurrent.children[1]) for x in c[0].content if 'content' in x.__dict__ and x.token == 'block']
+
+        elif typ == "arg_terminal":
+            ASTcurrent.children.append(ASTNode(" ".join([x.value for x in c[0].content]), ASTcurrent, []))
+
+        elif typ == "if":
+            ASTcurrent.children.append(ASTNode("if", ASTcurrent, []))
+            ASTcurrent = ASTcurrent.children[-1]
+            ASTcurrent.children.append(ASTNode("", ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode("body", ASTcurrent, []))
             ASTcurrent = ASTcurrent.children[0]
             #if : Look for collation block or collation content_terminal
             pass
@@ -86,7 +81,7 @@ def buildAST(parseHead):
             # if(ASTcurrent.name == "if"):
             #     ASTcurrent = ASTcurrent.children[0]
             #     ASTcurrent.name = c[0].content[1].content[0].value
-            #     #ASTcurrent.children.append(ASTNode("",ASTcurrent,[]))
+            #     #ASTcurrent.children.append(ASTNode("", ASTcurrent, []))
             # else:
             #     #ASTcurrent = ASTcurrent.children[0]
             #     ASTcurrent.children.append()
@@ -101,12 +96,13 @@ def buildAST(parseHead):
             #arithmetic : Look for SELF_DEFINED or value or arithmetic operator arithmetic or operator arithmetic or arithmetic operator
             #print(c[0].content[0])
             tmpLen = len([x for x in c[0].content if "content" in x.__dict__])
+            print (tmpLen)
             #for two non-terminals (i.e ARITHMETIC op ARITHMETIC)
             if(tmpLen == 2): 
-                pass
+                ASTcurrent.children.append(ASTNode(c[0].content[1].value, ASTcurrent, []))
+                ASTcurrent = ASTcurrent.children[-1]
             #for one non-terminals (i.e value)
             elif(tmpLen == 1):
-                ASTcurrent = ASTcurrent.parent
                 pass
             #for no non-terminals (i.e SELF_DEFINED)
             else:
@@ -121,16 +117,17 @@ def buildAST(parseHead):
             pass
         elif typ == "return":
             #return : value or SELF_DEFINED or function call or nothing
-            tmp = ASTNode("return",ASTcurrent,[])
-            ASTcurrent.children.append(tmp)
-            ASTcurrent = tmp
-            ASTcurrent.children.append(ASTNode("",ASTcurrent,[]))
-            ASTcurrent = ASTcurrent.children[0]
+            ASTcurrent.children.append(ASTNode("return", ASTcurrent, []))
+            ASTcurrent = ASTcurrent.children[-1]
             pass
 
         else:
             pass
-        ntv = [(x, ASTcurrent) for x in c[0].content[sliceIndex:] if 'content' in x.__dict__] + ntv[1:]
+
+        if expansion == None:
+            expansion = [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__]
+        print ([x.token for x,y in expansion])
+        ntv = expansion + ntv[1:]
 
     pprint_tree(ASTHead)
 
