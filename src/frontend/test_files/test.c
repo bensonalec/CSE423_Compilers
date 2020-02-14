@@ -1,15 +1,4 @@
-int k(int i, char c);
-
-int main() {
-
-	int x = ~1;
-	x = -1;
-	x = --x;
-	y = x;
-	x = z;
+int main(int a, int b, int c, int d, int e) {
+	int x = 1+2+3*5+7;
 	return 1;
-}
-
-int k(int i, char c){
-	int x;
 }
