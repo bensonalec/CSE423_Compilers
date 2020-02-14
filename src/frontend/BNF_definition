@@ -45,7 +45,6 @@ param : param_terminal #paramater
 param : param_terminal COMMA param #parameter
 
 param_terminal : arithmetic #param_terminal
-param_terminal : SELF_DEFINED #param_terminal
 
 loop : WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN block #while loop
 loop : WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN content_terminal #while loop
@@ -53,25 +52,33 @@ loop : WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN content_terminal #while loop
 loop : FOR_LOOP OPEN_PAREN for_part_1 SEMICOLON for_part_2 SEMICOLON for_part_3 CLOSE_PAREN block #for loop
 loop : FOR_LOOP OPEN_PAREN for_part_1 SEMICOLON for_part_2 SEMICOLON for_part_3 CLOSE_PAREN content_terminal #for loop
 
-loop : DO_LOOP block WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN SEMICOLON #loop
-loop : DO_LOOP content_terminal WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN SEMICOLON #loop
+loop : DO_LOOP block WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN SEMICOLON #do loop
+loop : DO_LOOP content_terminal WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN SEMICOLON #do loop
 
-branch : IF_BRANCH OPEN_PAREN collation CLOSE_PAREN block #if
-branch : IF_BRANCH OPEN_PAREN collation CLOSE_PAREN content_terminal #if
+branch : IF_BRANCH OPEN_PAREN collation CLOSE_PAREN if_body#if
+branch : IF_BRANCH OPEN_PAREN collation CLOSE_PAREN if_body if_expansion #if
 
-branch : ELSE_BRANCH block #else
-branch : ELSE_BRANCH content_terminal #else
+if_body : block #if_body
+if_body : content_terminal #if_body
 
-branch : ELSE_BRANCH IF_BRANCH OPEN_PAREN collation CLOSE_PAREN block #elif
-branch : ELSE_BRANCH IF_BRANCH OPEN_PAREN collation CLOSE_PAREN content_terminal #elif
+if_expansion : ELSE_BRANCH if_body #if_expansion
 
-branch : SWITCH_BRANCH OPEN_PAREN arithmetic CLOSE_PAREN block #switch
+branch : SWITCH_BRANCH OPEN_PAREN arithmetic CLOSE_PAREN switch_body #switch
 
-branch : CASE value COLON block #case
-branch : CASE value COLON content_terminal #case
+switch_body : OPEN_BRACE case CLOSE_BRACE #switch_body
+switch_body : OPEN_BRACE case COMMA cases CLOSE_BRACE #switch_body
 
-branch : DEFAULT COLON block #default
-branch : DEFAULT COLON content_terminal #default
+cases : case COMMA cases #cases
+cases : case #cases
+cases : default #cases
+
+case : CASE value COLON #case
+case : CASE value COLON case_body #case
+
+default : DEFAULT COLON case_body #default
+
+case_body : block #case_body
+case_body : content #case_body
 
 goto : SELF_DEFINED COLON content_terminal #goto
 goto : SELF_DEFINED COLON #goto
