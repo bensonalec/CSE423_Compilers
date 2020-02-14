@@ -67,8 +67,6 @@ def buildAST(parseHead):
             if not (c[0].content[1].content[0].token == 'content_terminal' and c[0].content[1].content[0].content[0].token == "if"):
                 ASTcurrent.children.append(ASTNode("default", ASTcurrent, []))
                 ASTcurrent = ASTcurrent.children[-1]
-        elif typ == "collation":
-            pass
         elif typ == "comparison":
             ASTcurrent.name = c[0].content[0].value
             pass
@@ -81,6 +79,7 @@ def buildAST(parseHead):
                 ASTcurrent = ASTcurrent.children[-1]
             #for one non-terminals (i.e value)
             elif(tmpLen == 1):
+                print ([x for x in c[0].content])
                 pass
             #for no non-terminals (i.e SELF_DEFINED)
             else:
@@ -113,7 +112,7 @@ def buildAST(parseHead):
             ASTcurrent = ASTcurrent.children[-1]
             ASTcurrent.children.append(ASTNode(c[0].content[1].value, ASTcurrent, []))
         elif typ == "goto":
-            pass
+            ASTcurrent.children.append(ASTNode(f"{c[0].content[0].value}:", ASTcurrent, []))
         elif typ == "do loop":
             ASTcurrent.children.append(ASTNode("do_while", ASTcurrent, []))
             ASTcurrent = ASTcurrent.children[-1]
@@ -121,6 +120,15 @@ def buildAST(parseHead):
             ASTcurrent.children.append(ASTNode("body", ASTcurrent, []))
 
             expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if 'content' in x.__dict__ and x.token == "collation"] + [(x, ASTcurrent.children[1]) for x in c[0].content if 'content' in x.__dict__ and (x.token == "block" or x.token == "content_terminal")]
+        elif typ == "unary":
+            if len([x for x in c[0].content if 'content' in x.__dict__]):
+                pass
+            else:
+                op_index = [x for x in range(2) if x != [y.name for y in c[0].content].index("SELF_DEFINED")][0]
+                ASTcurrent.children.append(ASTNode(c[0].content[op_index], ASTcurrent, []))
+                ASTcurrent = ASTcurrent.children[-1]
+                ASTcurrent.children.append(ASTNode("NULL", ASTcurrent ,[]))
+                ASTcurrent.children.insert(op_index ^ 1, ASTNode(c[0].content[op_index ^ 1], ASTcurrent, []))
             pass
         else:
             # print (c[0].token)
@@ -131,6 +139,8 @@ def buildAST(parseHead):
         # print ([x.token for x,y in expansion])
         ntv = expansion + ntv[1:]
 
+    # goto: lable colon
+    # unary operators: Operator and index of child corresponds to pre or post.
 
     # to ensure that all nodes dont have an empty parent
     ntv = [ASTHead]
@@ -142,15 +152,15 @@ def buildAST(parseHead):
             del c.parent.children[0]
         ntv = [x for x in c.children] + ntv[1:]
 
-    pprint_tree(ASTHead)
+    return ASTHead
 
-def pprint_tree(node, file=None, _prefix="", _last=True):
+def print_AST(node, file=None, _prefix="", _last=True):
     print(_prefix, "`-- " if _last else "|-- ", node.name, sep="", file=file)
     _prefix += "    " if _last else "|   "
     child_count = len(node.children)
     for i, child in enumerate(node.children):
         _last = i == (child_count - 1)
-        pprint_tree(child, file, _prefix, _last)
+        print_AST(child, file, _prefix, _last)
 
 
 class ASTNode():

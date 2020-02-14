@@ -497,6 +497,21 @@ class Parser():
             self.Head = newNode
             return newNode
 
+        @self.pg.production('single_line : arithmetic SEMICOLON ')
+        def single_line___arithmetic_SEMICOLON_(p):
+            """
+            Boilerplate BNF function
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
+            """
+            newNode = AbstractSyntaxTree("single_line",p)
+            self.Head = newNode
+            return newNode
+
         @self.pg.production('single_line : SEMICOLON ')
         def single_line___SEMICOLON_(p):
             """
@@ -914,6 +929,21 @@ class Parser():
                 The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("case_body",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('goto : SELF_DEFINED COLON block ')
+        def goto___SELF_DEFINED_COLON_block_(p):
+            """
+            Boilerplate BNF function
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
+            """
+            newNode = AbstractSyntaxTree("goto",p)
             self.Head = newNode
             return newNode
 
@@ -1723,7 +1753,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arithmetic",p)
+            newNode = AbstractSyntaxTree("unary",p)
             self.Head = newNode
             return newNode
 
@@ -1738,7 +1768,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arithmetic",p)
+            newNode = AbstractSyntaxTree("unary",p)
             self.Head = newNode
             return newNode
 
@@ -1753,7 +1783,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arithmetic",p)
+            newNode = AbstractSyntaxTree("unary",p)
             self.Head = newNode
             return newNode
 
@@ -1768,7 +1798,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arithmetic",p)
+            newNode = AbstractSyntaxTree("unary",p)
             self.Head = newNode
             return newNode
 
@@ -1783,7 +1813,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arithmetic",p)
+            newNode = AbstractSyntaxTree("unary",p)
             self.Head = newNode
             return newNode
 
@@ -1798,7 +1828,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arithmetic",p)
+            newNode = AbstractSyntaxTree("unary",p)
             self.Head = newNode
             return newNode
 
@@ -1813,7 +1843,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arithmetic",p)
+            newNode = AbstractSyntaxTree("unary",p)
             self.Head = newNode
             return newNode
 
@@ -1828,7 +1858,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arithmetic",p)
+            newNode = AbstractSyntaxTree("unary",p)
             self.Head = newNode
             return newNode
 
@@ -1843,7 +1873,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arithmetic",p)
+            newNode = AbstractSyntaxTree("unary",p)
             self.Head = newNode
             return newNode
 

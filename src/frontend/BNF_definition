@@ -36,6 +36,7 @@ single_line : initialization SEMICOLON #single_line
 single_line : function_call SEMICOLON #single_line
 single_line : designation SEMICOLON #single_line
 single_line : response SEMICOLON #single_line
+single_line : arithmetic SEMICOLON #single_line
 single_line : SEMICOLON #single_line
 
 function_call : SELF_DEFINED OPEN_PAREN param CLOSE_PAREN #function call
@@ -80,6 +81,7 @@ default : DEFAULT COLON case_body #default
 case_body : block #case_body
 case_body : content #case_body
 
+goto : SELF_DEFINED COLON block #goto
 goto : SELF_DEFINED COLON content_terminal #goto
 goto : SELF_DEFINED COLON #goto
 
@@ -145,15 +147,15 @@ arithmetic : arithmetic SUB arithmetic #arithmetic
 arithmetic : arithmetic MUL arithmetic #arithmetic
 arithmetic : arithmetic DIV arithmetic #arithmetic
 arithmetic : arithmetic MOD arithmetic #arithmetic
-arithmetic : ADD arithmetic #arithmetic
-arithmetic : SUB arithmetic #arithmetic
-arithmetic : NOT arithmetic #arithmetic
-arithmetic : COMP arithmetic #arithmetic
-arithmetic : OPEN_PAREN TYPE CLOSE_PAREN arithmetic #arithmetic
-arithmetic : INC SELF_DEFINED #arithmetic
-arithmetic : DEC SELF_DEFINED #arithmetic
-arithmetic : SELF_DEFINED INC #arithmetic
-arithmetic : SELF_DEFINED DEC #arithmetic
+arithmetic : ADD arithmetic #unary
+arithmetic : SUB arithmetic #unary
+arithmetic : NOT arithmetic #unary
+arithmetic : COMP arithmetic #unary
+arithmetic : OPEN_PAREN TYPE CLOSE_PAREN arithmetic #unary
+arithmetic : INC SELF_DEFINED #unary
+arithmetic : DEC SELF_DEFINED #unary
+arithmetic : SELF_DEFINED INC #unary
+arithmetic : SELF_DEFINED DEC #unary
 arithmetic : OPEN_PAREN arithmetic CLOSE_PAREN #arithmetic
 arithmetic : value #arithmetic
 arithmetic : SELF_DEFINED #arithmetic

@@ -131,7 +131,9 @@ def main(args, fi):
         # Retrieve the head of the AST
         head = pg.getTree()
 
-        ast.buildAST(head)
+        astree = ast.buildAST(head)
+
+        ast.print_AST(astree)
 
     except LexingError as err:
         print("Received error(s) from token validation. Exiting...")
@@ -142,20 +144,16 @@ def main(args, fi):
         pg.print_error()
         print("Received AssertionError(s) from parser, continuing with what was parsed...\n")
 
-    # except BaseException as err:
-    #     print(f"BaseException: {err}. Exiting...")
-    #     exit()
+    except BaseException as err:
+        print(f"BaseException: {err}. Exiting...")
+        exit()
     
-    # Retrieve the head of the AST
-    head = pg.getTree()
 
     if args.tree or args.all:
         print(getTree(head,0))
     
     if args.pretty or args.all:
-        #prettyPrint(head,0,None)
         pprint_tree(head)
-
 
     if args.all:
         printTree(head, 0)
