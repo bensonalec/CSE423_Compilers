@@ -1,21 +1,39 @@
 program : definitionList #program
 
-definitionList : functionDefinition definitionList #definitionList
-definitionList : functionDeclaration definitionList #definitionList
-definitionList : initialization SEMICOLON definitionList #definitionList
-definitionList : #definitionList
+definitionList : definition_terminal definitionList #definitionList
+definitionList : definition_terminal #definitionList
 
-functionDefinition : TYPE SELF_DEFINED OPEN_PAREN args CLOSE_PAREN block #function definition
-functionDefinition : TYPE SELF_DEFINED OPEN_PAREN CLOSE_PAREN block #function definition
+definition_terminal : functionDefinition #definition_terminal
+definition_terminal : functionDeclaration #definition_terminal
+definition_terminal : initialization #definition_terminal
+definition_terminal : COMMENT #definition_terminal
 
-functionDeclaration : TYPE SELF_DEFINED OPEN_PAREN args CLOSE_PAREN SEMICOLON #functionDeclaration
-functionDeclaration : TYPE SELF_DEFINED OPEN_PAREN CLOSE_PAREN SEMICOLON #functionDeclaration
+functionDefinition : func_type SELF_DEFINED OPEN_PAREN args CLOSE_PAREN block #function definition
+functionDefinition : func_type SELF_DEFINED OPEN_PAREN CLOSE_PAREN block #function definition
+
+functionDeclaration : func_type SELF_DEFINED OPEN_PAREN args CLOSE_PAREN SEMICOLON #functionDeclaration
+functionDeclaration : func_type SELF_DEFINED OPEN_PAREN CLOSE_PAREN SEMICOLON #functionDeclaration
+
+func_type : TYPE #func_type
+func_type : func_modif TYPE #func_type
+
+func_modif : func_modif_terminal #func_modif
+func_modif : func_modif_terminal func_modif #func_modif
+
+func_modif_terminal : FUNC_MODIF #
+func_modif_terminal : BOTH_MODIF #
+
+var_modif : var_modif_terminal #var_modif
+var_modif : var_modif_terminal var_modif #var_modif
+
+var_modif_terminal : VAR_MODIF #var_modif_terminal
+var_modif_terminal : BOTH_MODIF #var_modif_terminal
 
 args : arg_terminal COMMA args #args
 args : arg_terminal #args
 
-arg_terminal : TYPE SELF_DEFINED #arg_terminal
-arg_terminal : TYPE #arg_terminal
+arg_terminal : var_type SELF_DEFINED #arg_terminal
+arg_terminal : var_type #arg_terminal
 
 block : OPEN_BRACE block block CLOSE_BRACE #block
 block : OPEN_BRACE block content CLOSE_BRACE #block
@@ -36,6 +54,7 @@ single_line : initialization SEMICOLON #single_line
 single_line : function_call SEMICOLON #single_line
 single_line : designation SEMICOLON #single_line
 single_line : response SEMICOLON #single_line
+single_line : arithmetic SEMICOLON #single_line
 single_line : SEMICOLON #single_line
 
 function_call : SELF_DEFINED OPEN_PAREN param CLOSE_PAREN #function call
@@ -45,7 +64,7 @@ param : param_terminal #paramater
 param : param_terminal COMMA param #parameter
 
 param_terminal : arithmetic #param_terminal
-param_terminal : SELF_DEFINED #param_terminal
+param_terminal : STRING #param_terminal
 
 loop : WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN block #while loop
 loop : WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN content_terminal #while loop
@@ -53,26 +72,35 @@ loop : WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN content_terminal #while loop
 loop : FOR_LOOP OPEN_PAREN for_part_1 SEMICOLON for_part_2 SEMICOLON for_part_3 CLOSE_PAREN block #for loop
 loop : FOR_LOOP OPEN_PAREN for_part_1 SEMICOLON for_part_2 SEMICOLON for_part_3 CLOSE_PAREN content_terminal #for loop
 
-loop : DO_LOOP block WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN SEMICOLON #loop
-loop : DO_LOOP content_terminal WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN SEMICOLON #loop
+loop : DO_LOOP block WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN SEMICOLON #do loop
+loop : DO_LOOP content_terminal WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN SEMICOLON #do loop
 
-branch : IF_BRANCH OPEN_PAREN collation CLOSE_PAREN block #if
-branch : IF_BRANCH OPEN_PAREN collation CLOSE_PAREN content_terminal #if
+branch : IF_BRANCH OPEN_PAREN collation CLOSE_PAREN if_body#if
+branch : IF_BRANCH OPEN_PAREN collation CLOSE_PAREN if_body if_expansion #if
 
-branch : ELSE_BRANCH block #else
-branch : ELSE_BRANCH content_terminal #else
+if_body : block #if_body
+if_body : content_terminal #if_body
 
-branch : ELSE_BRANCH IF_BRANCH OPEN_PAREN collation CLOSE_PAREN block #elif
-branch : ELSE_BRANCH IF_BRANCH OPEN_PAREN collation CLOSE_PAREN content_terminal #elif
+if_expansion : ELSE_BRANCH if_body #if_expansion
 
-branch : SWITCH_BRANCH OPEN_PAREN arithmetic CLOSE_PAREN block #switch
+branch : SWITCH_BRANCH OPEN_PAREN arithmetic CLOSE_PAREN switch_body #switch
 
-branch : CASE value COLON block #case
-branch : CASE value COLON content_terminal #case
+switch_body : OPEN_BRACE case CLOSE_BRACE #switch_body
+switch_body : OPEN_BRACE cases CLOSE_BRACE #switch_body
 
-branch : DEFAULT COLON block #default
-branch : DEFAULT COLON content_terminal #default
+cases : case cases #cases
+cases : case #cases
+cases : default #cases
 
+case : CASE value COLON #case
+case : CASE value COLON case_body #case
+
+default : DEFAULT COLON case_body #default
+
+case_body : block #case_body
+case_body : content #case_body
+
+goto : SELF_DEFINED COLON block #goto
 goto : SELF_DEFINED COLON content_terminal #goto
 goto : SELF_DEFINED COLON #goto
 
@@ -86,9 +114,12 @@ response : GOTO SELF_DEFINED #jump
 response : BREAK #break
 response : CONTINUE #continue
 
-initialization : TYPE designation #initialization
-initialization : TYPE SELF_DEFINED #initialization
-initialization : TYPE MUL designation #initialization
+initialization : var_type designation #initialization
+initialization : var_type SELF_DEFINED #initialization
+initialization : var_type MUL designation #initialization
+
+var_type : var_modif TYPE #var_type
+var_type : TYPE #var_type
 
 for_part_1 : initialization #for param 1
 for_part_1 : #for param 1
@@ -118,6 +149,8 @@ assignment : SET #assignment
 
 collation : collation comparison collation #collation
 collation : arithmetic #collation
+collation : OPEN_PAREN initialization CLOSE_PAREN #collation
+collation : OPEN_PAREN designation CLOSE_PAREN #collation
 
 comparison : EQ #comparison
 comparison : LEQ #comparison
@@ -138,15 +171,16 @@ arithmetic : arithmetic SUB arithmetic #arithmetic
 arithmetic : arithmetic MUL arithmetic #arithmetic
 arithmetic : arithmetic DIV arithmetic #arithmetic
 arithmetic : arithmetic MOD arithmetic #arithmetic
-arithmetic : ADD arithmetic #arithmetic
-arithmetic : SUB arithmetic #arithmetic
-arithmetic : NOT arithmetic #arithmetic
-arithmetic : COMP arithmetic #arithmetic
-arithmetic : OPEN_PAREN TYPE CLOSE_PAREN arithmetic #arithmetic
-arithmetic : INC SELF_DEFINED #arithmetic
-arithmetic : DEC SELF_DEFINED #arithmetic
-arithmetic : SELF_DEFINED INC #arithmetic
-arithmetic : SELF_DEFINED DEC #arithmetic
+arithmetic : ADD arithmetic #unary
+arithmetic : SUB arithmetic #unary
+arithmetic : NOT arithmetic #unary
+arithmetic : COMP arithmetic #unary
+arithmetic : BAND arithmetic #unary
+arithmetic : OPEN_PAREN var_modif TYPE CLOSE_PAREN arithmetic #unary
+arithmetic : INC SELF_DEFINED #unary
+arithmetic : DEC SELF_DEFINED #unary
+arithmetic : SELF_DEFINED INC #unary
+arithmetic : SELF_DEFINED DEC #unary
 arithmetic : OPEN_PAREN arithmetic CLOSE_PAREN #arithmetic
 arithmetic : value #arithmetic
 arithmetic : SELF_DEFINED #arithmetic
