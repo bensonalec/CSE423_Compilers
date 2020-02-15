@@ -1,16 +1,17 @@
 from rply import LexerGenerator
 from rply.errors import LexingError
 import copy
+import re
 
 class Lexer():
     def __init__(self):
         self.lexer = LexerGenerator()
     
     def _add_tokens(self):
-        self.lexer.add("COMMENT",       r"(\/\/.*|\/\*.*\*\/|/\*[^*]*\*+(?:[^/*][^*]*\*+)*/)") # Catches both multi-line and single line comments
+        self.lexer.add("COMMENT",       r"/(\*(\w|\W)*?\*/|/([^\n]*))") # Catches both multi-line and single line comments
         self.lexer.add("PREPROCESSOR",  r"#\s*(warning|else|endif|include|undef|ifdef|ifndef|if|elif|pragma|define|if|elif|error|pragma|line)([\t\f ]+[^\s]+)*")
-        self.lexer.add("CHAR",          r"\'[\w\;\\ \%\"\']\'")
-        self.lexer.add("STRING",        r"(\"[\w+\;\\ \%\"\']*\")") # Classifies single characters and multiple characters as a string
+        self.lexer.add("CHAR",          r"\'\\?[\w\;\\ \%\"\']\'")
+        self.lexer.add("STRING",        r"(\"([\w+\\ \"']|[`\-=~[\]\;,./!@#$%^&*()_+{}|:<>?])*\")") # Classifies single characters and multiple characters as a string
         self.lexer.add("HEX",           r"0x[\dA-Fa-f]+")
         self.lexer.add("OCT",           r"0[0-7]{1,3}")
         self.lexer.add("BIN",           r"0b[01]+")
