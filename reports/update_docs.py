@@ -38,7 +38,8 @@ if __name__ == "__main__":
             style += "background: rgb(170, 255, 170);"
         elif td.string == "✕":
             style += "background: rgb(255, 170, 170);"
-
+        elif td.string == "−":
+            style += "background: rgb(170, 170, 170);"
         else:
             b = False
 
