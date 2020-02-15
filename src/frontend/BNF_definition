@@ -116,6 +116,7 @@ response : CONTINUE #continue
 
 initialization : var_type designation #initialization
 initialization : var_type SELF_DEFINED #initialization
+initialization : var_type SELF_DEFINED OPEN_BRACK INTEGER CLOSE_BRACK #initialization
 initialization : var_type MUL designation #initialization
 
 var_type : var_modif TYPE #var_type
@@ -134,6 +135,11 @@ for_part_3 : #for param 3
 designation : SELF_DEFINED assignment arithmetic #designation
 designation : SELF_DEFINED assignment function_call #designation
 designation : SELF_DEFINED OPEN_BRACK INTEGER CLOSE_BRACK assignment arithmetic #designation
+designation : SELF_DEFINED OPEN_BRACK INTEGER CLOSE_BRACK assignment STRING #designation
+designation : SELF_DEFINED OPEN_BRACK INTEGER CLOSE_BRACK assignment OPEN_BRACE arr_list CLOSE_BRACE #designation
+
+arr_list : value #arr_list
+arr_list : value COMMA arr_list #arr_list
 
 assignment : AEQ #assignment
 assignment : SEQ #assignment
@@ -184,6 +190,7 @@ arithmetic : SELF_DEFINED DEC #unary
 arithmetic : OPEN_PAREN arithmetic CLOSE_PAREN #arithmetic
 arithmetic : value #arithmetic
 arithmetic : SELF_DEFINED #arithmetic
+arithmetic : SELF_DEFINED OPEN_BRACK INTEGER CLOSE_BRACK #arithmetic
 arithmetic : function_call #arithmetic
 
 value : INTEGER #value

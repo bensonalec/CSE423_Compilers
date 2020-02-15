@@ -36,7 +36,7 @@ class Parser():
         """
 
         self.pg = ParserGenerator(
-            ['COMMENT','SELF_DEFINED','OPEN_PAREN','CLOSE_PAREN','SEMICOLON','TYPE','FUNC_MODIF','BOTH_MODIF','VAR_MODIF','COMMA','OPEN_BRACE','CLOSE_BRACE','STRING','WHILE_LOOP','FOR_LOOP','DO_LOOP','IF_BRANCH','ELSE_BRANCH','SWITCH_BRANCH','CASE','COLON','DEFAULT','RETURN','GOTO','BREAK','CONTINUE','MUL','OPEN_BRACK','INTEGER','CLOSE_BRACK','AEQ','SEQ','MEQ','DEQ','LSEQ','RSEQ','BOEQ','BAEQ','XEQ','CEQ','SET','EQ','LEQ','GEQ','NEQ','LT','GT','OR','AND','BOR','XOR','BAND','LSH','RSH','ADD','SUB','DIV','MOD','NOT','COMP','INC','DEC','PRECISION','CHAR','HEX','OCT','BIN','NULL'] , 
+            ['COMMENT','SELF_DEFINED','OPEN_PAREN','CLOSE_PAREN','SEMICOLON','TYPE','FUNC_MODIF','BOTH_MODIF','VAR_MODIF','COMMA','OPEN_BRACE','CLOSE_BRACE','STRING','WHILE_LOOP','FOR_LOOP','DO_LOOP','IF_BRANCH','ELSE_BRANCH','SWITCH_BRANCH','CASE','COLON','DEFAULT','RETURN','GOTO','BREAK','CONTINUE','OPEN_BRACK','INTEGER','CLOSE_BRACK','MUL','AEQ','SEQ','MEQ','DEQ','LSEQ','RSEQ','BOEQ','BAEQ','XEQ','CEQ','SET','EQ','LEQ','GEQ','NEQ','LT','GT','OR','AND','BOR','XOR','BAND','LSH','RSH','ADD','SUB','DIV','MOD','NOT','COMP','INC','DEC','PRECISION','CHAR','HEX','OCT','BIN','NULL'] , 
             precedence=[
                 ('right', ['SET', 'AEQ', 'SEQ', 'MEQ', 'DEQ', 'MODEQ', 'LSEQ', 'RSEQ', 'BAEQ', 'XEQ', 'BOEQ']),
                 ('left',  ['OR']),
@@ -1307,6 +1307,21 @@ class Parser():
             self.Head = newNode
             return newNode
 
+        @self.pg.production('initialization : var_type SELF_DEFINED OPEN_BRACK INTEGER CLOSE_BRACK ')
+        def initialization___var_type_SELF_DEFINED_OPEN_BRACK_INTEGER_CLOSE_BRACK_(p):
+            """
+            Boilerplate BNF function
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
+            """
+            newNode = AbstractSyntaxTree("initialization",p)
+            self.Head = newNode
+            return newNode
+
         @self.pg.production('initialization : var_type MUL designation ')
         def initialization___var_type_MUL_designation_(p):
             """
@@ -1499,6 +1514,66 @@ class Parser():
                 The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("designation",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('designation : SELF_DEFINED OPEN_BRACK INTEGER CLOSE_BRACK assignment STRING ')
+        def designation___SELF_DEFINED_OPEN_BRACK_INTEGER_CLOSE_BRACK_assignment_STRING_(p):
+            """
+            Boilerplate BNF function
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
+            """
+            newNode = AbstractSyntaxTree("designation",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('designation : SELF_DEFINED OPEN_BRACK INTEGER CLOSE_BRACK assignment OPEN_BRACE arr_list CLOSE_BRACE ')
+        def designation___SELF_DEFINED_OPEN_BRACK_INTEGER_CLOSE_BRACK_assignment_OPEN_BRACE_arr_list_CLOSE_BRACE_(p):
+            """
+            Boilerplate BNF function
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
+            """
+            newNode = AbstractSyntaxTree("designation",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('arr_list : value ')
+        def arr_list___value_(p):
+            """
+            Boilerplate BNF function
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
+            """
+            newNode = AbstractSyntaxTree("arr_list",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('arr_list : value COMMA arr_list ')
+        def arr_list___value_COMMA_arr_list_(p):
+            """
+            Boilerplate BNF function
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
+            """
+            newNode = AbstractSyntaxTree("arr_list",p)
             self.Head = newNode
             return newNode
 
@@ -2179,6 +2254,21 @@ class Parser():
 
         @self.pg.production('arithmetic : SELF_DEFINED ')
         def arithmetic___SELF_DEFINED_(p):
+            """
+            Boilerplate BNF function
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
+            """
+            newNode = AbstractSyntaxTree("arithmetic",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('arithmetic : SELF_DEFINED OPEN_BRACK INTEGER CLOSE_BRACK ')
+        def arithmetic___SELF_DEFINED_OPEN_BRACK_INTEGER_CLOSE_BRACK_(p):
             """
             Boilerplate BNF function
             
