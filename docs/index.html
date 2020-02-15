@@ -257,6 +257,9 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
         flex-grow: 1;
         text-align: center;
     }
+    tbody th, tbody td {
+        border-bottom: 1px solid rgb(150, 150, 150);
+    }
       </style>
       <dl>
        <dt>
@@ -339,1995 +342,2195 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
          </dt>
          <dd>
           The plan is to support the whole set of C instructions for as much of the compilation process as possible. As such here is a table of what parts of the compiler supports what features:
-          <table>
-           <tr>
-            <th style="padding: 10px;">
-             Preprocessor
-            </th>
-            <th style="padding: 10px;">
-             Feature
-            </th>
-            <th style="padding: 10px;">
-             Lexer
-            </th>
-            <th style="padding: 10px;">
-             Parser
-            </th>
-            <th style="padding: 10px;">
-             AST Building
-            </th>
-           </tr>
-           <tr>
-            <th colspan="3" style="padding: 10px;">
-             Declaration, Definition, and Calling
-            </th>
-           </tr>
-           <tr>
-            <td>
-             Declaring Variables
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             Defining Variables
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             Declaring Functions
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             Defining Functions
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             Declaring Functions with Arguments
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             Defining Functions with Arguments
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             Calling Functions without Parameters
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             Calling Functions with Parameters
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <th colspan="3" style="padding: 10px;">
-             Assignment
-            </th>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              =
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              +=
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              -=
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              *=
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              /=
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              %=
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              &lt;&lt;=
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              &gt;&gt;=
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              |=
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              &amp;=
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              ^=
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              ~=
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <th colspan="3" style="padding: 10px;">
-             Keywords
-            </th>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              sizeof
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              typedef
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              inline
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              register
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              volatile
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              const
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              signed
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              static
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              unsigned
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              extern
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <th colspan="3" style="padding: 10px;">
-             Arithmetic Operations with Precedence
-            </th>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              +
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              -
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              *
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              /
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              %
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              &lt;&lt;
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              &gt;&gt;
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              |
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              &amp;
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              ^
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              ~
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             Using Integers
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             Using Floating Point
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             Using Characters
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             Using Hex
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             Using Octal
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             Using Binary
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <th colspan="3" style="padding: 10px;">
-             Comperative Operations
-            </th>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              ==
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              &lt;=
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              &gt;=
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              !=
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              &lt;
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              &gt;
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <th colspan="3" style="padding: 10px;">
-             Branching
-            </th>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              If
-             </code>
-             (With a closed scope after it)
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              If
-             </code>
-             (With a single line after it)
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              Else If
-             </code>
-             (With a closed scope after it)
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              Else If
-             </code>
-             (With a single line after it)
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              Else
-             </code>
-             (With a closed scope after it)
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              Else
-             </code>
-             (With a single line after it)
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              Switch
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <th colspan="3" style="padding: 10px;">
-             Unary
-            </th>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              +
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              -
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              ++
-             </code>
-             (Pre)
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              --
-             </code>
-             (Pre)
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              ++
-             </code>
-             (Post)
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              --
-             </code>
-             (Post)
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              !
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              ~
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             Casting
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              sizeof
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <th colspan="3" style="padding: 10px;">
-             Loops
-            </th>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              While
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              For
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              Do While
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <th colspan="3" style="padding: 10px;">
-             Jumps
-            </th>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              Return
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              Goto
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              Break
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              Continue
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <th colspan="3" style="padding: 10px;">
-             Types
-            </th>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              auto
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              long double
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              double
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              float
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              long long int
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              long
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              int
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              short
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              char
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              void
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             Immutable Strings
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <th colspan="3" style="padding: 10px;">
-             Preprocessor Keywords
-            </th>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              #Warning
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              #Include (Standard Library)
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              #Include (Local)
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              #Define
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              #Undef
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              #If
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              #Ifdef
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              #Ifndef
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              #Elif
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              #Else
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              #Endif
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              #Pragma
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              #Error
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
-           <tr>
-            <td>
-             <code>
-              #Line
-             </code>
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-            <td style="text-align: center; background: rgb(170, 255, 170);">
-             ✓
-            </td>
-            <td style="text-align: center; background: rgb(170, 170, 170);">
-             −
-            </td>
-            <td style="text-align: center; background: rgb(255, 170, 170);">
-             ✕
-            </td>
-           </tr>
+          <table style="overflow-x: auto;">
+           <thead>
+            <tr>
+             <th style="padding: 10px;">
+              Feature
+             </th>
+             <th style="padding: 10px;">
+              Preprocessor
+             </th>
+             <th style="padding: 10px;">
+              Lexer
+             </th>
+             <th style="padding: 10px;">
+              Parser
+             </th>
+             <th style="padding: 10px;">
+              AST Building
+             </th>
+             <th style="padding: 10px;">
+              Semantic Analysis
+             </th>
+            </tr>
+           </thead>
+           <tfoot id="table_foot">
+            <td colspan="6" style="border: 0px 0px 50px 0px solid black;">
+             <div>
+              1: With and without arguments/parameters.
+              <br/>
+              2: With a specific scope and with only one line following it.
+              <br/>
+              3: Both pre and post operators.
+              <br/>
+              4: Both
+              <code>
+               long long int
+              </code>
+              and
+              <code>
+               long long
+              </code>
+              are accepted.
+              <br/>
+              5: Only local header files currently due to platform interaction.
+              <br/>
+             </div>
+            </td>
+           </tfoot>
+           <tbody>
+            <tr>
+             <th colspan="6" style="padding: 10px;">
+              Declaration, Definition, and Calling
+             </th>
+            </tr>
+            <tr>
+             <td>
+              Declaring Variables
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              Assigning Variables
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              Declaring Functions
+              <sup>
+               <a href="#table_foot">
+                [1]
+               </a>
+              </sup>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              Defining Functions
+              <sup>
+               <a href="#table_foot">
+                [1]
+               </a>
+              </sup>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              Calling Functions
+              <sup>
+               <a href="#table_foot">
+                [1]
+               </a>
+              </sup>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <th colspan="6" style="padding: 10px;">
+              Assignment
+             </th>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               =
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               +=
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               -=
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               *=
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               /=
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               %=
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               &lt;&lt;=
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               &gt;&gt;=
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               |=
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               &amp;=
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               ^=
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               ~=
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <th colspan="6" style="padding: 10px;">
+              Keywords
+             </th>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               sizeof
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               typedef
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               inline
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               register
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               volatile
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               const
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               signed
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               static
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               unsigned
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               extern
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <th colspan="6" style="padding: 10px;">
+              Arithmetic Operations with Precedence
+             </th>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               +
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               -
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               *
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               /
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               %
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               &lt;&lt;
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               &gt;&gt;
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               |
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               &amp;
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               ^
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               ~
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              Using Integers
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              Using Floating Point
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              Using Characters
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              Using Hex
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              Using Octal
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              Using Binary
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <th colspan="6" style="padding: 10px;">
+              Comperative Operations
+             </th>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               ==
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               &lt;=
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               &gt;=
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               !=
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               &lt;
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               &gt;
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <th colspan="6" style="padding: 10px;">
+              Branching
+             </th>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               If
+              </code>
+              <sup>
+               <a href="#table_foot">
+                [2]
+               </a>
+              </sup>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               Else If
+              </code>
+              <sup>
+               <a href="#table_foot">
+                [2]
+               </a>
+              </sup>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               Else
+              </code>
+              <sup>
+               <a href="#table_foot">
+                [2]
+               </a>
+              </sup>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               Switch
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <th colspan="6" style="padding: 10px;">
+              Unary
+             </th>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               +
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               -
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               ++
+              </code>
+              <sup>
+               <a href="#table_foot">
+                [3]
+               </a>
+              </sup>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               --
+              </code>
+              <sup>
+               <a href="#table_foot">
+                [3]
+               </a>
+              </sup>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               !
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               ~
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              Casting
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               sizeof
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <th colspan="6" style="padding: 10px;">
+              Loops
+             </th>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               While
+              </code>
+              <sup>
+               <a href="#table_foot">
+                [2]
+               </a>
+              </sup>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               For
+              </code>
+              <sup>
+               <a href="#table_foot">
+                [2]
+               </a>
+              </sup>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               Do While
+              </code>
+              <sup>
+               <a href="#table_foot">
+                [2]
+               </a>
+              </sup>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <th colspan="6" style="padding: 10px;">
+              Jumps
+             </th>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               Return
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               Goto
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               Break
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               Continue
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <th colspan="6" style="padding: 10px;">
+              Types
+             </th>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               auto
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               long double
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               double
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               float
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               long long int
+              </code>
+              <sup>
+               <a href="#table_foot">
+                [4]
+               </a>
+              </sup>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               long
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               int
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               short
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               char
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               void
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <td>
+              Immutable Strings
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+            </tr>
+            <tr>
+             <th colspan="6" style="padding: 10px;">
+              Preprocessor Keywords
+             </th>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               #Warning
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               #Include
+              </code>
+              <sup>
+               <a href="#table_foot">
+                [5]
+               </a>
+              </sup>
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               #Define
+              </code>
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               #Undef
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               #If
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               #Ifdef
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               #Ifndef
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               #Elif
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               #Else
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               #Endif
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               #Pragma
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               #Error
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+            </tr>
+            <tr>
+             <td>
+              <code>
+               #Line
+              </code>
+             </td>
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
+             </td>
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+             <td style="text-align: center; background: rgb(170, 170, 170);">
+              −
+             </td>
+            </tr>
+           </tbody>
           </table>
          </dd>
          <dt>
