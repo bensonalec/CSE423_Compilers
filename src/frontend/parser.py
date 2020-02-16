@@ -36,7 +36,7 @@ class Parser():
         """
 
         self.pg = ParserGenerator(
-            ['COMMENT','SELF_DEFINED','OPEN_PAREN','CLOSE_PAREN','SEMICOLON','TYPE','FUNC_MODIF','BOTH_MODIF','VAR_MODIF','COMMA','OPEN_BRACE','CLOSE_BRACE','STRING','WHILE_LOOP','FOR_LOOP','DO_LOOP','IF_BRANCH','ELSE_BRANCH','SWITCH_BRANCH','CASE','COLON','DEFAULT','RETURN','GOTO','BREAK','CONTINUE','OPEN_BRACK','INTEGER','CLOSE_BRACK','MUL','AEQ','SEQ','MEQ','DEQ','LSEQ','RSEQ','BOEQ','BAEQ','XEQ','CEQ','SET','EQ','LEQ','GEQ','NEQ','LT','GT','OR','AND','BOR','XOR','BAND','LSH','RSH','ADD','SUB','DIV','MOD','NOT','COMP','INC','DEC','PRECISION','CHAR','HEX','OCT','BIN','NULL'] , 
+            ['COMMENT','SELF_DEFINED','OPEN_PAREN','CLOSE_PAREN','SEMICOLON','TYPE','FUNC_MODIF','BOTH_MODIF','VAR_MODIF','COMMA','OPEN_BRACE','CLOSE_BRACE','STRING','WHILE_LOOP','FOR_LOOP','DO_LOOP','IF_BRANCH','ELSE_BRANCH','SWITCH_BRANCH','CASE','COLON','DEFAULT','RETURN','GOTO','BREAK','CONTINUE','EQ','OPEN_BRACK','INTEGER','CLOSE_BRACK','MUL','AEQ','SEQ','MEQ','DEQ','LSEQ','RSEQ','BOEQ','BAEQ','XEQ','CEQ','SET','LEQ','GEQ','NEQ','LT','GT','OR','AND','BOR','XOR','BAND','LSH','RSH','ADD','SUB','DIV','MOD','NOT','COMP','INC','DEC','PRECISION','CHAR','HEX','OCT','BIN','NULL'] , 
             precedence=[
                 ('right', ['SET', 'AEQ', 'SEQ', 'MEQ', 'DEQ', 'MODEQ', 'LSEQ', 'RSEQ', 'BAEQ', 'XEQ', 'BOEQ']),
                 ('left',  ['OR']),
@@ -1277,8 +1277,8 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production('initialization : var_type designation ')
-        def initialization___var_type_designation_(p):
+        @self.pg.production('initialization : var_type SELF_DEFINED EQ initialization_terminal ')
+        def initialization___var_type_SELF_DEFINED_EQ_initialization_terminal_(p):
             """
             Boilerplate BNF function
             
@@ -1334,6 +1334,96 @@ class Parser():
                 The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("initialization",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('initialization : var_type SELF_DEFINED array_init assignment STRING ')
+        def initialization___var_type_SELF_DEFINED_array_init_assignment_STRING_(p):
+            """
+            Boilerplate BNF function
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
+            """
+            newNode = AbstractSyntaxTree("initialization",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('initialization : var_type SELF_DEFINED array_init assignment OPEN_BRACE arr_list CLOSE_BRACE ')
+        def initialization___var_type_SELF_DEFINED_array_init_assignment_OPEN_BRACE_arr_list_CLOSE_BRACE_(p):
+            """
+            Boilerplate BNF function
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
+            """
+            newNode = AbstractSyntaxTree("initialization",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('array_init : OPEN_BRACK INTEGER CLOSE_BRACK ')
+        def array_init___OPEN_BRACK_INTEGER_CLOSE_BRACK_(p):
+            """
+            Boilerplate BNF function
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
+            """
+            newNode = AbstractSyntaxTree("array_init",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('array_init : OPEN_BRACK CLOSE_BRACK ')
+        def array_init___OPEN_BRACK_CLOSE_BRACK_(p):
+            """
+            Boilerplate BNF function
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
+            """
+            newNode = AbstractSyntaxTree("array_init",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('initialization_terminal : arithmetic ')
+        def initialization_terminal___arithmetic_(p):
+            """
+            Boilerplate BNF function
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
+            """
+            newNode = AbstractSyntaxTree("initialization_terminal",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('initialization_terminal : function_call ')
+        def initialization_terminal___function_call_(p):
+            """
+            Boilerplate BNF function
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
+            """
+            newNode = AbstractSyntaxTree("initialization_terminal",p)
             self.Head = newNode
             return newNode
 
@@ -1502,38 +1592,8 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production('designation : SELF_DEFINED OPEN_BRACK INTEGER CLOSE_BRACK assignment arithmetic ')
-        def designation___SELF_DEFINED_OPEN_BRACK_INTEGER_CLOSE_BRACK_assignment_arithmetic_(p):
-            """
-            Boilerplate BNF function
-            
-            Args:
-                p: The matching set of tokens.
-
-            Returns:
-                The node of the abstract syntax tree.
-            """
-            newNode = AbstractSyntaxTree("designation",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('designation : SELF_DEFINED OPEN_BRACK INTEGER CLOSE_BRACK assignment STRING ')
-        def designation___SELF_DEFINED_OPEN_BRACK_INTEGER_CLOSE_BRACK_assignment_STRING_(p):
-            """
-            Boilerplate BNF function
-            
-            Args:
-                p: The matching set of tokens.
-
-            Returns:
-                The node of the abstract syntax tree.
-            """
-            newNode = AbstractSyntaxTree("designation",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('designation : SELF_DEFINED OPEN_BRACK INTEGER CLOSE_BRACK assignment OPEN_BRACE arr_list CLOSE_BRACE ')
-        def designation___SELF_DEFINED_OPEN_BRACK_INTEGER_CLOSE_BRACK_assignment_OPEN_BRACE_arr_list_CLOSE_BRACE_(p):
+        @self.pg.production('designation : SELF_DEFINED array_access assignment arithmetic ')
+        def designation___SELF_DEFINED_array_access_assignment_arithmetic_(p):
             """
             Boilerplate BNF function
             
@@ -2267,8 +2327,8 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production('arithmetic : SELF_DEFINED OPEN_BRACK INTEGER CLOSE_BRACK ')
-        def arithmetic___SELF_DEFINED_OPEN_BRACK_INTEGER_CLOSE_BRACK_(p):
+        @self.pg.production('arithmetic : SELF_DEFINED array_access ')
+        def arithmetic___SELF_DEFINED_array_access_(p):
             """
             Boilerplate BNF function
             
@@ -2294,6 +2354,51 @@ class Parser():
                 The node of the abstract syntax tree.
             """
             newNode = AbstractSyntaxTree("arithmetic",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('array_access : OPEN_BRACK INTEGER CLOSE_BRACK ')
+        def array_access___OPEN_BRACK_INTEGER_CLOSE_BRACK_(p):
+            """
+            Boilerplate BNF function
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
+            """
+            newNode = AbstractSyntaxTree("array_access",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('array_access : OPEN_BRACK SELF_DEFINED CLOSE_BRACK ')
+        def array_access___OPEN_BRACK_SELF_DEFINED_CLOSE_BRACK_(p):
+            """
+            Boilerplate BNF function
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
+            """
+            newNode = AbstractSyntaxTree("array_access",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('array_access : OPEN_BRACK function_call CLOSE_BRACK ')
+        def array_access___OPEN_BRACK_function_call_CLOSE_BRACK_(p):
+            """
+            Boilerplate BNF function
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
+            """
+            newNode = AbstractSyntaxTree("array_access",p)
             self.Head = newNode
             return newNode
 
