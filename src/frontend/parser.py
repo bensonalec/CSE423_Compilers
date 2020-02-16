@@ -36,7 +36,7 @@ class Parser():
         """
 
         self.pg = ParserGenerator(
-            ['COMMENT','SELF_DEFINED','OPEN_PAREN','CLOSE_PAREN','SEMICOLON','TYPE','FUNC_MODIF','BOTH_MODIF','VAR_MODIF','COMMA','OPEN_BRACE','CLOSE_BRACE','STRING','WHILE_LOOP','FOR_LOOP','DO_LOOP','IF_BRANCH','ELSE_BRANCH','SWITCH_BRANCH','CASE','COLON','DEFAULT','RETURN','GOTO','BREAK','CONTINUE','EQ','OPEN_BRACK','INTEGER','CLOSE_BRACK','MUL','AEQ','SEQ','MEQ','DEQ','LSEQ','RSEQ','BOEQ','BAEQ','XEQ','CEQ','SET','LEQ','GEQ','NEQ','LT','GT','OR','AND','BOR','XOR','BAND','LSH','RSH','ADD','SUB','DIV','MOD','NOT','COMP','INC','DEC','PRECISION','CHAR','HEX','OCT','BIN','NULL'] , 
+            ['COMMENT','SELF_DEFINED','OPEN_PAREN','CLOSE_PAREN','SEMICOLON','TYPE','FUNC_MODIF','BOTH_MODIF','VAR_MODIF','COMMA','OPEN_BRACE','CLOSE_BRACE','STRING','WHILE_LOOP','FOR_LOOP','DO_LOOP','IF_BRANCH','ELSE_BRANCH','SWITCH_BRANCH','CASE','COLON','DEFAULT','RETURN','GOTO','BREAK','CONTINUE','SET','OPEN_BRACK','INTEGER','CLOSE_BRACK','MUL','AEQ','SEQ','MEQ','DEQ','LSEQ','RSEQ','BOEQ','BAEQ','XEQ','CEQ','EQ','LEQ','GEQ','NEQ','LT','GT','OR','AND','BOR','XOR','BAND','LSH','RSH','ADD','SUB','DIV','MOD','NOT','COMP','INC','DEC','PRECISION','CHAR','HEX','OCT','BIN','NULL'] , 
             precedence=[
                 ('right', ['SET', 'AEQ', 'SEQ', 'MEQ', 'DEQ', 'MODEQ', 'LSEQ', 'RSEQ', 'BAEQ', 'XEQ', 'BOEQ']),
                 ('left',  ['OR']),
@@ -1277,8 +1277,8 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production('initialization : var_type SELF_DEFINED EQ initialization_terminal ')
-        def initialization___var_type_SELF_DEFINED_EQ_initialization_terminal_(p):
+        @self.pg.production('initialization : var_type SELF_DEFINED SET initialization_terminal ')
+        def initialization___var_type_SELF_DEFINED_SET_initialization_terminal_(p):
             """
             Boilerplate BNF function
             

@@ -114,7 +114,7 @@ response : GOTO SELF_DEFINED #jump
 response : BREAK #break
 response : CONTINUE #continue
 
-initialization : var_type SELF_DEFINED EQ initialization_terminal #initialization
+initialization : var_type SELF_DEFINED SET initialization_terminal #initialization
 initialization : var_type SELF_DEFINED #initialization
 initialization : var_type SELF_DEFINED OPEN_BRACK INTEGER CLOSE_BRACK #initialization
 initialization : var_type MUL designation #initialization
