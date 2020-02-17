@@ -72,15 +72,16 @@ def buildAST(parseHead):
             pass
         elif typ == "arithmetic":
             tmpLen = len([x for x in c[0].content if "content" in x.__dict__])
-            # print (tmpLen)
+
             #for two non-terminals (i.e ARITHMETIC op ARITHMETIC)
             if(tmpLen == 2): 
                 ASTcurrent.children.append(ASTNode(c[0].content[1].value, ASTcurrent, []))
                 ASTcurrent = ASTcurrent.children[-1]
+            
             #for one non-terminals (i.e value)
             elif(tmpLen == 1):
-                print ([x for x in c[0].content])
                 pass
+            
             #for no non-terminals (i.e SELF_DEFINED)
             else:
                 ASTcurrent.children.append(ASTNode(c[0].content[0].value,ASTcurrent,[]))
@@ -122,21 +123,22 @@ def buildAST(parseHead):
             expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if 'content' in x.__dict__ and x.token == "collation"] + [(x, ASTcurrent.children[1]) for x in c[0].content if 'content' in x.__dict__ and (x.token == "block" or x.token == "content_terminal")]
         elif typ == "unary":
             if len([x for x in c[0].content if 'content' in x.__dict__]):
-                pass
+                index = [x for x in range(2) if x != [y.token if 'content' in y.__dict__ else y.name for y in c[0].content].index("arithmetic")][0]
+                ASTcurrent.children.append(ASTNode(c[0].content[index].value, ASTcurrent, []))
+                ASTcurrent = ASTcurrent.children[-1]
             else:
                 op_index = [x for x in range(2) if x != [y.name for y in c[0].content].index("SELF_DEFINED")][0]
-                ASTcurrent.children.append(ASTNode(c[0].content[op_index], ASTcurrent, []))
+                ASTcurrent.children.append(ASTNode(c[0].content[op_index].value, ASTcurrent, []))
                 ASTcurrent = ASTcurrent.children[-1]
                 ASTcurrent.children.append(ASTNode("NULL", ASTcurrent ,[]))
-                ASTcurrent.children.insert(op_index ^ 1, ASTNode(c[0].content[op_index ^ 1], ASTcurrent, []))
+                ASTcurrent.children.insert(op_index ^ 1, ASTNode(c[0].content[op_index ^ 1].value, ASTcurrent, []))
             pass
         else:
-            # print (c[0].token)
             pass
 
         if expansion == None:
             expansion = [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__]
-        # print ([x.token for x,y in expansion])
+
         ntv = expansion + ntv[1:]
 
     # goto: lable colon
