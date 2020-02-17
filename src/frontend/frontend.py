@@ -11,6 +11,7 @@ from copy import deepcopy
 lex = importlib.import_module("lexer", ".")
 par = importlib.import_module("parser", ".")
 btp = importlib.import_module("bnfToParser", ".")
+ast = importlib.import_module("AST_builder", ".")
 
 
 def getTree(head,level):
@@ -74,11 +75,13 @@ def printTree(head,level):
 
 def pprint_tree(node, file=None, _prefix="", _last=True):
     """
-    Prints the abstract syntax tree in correct order
+    Prints the abstract syntax tree in depth first order
 
-    Args:
-        node: The node in the AST being printed
-        file: The file the AST is being printed to
+    Args: 
+        node: The head node of the tree.
+        file: The file to be written to (Defaults to Stdout).
+        _prefix: A string indicating the spacing from the left side of the screen.
+        _last: A boolean that indicates if a node is the last in it's immediate surroundings.
     """
     if type(node) == type(par.AbstractSyntaxTree("test", "test")):
         print(_prefix, "`-- " if _last else "|-- ", node.token, sep="", file=file)
@@ -90,10 +93,9 @@ def pprint_tree(node, file=None, _prefix="", _last=True):
     else:
         print(_prefix, "`-- " if _last else "|-- ", node, sep="", file=file)
 
-#main function to control the frontend with different command line options.
 def main(args, fi):
     """
-    The main function of this, takes in command line input via an object from argparse, and the name of the file.
+    The main function of the frontend, takes in command line input via an object from argparse, and the name of the file.
     
     Args:
         args: The object that contains the command line arguements.
@@ -127,6 +129,14 @@ def main(args, fi):
         parser = pg.get_parser()
         parser.parse(tokens)
 
+        # Retrieve the head of the AST
+        head = pg.getTree()
+
+        astree = ast.buildAST(head)
+
+        if args.all:
+            ast.print_AST(astree)
+
     except LexingError as err:
         print("Received error(s) from token validation. Exiting...")
         exit()
@@ -140,16 +150,12 @@ def main(args, fi):
         print(f"BaseException: {err}. Exiting...")
         exit()
     
-    # Retrieve the head of the AST
-    head = pg.getTree()
 
     if args.tree or args.all:
         print(getTree(head,0))
     
     if args.pretty or args.all:
-        #prettyPrint(head,0,None)
         pprint_tree(head)
-
 
     if args.all:
         printTree(head, 0)

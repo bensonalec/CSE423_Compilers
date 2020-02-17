@@ -1,13 +1,26 @@
+"""
+The lexer class definition. Uses rplys lexer as a jumping off point, and regexes and token names are added in order to tokenize.
+"""
+
 from rply import LexerGenerator
 from rply.errors import LexingError
 import copy
 import re
 
 class Lexer():
+    """
+    The lexer class definition
+    """
     def __init__(self):
+        """
+        Constructs the Lexer object.
+        """
         self.lexer = LexerGenerator()
     
     def _add_tokens(self):
+        """
+        Adds tokens to the rply lexer object
+        """
         self.lexer.add("COMMENT",       r"/(\*(\w|\W)*?\*/|/([^\n]*))") # Catches both multi-line and single line comments
         self.lexer.add("PREPROCESSOR",  r"#\s*(warning|else|endif|include|undef|ifdef|ifndef|if|elif|pragma|define|if|elif|error|pragma|line)([\t\f ]+[^\s]+)*")
         self.lexer.add("CHAR",          r"\'\\?[\w\;\\ \%\"\']\'")
@@ -86,7 +99,14 @@ class Lexer():
         self.lexer.ignore(r'\s+')
         self.lexer.ignore(r'\n')
         self.lexer.ignore(r'\t')
+
     def get_lexer(self):
+        """
+        Retrieves the lexer, with the tokens added to the inner lexer object.
+
+        Returns:
+            The lexer, now built with the tokens added
+        """
         self._add_tokens()
         return self.lexer.build()
     

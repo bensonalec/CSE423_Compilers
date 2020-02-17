@@ -1,4 +1,7 @@
 
+"""
+This module contains definitions for the Parse Tree and Parser classes, as well as some ansillary functions to assist.
+"""
 from rply import ParserGenerator
 from rply.errors import ParserGeneratorWarning
 from warnings import simplefilter
@@ -7,13 +10,13 @@ from rply.token import Token
 #we get werid 'non-descriptive' warnings from ParserGenerator, this ignores those
 simplefilter('ignore', ParserGeneratorWarning)
 
-class AbstractSyntaxTree():
+class ParseTree():
     """
-    AbstractSyntaxTree is a class that acts as each node in an Abstract Syntax Tree
+    ParseTree is a class that acts as each node in an Abstract Syntax Tree
     """
     def __init__(self, token, content):
         """
-        Construct a new AbstractSyntaxTree object
+        Construct a new ParseTree object
 
         Args:
             token: The token type of the node.
@@ -26,7 +29,7 @@ class AbstractSyntaxTree():
 #setup parser class
 class Parser():
     """
-    Parser is an object that contains the rules for the aprser
+    Definition for the Parser object, works off of rply. Contains rules for parsing.
     """
     
     def __init__(self):
@@ -73,7 +76,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("program",p)
+            newNode = ParseTree("program",p)
             self.Head = newNode
             return newNode
 
@@ -88,7 +91,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("definitionList",p)
+            newNode = ParseTree("definitionList",p)
             self.Head = newNode
             return newNode
 
@@ -103,7 +106,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("definitionList",p)
+            newNode = ParseTree("definitionList",p)
             self.Head = newNode
             return newNode
 
@@ -118,7 +121,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("definition_terminal",p)
+            newNode = ParseTree("definition_terminal",p)
             self.Head = newNode
             return newNode
 
@@ -133,7 +136,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("definition_terminal",p)
+            newNode = ParseTree("definition_terminal",p)
             self.Head = newNode
             return newNode
 
@@ -148,7 +151,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("definition_terminal",p)
+            newNode = ParseTree("definition_terminal",p)
             self.Head = newNode
             return newNode
 
@@ -163,7 +166,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("definition_terminal",p)
+            newNode = ParseTree("definition_terminal",p)
             self.Head = newNode
             return newNode
 
@@ -178,7 +181,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("function definition",p)
+            newNode = ParseTree("function definition",p)
             self.Head = newNode
             return newNode
 
@@ -193,7 +196,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("function definition",p)
+            newNode = ParseTree("function definition",p)
             self.Head = newNode
             return newNode
 
@@ -208,7 +211,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("functionDeclaration",p)
+            newNode = ParseTree("functionDeclaration",p)
             self.Head = newNode
             return newNode
 
@@ -223,7 +226,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("functionDeclaration",p)
+            newNode = ParseTree("functionDeclaration",p)
             self.Head = newNode
             return newNode
 
@@ -238,7 +241,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("func_type",p)
+            newNode = ParseTree("func_type",p)
             self.Head = newNode
             return newNode
 
@@ -253,7 +256,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("func_type",p)
+            newNode = ParseTree("func_type",p)
             self.Head = newNode
             return newNode
 
@@ -268,7 +271,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("func_modif",p)
+            newNode = ParseTree("func_modif",p)
             self.Head = newNode
             return newNode
 
@@ -283,7 +286,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("func_modif",p)
+            newNode = ParseTree("func_modif",p)
             self.Head = newNode
             return newNode
 
@@ -298,7 +301,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("",p)
+            newNode = ParseTree("",p)
             self.Head = newNode
             return newNode
 
@@ -313,7 +316,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("",p)
+            newNode = ParseTree("",p)
             self.Head = newNode
             return newNode
 
@@ -328,7 +331,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("var_modif",p)
+            newNode = ParseTree("var_modif",p)
             self.Head = newNode
             return newNode
 
@@ -343,7 +346,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("var_modif",p)
+            newNode = ParseTree("var_modif",p)
             self.Head = newNode
             return newNode
 
@@ -358,7 +361,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("var_modif_terminal",p)
+            newNode = ParseTree("var_modif_terminal",p)
             self.Head = newNode
             return newNode
 
@@ -373,7 +376,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("var_modif_terminal",p)
+            newNode = ParseTree("var_modif_terminal",p)
             self.Head = newNode
             return newNode
 
@@ -388,7 +391,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("args",p)
+            newNode = ParseTree("args",p)
             self.Head = newNode
             return newNode
 
@@ -403,7 +406,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("args",p)
+            newNode = ParseTree("args",p)
             self.Head = newNode
             return newNode
 
@@ -418,7 +421,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arg_terminal",p)
+            newNode = ParseTree("arg_terminal",p)
             self.Head = newNode
             return newNode
 
@@ -433,7 +436,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arg_terminal",p)
+            newNode = ParseTree("arg_terminal",p)
             self.Head = newNode
             return newNode
 
@@ -448,7 +451,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("block",p)
+            newNode = ParseTree("block",p)
             self.Head = newNode
             return newNode
 
@@ -463,7 +466,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("block",p)
+            newNode = ParseTree("block",p)
             self.Head = newNode
             return newNode
 
@@ -478,7 +481,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("block",p)
+            newNode = ParseTree("block",p)
             self.Head = newNode
             return newNode
 
@@ -493,7 +496,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("block",p)
+            newNode = ParseTree("block",p)
             self.Head = newNode
             return newNode
 
@@ -508,7 +511,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("block",p)
+            newNode = ParseTree("block",p)
             self.Head = newNode
             return newNode
 
@@ -523,7 +526,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("content",p)
+            newNode = ParseTree("content",p)
             self.Head = newNode
             return newNode
 
@@ -538,7 +541,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("content",p)
+            newNode = ParseTree("content",p)
             self.Head = newNode
             return newNode
 
@@ -553,7 +556,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("content_terminal",p)
+            newNode = ParseTree("content_terminal",p)
             self.Head = newNode
             return newNode
 
@@ -568,7 +571,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("content_terminal",p)
+            newNode = ParseTree("content_terminal",p)
             self.Head = newNode
             return newNode
 
@@ -583,7 +586,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("content_terminal",p)
+            newNode = ParseTree("content_terminal",p)
             self.Head = newNode
             return newNode
 
@@ -598,7 +601,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("content_terminal",p)
+            newNode = ParseTree("content_terminal",p)
             self.Head = newNode
             return newNode
 
@@ -613,7 +616,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("content_terminal",p)
+            newNode = ParseTree("content_terminal",p)
             self.Head = newNode
             return newNode
 
@@ -628,7 +631,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("single_line",p)
+            newNode = ParseTree("single_line",p)
             self.Head = newNode
             return newNode
 
@@ -643,7 +646,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("single_line",p)
+            newNode = ParseTree("single_line",p)
             self.Head = newNode
             return newNode
 
@@ -658,7 +661,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("single_line",p)
+            newNode = ParseTree("single_line",p)
             self.Head = newNode
             return newNode
 
@@ -673,7 +676,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("single_line",p)
+            newNode = ParseTree("single_line",p)
             self.Head = newNode
             return newNode
 
@@ -688,7 +691,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("single_line",p)
+            newNode = ParseTree("single_line",p)
             self.Head = newNode
             return newNode
 
@@ -703,7 +706,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("single_line",p)
+            newNode = ParseTree("single_line",p)
             self.Head = newNode
             return newNode
 
@@ -718,7 +721,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("function call",p)
+            newNode = ParseTree("function call",p)
             self.Head = newNode
             return newNode
 
@@ -733,7 +736,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("function call",p)
+            newNode = ParseTree("function call",p)
             self.Head = newNode
             return newNode
 
@@ -748,7 +751,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("paramater",p)
+            newNode = ParseTree("paramater",p)
             self.Head = newNode
             return newNode
 
@@ -763,7 +766,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("parameter",p)
+            newNode = ParseTree("parameter",p)
             self.Head = newNode
             return newNode
 
@@ -778,7 +781,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("param_terminal",p)
+            newNode = ParseTree("param_terminal",p)
             self.Head = newNode
             return newNode
 
@@ -793,7 +796,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("param_terminal",p)
+            newNode = ParseTree("param_terminal",p)
             self.Head = newNode
             return newNode
 
@@ -808,7 +811,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("while loop",p)
+            newNode = ParseTree("while loop",p)
             self.Head = newNode
             return newNode
 
@@ -823,7 +826,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("while loop",p)
+            newNode = ParseTree("while loop",p)
             self.Head = newNode
             return newNode
 
@@ -838,7 +841,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("for loop",p)
+            newNode = ParseTree("for loop",p)
             self.Head = newNode
             return newNode
 
@@ -853,7 +856,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("for loop",p)
+            newNode = ParseTree("for loop",p)
             self.Head = newNode
             return newNode
 
@@ -868,7 +871,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("do loop",p)
+            newNode = ParseTree("do loop",p)
             self.Head = newNode
             return newNode
 
@@ -883,7 +886,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("do loop",p)
+            newNode = ParseTree("do loop",p)
             self.Head = newNode
             return newNode
 
@@ -898,7 +901,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("if",p)
+            newNode = ParseTree("if",p)
             self.Head = newNode
             return newNode
 
@@ -913,7 +916,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("if",p)
+            newNode = ParseTree("if",p)
             self.Head = newNode
             return newNode
 
@@ -928,7 +931,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("if_body",p)
+            newNode = ParseTree("if_body",p)
             self.Head = newNode
             return newNode
 
@@ -943,7 +946,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("if_body",p)
+            newNode = ParseTree("if_body",p)
             self.Head = newNode
             return newNode
 
@@ -958,7 +961,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("if_expansion",p)
+            newNode = ParseTree("if_expansion",p)
             self.Head = newNode
             return newNode
 
@@ -973,7 +976,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("switch",p)
+            newNode = ParseTree("switch",p)
             self.Head = newNode
             return newNode
 
@@ -988,7 +991,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("switch_body",p)
+            newNode = ParseTree("switch_body",p)
             self.Head = newNode
             return newNode
 
@@ -1003,7 +1006,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("switch_body",p)
+            newNode = ParseTree("switch_body",p)
             self.Head = newNode
             return newNode
 
@@ -1018,7 +1021,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("cases",p)
+            newNode = ParseTree("cases",p)
             self.Head = newNode
             return newNode
 
@@ -1033,7 +1036,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("cases",p)
+            newNode = ParseTree("cases",p)
             self.Head = newNode
             return newNode
 
@@ -1048,7 +1051,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("cases",p)
+            newNode = ParseTree("cases",p)
             self.Head = newNode
             return newNode
 
@@ -1063,7 +1066,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("case",p)
+            newNode = ParseTree("case",p)
             self.Head = newNode
             return newNode
 
@@ -1078,7 +1081,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("case",p)
+            newNode = ParseTree("case",p)
             self.Head = newNode
             return newNode
 
@@ -1093,7 +1096,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("default",p)
+            newNode = ParseTree("default",p)
             self.Head = newNode
             return newNode
 
@@ -1108,7 +1111,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("case_body",p)
+            newNode = ParseTree("case_body",p)
             self.Head = newNode
             return newNode
 
@@ -1123,7 +1126,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("case_body",p)
+            newNode = ParseTree("case_body",p)
             self.Head = newNode
             return newNode
 
@@ -1138,7 +1141,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("goto",p)
+            newNode = ParseTree("goto",p)
             self.Head = newNode
             return newNode
 
@@ -1153,7 +1156,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("goto",p)
+            newNode = ParseTree("goto",p)
             self.Head = newNode
             return newNode
 
@@ -1168,7 +1171,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("goto",p)
+            newNode = ParseTree("goto",p)
             self.Head = newNode
             return newNode
 
@@ -1183,7 +1186,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("return",p)
+            newNode = ParseTree("return",p)
             self.Head = newNode
             return newNode
 
@@ -1198,7 +1201,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("return",p)
+            newNode = ParseTree("return",p)
             self.Head = newNode
             return newNode
 
@@ -1213,7 +1216,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("return",p)
+            newNode = ParseTree("return",p)
             self.Head = newNode
             return newNode
 
@@ -1228,7 +1231,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("return",p)
+            newNode = ParseTree("return",p)
             self.Head = newNode
             return newNode
 
@@ -1243,7 +1246,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("jump",p)
+            newNode = ParseTree("jump",p)
             self.Head = newNode
             return newNode
 
@@ -1258,7 +1261,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("break",p)
+            newNode = ParseTree("break",p)
             self.Head = newNode
             return newNode
 
@@ -1273,7 +1276,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("continue",p)
+            newNode = ParseTree("continue",p)
             self.Head = newNode
             return newNode
 
@@ -1288,7 +1291,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("initialization",p)
+            newNode = ParseTree("initialization",p)
             self.Head = newNode
             return newNode
 
@@ -1303,7 +1306,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("initialization",p)
+            newNode = ParseTree("initialization",p)
             self.Head = newNode
             return newNode
 
@@ -1318,7 +1321,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("initialization",p)
+            newNode = ParseTree("initialization",p)
             self.Head = newNode
             return newNode
 
@@ -1333,7 +1336,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("initialization",p)
+            newNode = ParseTree("initialization",p)
             self.Head = newNode
             return newNode
 
@@ -1348,7 +1351,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("initialization",p)
+            newNode = ParseTree("initialization",p)
             self.Head = newNode
             return newNode
 
@@ -1363,7 +1366,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("initialization",p)
+            newNode = ParseTree("initialization",p)
             self.Head = newNode
             return newNode
 
@@ -1378,7 +1381,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("array_init",p)
+            newNode = ParseTree("array_init",p)
             self.Head = newNode
             return newNode
 
@@ -1393,7 +1396,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("array_init",p)
+            newNode = ParseTree("array_init",p)
             self.Head = newNode
             return newNode
 
@@ -1408,7 +1411,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("initialization_terminal",p)
+            newNode = ParseTree("initialization_terminal",p)
             self.Head = newNode
             return newNode
 
@@ -1423,7 +1426,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("initialization_terminal",p)
+            newNode = ParseTree("initialization_terminal",p)
             self.Head = newNode
             return newNode
 
@@ -1438,7 +1441,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("var_type",p)
+            newNode = ParseTree("var_type",p)
             self.Head = newNode
             return newNode
 
@@ -1453,7 +1456,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("var_type",p)
+            newNode = ParseTree("var_type",p)
             self.Head = newNode
             return newNode
 
@@ -1468,7 +1471,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("for param 1",p)
+            newNode = ParseTree("for param 1",p)
             self.Head = newNode
             return newNode
 
@@ -1483,7 +1486,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("for param 1",p)
+            newNode = ParseTree("for param 1",p)
             self.Head = newNode
             return newNode
 
@@ -1498,7 +1501,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("for param 1",p)
+            newNode = ParseTree("for param 1",p)
             self.Head = newNode
             return newNode
 
@@ -1513,7 +1516,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("for param 2",p)
+            newNode = ParseTree("for param 2",p)
             self.Head = newNode
             return newNode
 
@@ -1528,7 +1531,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("for param 2",p)
+            newNode = ParseTree("for param 2",p)
             self.Head = newNode
             return newNode
 
@@ -1543,7 +1546,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("for param 3",p)
+            newNode = ParseTree("for param 3",p)
             self.Head = newNode
             return newNode
 
@@ -1558,7 +1561,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("for param 3",p)
+            newNode = ParseTree("for param 3",p)
             self.Head = newNode
             return newNode
 
@@ -1573,7 +1576,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("designation",p)
+            newNode = ParseTree("designation",p)
             self.Head = newNode
             return newNode
 
@@ -1588,7 +1591,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("designation",p)
+            newNode = ParseTree("designation",p)
             self.Head = newNode
             return newNode
 
@@ -1603,7 +1606,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("designation",p)
+            newNode = ParseTree("designation",p)
             self.Head = newNode
             return newNode
 
@@ -1618,7 +1621,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arr_list",p)
+            newNode = ParseTree("arr_list",p)
             self.Head = newNode
             return newNode
 
@@ -1633,7 +1636,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arr_list",p)
+            newNode = ParseTree("arr_list",p)
             self.Head = newNode
             return newNode
 
@@ -1648,7 +1651,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("assignment",p)
+            newNode = ParseTree("assignment",p)
             self.Head = newNode
             return newNode
 
@@ -1663,7 +1666,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("assignment",p)
+            newNode = ParseTree("assignment",p)
             self.Head = newNode
             return newNode
 
@@ -1678,7 +1681,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("assignment",p)
+            newNode = ParseTree("assignment",p)
             self.Head = newNode
             return newNode
 
@@ -1693,7 +1696,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("assignment",p)
+            newNode = ParseTree("assignment",p)
             self.Head = newNode
             return newNode
 
@@ -1708,7 +1711,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("assignment",p)
+            newNode = ParseTree("assignment",p)
             self.Head = newNode
             return newNode
 
@@ -1723,7 +1726,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("assignment",p)
+            newNode = ParseTree("assignment",p)
             self.Head = newNode
             return newNode
 
@@ -1738,7 +1741,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("assignment",p)
+            newNode = ParseTree("assignment",p)
             self.Head = newNode
             return newNode
 
@@ -1753,7 +1756,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("assignment",p)
+            newNode = ParseTree("assignment",p)
             self.Head = newNode
             return newNode
 
@@ -1768,7 +1771,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("assignment",p)
+            newNode = ParseTree("assignment",p)
             self.Head = newNode
             return newNode
 
@@ -1783,7 +1786,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("assignment",p)
+            newNode = ParseTree("assignment",p)
             self.Head = newNode
             return newNode
 
@@ -1798,7 +1801,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("assignment",p)
+            newNode = ParseTree("assignment",p)
             self.Head = newNode
             return newNode
 
@@ -1813,7 +1816,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("collation",p)
+            newNode = ParseTree("collation",p)
             self.Head = newNode
             return newNode
 
@@ -1828,7 +1831,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("collation",p)
+            newNode = ParseTree("collation",p)
             self.Head = newNode
             return newNode
 
@@ -1843,7 +1846,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("collation",p)
+            newNode = ParseTree("collation",p)
             self.Head = newNode
             return newNode
 
@@ -1858,7 +1861,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("collation",p)
+            newNode = ParseTree("collation",p)
             self.Head = newNode
             return newNode
 
@@ -1873,7 +1876,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("comparison",p)
+            newNode = ParseTree("comparison",p)
             self.Head = newNode
             return newNode
 
@@ -1888,7 +1891,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("comparison",p)
+            newNode = ParseTree("comparison",p)
             self.Head = newNode
             return newNode
 
@@ -1903,7 +1906,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("comparison",p)
+            newNode = ParseTree("comparison",p)
             self.Head = newNode
             return newNode
 
@@ -1918,7 +1921,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("comparison",p)
+            newNode = ParseTree("comparison",p)
             self.Head = newNode
             return newNode
 
@@ -1933,7 +1936,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("comparison",p)
+            newNode = ParseTree("comparison",p)
             self.Head = newNode
             return newNode
 
@@ -1948,7 +1951,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("comparison",p)
+            newNode = ParseTree("comparison",p)
             self.Head = newNode
             return newNode
 
@@ -1963,7 +1966,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arithmetic",p)
+            newNode = ParseTree("arithmetic",p)
             self.Head = newNode
             return newNode
 
@@ -1978,7 +1981,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arithmetic",p)
+            newNode = ParseTree("arithmetic",p)
             self.Head = newNode
             return newNode
 
@@ -1993,7 +1996,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arithmetic",p)
+            newNode = ParseTree("arithmetic",p)
             self.Head = newNode
             return newNode
 
@@ -2008,7 +2011,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arithmetic",p)
+            newNode = ParseTree("arithmetic",p)
             self.Head = newNode
             return newNode
 
@@ -2023,7 +2026,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arithmetic",p)
+            newNode = ParseTree("arithmetic",p)
             self.Head = newNode
             return newNode
 
@@ -2038,7 +2041,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arithmetic",p)
+            newNode = ParseTree("arithmetic",p)
             self.Head = newNode
             return newNode
 
@@ -2053,7 +2056,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arithmetic",p)
+            newNode = ParseTree("arithmetic",p)
             self.Head = newNode
             return newNode
 
@@ -2068,7 +2071,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arithmetic",p)
+            newNode = ParseTree("arithmetic",p)
             self.Head = newNode
             return newNode
 
@@ -2083,7 +2086,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arithmetic",p)
+            newNode = ParseTree("arithmetic",p)
             self.Head = newNode
             return newNode
 
@@ -2098,7 +2101,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arithmetic",p)
+            newNode = ParseTree("arithmetic",p)
             self.Head = newNode
             return newNode
 
@@ -2113,7 +2116,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arithmetic",p)
+            newNode = ParseTree("arithmetic",p)
             self.Head = newNode
             return newNode
 
@@ -2128,7 +2131,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arithmetic",p)
+            newNode = ParseTree("arithmetic",p)
             self.Head = newNode
             return newNode
 
@@ -2143,7 +2146,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("unary",p)
+            newNode = ParseTree("unary",p)
             self.Head = newNode
             return newNode
 
@@ -2158,7 +2161,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("unary",p)
+            newNode = ParseTree("unary",p)
             self.Head = newNode
             return newNode
 
@@ -2173,7 +2176,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("unary",p)
+            newNode = ParseTree("unary",p)
             self.Head = newNode
             return newNode
 
@@ -2188,7 +2191,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("unary",p)
+            newNode = ParseTree("unary",p)
             self.Head = newNode
             return newNode
 
@@ -2203,7 +2206,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("unary",p)
+            newNode = ParseTree("unary",p)
             self.Head = newNode
             return newNode
 
@@ -2218,7 +2221,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("unary",p)
+            newNode = ParseTree("unary",p)
             self.Head = newNode
             return newNode
 
@@ -2233,7 +2236,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("unary",p)
+            newNode = ParseTree("unary",p)
             self.Head = newNode
             return newNode
 
@@ -2248,7 +2251,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("unary",p)
+            newNode = ParseTree("unary",p)
             self.Head = newNode
             return newNode
 
@@ -2263,7 +2266,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("unary",p)
+            newNode = ParseTree("unary",p)
             self.Head = newNode
             return newNode
 
@@ -2278,7 +2281,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("unary",p)
+            newNode = ParseTree("unary",p)
             self.Head = newNode
             return newNode
 
@@ -2293,7 +2296,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arithmetic",p)
+            newNode = ParseTree("arithmetic",p)
             self.Head = newNode
             return newNode
 
@@ -2308,7 +2311,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arithmetic",p)
+            newNode = ParseTree("arithmetic",p)
             self.Head = newNode
             return newNode
 
@@ -2323,7 +2326,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arithmetic",p)
+            newNode = ParseTree("arithmetic",p)
             self.Head = newNode
             return newNode
 
@@ -2338,7 +2341,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arithmetic",p)
+            newNode = ParseTree("arithmetic",p)
             self.Head = newNode
             return newNode
 
@@ -2353,7 +2356,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("arithmetic",p)
+            newNode = ParseTree("arithmetic",p)
             self.Head = newNode
             return newNode
 
@@ -2368,7 +2371,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("array_access",p)
+            newNode = ParseTree("array_access",p)
             self.Head = newNode
             return newNode
 
@@ -2383,7 +2386,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("array_access",p)
+            newNode = ParseTree("array_access",p)
             self.Head = newNode
             return newNode
 
@@ -2398,7 +2401,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("array_access",p)
+            newNode = ParseTree("array_access",p)
             self.Head = newNode
             return newNode
 
@@ -2413,7 +2416,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("value",p)
+            newNode = ParseTree("value",p)
             self.Head = newNode
             return newNode
 
@@ -2428,7 +2431,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("value",p)
+            newNode = ParseTree("value",p)
             self.Head = newNode
             return newNode
 
@@ -2443,7 +2446,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("value",p)
+            newNode = ParseTree("value",p)
             self.Head = newNode
             return newNode
 
@@ -2458,7 +2461,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("value",p)
+            newNode = ParseTree("value",p)
             self.Head = newNode
             return newNode
 
@@ -2473,7 +2476,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("value",p)
+            newNode = ParseTree("value",p)
             self.Head = newNode
             return newNode
 
@@ -2488,7 +2491,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("value",p)
+            newNode = ParseTree("value",p)
             self.Head = newNode
             return newNode
 
@@ -2503,7 +2506,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = AbstractSyntaxTree("value",p)
+            newNode = ParseTree("value",p)
             self.Head = newNode
             return newNode
 
