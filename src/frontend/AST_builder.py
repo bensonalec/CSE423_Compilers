@@ -61,7 +61,11 @@ def buildAST(parseHead):
 
             # split the content of the function definition up
             expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if 'content' in x.__dict__ and x.token == 'args'] + [(x, ASTcurrent.children[1]) for x in c[0].content if 'content' in x.__dict__ and x.token == 'block']
-
+        elif typ == "functionDeclaration":
+            ASTcurrent.children.append(ASTNode(f"{c[0].content[0].value} {c[0].content[1].value}", ASTcurrent, []))
+            ASTcurrent = ASTcurrent.children[-1]
+            ASTcurrent.children.append(ASTNode("param", ASTcurrent, []))
+            ASTcurrent = ASTcurrent.children[-1]
         elif typ == "arg_terminal":
             ASTcurrent.children.append(ASTNode(" ".join([x.value for x in c[0].content]), ASTcurrent, []))
         elif typ == "if":
@@ -103,9 +107,6 @@ def buildAST(parseHead):
         elif typ == "return":
             ASTcurrent.children.append(ASTNode("return", ASTcurrent, []))
             ASTcurrent = ASTcurrent.children[-1]
-            # Returning a variable
-            if len(c[0].content) > 0 and 'value' in c[0].content[1].__dict__:
-                ASTcurrent.children.append(ASTNode(c[0].content[1].value, ASTcurrent, []))
             pass
         elif typ == "function call":
             ASTcurrent.children.append(ASTNode(f"{c[0].content[0].value} ()", ASTcurrent, []))
