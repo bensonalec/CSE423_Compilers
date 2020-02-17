@@ -133,7 +133,8 @@ def main(args, fi):
 
         astree = ast.buildAST(head)
 
-        ast.print_AST(astree)
+        if args.all:
+            ast.print_AST(astree)
 
     except LexingError as err:
         print("Received error(s) from token validation. Exiting...")
