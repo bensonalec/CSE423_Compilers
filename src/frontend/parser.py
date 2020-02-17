@@ -1,4 +1,7 @@
 
+"""
+This module contains definitions for the AbstractSyntaxTree and Parser classes, as well as some ansillary functions to assist.
+"""
 from rply import ParserGenerator
 from rply.errors import ParserGeneratorWarning
 from warnings import simplefilter
@@ -26,7 +29,7 @@ class AbstractSyntaxTree():
 #setup parser class
 class Parser():
     """
-    Parser is an object that contains the rules for the aprser
+    Definition for the Parser object, works off of rply. Contains rules for parsing.
     """
     
     def __init__(self):

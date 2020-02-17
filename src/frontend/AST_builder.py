@@ -1,11 +1,24 @@
-
-
+"""
+This module takes in the parse tree, and produces an Abstract Syntax Tree. 
+This is done using a Depth First Traversal. By taking the Concrete Syntax Tree (Parse Tree) 
+and converting it to an Abstract Syntax Tree we can begin to move towards an intermediate form.
+"""
 def buildAST(parseHead):
+    """
+    Produces an AST given the head of the Parse Tree
+
+    Args:
+        parseHead: The head node of the parse tree.
+
+    Returns: 
+        The head of the Abstract Syntax Tree.
+    """
     head = parseHead
     ASTHead = None
     ASTcurrent = None
     ntv = [(head, ASTcurrent)]
     
+    #DFS by iterating through a stack of nodes to visit
     while ntv != []:
         c = ntv[0]
         typ = c[0].token
@@ -13,6 +26,7 @@ def buildAST(parseHead):
 
         expansion = None
 
+        #This block checks the type of the ASTNode that is  being visited, and acts as a monstrous switch statement, for each visited node a proper AST segment or node is built
         if typ == "program":
             ASTHead = ASTNode("Program")
             ASTcurrent = ASTHead
@@ -146,6 +160,7 @@ def buildAST(parseHead):
     # to ensure that all nodes dont have an empty parent
     ntv = [ASTHead]
 
+    #Removes the blank parents from some nodes that end up blank as a result of our AST building process
     while ntv != []:
         c = ntv[0]
         if c.parent and c.parent.name == "":
@@ -156,6 +171,15 @@ def buildAST(parseHead):
     return ASTHead
 
 def print_AST(node, file=None, _prefix="", _last=True):
+    """
+    Prints the AST given the head
+
+    Args: 
+        node: The head node of the tree.
+        file: The file to be written to (Defaults to Stdout).
+        _prefix: A string indicating the spacing from the left side of the screen.
+        _last: A boolean that indicates if a node is the last in it's immediate surroundings.
+    """
     print(_prefix, "`-- " if _last else "|-- ", node.name, sep="", file=file)
     _prefix += "    " if _last else "|   "
     child_count = len(node.children)
@@ -165,7 +189,19 @@ def print_AST(node, file=None, _prefix="", _last=True):
 
 
 class ASTNode():
+    """
+    A class that builds an object representing the node in an AST. 
+    It has it's children, parent, and name.
+    """
     def __init__(self, name = None, parent = None, children = []):
+        """
+        Constructs an ASTNode
+
+        Args: 
+            name: The name of the Node (Its contents).
+            parent: A node that is the parent of this current node.
+            children: The children of this node (In a list).
+        """
         self.children = children
         self.parent = parent
         self.name = name

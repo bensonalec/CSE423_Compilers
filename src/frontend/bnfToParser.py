@@ -1,3 +1,7 @@
+"""
+This module reads in a BNF and produces a parser for use with rply.The BNF expects the form X : Y Y #name, where the name determines what the node will end up being called in the Parse tree.
+"""
+
 import re
 
     
@@ -65,7 +69,7 @@ initTemp = """
 
 def main(path):
     """
-    Creates a parser.py file from input (assumed to be BNF_definition)
+    Creates a parser.py file from input. While the default is more or less BNF_definition (as it is passed in inside this files __main__ block) the function assumes no default
 
     Args:
         path: the path to the input file
@@ -112,6 +116,9 @@ def main(path):
             functionList += newFunc
 
     totalOutput = """
+\"\"\"
+This module contains definitions for the AbstractSyntaxTree and Parser classes, as well as some ansillary functions to assist.
+\"\"\"
 from rply import ParserGenerator
 from rply.errors import ParserGeneratorWarning
 from warnings import simplefilter
@@ -139,7 +146,7 @@ class AbstractSyntaxTree():
 #setup parser class
 class Parser():
     \"\"\"
-    Parser is an object that contains the rules for the aprser
+    Definition for the Parser object, works off of rply. Contains rules for parsing.
     \"\"\"
     INITSPOT
 
@@ -233,4 +240,5 @@ class Parser():
         f.write(totalOutput)
 
 if __name__ == "__main__":
+    #default is assumed to be BNF definition if not otherwise specified
     main("BNF_definition")
