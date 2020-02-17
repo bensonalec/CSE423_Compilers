@@ -22,7 +22,7 @@
                 The compiler is split up into three modules, the frontend, the optimizer, and the backend. So far only the frontend is implemented, and can so far only be executed by running the <code>frontend.py</code> located in <code>./src/frontend</code>. The frontend supports a variety of commandline options such as:
                 <dl>
                     <dt><code>-a</code></dt>
-                    <dd>Displays all intermediate outputs produced by both the lexer and parser.</dd>
+                    <dd>Displays all intermediate outputs produced by the lexer, parser, and AST.</dd>
                     <dt><code>-b</code></dt>
                     <dd>Allows for rebuilding of BNF grammar and parser before the frontend touches the input.</dd>
                     <dt><code>-h</code></dt>
@@ -34,6 +34,7 @@
                     <dt><code>-t</code></dt>
                     <dd>Prints a list like tree structure of the tokens after they have been parsed.</dd>
                 </dl>
+                We plan to implement the same functionality into <code>run.py</code> located in <code>./src</code> but have yet to do so.
             </dd>
             <dt><h3>Subset of C supported</h3></dt>
             <dd>
@@ -56,6 +57,7 @@
                             3: Both pre and post operators. <br>
                             4: Both <code>long long int</code> and <code>long long</code> are accepted. <br>
                             5: Only local header files currently due to platform interaction. <br>
+                            6: Implemented, but has yet to be merged. <br>
                         </div></td>
                     </tfoot>
                     <tbody >
@@ -67,7 +69,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -75,7 +77,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -83,7 +85,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -91,7 +93,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -99,7 +101,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -110,7 +112,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -118,7 +120,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -126,7 +128,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -134,7 +136,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -142,7 +144,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -174,7 +176,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -292,7 +294,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -300,7 +302,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -308,7 +310,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -316,7 +318,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -324,7 +326,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -348,7 +350,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -356,7 +358,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -364,7 +366,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -372,7 +374,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -380,7 +382,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -388,7 +390,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -396,7 +398,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -404,7 +406,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -412,7 +414,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -420,7 +422,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -431,7 +433,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -439,7 +441,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -447,7 +449,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -455,7 +457,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -463,7 +465,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -471,7 +473,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -482,7 +484,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -490,7 +492,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -498,7 +500,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -517,7 +519,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -525,7 +527,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -533,7 +535,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -541,7 +543,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -549,7 +551,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -557,7 +559,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -584,7 +586,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -607,11 +609,11 @@
                             <th>Jumps</th>
                         </tr>
                         <tr>
-                            <td><code>Return</code></td>
+                            <td><code>Return</code><sup>[1]</sup></td>
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -619,7 +621,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -627,7 +629,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -635,7 +637,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -646,7 +648,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -654,7 +656,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -662,7 +664,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -670,7 +672,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -678,7 +680,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -686,7 +688,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -694,7 +696,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -702,7 +704,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -710,7 +712,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -718,7 +720,7 @@
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -730,7 +732,7 @@
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
-                            <th>Preprocessor Keywords</th>
+                            <th>Preprocessor Directives</th>
                         </tr>
                         <tr>
                             <td><code>#Warning</code></td>
@@ -741,7 +743,7 @@
                             <td>&#x2212;</td>
                         </tr>
                         <tr>
-                            <td><code>#Include</code><sup>[5]</sup></td>
+                            <td><code>#Include</code><sup>[5][6]</sup></td>
                             <td>&#x2715;</td>
                             <td>&#x2713;</td>
                             <td>&#x2212;</td>
@@ -749,8 +751,8 @@
                             <td>&#x2212;</td>
                         </tr>
                         <tr>
-                            <td><code>#Define</code></td>
-                            <td>&#x2713;</td>
+                            <td><code>#Define</code><sup>[6]</sup></td>
+                            <td>&#x2715;</td>
                             <td>&#x2713;</td>
                             <td>&#x2212;</td>
                             <td>&#x2212;</td>
@@ -904,6 +906,15 @@ Token('CLOSE_BRACE', '}')</pre>
         |       |       `-- Token('SEMICOLON', ';')
         |       `-- Token('CLOSE_BRACE', '}')
         `-- definitionList</pre>
+                            </div>
+                            <div>
+                                <h5>Abstract Syntax Tree</h5>
+<pre>`-- Program
+    `-- int main
+        |-- param
+        `-- body
+            `-- return
+                `-- 1</pre>
                             </div>
                         </div>
                     </dd>
@@ -1218,6 +1229,51 @@ Token('CLOSE_BRACE', '}')</pre>
         |       |                                   `-- Token('SEMICOLON', ';')
         |       `-- Token('CLOSE_BRACE', '}')
         `-- definitionList</pre>
+                            </div>
+                            <div>
+                                <h5>Abstract Syntax Tree</h5>
+<pre>`-- Program
+    `-- int main
+        |-- param
+        `-- body
+            |-- =
+            |   |-- int a
+            |   `-- +
+            |       |-- +
+            |       |   |-- 1
+            |       |   `-- 2
+            |       `-- 3
+            |-- =
+            |   |-- int b
+            |   `-- -
+            |       |-- /
+            |       |   |-- *
+            |       |   |   |-- *
+            |       |   |   |   |-- 56
+            |       |   |   |   `-- 78
+            |       |   |   `-- 5
+            |       |   `-- 20
+            |       `-- 3
+            |-- =
+            |   |-- int c
+            |   `-- %
+            |       |-- 56
+            |       `-- 2
+            |-- =
+            |   |-- int d
+            |   `-- -10
+            |-- +=
+            |   |-- c
+            |   `-- 3
+            |-- -=
+            |   |-- c
+            |   `-- 3
+            |-- *=
+            |   |-- c
+            |   `-- 2
+            `-- /=
+                |-- c
+                `-- 4</pre>
                             </div>
                         </div>
                     </dd>

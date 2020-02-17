@@ -187,14 +187,13 @@ Token("ACCESS", "-&gt;")</pre>
                             requires a grammar. After defining a grammar is a separate 
                             file we can construct a parser using RPLY syntax that will 
                             take in the grammar and build our Abstract Syntax Tree.
-            </dd>
-            <dt>
-             <h3 id="section_5">
-              Example of BNF grammar
-             </h3>
-            </dt>
-            <dd>
-             <pre style="overflow-x: auto;">
+             <dl>
+              <dt>
+               <h5>
+                Example of BNF grammar
+               </h5>
+               <dd>
+                <pre style="overflow-x: auto;">
 program : definitionList #program
 
 definitionList : functionDefinition definitionList #definitionList
@@ -216,33 +215,36 @@ args : TYPE COMMA args #args
 block : OPEN_BRACE block content CLOSE_BRACE #block
 block : OPEN_BRACE content block CLOSE_BRACE #block
 ...</pre>
-             <a href="https://github.com/bensonalec/CSE423_Compilers/blob/master/src/frontend/BNF_definition" target="_blank">
-              Our Full BNF
-             </a>
-             <p class="todo">
-              TODO:
-              <ul class="todo">
-               <li>
-                We are only reporting the last successful token parsed 
+                <a href="https://github.com/bensonalec/CSE423_Compilers/blob/master/src/frontend/BNF_definition" target="_blank">
+                 Our Full BNF
+                </a>
+                <p class="todo">
+                 TODO:
+                 <ul class="todo">
+                  <li>
+                   We are only reporting the last successful token parsed 
                                         but not giving a detailed and more "useful" message. 
                                         We should work on this.
-               </li>
-               <li>
-                There is currently no more error handling beyond 
+                  </li>
+                  <li>
+                   There is currently no more error handling beyond 
                                         syntax errors. (i.e. more semantic style errors by the 
                                         user are not recognized nor caught)
-               </li>
-              </ul>
-             </p>
+                  </li>
+                 </ul>
+                </p>
+               </dd>
+              </dt>
+             </dl>
             </dd>
            </dl>
           </dl>
-          <p class="note">
-           NOTE: The Frontend module can be ran individually 
-                        from the command line.
-          </p>
          </dd>
         </dl>
+        <p class="note">
+         NOTE: The Frontend module can be ran individually 
+                        from the command line.
+        </p>
        </dd>
       </dl>
      </section>
@@ -263,14 +265,14 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
       </style>
       <dl>
        <dt>
-        <h2 id="section_6">
+        <h2 id="section_5">
          User Manual
         </h2>
        </dt>
        <dd>
         <dl>
          <dt>
-          <h3 id="section_7">
+          <h3 id="section_6">
            How to use the compiler
           </h3>
          </dt>
@@ -291,7 +293,7 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
             </code>
            </dt>
            <dd>
-            Displays all intermediate outputs produced by both the lexer and parser.
+            Displays all intermediate outputs produced by the lexer, parser, and AST.
            </dd>
            <dt>
             <code>
@@ -334,9 +336,18 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
             Prints a list like tree structure of the tokens after they have been parsed.
            </dd>
           </dl>
+          We plan to implement the same functionality into
+          <code>
+           run.py
+          </code>
+          located in
+          <code>
+           ./src
+          </code>
+          but have yet to do so.
          </dd>
          <dt>
-          <h3 id="section_8">
+          <h3 id="section_7">
            Subset of C supported
           </h3>
          </dt>
@@ -386,6 +397,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               <br/>
               5: Only local header files currently due to platform interaction.
               <br/>
+              6: Implemented, but has yet to be merged.
+              <br/>
              </div>
             </td>
            </tfoot>
@@ -408,8 +421,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -428,8 +441,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -453,8 +466,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -478,8 +491,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -503,8 +516,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -530,8 +543,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -552,8 +565,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -574,8 +587,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -596,8 +609,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -618,8 +631,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -706,8 +719,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1024,8 +1037,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1046,8 +1059,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1068,8 +1081,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1090,8 +1103,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1112,8 +1125,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1178,8 +1191,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1200,8 +1213,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1222,8 +1235,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1244,8 +1257,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1264,8 +1277,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1284,8 +1297,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1304,8 +1317,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1324,8 +1337,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1344,8 +1357,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1364,8 +1377,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1391,8 +1404,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1413,8 +1426,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1435,8 +1448,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1457,8 +1470,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1479,8 +1492,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1501,8 +1514,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1533,8 +1546,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1560,8 +1573,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1587,8 +1600,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1636,8 +1649,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1658,8 +1671,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1685,8 +1698,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1712,8 +1725,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1734,8 +1747,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1756,8 +1769,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1830,8 +1843,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1901,6 +1914,11 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               <code>
                Return
               </code>
+              <sup>
+               <a href="#table_foot">
+                [1]
+               </a>
+              </sup>
              </td>
              <td style="text-align: center; background: rgb(170, 170, 170);">
               −
@@ -1911,8 +1929,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1933,8 +1951,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1955,8 +1973,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -1977,8 +1995,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -2004,8 +2022,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -2026,8 +2044,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -2048,8 +2066,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -2070,8 +2088,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -2097,8 +2115,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -2119,8 +2137,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -2141,8 +2159,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -2163,8 +2181,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -2185,8 +2203,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -2207,8 +2225,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <td style="text-align: center; background: #aaffaa;">
               ✓
              </td>
-             <td style="text-align: center; background: rgb(255, 170, 170);">
-              ✕
+             <td style="text-align: center; background: #aaffaa;">
+              ✓
              </td>
              <td style="text-align: center; background: rgb(255, 170, 170);">
               ✕
@@ -2236,7 +2254,7 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
             </tr>
             <tr>
              <th colspan="6" style="padding: 10px;">
-              Preprocessor Keywords
+              Preprocessor Directives
              </th>
             </tr>
             <tr>
@@ -2268,7 +2286,7 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               </code>
               <sup>
                <a href="#table_foot">
-                [5]
+                [5][6]
                </a>
               </sup>
              </td>
@@ -2293,9 +2311,14 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               <code>
                #Define
               </code>
+              <sup>
+               <a href="#table_foot">
+                [6]
+               </a>
+              </sup>
              </td>
-             <td style="text-align: center; background: #aaffaa;">
-              ✓
+             <td style="text-align: center; background: rgb(255, 170, 170);">
+              ✕
              </td>
              <td style="text-align: center; background: #aaffaa;">
               ✓
@@ -2534,7 +2557,7 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
           </table>
          </dd>
          <dt>
-          <h3 id="section_9">
+          <h3 id="section_8">
            Examples of C Programs and their Intermediate Representations
           </h3>
          </dt>
@@ -2559,7 +2582,7 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <a onclick='[...document.getElementsByClassName("representation_0")].forEach(function(elem, index) { if (index === 3.0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Parse Tree (Tree View)
              </a>
-             <a>
+             <a onclick='[...document.getElementsByClassName("representation_0")].forEach(function(elem, index) { if (index === 4.0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Abstract Syntax Tree
              </a>
             </div>
@@ -2625,6 +2648,17 @@ Token('CLOSE_BRACE', '}')</pre>
         |       `-- Token('CLOSE_BRACE', '}')
         `-- definitionList</pre>
              </div>
+             <div class="representation_0" style="display: none;">
+              <h5>
+               Abstract Syntax Tree
+              </h5>
+              <pre style="overflow-x: auto;">`-- Program
+    `-- int main
+        |-- param
+        `-- body
+            `-- return
+                `-- 1</pre>
+             </div>
             </div>
            </dd>
            <dt>
@@ -2646,7 +2680,7 @@ Token('CLOSE_BRACE', '}')</pre>
              <a onclick='[...document.getElementsByClassName("representation_1")].forEach(function(elem, index) { if (index === 3.0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Parse Tree (Tree View)
              </a>
-             <a>
+             <a onclick='[...document.getElementsByClassName("representation_1")].forEach(function(elem, index) { if (index === 4.0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Abstract Syntax Tree
              </a>
             </div>
@@ -2961,6 +2995,53 @@ Token('CLOSE_BRACE', '}')</pre>
         |       `-- Token('CLOSE_BRACE', '}')
         `-- definitionList</pre>
              </div>
+             <div class="representation_1" style="display: none;">
+              <h5>
+               Abstract Syntax Tree
+              </h5>
+              <pre style="overflow-x: auto;">`-- Program
+    `-- int main
+        |-- param
+        `-- body
+            |-- =
+            |   |-- int a
+            |   `-- +
+            |       |-- +
+            |       |   |-- 1
+            |       |   `-- 2
+            |       `-- 3
+            |-- =
+            |   |-- int b
+            |   `-- -
+            |       |-- /
+            |       |   |-- *
+            |       |   |   |-- *
+            |       |   |   |   |-- 56
+            |       |   |   |   `-- 78
+            |       |   |   `-- 5
+            |       |   `-- 20
+            |       `-- 3
+            |-- =
+            |   |-- int c
+            |   `-- %
+            |       |-- 56
+            |       `-- 2
+            |-- =
+            |   |-- int d
+            |   `-- -10
+            |-- +=
+            |   |-- c
+            |   `-- 3
+            |-- -=
+            |   |-- c
+            |   `-- 3
+            |-- *=
+            |   |-- c
+            |   `-- 2
+            `-- /=
+                |-- c
+                `-- 4</pre>
+             </div>
             </div>
            </dd>
           </dl>
@@ -3049,34 +3130,27 @@ Token('CLOSE_BRACE', '}')</pre>
       </li>
       <li>
        <a href="#section_5">
-        <h4>
-         Example of BNF grammar
-        </h4>
-       </a>
-      </li>
-      <li>
-       <a href="#section_6">
         <h3>
          User Manual
         </h3>
        </a>
       </li>
       <li>
-       <a href="#section_7">
+       <a href="#section_6">
         <h4>
          How to use the compiler
         </h4>
        </a>
       </li>
       <li>
-       <a href="#section_8">
+       <a href="#section_7">
         <h4>
          Subset of C supported
         </h4>
        </a>
       </li>
       <li>
-       <a href="#section_9">
+       <a href="#section_8">
         <h4>
          Examples of C Programs and their Intermediate Representations
         </h4>

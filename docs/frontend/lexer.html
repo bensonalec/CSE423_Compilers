@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.4" />
 <title>src.frontend.lexer API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="The lexer class definition. Uses rplys lexer as a jumping off point, and regexes and token names are added in order to tokenize." />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,19 +20,33 @@
 <h1 class="title">Module <code>src.frontend.lexer</code></h1>
 </header>
 <section id="section-intro">
+<p>The lexer class definition. Uses rplys lexer as a jumping off point, and regexes and token names are added in order to tokenize.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from rply import LexerGenerator
+<pre><code class="python">&#34;&#34;&#34;
+The lexer class definition. Uses rplys lexer as a jumping off point, and regexes and token names are added in order to tokenize.
+&#34;&#34;&#34;
+
+from rply import LexerGenerator
 from rply.errors import LexingError
 import copy
 
 class Lexer():
+    &#34;&#34;&#34;
+    The lexer class definition
+    &#34;&#34;&#34;
     def __init__(self):
+        &#34;&#34;&#34;
+        Constructs the Lexer object.
+        &#34;&#34;&#34;
         self.lexer = LexerGenerator()
     
     def _add_tokens(self):
+        &#34;&#34;&#34;
+        Adds tokens to the rply lexer object
+        &#34;&#34;&#34;
         self.lexer.add(&#34;COMMENT&#34;,       r&#34;(\/\/.*|\/\*.*\*\/|/\*[^*]*\*+(?:[^/*][^*]*\*+)*/)&#34;) # Catches both multi-line and single line comments
         self.lexer.add(&#34;PREPROCESSOR&#34;,  r&#34;#\s*(warning|else|endif|include|undef|ifdef|ifndef|if|elif|pragma|define|if|elif|error|pragma|line)([\t\f ]+[^\s]+)*&#34;)
         self.lexer.add(&#34;CHAR&#34;,          r&#34;\&#39;[\w\;\\ \%\&#34;\&#39;]\&#39;&#34;)
@@ -109,7 +123,14 @@ class Lexer():
         self.lexer.ignore(r&#39;\s+&#39;)
         self.lexer.ignore(r&#39;\n&#39;)
         self.lexer.ignore(r&#39;\t&#39;)
+
     def get_lexer(self):
+        &#34;&#34;&#34;
+        Retrieves the lexer, with the tokens added to the inner lexer object.
+
+        Returns:
+            The lexer, now built with the tokens added
+        &#34;&#34;&#34;
         self._add_tokens()
         return self.lexer.build()
     
@@ -286,16 +307,26 @@ errors. The input <code>token</code> is a <code>Token</code> object, imported fr
 <span>class <span class="ident">Lexer</span></span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>The lexer class definition</p>
+<p>Constructs the Lexer object.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Lexer():
+    &#34;&#34;&#34;
+    The lexer class definition
+    &#34;&#34;&#34;
     def __init__(self):
+        &#34;&#34;&#34;
+        Constructs the Lexer object.
+        &#34;&#34;&#34;
         self.lexer = LexerGenerator()
     
     def _add_tokens(self):
+        &#34;&#34;&#34;
+        Adds tokens to the rply lexer object
+        &#34;&#34;&#34;
         self.lexer.add(&#34;COMMENT&#34;,       r&#34;(\/\/.*|\/\*.*\*\/|/\*[^*]*\*+(?:[^/*][^*]*\*+)*/)&#34;) # Catches both multi-line and single line comments
         self.lexer.add(&#34;PREPROCESSOR&#34;,  r&#34;#\s*(warning|else|endif|include|undef|ifdef|ifndef|if|elif|pragma|define|if|elif|error|pragma|line)([\t\f ]+[^\s]+)*&#34;)
         self.lexer.add(&#34;CHAR&#34;,          r&#34;\&#39;[\w\;\\ \%\&#34;\&#39;]\&#39;&#34;)
@@ -372,7 +403,14 @@ errors. The input <code>token</code> is a <code>Token</code> object, imported fr
         self.lexer.ignore(r&#39;\s+&#39;)
         self.lexer.ignore(r&#39;\n&#39;)
         self.lexer.ignore(r&#39;\t&#39;)
+
     def get_lexer(self):
+        &#34;&#34;&#34;
+        Retrieves the lexer, with the tokens added to the inner lexer object.
+
+        Returns:
+            The lexer, now built with the tokens added
+        &#34;&#34;&#34;
         self._add_tokens()
         return self.lexer.build()</code></pre>
 </details>
@@ -382,12 +420,23 @@ errors. The input <code>token</code> is a <code>Token</code> object, imported fr
 <span>def <span class="ident">get_lexer</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Retrieves the lexer, with the tokens added to the inner lexer object.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>The</code> <code>lexer</code>, <code>now</code> <code>built</code> <code>with</code> <code>the</code> <code>tokens</code> <code>added</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_lexer(self):
+    &#34;&#34;&#34;
+    Retrieves the lexer, with the tokens added to the inner lexer object.
+
+    Returns:
+        The lexer, now built with the tokens added
+    &#34;&#34;&#34;
     self._add_tokens()
     return self.lexer.build()</code></pre>
 </details>
