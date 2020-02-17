@@ -11,6 +11,7 @@ from copy import deepcopy
 lex = importlib.import_module("lexer", ".")
 par = importlib.import_module("parser", ".")
 btp = importlib.import_module("bnfToParser", ".")
+ast = importlib.import_module("AST_builder", ".")
 
 
 def getTree(head,level):
@@ -127,6 +128,13 @@ def main(args, fi):
         parser = pg.get_parser()
         parser.parse(tokens)
 
+        # Retrieve the head of the AST
+        head = pg.getTree()
+
+        astree = ast.buildAST(head)
+
+        ast.print_AST(astree)
+
     except LexingError as err:
         print("Received error(s) from token validation. Exiting...")
         exit()
@@ -140,16 +148,12 @@ def main(args, fi):
         print(f"BaseException: {err}. Exiting...")
         exit()
     
-    # Retrieve the head of the AST
-    head = pg.getTree()
 
     if args.tree or args.all:
         print(getTree(head,0))
     
     if args.pretty or args.all:
-        #prettyPrint(head,0,None)
         pprint_tree(head)
-
 
     if args.all:
         printTree(head, 0)
