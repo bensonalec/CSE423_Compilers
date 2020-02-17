@@ -40,6 +40,7 @@ from copy import deepcopy
 lex = importlib.import_module(&#34;lexer&#34;, &#34;.&#34;)
 par = importlib.import_module(&#34;parser&#34;, &#34;.&#34;)
 btp = importlib.import_module(&#34;bnfToParser&#34;, &#34;.&#34;)
+ast = importlib.import_module(&#34;AST_builder&#34;, &#34;.&#34;)
 
 
 def getTree(head,level):
@@ -103,11 +104,13 @@ def printTree(head,level):
 
 def pprint_tree(node, file=None, _prefix=&#34;&#34;, _last=True):
     &#34;&#34;&#34;
-    Prints the abstract syntax tree in correct order
+    Prints the abstract syntax tree in depth first order
 
-    Args:
-        node: The node in the AST being printed
-        file: The file the AST is being printed to
+    Args: 
+        node: The head node of the tree.
+        file: The file to be written to (Defaults to Stdout).
+        _prefix: A string indicating the spacing from the left side of the screen.
+        _last: A boolean that indicates if a node is the last in it&#39;s immediate surroundings.
     &#34;&#34;&#34;
     if type(node) == type(par.AbstractSyntaxTree(&#34;test&#34;, &#34;test&#34;)):
         print(_prefix, &#34;`-- &#34; if _last else &#34;|-- &#34;, node.token, sep=&#34;&#34;, file=file)
@@ -119,10 +122,9 @@ def pprint_tree(node, file=None, _prefix=&#34;&#34;, _last=True):
     else:
         print(_prefix, &#34;`-- &#34; if _last else &#34;|-- &#34;, node, sep=&#34;&#34;, file=file)
 
-#main function to control the frontend with different command line options.
 def main(args, fi):
     &#34;&#34;&#34;
-    The main function of this, takes in command line input via an object from argparse, and the name of the file.
+    The main function of the frontend, takes in command line input via an object from argparse, and the name of the file.
     
     Args:
         args: The object that contains the command line arguements.
@@ -156,6 +158,13 @@ def main(args, fi):
         parser = pg.get_parser()
         parser.parse(tokens)
 
+        # Retrieve the head of the AST
+        head = pg.getTree()
+
+        astree = ast.buildAST(head)
+
+        ast.print_AST(astree)
+
     except LexingError as err:
         print(&#34;Received error(s) from token validation. Exiting...&#34;)
         exit()
@@ -169,16 +178,12 @@ def main(args, fi):
         print(f&#34;BaseException: {err}. Exiting...&#34;)
         exit()
     
-    # Retrieve the head of the AST
-    head = pg.getTree()
 
     if args.tree or args.all:
         print(getTree(head,0))
     
     if args.pretty or args.all:
-        #prettyPrint(head,0,None)
         pprint_tree(head)
-
 
     if args.all:
         printTree(head, 0)
@@ -282,7 +287,7 @@ if __name__ == &#34;__main__&#34;:
 <span>def <span class="ident">main</span></span>(<span>args, fi)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>The main function of this, takes in command line input via an object from argparse, and the name of the file.</p>
+<section class="desc"><p>The main function of the frontend, takes in command line input via an object from argparse, and the name of the file.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>args</code></strong></dt>
@@ -296,7 +301,7 @@ if __name__ == &#34;__main__&#34;:
 </summary>
 <pre><code class="python">def main(args, fi):
     &#34;&#34;&#34;
-    The main function of this, takes in command line input via an object from argparse, and the name of the file.
+    The main function of the frontend, takes in command line input via an object from argparse, and the name of the file.
     
     Args:
         args: The object that contains the command line arguements.
@@ -330,6 +335,13 @@ if __name__ == &#34;__main__&#34;:
         parser = pg.get_parser()
         parser.parse(tokens)
 
+        # Retrieve the head of the AST
+        head = pg.getTree()
+
+        astree = ast.buildAST(head)
+
+        ast.print_AST(astree)
+
     except LexingError as err:
         print(&#34;Received error(s) from token validation. Exiting...&#34;)
         exit()
@@ -343,16 +355,12 @@ if __name__ == &#34;__main__&#34;:
         print(f&#34;BaseException: {err}. Exiting...&#34;)
         exit()
     
-    # Retrieve the head of the AST
-    head = pg.getTree()
 
     if args.tree or args.all:
         print(getTree(head,0))
     
     if args.pretty or args.all:
-        #prettyPrint(head,0,None)
         pprint_tree(head)
-
 
     if args.all:
         printTree(head, 0)</code></pre>
@@ -362,25 +370,25 @@ if __name__ == &#34;__main__&#34;:
 <span>def <span class="ident">pprint_tree</span></span>(<span>node, file=None)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Prints the abstract syntax tree in correct order</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>node</code></strong></dt>
-<dd>The node in the AST being printed</dd>
-<dt><strong><code>file</code></strong></dt>
-<dd>The file the AST is being printed to</dd>
-</dl></section>
+<section class="desc"><p>Prints the abstract syntax tree in depth first order</p>
+<p>Args:
+node: The head node of the tree.
+file: The file to be written to (Defaults to Stdout).
+_prefix: A string indicating the spacing from the left side of the screen.
+_last: A boolean that indicates if a node is the last in it's immediate surroundings.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def pprint_tree(node, file=None, _prefix=&#34;&#34;, _last=True):
     &#34;&#34;&#34;
-    Prints the abstract syntax tree in correct order
+    Prints the abstract syntax tree in depth first order
 
-    Args:
-        node: The node in the AST being printed
-        file: The file the AST is being printed to
+    Args: 
+        node: The head node of the tree.
+        file: The file to be written to (Defaults to Stdout).
+        _prefix: A string indicating the spacing from the left side of the screen.
+        _last: A boolean that indicates if a node is the last in it&#39;s immediate surroundings.
     &#34;&#34;&#34;
     if type(node) == type(par.AbstractSyntaxTree(&#34;test&#34;, &#34;test&#34;)):
         print(_prefix, &#34;`-- &#34; if _last else &#34;|-- &#34;, node.token, sep=&#34;&#34;, file=file)

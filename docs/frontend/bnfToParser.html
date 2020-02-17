@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.4" />
 <title>src.frontend.bnfToParser API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="This module reads in a BNF and produces a parser for use with rply.The BNF expects the form X : Y Y #name, where the name determines what the node …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,11 +20,16 @@
 <h1 class="title">Module <code>src.frontend.bnfToParser</code></h1>
 </header>
 <section id="section-intro">
+<p>This module reads in a BNF and produces a parser for use with rply.The BNF expects the form X : Y Y #name, where the name determines what the node will end up being called in the Parse tree.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import re
+<pre><code class="python">&#34;&#34;&#34;
+This module reads in a BNF and produces a parser for use with rply.The BNF expects the form X : Y Y #name, where the name determines what the node will end up being called in the Parse tree.
+&#34;&#34;&#34;
+
+import re
 
     
 funcTemp = &#34;&#34;&#34;
@@ -91,7 +96,7 @@ initTemp = &#34;&#34;&#34;
 
 def main(path):
     &#34;&#34;&#34;
-    Creates a parser.py file from input (assumed to be BNF_definition)
+    Creates a parser.py file from input. While the default is more or less BNF_definition (as it is passed in inside this files __main__ block) the function assumes no default
 
     Args:
         path: the path to the input file
@@ -138,6 +143,9 @@ def main(path):
             functionList += newFunc
 
     totalOutput = &#34;&#34;&#34;
+\&#34;\&#34;\&#34;
+This module contains definitions for the AbstractSyntaxTree and Parser classes, as well as some ansillary functions to assist.
+\&#34;\&#34;\&#34;
 from rply import ParserGenerator
 from rply.errors import ParserGeneratorWarning
 from warnings import simplefilter
@@ -165,7 +173,7 @@ class AbstractSyntaxTree():
 #setup parser class
 class Parser():
     \&#34;\&#34;\&#34;
-    Parser is an object that contains the rules for the aprser
+    Definition for the Parser object, works off of rply. Contains rules for parsing.
     \&#34;\&#34;\&#34;
     INITSPOT
 
@@ -259,6 +267,7 @@ class Parser():
         f.write(totalOutput)
 
 if __name__ == &#34;__main__&#34;:
+    #default is assumed to be BNF definition if not otherwise specified
     main(&#34;BNF_definition&#34;)</code></pre>
 </details>
 </section>
@@ -273,7 +282,7 @@ if __name__ == &#34;__main__&#34;:
 <span>def <span class="ident">main</span></span>(<span>path)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Creates a parser.py file from input (assumed to be BNF_definition)</p>
+<section class="desc"><p>Creates a parser.py file from input. While the default is more or less BNF_definition (as it is passed in inside this files <strong>main</strong> block) the function assumes no default</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>path</code></strong></dt>
@@ -285,7 +294,7 @@ if __name__ == &#34;__main__&#34;:
 </summary>
 <pre><code class="python">def main(path):
     &#34;&#34;&#34;
-    Creates a parser.py file from input (assumed to be BNF_definition)
+    Creates a parser.py file from input. While the default is more or less BNF_definition (as it is passed in inside this files __main__ block) the function assumes no default
 
     Args:
         path: the path to the input file
@@ -332,6 +341,9 @@ if __name__ == &#34;__main__&#34;:
             functionList += newFunc
 
     totalOutput = &#34;&#34;&#34;
+\&#34;\&#34;\&#34;
+This module contains definitions for the AbstractSyntaxTree and Parser classes, as well as some ansillary functions to assist.
+\&#34;\&#34;\&#34;
 from rply import ParserGenerator
 from rply.errors import ParserGeneratorWarning
 from warnings import simplefilter
@@ -359,7 +371,7 @@ class AbstractSyntaxTree():
 #setup parser class
 class Parser():
     \&#34;\&#34;\&#34;
-    Parser is an object that contains the rules for the aprser
+    Definition for the Parser object, works off of rply. Contains rules for parsing.
     \&#34;\&#34;\&#34;
     INITSPOT
 
