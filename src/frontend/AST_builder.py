@@ -39,6 +39,8 @@ def buildAST(parseHead):
             expansion = [(x, ASTcurrent) for x in c[0].content[1:] if 'content' in x.__dict__]            
         elif typ == "value":
             ASTcurrent.children.append(ASTNode(f"{c[0].content[0].value}", ASTcurrent, []))
+
+            print_AST(ASTcurrent)
         elif typ == "function definition":
             ASTcurrent.children.append(ASTNode(f"{c[0].content[0].value} {c[0].content[1].value}", ASTcurrent, []))
             ASTcurrent = ASTcurrent.children[-1]
@@ -81,7 +83,6 @@ def buildAST(parseHead):
             #for one non-terminals (i.e value)
             elif(tmpLen == 1):
                 pass
-            
             #for no non-terminals (i.e SELF_DEFINED)
             else:
                 ASTcurrent.children.append(ASTNode(c[0].content[0].value,ASTcurrent,[]))
@@ -151,6 +152,7 @@ def buildAST(parseHead):
         c = ntv[0]
         if c.parent and c.parent.name == "":
             c.parent.name = c.name
+            c.parent.children = c.children + c.parent.children[1:]
             del c.parent.children[0]
         ntv = [x for x in c.children] + ntv[1:]
 
