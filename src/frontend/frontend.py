@@ -186,6 +186,8 @@ def main(args, fi):
         print(f"Unrecoverable exception occured. Exiting...")
         exit()
 
+    return astree
+
 if __name__ == "__main__":
     #command line arguements
 
