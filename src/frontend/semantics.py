@@ -102,7 +102,7 @@ class symbol_table():
 
             # checks whether the current node is an operation that will need to access the symbol table 
             try:                
-                index = ["="].index(cur.Node.name)
+                index = ["=","call"].index(cur.Node.name)
                 
                 # Function Declaration
                 if index == 0:
@@ -185,7 +185,24 @@ class symbol_table():
 
                             pass
                     # print("Variable in use!",cur.Node.name,[x.name for x in cur.Node.children])
-
+                elif index == 1:
+                    #iterate through the children, get the name of the function, look up how many parameters it expects
+                    func = cur.Node.children[0]
+                    functionName = func.name
+                    functionChildren = [x.name for x in func.children]
+                    #get the number of params and types from the symbol table
+                    params = [x for x in self.symbols if functionName in x.scope]
+                    types = [x.type for x in params]
+                    print(types)
+                    if(len(params) != len(functionChildren)):
+                        print("Improper amount of arguments in call")
+                    
+                    #check the types of all the elements of functionChildren, taht they align with the types needed by params
+                    #iterate through the params, if the params (in order) are eqwual to the types in types, then it's fine
+                    print(functionName)
+                    print(functionChildren)
+                    #then iterate through the children of this and check the types of the parameters
+                    pass
          
             except ValueError:
                 # This means that the token is not in that list
