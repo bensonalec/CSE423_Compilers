@@ -17,7 +17,7 @@ funcTemp = """
             Returns:
                 The node of the abstract syntax tree.
             \"\"\"
-            newNode = AbstractSyntaxTree("NAMESPOT",p)
+            newNode = ParseTree("NAMESPOT",p)
             self.Head = newNode
             return newNode
 """
@@ -33,7 +33,7 @@ headTemp = """
             Returns:
                 The node of the abstract syntax tree.
             \"\"\"
-            newNode = AbstractSyntaxTree("NAMESPOT",p)
+            newNode = ParseTree("NAMESPOT",p)
             self.Head = newNode
             return newNode
 """
@@ -117,7 +117,7 @@ def main(path):
 
     totalOutput = """
 \"\"\"
-This module contains definitions for the AbstractSyntaxTree and Parser classes, as well as some ansillary functions to assist.
+This module contains definitions for the Parse Tree and Parser classes, as well as some ansillary functions to assist.
 \"\"\"
 from rply import ParserGenerator
 from rply.errors import ParserGeneratorWarning
@@ -127,13 +127,13 @@ from rply.token import Token
 #we get werid 'non-descriptive' warnings from ParserGenerator, this ignores those
 simplefilter('ignore', ParserGeneratorWarning)
 
-class AbstractSyntaxTree():
+class ParseTree():
     \"\"\"
-    AbstractSyntaxTree is a class that acts as each node in an Abstract Syntax Tree
+    ParseTree is a class that acts as each node in an Abstract Syntax Tree
     \"\"\"
     def __init__(self, token, content):
         \"\"\"
-        Construct a new AbstractSyntaxTree object
+        Construct a new ParseTree object
 
         Args:
             token: The token type of the node.

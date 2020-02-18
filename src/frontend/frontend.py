@@ -31,7 +31,7 @@ def getTree(head,level):
     li = []
     out = ""
     for node in content:
-        if(type(node) != type(par.AbstractSyntaxTree("sample","sample"))):
+        if(type(node) != type(par.ParseTree("sample","sample"))):
             li.append(node)
         else:
             li.append(node.token)
@@ -41,7 +41,7 @@ def getTree(head,level):
 
     #iterate through the components of the BNF
     for node in content:
-        if(type(node) == type(par.AbstractSyntaxTree("sample","sample"))):
+        if(type(node) == type(par.ParseTree("sample","sample"))):
             out += getTree(node,level)
     return out
 
@@ -59,7 +59,7 @@ def printTree(head,level):
     li = []
     out = ""
     for node in content:
-        if(type(node) != type(par.AbstractSyntaxTree("sample","sample"))):
+        if(type(node) != type(par.ParseTree("sample","sample"))):
             li.append(node)
         else:
             li.append(node.token)
@@ -69,7 +69,7 @@ def printTree(head,level):
 
     #iterate through the components of the BNF
     for node in content:
-        if(type(node) == type(par.AbstractSyntaxTree("sample","sample"))):
+        if(type(node) == type(par.ParseTree("sample","sample"))):
             printTree(node,level)
 
 
@@ -83,7 +83,7 @@ def pprint_tree(node, file=None, _prefix="", _last=True):
         _prefix: A string indicating the spacing from the left side of the screen.
         _last: A boolean that indicates if a node is the last in it's immediate surroundings.
     """
-    if type(node) == type(par.AbstractSyntaxTree("test", "test")):
+    if type(node) == type(par.ParseTree("test", "test")):
         print(_prefix, "`-- " if _last else "|-- ", node.token, sep="", file=file)
         _prefix += "    " if _last else "|   "
         child_count = len(node.content)
@@ -148,7 +148,7 @@ def main(args, fi):
 
     except BaseException as err:
         print(f"BaseException: {err}. Exiting...")
-        exit()
+    #     exit()
     
 
     if args.tree or args.all:

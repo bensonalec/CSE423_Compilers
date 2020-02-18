@@ -31,7 +31,7 @@ def buildAST(parseHead):
             ASTHead = ASTNode("Program")
             ASTcurrent = ASTHead
         elif typ == "initialization":
-            ASTcurrent.children.append(ASTNode("", ASTcurrent,[]))
+            ASTcurrent.children.append(ASTNode("=", ASTcurrent, []))
             ASTcurrent = ASTcurrent.children[-1]
             if len([x for x in c[0].content if 'content' in x.__dict__]) == 0:
                 ASTcurrent.name = "="
