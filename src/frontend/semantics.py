@@ -16,7 +16,6 @@ class Entry():
 
 Node = namedtuple("Node", ["Node", "Scope"])
 
-
 class symbol_table():
     def __init__(self,AST):
         self.AST = AST
@@ -47,22 +46,6 @@ class symbol_table():
                     else:
                         self.symbols.add(Entry(True, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
                         cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + "/")
-                    """ if cur.Node.children[1].name == "main":
-                        self.symbols.add(Entry(True, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
-                        cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + "/")
-
-                    #if function name is in table already or main has not been declared
-                    elif ([x for x in self.symbols if x.name == cur.Node.children[0].name]  == []):
-                        cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + "/") 
-
-                     #if main hasn't already been declared you don't need a function prototype              
-                    elif ([x for x in self.symbols if x.name == "main"]  == []): 
-                        self.symbols.add(Entry(True, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
-                        cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + "/")
-                    #if it fails all checks
-                    else:
-                        self.undefined.append(Entry(True, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope))  """
-
 
                 #Function Prototype Declaration
                 elif index == 1:
@@ -73,9 +56,9 @@ class symbol_table():
                 
                 # Function Call
                 elif index == 2:
-                    if ([x for x in self.symbols if x.name == cur.Node.children[0].name and cur.Scope in x.scope] == []):
-                        print("Function Undefined")
-                        self.undefined.append(Entry(True, cur.Node.children[0].name, None, cur.Scope)) #FIX ME
+                    print (f"{cur.Node.children[0].name}")
+                    if [x for x in self.symbols if x.is_function == True and x.name == cur.Node.children[0].name] == []:
+                        self.undefined.append(Entry(True, cur.Node.children[0].name, None, cur.Scope))
                     pass
                 # Initialization and Usage
                 elif index == 3:
@@ -100,10 +83,29 @@ class symbol_table():
 
             # fetches the relevant children of the current node and appends the already known children to the list of residual nodes
             ntv = [Node(x, cur.Scope) for x in cur.Node.children if 'children' in x.__dict__] + ntv[1:]
-        
-        
-        #prints symbol table and undefined
-        print ("Known symbols:")
-        [print (f"{x.name} {x.type} {x.scope}") for x in self.symbols]
-        print ("Unknown symbols:")
-        [print (f"{x.name} {x.type} {x.scope}") for x in self.undefined]
+
+
+    def print_symbol_table(self):
+        col_lengths = [
+            max(max([len(x.name) for x in self.symbols]), len("Name")),
+            max(max([len(str(x.is_function)) for x in self.symbols]), len("Function?")),
+            max(max([len(x.type) for x in self.symbols]), len("Type")),
+            max(max([len(x.scope) for x in self.symbols]), len("Scope")),
+            max(max([len(x.references) for x in self.symbols]), len("References")),
+            max(max([len(x.modifiers) for x in self.symbols]), len("Modifiers")),
+        ]
+
+        print (f"{'Name':^{col_lengths[0]}} | {'Function?':^{col_lengths[1]}} | {'Type':^{col_lengths[2]}} | {'Scope':^{col_lengths[3]}}")
+        print (f"{'-'*col_lengths[0]}-+-{'-'*col_lengths[1]}-+-{'-'*col_lengths[2]}-+-{'-'*col_lengths[3]}-")
+        [print(f"{x.name:>{col_lengths[0]}} | {str(x.is_function) :>{col_lengths[1]}} | {x.type :>{col_lengths[2]}} | {x.scope :<{col_lengths[3]}}") for x in self.symbols]
+
+    def print_unknown_symbols(self):
+        col_lengths = [
+            max(max([len(x.name) for x in self.undefined]), len("Name")),
+            max(max([len(str(x.is_function)) for x in self.undefined]), len("Function?")),
+            max(max([len(x.scope) for x in self.undefined]), len("Scope")),
+        ]
+
+        print (f"{'Name':^{col_lengths[0]}} | {'Function?':^{col_lengths[1]}} | {'Type':^{col_lengths[2]}}")
+        print (f"{'-'*col_lengths[0]}-+-{'-'*col_lengths[1]}-+-{'-'*col_lengths[2]}-")
+        [print(f"{x.name:>{col_lengths[0]}} | {str(x.is_function) :>{col_lengths[1]}} | {x.type :>{col_lengths[2]}}") for x in self.undefined]

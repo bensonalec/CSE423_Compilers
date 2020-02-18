@@ -142,6 +142,8 @@ def main(args, fi):
         sym = sem.symbol_table(astree)
 
         sym.analyze()
+        sym.print_symbol_table()
+        sym.print_unknown_symbols()
 
     except LexingError as err:
         print("Received error(s) from token validation. Exiting...")
