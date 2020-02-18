@@ -146,7 +146,7 @@ class symbol_table():
                             if(len(tblEntry) == 1):
                                 funcType = tblEntry[0].type
                                 if(funcType != expectedType):
-                                    print("Type mismatch")
+                                    print("Type mismatch for",topVar)
                         #one of the children is a precision
                         elif(precCheck.match(x.name)):
                             if(expectedType != "float" and expectedType != "double"):
@@ -176,11 +176,11 @@ class symbol_table():
                                     elif([x for x in self.symbols if x.name == curTemp.Node.name and curTemp.Scope in x.scope] != []):
                                         var = [x for x in self.symbols if x.name == curTemp.Node.name and curTemp.Scope in x.scope][0]
                                         if(var.type != "int"):
-                                            print("Type mismatch")
+                                            print("Type mismatch for",topVar)
                                     elif((precCheck.match(curTemp.Node.name))):
-                                        print("Type mismatch")
+                                        print("Type mismatch for",topVar)
                                     elif(not (digCheck.match(curTemp.Node.name) or opCheck.match(curTemp.Node.name))):
-                                        print("Type mismatch")
+                                        print("Type mismatch for",topVar)
                                 ntvTemp = [Node(z, curTemp.Scope) for z in curTemp.Node.children if 'children' in z.__dict__] + ntvTemp[1:]
 
                             pass
