@@ -20,7 +20,7 @@ class symbol_table():
     def __init__(self,AST):
         self.AST = AST
 
-        self.symbols = set()
+        self.symbols = []
         self.undefined = []
     
     def analyze(self):
@@ -45,13 +45,13 @@ class symbol_table():
                         print(f'Function Not Properly Declared {cur.Node.children[0].name}')
                         self.undefined.append(Entry(True, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope))
                     else:
-                        self.symbols.add(Entry(True, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
+                        self.symbols.append(Entry(True, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
                         cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + "/")
 
                 #Function Prototype Declaration
                 elif index == 1:
-                    self.symbols.add(Entry(True, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
-                    #no need to change scope since it is a prototype 
+                    self.symbols.append(Entry(True, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
+                    cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + "/")
                     pass
                 
                 
@@ -68,7 +68,7 @@ class symbol_table():
                     if len(cur.Node.children) > 1:
                         #add to symbol table this should also handle function param being that they are still within the same scope as there parent function
                         if([x for x in self.symbols if x.name == cur.Node.children[1].name and cur.Scope in x.scope] == []):
-                            self.symbols.add(Entry(False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
+                            self.symbols.append(Entry(False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
                         else:
                             print(f'Variable Already Declared {cur.Node.children[1].name} {cur.Node.children[0].name}')
                             self.undefined.append(Entry(False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope))                             
@@ -104,9 +104,11 @@ class symbol_table():
             max(max([len(x.modifiers) for x in self.symbols]), len("Modifiers")),
         ]
 
+        self.symbols.sort(key=lambda x: x.scope)
+
         print (f"{'Name':^{col_lengths[0]}} | {'Function?':^{col_lengths[1]}} | {'Type':^{col_lengths[2]}} | {'Scope':^{col_lengths[3]}}")
         print (f"{'-'*col_lengths[0]}-+-{'-'*col_lengths[1]}-+-{'-'*col_lengths[2]}-+-{'-'*col_lengths[3]}-")
-        [print(f"{x.name:>{col_lengths[0]}} | {str(x.is_function) :>{col_lengths[1]}} | {x.type :>{col_lengths[2]}} | {x.scope :<{col_lengths[3]}}") for x in self.symbols]
+        for x in self.symbols: print(f"{x.name:>{col_lengths[0]}} | {str(x.is_function) :>{col_lengths[1]}} | {x.type :>{col_lengths[2]}} | {x.scope :<{col_lengths[3]}}")
 
     def print_unknown_symbols(self):
         if len(self.undefined) == 0:
@@ -119,6 +121,8 @@ class symbol_table():
             max(max([len(x.scope) for x in self.undefined]), len("Scope")),
         ]
 
+        self.undefined.sort(key=lambda x: x.scope)
+
         print (f"{'Name':^{col_lengths[0]}} | {'Function?':^{col_lengths[1]}} | {'Type':^{col_lengths[2]}}")
         print (f"{'-'*col_lengths[0]}-+-{'-'*col_lengths[1]}-+-{'-'*col_lengths[2]}-")
-        [print(f"{x.name:>{col_lengths[0]}} | {str(x.is_function) :>{col_lengths[1]}} | {x.type :>{col_lengths[2]}}") for x in self.undefined]
+        for x in self.undefined: print(f"{x.name:>{col_lengths[0]}} | {str(x.is_function) :>{col_lengths[1]}} | {x.type :>{col_lengths[2]}}")
