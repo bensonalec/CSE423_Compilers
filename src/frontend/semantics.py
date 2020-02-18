@@ -85,6 +85,10 @@ class symbol_table():
 
 
     def print_symbol_table(self):
+        if len(self.symbols) == 0:
+            print ("No defined symbols available")
+            return
+
         col_lengths = [
             max(max([len(x.name) for x in self.symbols]), len("Name")),
             max(max([len(str(x.is_function)) for x in self.symbols]), len("Function?")),
@@ -99,6 +103,10 @@ class symbol_table():
         [print(f"{x.name:>{col_lengths[0]}} | {str(x.is_function) :>{col_lengths[1]}} | {x.type :>{col_lengths[2]}} | {x.scope :<{col_lengths[3]}}") for x in self.symbols]
 
     def print_unknown_symbols(self):
+        if len(self.undefined) == 0:
+            print ("No undefined symbols available")
+            return
+
         col_lengths = [
             max(max([len(x.name) for x in self.undefined]), len("Name")),
             max(max([len(str(x.is_function)) for x in self.undefined]), len("Function?")),
