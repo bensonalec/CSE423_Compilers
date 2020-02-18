@@ -42,6 +42,7 @@ class symbol_table():
                 # Function Declaration
                 if index == 0:
                     if [x for x in self.symbols if x.name == "main"] != [] and [x for x in self.symbols if cur.Node.children[1].name == x.name] == []:
+                        print(f'Function Not Properly Declared {cur.Node.children[0].name}')
                         self.undefined.append(Entry(True, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope))
                     else:
                         self.symbols.add(Entry(True, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
@@ -57,6 +58,7 @@ class symbol_table():
                 # Function Call
                 elif index == 2:
                     if [x for x in self.symbols if x.is_function == True and x.name == cur.Node.children[0].name] == []:
+                        print(f'Function Undefined {cur.Node.children[0].name}')
                         self.undefined.append(Entry(True, cur.Node.children[0].name, "None", cur.Scope))
                     pass
                 # Initialization and Usage
@@ -65,13 +67,17 @@ class symbol_table():
                     #declaration of variable
                     if len(cur.Node.children) > 1:
                         #add to symbol table this should also handle function param being that they are still within the same scope as there parent function
-                        self.symbols.add(Entry(False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) #FIX ME
+                        if([x for x in self.symbols if x.name == cur.Node.children[1].name and cur.Scope in x.scope] == []):
+                            self.symbols.add(Entry(False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
+                        else:
+                            print(f'Variable Already Declared {cur.Node.children[1].name} {cur.Node.children[0].name}')
+                            self.undefined.append(Entry(False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope))                             
                         pass
                     #usage of varible
                     else:
                         if ([x for x in self.symbols if x.name == cur.Node.children[0].name and cur.Scope in x.scope] == []):
-                            print("Variable Undeclared")
-                            self.undefined.append(Entry(False,  cur.Node.children[0].name, "None", cur.Scope,)) #FIX ME
+                            print(f'Variable Undeclared {cur.Node.children[0].name}')
+                            self.undefined.append(Entry(False,  cur.Node.children[0].name, "None", cur.Scope)) 
                             
                         pass
 
