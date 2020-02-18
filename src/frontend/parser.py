@@ -1,5 +1,6 @@
-Overwriting 
-ule contains definitions for the ParseTree and Parser classes, as well as some ansillary functions to assist.
+
+"""
+This module contains definitions for the ParseTree and Parser classes, as well as some ansillary functions to assist.
 """
 from rply import ParserGenerator
 from rply.errors import ParserGeneratorWarning
