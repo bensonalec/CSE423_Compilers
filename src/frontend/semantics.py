@@ -51,7 +51,7 @@ class symbol_table():
                 #Function Prototype Declaration
                 elif index == 1:
                     self.symbols.append(Entry(True, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
-                    #no need to change scope since it is a prototype 
+                    cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + "/")
                     pass
                 
                 
