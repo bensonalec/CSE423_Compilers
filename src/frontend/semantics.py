@@ -57,7 +57,7 @@ class symbol_table():
                 # Function Call
                 elif index == 2:
                     if [x for x in self.symbols if x.is_function == True and x.name == cur.Node.children[0].name] == []:
-                        self.undefined.append(Entry(True, cur.Node.children[0].name, None, cur.Scope))
+                        self.undefined.append(Entry(True, cur.Node.children[0].name, "None", cur.Scope))
                     pass
                 # Initialization and Usage
                 elif index == 3:
@@ -71,7 +71,7 @@ class symbol_table():
                     else:
                         if ([x for x in self.symbols if x.name == cur.Node.children[0].name and cur.Scope in x.scope] == []):
                             print("Variable Undeclared")
-                            self.undefined.append(Entry(False,  cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope,)) #FIX ME
+                            self.undefined.append(Entry(False,  cur.Node.children[0].name, "None", cur.Scope,)) #FIX ME
                             
                         pass
 
