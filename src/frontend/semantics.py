@@ -184,7 +184,7 @@ class symbol_table():
                                 ntvTemp = [Node(z, curTemp.Scope) for z in curTemp.Node.children if 'children' in z.__dict__] + ntvTemp[1:]
 
                             pass
-                    # print("Variable in use!",cur.Node.name,[x.name for x in cur.Node.children])
+
                 elif index == 1:
                     #iterate through the children, get the name of the function, look up how many parameters it expects
                     func = cur.Node.children[0]
@@ -193,16 +193,30 @@ class symbol_table():
                     #get the number of params and types from the symbol table
                     params = [x for x in self.symbols if functionName in x.scope]
                     types = [x.type for x in params]
-                    print(types)
                     if(len(params) != len(functionChildren)):
                         print("Improper amount of arguments in call")
                     else:
                         for it,par in enumerate(functionChildren):
                             #get type of par
+                            expec = types[it]
+                            #one of the children is a precision
+                            if(precCheck.match(par)):
+                                if(expec != "float" and expec != "double"):
+                                    print("Type mismatch for",functionName,", unexpected precision")
+                            #one of the chidlren is an integer
+                            elif(digCheck.match(par)):
+                                if(expec != "int"):
+                                    print("Type mismatch for",functionName,", unexpected integer")
+                            elif(charCheck.match(par)):
+                                if(expec != "char"):
+                                    print("Type mismatch for",functionName,", unexpected character")
+                            elif(stringCheck.match(par)):
+                                if(expec != "string"):
+                                    print("Type mismatch for",functionName,", unexpected string")
+
                             #check if type of par and types[it] are the same
+                            
                             pass
-                    print(functionName)
-                    print(functionChildren)
                     #then iterate through the children of this and check the types of the parameters
                     pass
          
