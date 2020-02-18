@@ -89,7 +89,7 @@ class symbol_table():
             # fetches the relevant children of the current node and appends the already known children to the list of residual nodes
             ntv = [Node(x, cur.Scope) for x in cur.Node.children if 'children' in x.__dict__] + ntv[1:]
 
-        #Pass 2
+        #Pass 2, in this pass check types and function parameters
         ntv = [Node(self.AST, "/")]
 
         typ = None
