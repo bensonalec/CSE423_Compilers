@@ -4,6 +4,7 @@ for command line arguments that can be used to determine which portion is run.
 """
 import argparse
 import importlib
+import traceback
 
 from rply.errors import LexingError
 from copy import deepcopy
@@ -12,6 +13,7 @@ lex = importlib.import_module("lexer", ".")
 par = importlib.import_module("parser", ".")
 btp = importlib.import_module("bnfToParser", ".")
 ast = importlib.import_module("AST_builder", ".")
+sem = importlib.import_module("semantics", ".")
 
 
 def getTree(head,level):
@@ -137,6 +139,10 @@ def main(args, fi):
         if args.all:
             ast.print_AST(astree)
 
+        sym = sem.symbol_table(astree)
+
+        sym.analyze()
+
     except LexingError as err:
         print("Received error(s) from token validation. Exiting...")
         exit()
@@ -147,7 +153,8 @@ def main(args, fi):
         print("Received AssertionError(s) from parser, continuing with what was parsed...\n")
 
     except BaseException as err:
-        print(f"BaseException: {err}. Exiting...")
+        traceback.print_exc()
+        print(f"Unrecoverable exception occured. Exiting...")
         exit()
     
 
