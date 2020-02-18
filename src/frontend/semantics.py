@@ -56,7 +56,6 @@ class symbol_table():
                 
                 # Function Call
                 elif index == 2:
-                    print (f"{cur.Node.children[0].name}")
                     if [x for x in self.symbols if x.is_function == True and x.name == cur.Node.children[0].name] == []:
                         self.undefined.append(Entry(True, cur.Node.children[0].name, None, cur.Scope))
                     pass
