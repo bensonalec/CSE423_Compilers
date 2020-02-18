@@ -1,4 +1,4 @@
-import importlib
+import importlib,re
 from collections import namedtuple
 
 lex = importlib.import_module("lexer", ".")
@@ -80,6 +80,111 @@ class symbol_table():
                             self.undefined.append(Entry(False,  cur.Node.children[0].name, "None", cur.Scope)) 
                             
                         pass
+
+         
+            except ValueError:
+                # This means that the token is not in that list
+                pass
+
+            # fetches the relevant children of the current node and appends the already known children to the list of residual nodes
+            ntv = [Node(x, cur.Scope) for x in cur.Node.children if 'children' in x.__dict__] + ntv[1:]
+
+        #Pass 2
+        ntv = [Node(self.AST, "/")]
+
+        typ = None
+        b = False
+
+        # Simple implementation of a DFS
+        while ntv != []:
+            # Grabs the first element which will be the residual left most child
+            cur = ntv[0]
+
+            # checks whether the current node is an operation that will need to access the symbol table 
+            try:                
+                index = ["="].index(cur.Node.name)
+                
+                # Function Declaration
+                if index == 0:
+                    children = cur.Node.children
+                    expectedType = ""
+                    topVar = ""
+                    #regexes to do type checks on the fly
+                    isDigit = r"\-?([1-9]\d*|\d)"
+                    isOp = r'\+|\-|\/|\*'
+                    isPrec = r"\-?(\d\.\d+|[1-9]\d*\.\d+)"
+                    isChar = r"(\'[\w\;\\ \%\"\']\')"
+                    isString = r"(\"[\w+\;\\ \%\"\']*\")"
+                    precCheck = re.compile(isPrec)
+                    digCheck = re.compile(isDigit)
+                    opCheck = re.compile(isOp)
+                    charCheck = re.compile(isChar)
+                    stringCheck = re.compile(isString)
+
+                    for x in children:
+                        #get the expected type, or variable in assignment
+                        if(x.name == "var"):
+
+                            chil = ([z for z in x.children])
+                            #this is the variable that is being assigned to
+                            var = chil[-1]
+                            #get the expected type from symbol table
+                            tblEntry = [x for x in self.symbols if x.name == var.name and cur.Scope in x.scope]
+                            if(expectedType == ""):
+                                if(len(tblEntry) == 1):
+                                    #it is in the table already (good)
+                                    topVar = tblEntry[0].name
+                                    expectedType = tblEntry[0].type
+                            else:
+                                if(expectedType != tblEntry[0].type):
+                                    print("Type mismatch")
+                        #check function calls
+                        elif(x.name == "call"):
+                            chil = [z for z in x.children]
+                            func = chil[-1]
+                            tblEntry = [x for x in self.symbols if x.name == func.name and cur.Scope in x.scope and x.is_function]
+                            if(len(tblEntry) == 1):
+                                funcType = tblEntry[0].type
+                                if(funcType != expectedType):
+                                    print("Type mismatch")
+                        #one of the children is a precision
+                        elif(precCheck.match(x.name)):
+                            if(expectedType != "float" and expectedType != "double"):
+                                print("Type mismatch for",topVar,", unexpected precision")
+                        #one of the chidlren is an integer
+                        elif(digCheck.match(x.name)):
+                            if(expectedType != "int"):
+                                print("Type mismatch for",topVar,", unexpected integer")
+                        elif(charCheck.match(x.name)):
+                            if(expectedType != "char"):
+                                print("Type mismatch for",topVar,", unexpected character")
+                        elif(stringCheck.match(x.name)):
+                            if(expectedType != "string"):
+                                print("Type mismatch for",topVar,", unexpected string")
+                        #case that operators are in use
+                        elif(opCheck.match(x.name)):
+                            #need to desced through all possible branches of this, and ensure everything is use is an integer
+                            #expect variables, function calls, and integers in operatiosn
+                            #need to traverse all nodes inside of this branch
+                            ntvTemp = [Node(x, "/")]
+                            while ntvTemp != []:
+                                # Grabs the first element which will be the residual left most child
+                                curTemp = ntvTemp[0]
+                                if(expectedType == "int"):
+                                    if(curTemp.Node.name == "var" or curTemp.Node.name == "call"):
+                                        pass
+                                    elif([x for x in self.symbols if x.name == curTemp.Node.name and curTemp.Scope in x.scope] != []):
+                                        var = [x for x in self.symbols if x.name == curTemp.Node.name and curTemp.Scope in x.scope][0]
+                                        if(var.type != "int"):
+                                            print("Type mismatch")
+                                    elif((precCheck.match(curTemp.Node.name))):
+                                        print("Type mismatch")
+                                    elif(not (digCheck.match(curTemp.Node.name) or opCheck.match(curTemp.Node.name))):
+                                        print("Type mismatch")
+                                ntvTemp = [Node(z, curTemp.Scope) for z in curTemp.Node.children if 'children' in z.__dict__] + ntvTemp[1:]
+
+                            pass
+                    # print("Variable in use!",cur.Node.name,[x.name for x in cur.Node.children])
 
          
             except ValueError:
