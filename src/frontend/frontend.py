@@ -5,6 +5,7 @@ for command line arguments that can be used to determine which portion is run.
 import argparse
 import importlib
 import traceback
+import sys
 
 from rply.errors import LexingError
 from copy import deepcopy
@@ -122,6 +123,8 @@ def main(args, fi):
 
     try:
 
+        #print(sys.modules)
+
         #Read in file
         text_input = fi.read()
         fi.close()
@@ -181,10 +184,10 @@ def main(args, fi):
         pg.print_error()
         print("Received AssertionError(s) from parser, continuing with what was parsed...\n")
 
-    except BaseException as err:
-        traceback.print_exc()
-        print(f"Unrecoverable exception occured. Exiting...")
-        exit()
+    # except BaseException as err:
+    #     traceback.print_exc()
+    #     print(f"Unrecoverable exception occured. Exiting...")
+    #     exit()
 
     return astree
 

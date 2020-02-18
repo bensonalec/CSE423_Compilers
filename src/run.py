@@ -1,8 +1,9 @@
 import argparse
 import importlib
 
-frontend = importlib.import_module("frontend.frontend", package="./frontend")
-
+frontend = importlib.import_module("frontend.frontend", package="frontend")
+#optimization = importlib.import_module("optimization.optimization", package="optimization)
+#backend = importlib.import_module("backend.backend", package="backend")
 
 def main(args, fi):
 
