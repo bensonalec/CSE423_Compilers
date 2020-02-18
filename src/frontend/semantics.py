@@ -196,9 +196,11 @@ class symbol_table():
                     print(types)
                     if(len(params) != len(functionChildren)):
                         print("Improper amount of arguments in call")
-                    
-                    #check the types of all the elements of functionChildren, taht they align with the types needed by params
-                    #iterate through the params, if the params (in order) are eqwual to the types in types, then it's fine
+                    else:
+                        for it,par in enumerate(functionChildren):
+                            #get type of par
+                            #check if type of par and types[it] are the same
+                            pass
                     print(functionName)
                     print(functionChildren)
                     #then iterate through the children of this and check the types of the parameters
