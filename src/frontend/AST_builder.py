@@ -49,7 +49,8 @@ def buildAST(parseHead):
             else:
                 ASTcurrent.children.append(ASTNode(c[0].content[1].content[0].value, ASTcurrent, []))
                 ASTcurrent = ASTcurrent.children[-1]
-                ASTcurrent.children.append(ASTNode(c[0].content[0].value, ASTcurrent, []))
+                ASTcurrent.children.append(ASTNode("var", ASTcurrent, []))
+                ASTcurrent.children[-1].children.append(ASTNode(c[0].content[0].value, ASTcurrent, []))
 
             # Skip the assignment node
             expansion = [(x, ASTcurrent) for x in c[0].content[1:] if 'content' in x.__dict__]            
