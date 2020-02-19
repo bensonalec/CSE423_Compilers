@@ -9,9 +9,6 @@ def main(args, fi):
 
     # Execution of the Frontend. 
     # This returns the Abstract Syntax Tree and Symbol Table
-    # print(frontend.main())
-    # print (frontend.__dict__.keys())
-    # for x in frontend.__dict__: print (x, frontend.__dict__[x])
     ast, sym = frontend.main(args, fi)
 
 
