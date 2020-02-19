@@ -138,7 +138,7 @@ class symbol_table():
                                     expectedType = tblEntry[0].type
                             else:
                                 if(expectedType != tblEntry[0].type):
-                                    print("Type mismatch")
+                                    print("Type mismatch for variable",var.name)
                         #check function calls
                         elif(x.name == "call"):
                             chil = [z for z in x.children]
@@ -151,17 +151,17 @@ class symbol_table():
                         #one of the children is a precision
                         elif(precCheck.match(x.name)):
                             if(expectedType != "float" and expectedType != "double"):
-                                print("Type mismatch for",topVar,", unexpected precision")
+                                print("Type mismatch for",topVar,", unexpected precision",x.name)
                         #one of the chidlren is an integer
                         elif(digCheck.match(x.name)):
                             if(expectedType != "int"):
-                                print("Type mismatch for",topVar,", unexpected integer")
+                                print("Type mismatch for",topVar,", unexpected integer",x.name)
                         elif(charCheck.match(x.name)):
                             if(expectedType != "char"):
-                                print("Type mismatch for",topVar,", unexpected character")
+                                print("Type mismatch for",topVar,", unexpected character",x.name)
                         elif(stringCheck.match(x.name)):
                             if(expectedType != "string"):
-                                print("Type mismatch for",topVar,", unexpected string")
+                                print("Type mismatch for",topVar,", unexpected string",x.name)
                         #case that operators are in use
                         elif(opCheck.match(x.name)):
                             #need to desced through all possible branches of this, and ensure everything is use is an integer
@@ -203,17 +203,17 @@ class symbol_table():
                             #one of the children is a precision
                             if(precCheck.match(par)):
                                 if(expec != "float" and expec != "double"):
-                                    print("Type mismatch for",functionName,", unexpected precision")
+                                    print("Type mismatch for",functionName,", unexpected precision",par)
                             #one of the chidlren is an integer
                             elif(digCheck.match(par)):
                                 if(expec != "int"):
-                                    print("Type mismatch for",functionName,", unexpected integer")
+                                    print("Type mismatch for",functionName,", unexpected integer",par)
                             elif(charCheck.match(par)):
                                 if(expec != "char"):
-                                    print("Type mismatch for",functionName,", unexpected character")
+                                    print("Type mismatch for",functionName,", unexpected character",par)
                             elif(stringCheck.match(par)):
                                 if(expec != "string"):
-                                    print("Type mismatch for",functionName,", unexpected string")
+                                    print("Type mismatch for",functionName,", unexpected string",par)
 
                             #check if type of par and types[it] are the same
                             
