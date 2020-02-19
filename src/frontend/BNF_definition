@@ -20,8 +20,8 @@ func_type : func_modif TYPE #func_type
 func_modif : func_modif_terminal #func_modif
 func_modif : func_modif_terminal func_modif #func_modif
 
-func_modif_terminal : FUNC_MODIF #
-func_modif_terminal : BOTH_MODIF #
+func_modif_terminal : FUNC_MODIF #func_modif_terminal
+func_modif_terminal : BOTH_MODIF #func_modif_terminal
 
 var_modif : var_modif_terminal #var_modif
 var_modif : var_modif_terminal var_modif #var_modif
@@ -138,6 +138,7 @@ for_part_2 : collation #for param 2
 for_part_2 : #for param 2
 
 for_part_3 : designation #for param 3
+for_part_3 : arithmetic #for param 3
 for_part_3 : #for param 3
 
 designation : SELF_DEFINED assignment arithmetic #designation

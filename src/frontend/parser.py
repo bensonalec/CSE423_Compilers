@@ -301,7 +301,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = ParseTree("",p)
+            newNode = ParseTree("func_modif_terminal",p)
             self.Head = newNode
             return newNode
 
@@ -316,7 +316,7 @@ class Parser():
             Returns:
                 The node of the abstract syntax tree.
             """
-            newNode = ParseTree("",p)
+            newNode = ParseTree("func_modif_terminal",p)
             self.Head = newNode
             return newNode
 
@@ -1537,6 +1537,21 @@ class Parser():
 
         @self.pg.production('for_part_3 : designation ')
         def for_part_3___designation_(p):
+            """
+            Boilerplate BNF function
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the abstract syntax tree.
+            """
+            newNode = ParseTree("for param 3",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('for_part_3 : arithmetic ')
+        def for_part_3___arithmetic_(p):
             """
             Boilerplate BNF function
             

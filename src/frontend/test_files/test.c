@@ -1,4 +1,22 @@
-int main(int a, int b, int c, int d, int e) {
-	register const unsigned int x = 1+2+3*5+7;
-	return 1;
+const unsigned int main() {
+	unsigned int a;
+	int b = 10;
+
+	a = 15;
+
+	while (1)
+		b++;
+
+	do 
+		a += 1;
+	while (a < b);
+
+	while ((a = tmp()) != 0)
+		printf("%d", a);
+
+	for (int i = 10; i < 100; i++)
+		++a;
+
+	for (a = 10; a < 100; a++)
+		++b;
 }
