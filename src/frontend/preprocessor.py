@@ -12,7 +12,7 @@ def remove_comments(text):
     """
 
     # Regex that will capture both '//' and '/* */' style comments
-    regex = r"(\/\/.*|\/\*.*\*\/|/\*[^*]*\*+(?:[^/*][^*]*\*+)*/)"
+    regex = r"/(\*(\w|\W)*?\*/|/([^\n]*))"
     
     return re.sub(regex, '', text)
 
@@ -98,20 +98,24 @@ def run(text):
     proc_list = sorted(find_preprocessors(text), key = lambda x: x[0])
 
 
-
     for pre_proc in proc_list:
         # Determine which are 'includes', 'defines', etc..
 
         if pre_proc[0] == "define":
 
-            variable = pre_proc[1].replace(" ", "") #strip whitespace
-            value = pre_proc[2].replace(" ", "")
+            try:
 
-            # Delete the pre-processor instruction from the C code
-            text = re.sub(rf"\s*#define {variable} {value}", "", text)
+                variable = pre_proc[1].replace(" ", "") #strip whitespace
+                value = pre_proc[2].replace(" ", "")
 
-            # Replace occurences of VARIABLE with VALUE in C code
-            text = re.sub(rf"{variable}", value, text)
+                # Delete the pre-processor instruction from the C code
+                text = re.sub(rf"\s*#define {variable} {value}", "", text)
+
+                # Replace occurences of VARIABLE with VALUE in C code
+                text = re.sub(rf"{variable}", value, text)
+
+            except Exception:
+                raise BaseException("Invalid '#define' statement")
 
         if pre_proc[0] == "include":
 
@@ -121,8 +125,8 @@ def run(text):
                 # TODO: add capability to search for standard libraries
 
                 # Delete the pre-processor instruction from the C code
-                text = re.sub(rf'\s*#include <{file_name[0]}>', "", text)
-                #text = get_text(PATH_TO_STD_LIBRARIES) + "\n" + text
+                text = re.sub(rf'\s*#include <{file_name[0]}>\n', "", text)
+                #text = get_text(PATH_TO_STD_LIBRARIES) + text
                 continue
             
             # Try to match to local library import (i.e. "xyz.h", 'xyz.h')
@@ -130,22 +134,22 @@ def run(text):
             if file_name:
 
                 # Delete the pre-processor instruction from the C code
-                text = re.sub(rf'\s*#include ["|\']{file_name[0]}["|\']', "", text)
-                text = get_text(file_name[0]) + "\n" + text
+                text = re.sub(rf'\s*#include ["|\']{file_name[0]}["|\']\n', "", text)
+                text = get_text(file_name[0]) + text
 
             else:
-                raise Exception("Invalid '#include' statement")
+                raise BaseException("Invalid '#include' statement")
 
 
 
-    # We are continuing to impliment more "supplimental" features, but cleanup for now.
+    # We are continuing to impliment more "supplimental" pre-processor features, but cleanup for now.
     text = cleanup(text)
 
     return text
 
 
 def main():
-    fi = open("./test_files/test_simple.c", "r")
+    fi = open("./test_files/test.c", "r")
     text = fi.read()
     fi.close()
     text = run(text)
