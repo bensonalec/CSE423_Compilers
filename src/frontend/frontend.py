@@ -184,10 +184,10 @@ def main(args, fi):
         pg.print_error()
         print("Received AssertionError(s) from parser, continuing with what was parsed...\n")
 
-    # except BaseException as err:
-    #     traceback.print_exc()
-    #     print(f"Unrecoverable exception occured. Exiting...")
-    #     exit()
+    except BaseException as err:
+        traceback.print_exc()
+        print(f"Unrecoverable exception occured. Exiting...")
+        exit()
 
     return astree
 
