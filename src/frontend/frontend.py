@@ -10,11 +10,11 @@ import sys
 from rply.errors import LexingError
 from copy import deepcopy
 
-lex = importlib.import_module("lexer", ".")
-par = importlib.import_module("parser", ".")
-btp = importlib.import_module("bnfToParser", ".")
-ast = importlib.import_module("AST_builder", ".")
-sem = importlib.import_module("semantics", ".")
+lex = importlib.import_module("lexer", __name__)
+par = importlib.import_module("parser", __name__)
+btp = importlib.import_module("bnfToParser", __name__)
+ast = importlib.import_module("AST_builder", __name__)
+sem = importlib.import_module("semantics", __name__)
 
 
 def getTree(head,level):

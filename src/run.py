@@ -1,7 +1,7 @@
 import argparse
 import importlib
 
-frontend = importlib.import_module("frontend.frontend", package="frontend")
+frontend = importlib.import_module("frontend.frontend", __name__)
 #optimization = importlib.import_module("optimization.optimization", package="optimization)
 #backend = importlib.import_module("backend.backend", package="backend")
 
@@ -9,6 +9,9 @@ def main(args, fi):
 
     # Execution of the Frontend. 
     # This returns the Abstract Syntax Tree and Symbol Table
+    # print(frontend.main())
+    # print (frontend.__dict__.keys())
+    # for x in frontend.__dict__: print (x, frontend.__dict__[x])
     ast, sym = frontend.main(args, fi)
 
 
