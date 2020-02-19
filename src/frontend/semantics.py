@@ -102,8 +102,8 @@ class symbol_table():
             cur = ntv[0]
 
             # checks whether the current node is an operation that will need to access the symbol table 
-            try:                
-                index = ["=","call"].index(cur.Node.name)
+            try:
+                index = ["=","call","func"].index(cur.Node.name)
                 
                 # Function Declaration
                 if index == 0:
@@ -220,7 +220,8 @@ class symbol_table():
                             pass
                     #then iterate through the children of this and check the types of the parameters
                     pass
-         
+                elif index == 2:
+                    pass
             except ValueError:
                 # This means that the token is not in that list
                 pass
