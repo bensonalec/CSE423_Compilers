@@ -17,6 +17,10 @@ const unsigned int main() {
 	for (int i = 10; i < 100; i++)
 		++a;
 
-	for (a = 10; a < 100; a++)
+	int c = 13;
+
+	for (a = 10; a < 100; a++){
 		++b;
+		int d = 19;
+	}
 }
