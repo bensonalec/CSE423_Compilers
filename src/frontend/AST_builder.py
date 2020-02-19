@@ -126,6 +126,8 @@ def buildAST(parseHead):
             ASTcurrent = ASTcurrent.children[-1]
             ASTcurrent.children.append(ASTNode(c[0].content[1].value, ASTcurrent))
         elif typ == "goto":
+            ASTcurrent.children.append(ASTNode("label", ASTcurrent))
+            ASTcurrent = ASTcurrent.children[-1]
             ASTcurrent.children.append(ASTNode(f"{c[0].content[0].value}:", ASTcurrent))
         elif typ == "do loop":
             ASTcurrent.children.append(ASTNode("do_while", ASTcurrent))
