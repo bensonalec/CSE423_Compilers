@@ -1,4 +1,4 @@
-import importlib
+import importlib,re
 from collections import namedtuple
 
 lex = importlib.import_module("lexer", ".")
@@ -69,7 +69,8 @@ class symbol_table():
                         #add to symbol table this should also handle function param being that they are still within the same scope as there parent function
                         if([x for x in self.symbols if x.name == cur.Node.children[1].name and cur.Scope in x.scope] == []):
                             self.symbols.append(Entry(False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
-                        else:
+                        elif(cur.Node.parent.name != "param"):
+                            print(cur.Node.parent.name)
                             print(f'Variable Already Declared {cur.Node.children[1].name} {cur.Node.children[0].name}')
                             self.undefined.append(Entry(False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope))                             
                         pass
@@ -82,6 +83,145 @@ class symbol_table():
                         pass
 
          
+            except ValueError:
+                # This means that the token is not in that list
+                pass
+
+            # fetches the relevant children of the current node and appends the already known children to the list of residual nodes
+            ntv = [Node(x, cur.Scope) for x in cur.Node.children if 'children' in x.__dict__] + ntv[1:]
+
+        #Pass 2, in this pass check types and function parameters
+        ntv = [Node(self.AST, "/")]
+
+        typ = None
+        b = False
+
+        # Simple implementation of a DFS
+        while ntv != []:
+            # Grabs the first element which will be the residual left most child
+            cur = ntv[0]
+
+            # checks whether the current node is an operation that will need to access the symbol table 
+            try:
+                index = ["=","call","func"].index(cur.Node.name)
+                
+                # Function Declaration
+                if index == 0:
+                    children = cur.Node.children
+                    expectedType = ""
+                    topVar = ""
+                    #regexes to do type checks on the fly
+                    isDigit = r"\-?([1-9]\d*|\d)"
+                    isOp = r'\+|\-|\/|\*'
+                    isPrec = r"\-?(\d\.\d+|[1-9]\d*\.\d+)"
+                    isChar = r"(\'[\w\;\\ \%\"\']\')"
+                    isString = r"(\"[\w+\;\\ \%\"\']*\")"
+                    precCheck = re.compile(isPrec)
+                    digCheck = re.compile(isDigit)
+                    opCheck = re.compile(isOp)
+                    charCheck = re.compile(isChar)
+                    stringCheck = re.compile(isString)
+
+                    for x in children:
+                        #get the expected type, or variable in assignment
+                        if(x.name == "var"):
+
+                            chil = ([z for z in x.children])
+                            #this is the variable that is being assigned to
+                            var = chil[-1]
+                            #get the expected type from symbol table
+                            tblEntry = [x for x in self.symbols if x.name == var.name and cur.Scope in x.scope]
+                            if(expectedType == ""):
+                                if(len(tblEntry) == 1):
+                                    #it is in the table already (good)
+                                    topVar = tblEntry[0].name
+                                    expectedType = tblEntry[0].type
+                            else:
+                                if(expectedType != tblEntry[0].type):
+                                    print("Type mismatch for variable",var.name)
+                        #check function calls
+                        elif(x.name == "call"):
+                            chil = [z for z in x.children]
+                            func = chil[-1]
+                            tblEntry = [x for x in self.symbols if x.name == func.name and cur.Scope in x.scope and x.is_function]
+                            if(len(tblEntry) == 1):
+                                funcType = tblEntry[0].type
+                                if(funcType != expectedType):
+                                    print("Type mismatch for",topVar)
+                        #one of the children is a precision
+                        elif(precCheck.match(x.name)):
+                            if(expectedType != "float" and expectedType != "double"):
+                                print("Type mismatch for",topVar,", unexpected precision",x.name)
+                        #one of the chidlren is an integer
+                        elif(digCheck.match(x.name)):
+                            if(expectedType != "int"):
+                                print("Type mismatch for",topVar,", unexpected integer",x.name)
+                        elif(charCheck.match(x.name)):
+                            if(expectedType != "char"):
+                                print("Type mismatch for",topVar,", unexpected character",x.name)
+                        elif(stringCheck.match(x.name)):
+                            if(expectedType != "string"):
+                                print("Type mismatch for",topVar,", unexpected string",x.name)
+                        #case that operators are in use
+                        elif(opCheck.match(x.name)):
+                            #need to desced through all possible branches of this, and ensure everything is use is an integer
+                            #expect variables, function calls, and integers in operatiosn
+                            #need to traverse all nodes inside of this branch
+                            ntvTemp = [Node(x, "/")]
+                            while ntvTemp != []:
+                                # Grabs the first element which will be the residual left most child
+                                curTemp = ntvTemp[0]
+                                if(expectedType == "int"):
+                                    if(curTemp.Node.name == "var" or curTemp.Node.name == "call"):
+                                        pass
+                                    elif([x for x in self.symbols if x.name == curTemp.Node.name and curTemp.Scope in x.scope] != []):
+                                        var = [x for x in self.symbols if x.name == curTemp.Node.name and curTemp.Scope in x.scope][0]
+                                        if(var.type != "int"):
+                                            print("Type mismatch for",topVar)
+                                    elif((precCheck.match(curTemp.Node.name))):
+                                        print("Type mismatch for",topVar)
+                                    elif(not (digCheck.match(curTemp.Node.name) or opCheck.match(curTemp.Node.name))):
+                                        print("Type mismatch for",topVar)
+                                ntvTemp = [Node(z, curTemp.Scope) for z in curTemp.Node.children if 'children' in z.__dict__] + ntvTemp[1:]
+
+                            pass
+
+                elif index == 1:
+                    #iterate through the children, get the name of the function, look up how many parameters it expects
+                    func = cur.Node.children[0]
+                    functionName = func.name
+                    functionChildren = [x.name for x in func.children]
+                    #get the number of params and types from the symbol table
+                    params = [x for x in self.symbols if functionName in x.scope]
+                    types = [x.type for x in params]
+                    if(len(params) != len(functionChildren)):
+                        print("Improper amount of arguments in call to function",functionName,functionChildren)
+                    else:
+                        for it,par in enumerate(functionChildren):
+                            #get type of par
+                            expec = types[it]
+                            #one of the children is a precision
+                            if(precCheck.match(par)):
+                                if(expec != "float" and expec != "double"):
+                                    print("Type mismatch for",functionName,", unexpected precision",par)
+                            #one of the chidlren is an integer
+                            elif(digCheck.match(par)):
+                                if(expec != "int"):
+                                    print("Type mismatch for",functionName,", unexpected integer",par)
+                            elif(charCheck.match(par)):
+                                if(expec != "char"):
+                                    print("Type mismatch for",functionName,", unexpected character",par)
+                            elif(stringCheck.match(par)):
+                                if(expec != "string"):
+                                    print("Type mismatch for",functionName,", unexpected string",par)
+
+                            #check if type of par and types[it] are the same
+                            
+                            pass
+                    #then iterate through the children of this and check the types of the parameters
+                    pass
+                elif index == 2:
+                    pass
             except ValueError:
                 # This means that the token is not in that list
                 pass
