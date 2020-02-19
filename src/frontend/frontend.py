@@ -4,6 +4,7 @@ for command line arguments that can be used to determine which portion is run.
 """
 import argparse
 import importlib
+import traceback
 
 from rply.errors import LexingError
 from copy import deepcopy
@@ -12,6 +13,7 @@ lex = importlib.import_module("lexer", ".")
 par = importlib.import_module("parser", ".")
 btp = importlib.import_module("bnfToParser", ".")
 ast = importlib.import_module("AST_builder", ".")
+sem = importlib.import_module("semantics", ".")
 
 
 def getTree(head,level):
@@ -132,10 +134,28 @@ def main(args, fi):
         # Retrieve the head of the AST
         head = pg.getTree()
 
+        if args.all:
+            printTree(head, 0)
+
+        if args.tree or args.all:
+            print(getTree(head,0))
+
+        if args.pretty or args.all:
+            pprint_tree(head)
+
         astree = ast.buildAST(head)
 
-        if args.all:
+        if args.ast or args.all:
             ast.print_AST(astree)
+
+        sym = sem.symbol_table(astree)
+
+        sym.analyze()
+
+        if args.symbol_table or args.all:
+            sym.print_symbol_table()
+            print ("")
+            sym.print_unknown_symbols()
 
     except LexingError as err:
         print("Received error(s) from token validation. Exiting...")
@@ -147,18 +167,9 @@ def main(args, fi):
         print("Received AssertionError(s) from parser, continuing with what was parsed...\n")
 
     except BaseException as err:
-        print(f"BaseException: {err}. Exiting...")
+        traceback.print_exc()
+        print(f"Unrecoverable exception occured. Exiting...")
         exit()
-    
-
-    if args.tree or args.all:
-        print(getTree(head,0))
-    
-    if args.pretty or args.all:
-        pprint_tree(head)
-
-    if args.all:
-        printTree(head, 0)
 
 if __name__ == "__main__":
     #command line arguements
@@ -166,21 +177,26 @@ if __name__ == "__main__":
     #decription of the comiler
     cmd_options = argparse.ArgumentParser(description='Frontend of the compiler. Can produce tokens and syntax tree')
     
+    cmd_options.add_argument('--all',help='Prints out all intermediate representations as they are encountered in the compilation process', action="store_true")
+
     #input file option
     cmd_options.add_argument('input_file', metavar='<filename.c>', type=str, help='Input c file.')
     
     #Arguement to print tokens from lexer
     cmd_options.add_argument('-l','--lex', help='Prints out tokens from lexer', action='store_true')
-    
-    #Print all output from lexer, parser, etc....
-    cmd_options.add_argument('-a','--all', help='Prints out all intermediate ouputs.', action="store_true")
 
     #Prints string representation of parse tree....
     cmd_options.add_argument('-t','--tree', help='Prints string representation of parse tree.', action="store_true")
 
     cmd_options.add_argument('-p','--pretty',help='Prints a pretty verision of the tree, and does not print the tokens', action="store_true")
 
+    #Print all output from lexer, parser, etc....
+    cmd_options.add_argument('-a','--ast', help='Prints out the abstract syntax tree.', action="store_true")
+
+    cmd_options.add_argument('-s','--symbol_table', help='Prints out the known and unknown symbols encountered during semantic analysis.', action="store_true")
+
     cmd_options.add_argument('-b', '--bnf', nargs='?', const='./BNF_definition', type=str, help='Rebuilds the parser using the current BNF grammar')
+
 
     #generate arguements
     args = cmd_options.parse_args()
