@@ -8,8 +8,8 @@ frontend = importlib.import_module("frontend.frontend", package="frontend")
 def main(args, fi):
 
     # Execution of the Frontend. 
-    # This returns the first intermediate representation of the inputed C file, an Abstract Syntax Tree.
-    ast = frontend.main(args, fi)
+    # This returns the Abstract Syntax Tree and Symbol Table
+    ast, sym = frontend.main(args, fi)
 
 
 
