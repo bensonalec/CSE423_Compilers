@@ -68,11 +68,15 @@ class symbol_table():
                     if len(cur.Node.children) > 1:
                         #add to symbol table this should also handle function param being that they are still within the same scope as there parent function
                         if([x for x in self.symbols if x.name == cur.Node.children[1].name and cur.Scope in x.scope] == []):
-                            self.symbols.append(Entry(False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
+                            if cur.Node.parent.parent.name != "func" or cur.Node.parent.parent.children[1].name == "main":
+                                self.symbols.append(Entry(False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
                         elif(cur.Node.parent.name != "param"):
-                            print(cur.Node.parent.name)
                             print(f'Variable Already Declared {cur.Node.children[1].name} {cur.Node.children[0].name}')
-                            self.undefined.append(Entry(False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope))                             
+                            self.undefined.append(Entry(False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
+                        elif(cur.Node.parent.name == "param" and [x for x in self.symbols if cur.Node.children[1].name == x.name] == []):                
+                            print(f'Undeclared parameter{cur.Node.children[1].name} {cur.Node.children[0].name}')
+                            self.undefined.append(Entry(False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
+                
                         pass
                     #usage of varible
                     else:
