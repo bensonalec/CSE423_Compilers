@@ -194,7 +194,7 @@ class symbol_table():
                     params = [x for x in self.symbols if functionName in x.scope]
                     types = [x.type for x in params]
                     if(len(params) != len(functionChildren)):
-                        print("Improper amount of arguments in call")
+                        print("Improper amount of arguments in call to function",functionName,functionChildren)
                     else:
                         for it,par in enumerate(functionChildren):
                             #get type of par
