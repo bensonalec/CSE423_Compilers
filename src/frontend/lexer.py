@@ -82,7 +82,7 @@ class Lexer():
         self.lexer.add("CASE",          r"\bcase\b")
         self.lexer.add("DEFAULT",       r"\bdefault\b")
         self.lexer.add("NULL",          r"\bNULL\b")
-        self.lexer.add("TYPE",          r"\b(auto|long double|double|float|long long (int)?|long|int|short|char|void)\b")
+        self.lexer.add("TYPE",          r"\b(auto|long double|double|float|long long( int)?|long|int|short|char|void)\b")
         self.lexer.add("MEM_STRUCT",    r"\b(struct|union|enum)\b")
         self.lexer.add("SELF_DEFINED",  r"[a-zA-Z_]\w*")
         self.lexer.add("OPEN_PAREN",    r"\(")

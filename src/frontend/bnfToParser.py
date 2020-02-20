@@ -8,15 +8,6 @@ import re
 funcTemp = """
         @self.pg.production('BNFSPOT')
         def FUNCNAMESPOT(p):
-            \"\"\"
-            Boilerplate BNF function
-            
-            Args:
-                p: The matching set of tokens.
-
-            Returns:
-                The node of the ParseTree.
-            \"\"\"
             newNode = ParseTree("NAMESPOT",p)
             self.Head = newNode
             return newNode
