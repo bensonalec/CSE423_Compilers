@@ -70,7 +70,6 @@ class symbol_table():
                         #add to symbol table this should also handle function param being that they are still within the same scope as there parent function
                         if([x for x in self.symbols if x.name == cur.Node.children[1].name and cur.Scope in x.scope] == []):
                             if cur.Node.parent.parent.name != "func" or cur.Node.parent.parent.children[1].name == "main":
-                                print(cur.Node.parent.name)
                                 if cur.Node.parent.name == "param":
                                     self.symbols.append(Entry(False,True, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
                                 else:
@@ -230,7 +229,18 @@ class symbol_table():
                     #then iterate through the children of this and check the types of the parameters
                     pass
                 elif index == 2:
-                    pass
+                    funcname = cur.Node.children[1].name
+                    
+                    #get params of the node currently being visited
+                    params = [x for x in cur.Node.children[2].children]
+                    params = [(x.children[0].name,x.children[1].name) for x in params]
+                    # print(params)
+                    #get the expected params
+                    expected = ([(x.type,x.name) for x in self.symbols if x.is_param and funcname in x.scope])
+
+                    if expected != params:
+                        print("Parameters in function prototype do not match function definition in ",funcname)
+
             except ValueError:
                 # This means that the token is not in that list
                 pass
