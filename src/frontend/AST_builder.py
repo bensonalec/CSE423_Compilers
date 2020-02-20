@@ -1,7 +1,5 @@
 """
-This module takes in the parse tree, and produces an Abstract Syntax Tree. 
-This is done using a Depth First Traversal. By taking the Concrete Syntax Tree (Parse Tree) 
-and converting it to an Abstract Syntax Tree we can begin to move towards an intermediate form.
+This module takes in the parse tree, and produces an Abstract Syntax Tree.This is done using a Depth First Traversal. By taking the Concrete Syntax Tree (Parse Tree)and converting it to an Abstract Syntax Tree we can begin to move towards an intermediate form.
 """
 def buildAST(parseHead):
     """
@@ -10,14 +8,14 @@ def buildAST(parseHead):
     Args:
         parseHead: The head node of the parse tree.
 
-    Returns: 
+    Returns:
         The head of the Abstract Syntax Tree.
     """
     head = parseHead
     ASTHead = None
     ASTcurrent = None
     ntv = [(head, ASTcurrent)]
-    
+   
     #DFS by iterating through a stack of nodes to visit
     while ntv != []:
         c = ntv[0]
@@ -28,7 +26,7 @@ def buildAST(parseHead):
 
         #This block checks the type of the ASTNode that is  being visited, and acts as a monstrous switch statement, for each visited node a proper AST segment or node is built
         if typ == "program":
-            ASTHead = ASTNode("Program", ASTcurrent)
+            ASTHead = ASTNode("program", ASTcurrent)
             ASTcurrent = ASTHead
         elif typ == "initialization":
             ASTcurrent.children.append(ASTNode("=", ASTcurrent))
@@ -44,7 +42,7 @@ def buildAST(parseHead):
             ASTcurrent.children[-1].children.append(ASTNode(c[0].content[0].value, ASTcurrent))
 
             # Skip the assignment node
-            expansion = [(x, ASTcurrent) for x in c[0].content[1:] if 'content' in x.__dict__]            
+            expansion = [(x, ASTcurrent) for x in c[0].content[1:] if 'content' in x.__dict__]           
         elif typ == "value":
             ASTcurrent.children.append(ASTNode(f"{c[0].content[0].value}", ASTcurrent))
         elif typ == "function definition":
@@ -54,7 +52,7 @@ def buildAST(parseHead):
             ASTcurrent.children.append(ASTNode("param", ASTcurrent))
             ASTcurrent.children.append(ASTNode("body", ASTcurrent))
 
-            
+           
             # split the content of the function definition up
             expansion = [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__ and x.token == 'func_type'] + [(x, ASTcurrent.children[1]) for x in c[0].content if 'content' in x.__dict__ and x.token == 'args'] + [(x, ASTcurrent.children[2]) for x in c[0].content if 'content' in x.__dict__ and x.token == 'block']
         elif typ == "functionDeclaration":
@@ -91,10 +89,10 @@ def buildAST(parseHead):
             tmpLen = len([x for x in c[0].content if "content" in x.__dict__])
 
             #for two non-terminals (i.e ARITHMETIC op ARITHMETIC)
-            if(tmpLen == 2): 
+            if(tmpLen == 2):
                 ASTcurrent.children.append(ASTNode(c[0].content[1].value, ASTcurrent))
                 ASTcurrent = ASTcurrent.children[-1]
-            
+           
             #for one non-terminals (i.e value)
             elif(tmpLen == 1):
                 pass
@@ -176,6 +174,42 @@ def buildAST(parseHead):
             expansion += [(x, ASTcurrent.children[1]) for x in c[0].content if 'content' in x.__dict__ and x.token == "for param 2"]
             expansion += [(x, ASTcurrent.children[2]) for x in c[0].content if 'content' in x.__dict__ and x.token == "for param 3"]
             expansion += [(x, ASTcurrent.children[3]) for x in c[0].content if 'content' in x.__dict__ and (x.token == "content_terminal" or x.token == "block")]
+        elif typ == "switch":
+            ASTcurrent.children.append(ASTNode("branch", ASTcurrent))
+            ASTcurrent = ASTcurrent.children[-1]
+           
+            cases = []
+            expansion = []
+
+            v = [x for x in c[0].content if 'content' in x.__dict__ and x.token == "switch_body"]
+            while v != []:
+                n = v[0]
+                extra = []
+                if n.token == "case" or n.token == "default":
+                    cases.append(n)
+                else:
+                    extra = [x for x in n.content if 'content' in x.__dict__]
+
+                v = extra + v[1:]
+
+            for case in cases:
+                ASTcurrent.children.append(ASTNode(case.token, ASTcurrent))
+                if case.token != "default":
+                    ASTcurrent.children[-1].children.append(ASTNode("==", ASTcurrent.children[-1]))
+                    ASTcurrent.children[-1].children[-1].children.append(ASTNode("var", ASTcurrent.children[-1].children[-1]))
+                    ASTcurrent.children[-1].children[-1].children[-1].children.append(ASTNode(c[0].content[2].content[0].value, ASTcurrent.children[-1].children[-1].children[-1]))
+                    ASTcurrent.children[-1].children[-1].children.append(ASTNode(case.content[1].content[0].value, ASTcurrent.children[-1].children[-1]))
+               
+                ASTcurrent.children[-1].children.append(ASTNode("body", ASTcurrent.children[-1]))
+
+                i = cases.index(case)
+                if [x for x in case.content if 'content' in x.__dict__ and x.token == 'case_body'] == []:
+                    while i < len(cases) and [x for x in cases[i].content if 'content' in x.__dict__ and x.token == 'case_body'] == []:
+                        i += 1
+
+                if i < len(cases):
+                    j = [x.token if 'content' in x.__dict__ else x.value for x in cases[i].content].index('case_body')
+                    expansion += [(cases[i].content[j], ASTcurrent.children[-1].children[-1])]   
         else:
             pass
 
@@ -201,11 +235,10 @@ def buildAST(parseHead):
     return ASTHead
 
 def print_AST(node, file=None, _prefix="", _last=True):
-    # return
     """
     Prints the AST given the head
 
-    Args: 
+    Args:
         node: The head node of the tree.
         file: The file to be written to (Defaults to Stdout).
         _prefix: A string indicating the spacing from the left side of the screen.
@@ -221,14 +254,14 @@ def print_AST(node, file=None, _prefix="", _last=True):
 
 class ASTNode():
     """
-    A class that builds an object representing the node in an AST. 
+    A class that builds an object representing the node in an AST.
     It has it's children, parent, and name.
     """
     def __init__(self, name, parent):
         """
         Constructs an ASTNode
 
-        Args: 
+        Args:
             name: The name of the Node (Its contents).
             parent: A node that is the parent of this current node.
             children: The children of this node (In a list).
