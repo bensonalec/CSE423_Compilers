@@ -203,7 +203,7 @@ class symbol_table():
                     functionName = func.name
                     functionChildren = [x.name for x in func.children]
                     #get the number of params and types from the symbol table
-                    params = [x for x in self.symbols if functionName in x.scope]
+                    params = [x for x in self.symbols if functionName in x.scope and x.is_param]
                     types = [x.type for x in params]
                     if(len(params) != len(functionChildren)):
                         print("Improper amount of arguments in call to function",functionName,functionChildren)
@@ -239,8 +239,8 @@ class symbol_table():
                     params = [(x.children[0].name) for x in params]
                     # print(params)
                     #get the expected params
-                    expected = ([(x.type) for x in self.symbols if x.is_param and f"/{funcname}/" == x.scope])
                     
+                    expected = ([(x.type) for x in self.symbols if x.is_param and f"/{funcname}/" == x.scope])
                     if expected != params:
                         print("Parameters in function prototype do not match function definition in ",funcname)
 
