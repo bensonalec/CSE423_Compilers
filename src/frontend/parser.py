@@ -1085,6 +1085,21 @@ class Parser():
             self.Head = newNode
             return newNode
 
+        @self.pg.production('default : DEFAULT COLON ')
+        def default___DEFAULT_COLON_(p):
+            """
+            Boilerplate BNF function
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the ParseTree.
+            """
+            newNode = ParseTree("default",p)
+            self.Head = newNode
+            return newNode
+
         @self.pg.production('default : DEFAULT COLON case_body ')
         def default___DEFAULT_COLON_case_body_(p):
             """

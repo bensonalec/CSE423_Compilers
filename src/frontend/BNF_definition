@@ -95,6 +95,7 @@ cases : default #cases
 case : CASE value COLON #case
 case : CASE value COLON case_body #case
 
+default : DEFAULT COLON #default
 default : DEFAULT COLON case_body #default
 
 case_body : block #case_body
