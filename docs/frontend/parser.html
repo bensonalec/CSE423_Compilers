@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.4" />
 <title>src.frontend.parser API documentation</title>
-<meta name="description" content="This module contains definitions for the AbstractSyntaxTree and Parser classes, as well as some ansillary functions to assist." />
+<meta name="description" content="This module contains definitions for the ParseTree and Parser classes, as well as some ansillary functions to assist." />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,13 +20,13 @@
 <h1 class="title">Module <code>src.frontend.parser</code></h1>
 </header>
 <section id="section-intro">
-<p>This module contains definitions for the AbstractSyntaxTree and Parser classes, as well as some ansillary functions to assist.</p>
+<p>This module contains definitions for the ParseTree and Parser classes, as well as some ansillary functions to assist.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-This module contains definitions for the AbstractSyntaxTree and Parser classes, as well as some ansillary functions to assist.
+This module contains definitions for the ParseTree and Parser classes, as well as some ansillary functions to assist.
 &#34;&#34;&#34;
 from rply import ParserGenerator
 from rply.errors import ParserGeneratorWarning
@@ -36,13 +36,13 @@ from rply.token import Token
 #we get werid &#39;non-descriptive&#39; warnings from ParserGenerator, this ignores those
 simplefilter(&#39;ignore&#39;, ParserGeneratorWarning)
 
-class AbstractSyntaxTree():
+class ParseTree():
     &#34;&#34;&#34;
-    AbstractSyntaxTree is a class that acts as each node in an Abstract Syntax Tree
+    ParseTree is a class that acts as each node in an ParseTree
     &#34;&#34;&#34;
     def __init__(self, token, content):
         &#34;&#34;&#34;
-        Construct a new AbstractSyntaxTree object
+        Construct a new ParseTree object
 
         Args:
             token: The token type of the node.
@@ -100,9 +100,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;program&#34;,p)
+            newNode = ParseTree(&#34;program&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -115,9 +115,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;definitionList&#34;,p)
+            newNode = ParseTree(&#34;definitionList&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -130,9 +130,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;definitionList&#34;,p)
+            newNode = ParseTree(&#34;definitionList&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -145,9 +145,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;definitionList&#34;,p)
+            newNode = ParseTree(&#34;definitionList&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -160,9 +160,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;definitionList&#34;,p)
+            newNode = ParseTree(&#34;definitionList&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -175,9 +175,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;function definition&#34;,p)
+            newNode = ParseTree(&#34;function definition&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -190,9 +190,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;function definition&#34;,p)
+            newNode = ParseTree(&#34;function definition&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -205,9 +205,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;functionDeclaration&#34;,p)
+            newNode = ParseTree(&#34;functionDeclaration&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -220,9 +220,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;functionDeclaration&#34;,p)
+            newNode = ParseTree(&#34;functionDeclaration&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -235,9 +235,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;args&#34;,p)
+            newNode = ParseTree(&#34;args&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -250,9 +250,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;args&#34;,p)
+            newNode = ParseTree(&#34;args&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -265,9 +265,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arg_terminal&#34;,p)
+            newNode = ParseTree(&#34;arg_terminal&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -280,9 +280,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arg_terminal&#34;,p)
+            newNode = ParseTree(&#34;arg_terminal&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -295,9 +295,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;block&#34;,p)
+            newNode = ParseTree(&#34;block&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -310,9 +310,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;block&#34;,p)
+            newNode = ParseTree(&#34;block&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -325,9 +325,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;block&#34;,p)
+            newNode = ParseTree(&#34;block&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -340,9 +340,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;block&#34;,p)
+            newNode = ParseTree(&#34;block&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -355,9 +355,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;block&#34;,p)
+            newNode = ParseTree(&#34;block&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -370,9 +370,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;content&#34;,p)
+            newNode = ParseTree(&#34;content&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -385,9 +385,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;content&#34;,p)
+            newNode = ParseTree(&#34;content&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -400,9 +400,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;content_terminal&#34;,p)
+            newNode = ParseTree(&#34;content_terminal&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -415,9 +415,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;content_terminal&#34;,p)
+            newNode = ParseTree(&#34;content_terminal&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -430,9 +430,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;content_terminal&#34;,p)
+            newNode = ParseTree(&#34;content_terminal&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -445,9 +445,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;content_terminal&#34;,p)
+            newNode = ParseTree(&#34;content_terminal&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -460,9 +460,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;content_terminal&#34;,p)
+            newNode = ParseTree(&#34;content_terminal&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -475,9 +475,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;single_line&#34;,p)
+            newNode = ParseTree(&#34;single_line&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -490,9 +490,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;single_line&#34;,p)
+            newNode = ParseTree(&#34;single_line&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -505,9 +505,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;single_line&#34;,p)
+            newNode = ParseTree(&#34;single_line&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -520,9 +520,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;single_line&#34;,p)
+            newNode = ParseTree(&#34;single_line&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -535,9 +535,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;single_line&#34;,p)
+            newNode = ParseTree(&#34;single_line&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -550,9 +550,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;single_line&#34;,p)
+            newNode = ParseTree(&#34;single_line&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -565,9 +565,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;function call&#34;,p)
+            newNode = ParseTree(&#34;function call&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -580,9 +580,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;function call&#34;,p)
+            newNode = ParseTree(&#34;function call&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -595,9 +595,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;paramater&#34;,p)
+            newNode = ParseTree(&#34;paramater&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -610,9 +610,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;parameter&#34;,p)
+            newNode = ParseTree(&#34;parameter&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -625,9 +625,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;param_terminal&#34;,p)
+            newNode = ParseTree(&#34;param_terminal&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -640,9 +640,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;while loop&#34;,p)
+            newNode = ParseTree(&#34;while loop&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -655,9 +655,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;while loop&#34;,p)
+            newNode = ParseTree(&#34;while loop&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -670,9 +670,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;for loop&#34;,p)
+            newNode = ParseTree(&#34;for loop&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -685,9 +685,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;for loop&#34;,p)
+            newNode = ParseTree(&#34;for loop&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -700,9 +700,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;do loop&#34;,p)
+            newNode = ParseTree(&#34;do loop&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -715,9 +715,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;do loop&#34;,p)
+            newNode = ParseTree(&#34;do loop&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -730,9 +730,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;if&#34;,p)
+            newNode = ParseTree(&#34;if&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -745,9 +745,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;if&#34;,p)
+            newNode = ParseTree(&#34;if&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -760,9 +760,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;if_body&#34;,p)
+            newNode = ParseTree(&#34;if_body&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -775,9 +775,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;if_body&#34;,p)
+            newNode = ParseTree(&#34;if_body&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -790,9 +790,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;if_expansion&#34;,p)
+            newNode = ParseTree(&#34;if_expansion&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -805,9 +805,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;switch&#34;,p)
+            newNode = ParseTree(&#34;switch&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -820,9 +820,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;switch_body&#34;,p)
+            newNode = ParseTree(&#34;switch_body&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -835,9 +835,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;switch_body&#34;,p)
+            newNode = ParseTree(&#34;switch_body&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -850,9 +850,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;cases&#34;,p)
+            newNode = ParseTree(&#34;cases&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -865,9 +865,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;cases&#34;,p)
+            newNode = ParseTree(&#34;cases&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -880,9 +880,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;cases&#34;,p)
+            newNode = ParseTree(&#34;cases&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -895,9 +895,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;case&#34;,p)
+            newNode = ParseTree(&#34;case&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -910,9 +910,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;case&#34;,p)
+            newNode = ParseTree(&#34;case&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -925,9 +925,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;default&#34;,p)
+            newNode = ParseTree(&#34;default&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -940,9 +940,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;case_body&#34;,p)
+            newNode = ParseTree(&#34;case_body&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -955,9 +955,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;case_body&#34;,p)
+            newNode = ParseTree(&#34;case_body&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -970,9 +970,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;goto&#34;,p)
+            newNode = ParseTree(&#34;goto&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -985,9 +985,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;goto&#34;,p)
+            newNode = ParseTree(&#34;goto&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1000,9 +1000,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;goto&#34;,p)
+            newNode = ParseTree(&#34;goto&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1015,9 +1015,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;return&#34;,p)
+            newNode = ParseTree(&#34;return&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1030,9 +1030,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;return&#34;,p)
+            newNode = ParseTree(&#34;return&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1045,9 +1045,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;return&#34;,p)
+            newNode = ParseTree(&#34;return&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1060,9 +1060,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;return&#34;,p)
+            newNode = ParseTree(&#34;return&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1075,9 +1075,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;jump&#34;,p)
+            newNode = ParseTree(&#34;jump&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1090,9 +1090,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;break&#34;,p)
+            newNode = ParseTree(&#34;break&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1105,9 +1105,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;continue&#34;,p)
+            newNode = ParseTree(&#34;continue&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1120,9 +1120,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;initialization&#34;,p)
+            newNode = ParseTree(&#34;initialization&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1135,9 +1135,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;initialization&#34;,p)
+            newNode = ParseTree(&#34;initialization&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1150,9 +1150,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;initialization&#34;,p)
+            newNode = ParseTree(&#34;initialization&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1165,9 +1165,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;for param 1&#34;,p)
+            newNode = ParseTree(&#34;for param 1&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1180,9 +1180,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;for param 1&#34;,p)
+            newNode = ParseTree(&#34;for param 1&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1195,9 +1195,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;for param 1&#34;,p)
+            newNode = ParseTree(&#34;for param 1&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1210,9 +1210,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;for param 2&#34;,p)
+            newNode = ParseTree(&#34;for param 2&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1225,9 +1225,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;for param 2&#34;,p)
+            newNode = ParseTree(&#34;for param 2&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1240,9 +1240,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;for param 3&#34;,p)
+            newNode = ParseTree(&#34;for param 3&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1255,9 +1255,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;for param 3&#34;,p)
+            newNode = ParseTree(&#34;for param 3&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1270,9 +1270,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;designation&#34;,p)
+            newNode = ParseTree(&#34;designation&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1285,9 +1285,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;designation&#34;,p)
+            newNode = ParseTree(&#34;designation&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1300,9 +1300,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;designation&#34;,p)
+            newNode = ParseTree(&#34;designation&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1315,9 +1315,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+            newNode = ParseTree(&#34;assignment&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1330,9 +1330,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+            newNode = ParseTree(&#34;assignment&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1345,9 +1345,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+            newNode = ParseTree(&#34;assignment&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1360,9 +1360,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+            newNode = ParseTree(&#34;assignment&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1375,9 +1375,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+            newNode = ParseTree(&#34;assignment&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1390,9 +1390,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+            newNode = ParseTree(&#34;assignment&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1405,9 +1405,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+            newNode = ParseTree(&#34;assignment&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1420,9 +1420,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+            newNode = ParseTree(&#34;assignment&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1435,9 +1435,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+            newNode = ParseTree(&#34;assignment&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1450,9 +1450,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+            newNode = ParseTree(&#34;assignment&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1465,9 +1465,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+            newNode = ParseTree(&#34;assignment&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1480,9 +1480,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;collation&#34;,p)
+            newNode = ParseTree(&#34;collation&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1495,9 +1495,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;collation&#34;,p)
+            newNode = ParseTree(&#34;collation&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1510,9 +1510,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;comparison&#34;,p)
+            newNode = ParseTree(&#34;comparison&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1525,9 +1525,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;comparison&#34;,p)
+            newNode = ParseTree(&#34;comparison&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1540,9 +1540,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;comparison&#34;,p)
+            newNode = ParseTree(&#34;comparison&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1555,9 +1555,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;comparison&#34;,p)
+            newNode = ParseTree(&#34;comparison&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1570,9 +1570,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;comparison&#34;,p)
+            newNode = ParseTree(&#34;comparison&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1585,9 +1585,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;comparison&#34;,p)
+            newNode = ParseTree(&#34;comparison&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1600,9 +1600,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1615,9 +1615,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1630,9 +1630,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1645,9 +1645,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1660,9 +1660,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1675,9 +1675,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1690,9 +1690,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1705,9 +1705,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1720,9 +1720,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1735,9 +1735,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1750,9 +1750,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1765,9 +1765,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1780,9 +1780,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;unary&#34;,p)
+            newNode = ParseTree(&#34;unary&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1795,9 +1795,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;unary&#34;,p)
+            newNode = ParseTree(&#34;unary&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1810,9 +1810,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;unary&#34;,p)
+            newNode = ParseTree(&#34;unary&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1825,9 +1825,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;unary&#34;,p)
+            newNode = ParseTree(&#34;unary&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1840,9 +1840,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;unary&#34;,p)
+            newNode = ParseTree(&#34;unary&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1855,9 +1855,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;unary&#34;,p)
+            newNode = ParseTree(&#34;unary&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1870,9 +1870,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;unary&#34;,p)
+            newNode = ParseTree(&#34;unary&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1885,9 +1885,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;unary&#34;,p)
+            newNode = ParseTree(&#34;unary&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1900,9 +1900,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;unary&#34;,p)
+            newNode = ParseTree(&#34;unary&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1915,9 +1915,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1930,9 +1930,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1945,9 +1945,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1960,9 +1960,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1975,9 +1975,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;value&#34;,p)
+            newNode = ParseTree(&#34;value&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -1990,9 +1990,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;value&#34;,p)
+            newNode = ParseTree(&#34;value&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2005,9 +2005,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;value&#34;,p)
+            newNode = ParseTree(&#34;value&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2020,9 +2020,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;value&#34;,p)
+            newNode = ParseTree(&#34;value&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2035,9 +2035,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;value&#34;,p)
+            newNode = ParseTree(&#34;value&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2050,9 +2050,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;value&#34;,p)
+            newNode = ParseTree(&#34;value&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2065,9 +2065,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;value&#34;,p)
+            newNode = ParseTree(&#34;value&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2105,7 +2105,7 @@ class Parser():
 
     def print_error(self):
         &#34;&#34;&#34;
-        Prints parser error message. This function ultimately iterates through the AST that was returned after the parser found an error. AST&#39;s consist of tokens as well as other AST&#39;s so we need to iterate to find the first token and then print its source position.
+        Prints parser error message. This function ultimately iterates through the ParseTree that was returned after the parser found an error. ParseTree&#39;s consist of tokens as well as other ParseTree&#39;s so we need to iterate to find the first token and then print its source position.
         &#34;&#34;&#34;
         # TODO: add some more in-depth error processing to print
         # out a more detailed description of what went wrong, and possibly some suggestions 
@@ -2131,14 +2131,14 @@ class Parser():
             else:
                 # Set head to last element.
                 # If this code executes then I can assume that the 
-                # last element is an AST.
+                # last element is an ParseTree.
                 head = head.content[len(head.content)-1]
 
         if token:
             print(f&#34;ParsingError: Last token  \&#39;{token.value}\&#39; parsed successfully at, {token.source_pos}\n&#34;)
         else:
             # Never found a token to report, need to exit
-            print(&#34;ParsingError: No AST obtained\n&#34;)
+            print(&#34;ParsingError: No ParseTree obtained\n&#34;)
             exit()
 
 
@@ -2155,13 +2155,13 @@ class Parser():
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="src.frontend.parser.AbstractSyntaxTree"><code class="flex name class">
-<span>class <span class="ident">AbstractSyntaxTree</span></span>
+<dt id="src.frontend.parser.ParseTree"><code class="flex name class">
+<span>class <span class="ident">ParseTree</span></span>
 <span>(</span><span>token, content)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>AbstractSyntaxTree is a class that acts as each node in an Abstract Syntax Tree</p>
-<p>Construct a new AbstractSyntaxTree object</p>
+<section class="desc"><p>ParseTree is a class that acts as each node in an ParseTree</p>
+<p>Construct a new ParseTree object</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>token</code></strong></dt>
@@ -2173,13 +2173,13 @@ class Parser():
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class AbstractSyntaxTree():
+<pre><code class="python">class ParseTree():
     &#34;&#34;&#34;
-    AbstractSyntaxTree is a class that acts as each node in an Abstract Syntax Tree
+    ParseTree is a class that acts as each node in an ParseTree
     &#34;&#34;&#34;
     def __init__(self, token, content):
         &#34;&#34;&#34;
-        Construct a new AbstractSyntaxTree object
+        Construct a new ParseTree object
 
         Args:
             token: The token type of the node.
@@ -2246,9 +2246,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;program&#34;,p)
+            newNode = ParseTree(&#34;program&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2261,9 +2261,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;definitionList&#34;,p)
+            newNode = ParseTree(&#34;definitionList&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2276,9 +2276,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;definitionList&#34;,p)
+            newNode = ParseTree(&#34;definitionList&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2291,9 +2291,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;definitionList&#34;,p)
+            newNode = ParseTree(&#34;definitionList&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2306,9 +2306,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;definitionList&#34;,p)
+            newNode = ParseTree(&#34;definitionList&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2321,9 +2321,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;function definition&#34;,p)
+            newNode = ParseTree(&#34;function definition&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2336,9 +2336,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;function definition&#34;,p)
+            newNode = ParseTree(&#34;function definition&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2351,9 +2351,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;functionDeclaration&#34;,p)
+            newNode = ParseTree(&#34;functionDeclaration&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2366,9 +2366,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;functionDeclaration&#34;,p)
+            newNode = ParseTree(&#34;functionDeclaration&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2381,9 +2381,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;args&#34;,p)
+            newNode = ParseTree(&#34;args&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2396,9 +2396,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;args&#34;,p)
+            newNode = ParseTree(&#34;args&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2411,9 +2411,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arg_terminal&#34;,p)
+            newNode = ParseTree(&#34;arg_terminal&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2426,9 +2426,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arg_terminal&#34;,p)
+            newNode = ParseTree(&#34;arg_terminal&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2441,9 +2441,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;block&#34;,p)
+            newNode = ParseTree(&#34;block&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2456,9 +2456,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;block&#34;,p)
+            newNode = ParseTree(&#34;block&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2471,9 +2471,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;block&#34;,p)
+            newNode = ParseTree(&#34;block&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2486,9 +2486,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;block&#34;,p)
+            newNode = ParseTree(&#34;block&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2501,9 +2501,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;block&#34;,p)
+            newNode = ParseTree(&#34;block&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2516,9 +2516,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;content&#34;,p)
+            newNode = ParseTree(&#34;content&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2531,9 +2531,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;content&#34;,p)
+            newNode = ParseTree(&#34;content&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2546,9 +2546,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;content_terminal&#34;,p)
+            newNode = ParseTree(&#34;content_terminal&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2561,9 +2561,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;content_terminal&#34;,p)
+            newNode = ParseTree(&#34;content_terminal&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2576,9 +2576,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;content_terminal&#34;,p)
+            newNode = ParseTree(&#34;content_terminal&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2591,9 +2591,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;content_terminal&#34;,p)
+            newNode = ParseTree(&#34;content_terminal&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2606,9 +2606,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;content_terminal&#34;,p)
+            newNode = ParseTree(&#34;content_terminal&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2621,9 +2621,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;single_line&#34;,p)
+            newNode = ParseTree(&#34;single_line&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2636,9 +2636,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;single_line&#34;,p)
+            newNode = ParseTree(&#34;single_line&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2651,9 +2651,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;single_line&#34;,p)
+            newNode = ParseTree(&#34;single_line&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2666,9 +2666,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;single_line&#34;,p)
+            newNode = ParseTree(&#34;single_line&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2681,9 +2681,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;single_line&#34;,p)
+            newNode = ParseTree(&#34;single_line&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2696,9 +2696,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;single_line&#34;,p)
+            newNode = ParseTree(&#34;single_line&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2711,9 +2711,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;function call&#34;,p)
+            newNode = ParseTree(&#34;function call&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2726,9 +2726,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;function call&#34;,p)
+            newNode = ParseTree(&#34;function call&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2741,9 +2741,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;paramater&#34;,p)
+            newNode = ParseTree(&#34;paramater&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2756,9 +2756,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;parameter&#34;,p)
+            newNode = ParseTree(&#34;parameter&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2771,9 +2771,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;param_terminal&#34;,p)
+            newNode = ParseTree(&#34;param_terminal&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2786,9 +2786,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;while loop&#34;,p)
+            newNode = ParseTree(&#34;while loop&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2801,9 +2801,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;while loop&#34;,p)
+            newNode = ParseTree(&#34;while loop&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2816,9 +2816,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;for loop&#34;,p)
+            newNode = ParseTree(&#34;for loop&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2831,9 +2831,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;for loop&#34;,p)
+            newNode = ParseTree(&#34;for loop&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2846,9 +2846,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;do loop&#34;,p)
+            newNode = ParseTree(&#34;do loop&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2861,9 +2861,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;do loop&#34;,p)
+            newNode = ParseTree(&#34;do loop&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2876,9 +2876,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;if&#34;,p)
+            newNode = ParseTree(&#34;if&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2891,9 +2891,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;if&#34;,p)
+            newNode = ParseTree(&#34;if&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2906,9 +2906,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;if_body&#34;,p)
+            newNode = ParseTree(&#34;if_body&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2921,9 +2921,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;if_body&#34;,p)
+            newNode = ParseTree(&#34;if_body&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2936,9 +2936,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;if_expansion&#34;,p)
+            newNode = ParseTree(&#34;if_expansion&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2951,9 +2951,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;switch&#34;,p)
+            newNode = ParseTree(&#34;switch&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2966,9 +2966,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;switch_body&#34;,p)
+            newNode = ParseTree(&#34;switch_body&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2981,9 +2981,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;switch_body&#34;,p)
+            newNode = ParseTree(&#34;switch_body&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2996,9 +2996,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;cases&#34;,p)
+            newNode = ParseTree(&#34;cases&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3011,9 +3011,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;cases&#34;,p)
+            newNode = ParseTree(&#34;cases&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3026,9 +3026,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;cases&#34;,p)
+            newNode = ParseTree(&#34;cases&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3041,9 +3041,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;case&#34;,p)
+            newNode = ParseTree(&#34;case&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3056,9 +3056,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;case&#34;,p)
+            newNode = ParseTree(&#34;case&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3071,9 +3071,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;default&#34;,p)
+            newNode = ParseTree(&#34;default&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3086,9 +3086,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;case_body&#34;,p)
+            newNode = ParseTree(&#34;case_body&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3101,9 +3101,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;case_body&#34;,p)
+            newNode = ParseTree(&#34;case_body&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3116,9 +3116,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;goto&#34;,p)
+            newNode = ParseTree(&#34;goto&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3131,9 +3131,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;goto&#34;,p)
+            newNode = ParseTree(&#34;goto&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3146,9 +3146,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;goto&#34;,p)
+            newNode = ParseTree(&#34;goto&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3161,9 +3161,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;return&#34;,p)
+            newNode = ParseTree(&#34;return&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3176,9 +3176,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;return&#34;,p)
+            newNode = ParseTree(&#34;return&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3191,9 +3191,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;return&#34;,p)
+            newNode = ParseTree(&#34;return&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3206,9 +3206,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;return&#34;,p)
+            newNode = ParseTree(&#34;return&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3221,9 +3221,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;jump&#34;,p)
+            newNode = ParseTree(&#34;jump&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3236,9 +3236,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;break&#34;,p)
+            newNode = ParseTree(&#34;break&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3251,9 +3251,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;continue&#34;,p)
+            newNode = ParseTree(&#34;continue&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3266,9 +3266,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;initialization&#34;,p)
+            newNode = ParseTree(&#34;initialization&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3281,9 +3281,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;initialization&#34;,p)
+            newNode = ParseTree(&#34;initialization&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3296,9 +3296,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;initialization&#34;,p)
+            newNode = ParseTree(&#34;initialization&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3311,9 +3311,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;for param 1&#34;,p)
+            newNode = ParseTree(&#34;for param 1&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3326,9 +3326,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;for param 1&#34;,p)
+            newNode = ParseTree(&#34;for param 1&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3341,9 +3341,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;for param 1&#34;,p)
+            newNode = ParseTree(&#34;for param 1&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3356,9 +3356,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;for param 2&#34;,p)
+            newNode = ParseTree(&#34;for param 2&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3371,9 +3371,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;for param 2&#34;,p)
+            newNode = ParseTree(&#34;for param 2&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3386,9 +3386,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;for param 3&#34;,p)
+            newNode = ParseTree(&#34;for param 3&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3401,9 +3401,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;for param 3&#34;,p)
+            newNode = ParseTree(&#34;for param 3&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3416,9 +3416,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;designation&#34;,p)
+            newNode = ParseTree(&#34;designation&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3431,9 +3431,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;designation&#34;,p)
+            newNode = ParseTree(&#34;designation&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3446,9 +3446,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;designation&#34;,p)
+            newNode = ParseTree(&#34;designation&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3461,9 +3461,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+            newNode = ParseTree(&#34;assignment&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3476,9 +3476,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+            newNode = ParseTree(&#34;assignment&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3491,9 +3491,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+            newNode = ParseTree(&#34;assignment&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3506,9 +3506,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+            newNode = ParseTree(&#34;assignment&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3521,9 +3521,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+            newNode = ParseTree(&#34;assignment&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3536,9 +3536,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+            newNode = ParseTree(&#34;assignment&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3551,9 +3551,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+            newNode = ParseTree(&#34;assignment&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3566,9 +3566,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+            newNode = ParseTree(&#34;assignment&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3581,9 +3581,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+            newNode = ParseTree(&#34;assignment&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3596,9 +3596,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+            newNode = ParseTree(&#34;assignment&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3611,9 +3611,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+            newNode = ParseTree(&#34;assignment&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3626,9 +3626,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;collation&#34;,p)
+            newNode = ParseTree(&#34;collation&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3641,9 +3641,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;collation&#34;,p)
+            newNode = ParseTree(&#34;collation&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3656,9 +3656,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;comparison&#34;,p)
+            newNode = ParseTree(&#34;comparison&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3671,9 +3671,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;comparison&#34;,p)
+            newNode = ParseTree(&#34;comparison&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3686,9 +3686,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;comparison&#34;,p)
+            newNode = ParseTree(&#34;comparison&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3701,9 +3701,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;comparison&#34;,p)
+            newNode = ParseTree(&#34;comparison&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3716,9 +3716,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;comparison&#34;,p)
+            newNode = ParseTree(&#34;comparison&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3731,9 +3731,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;comparison&#34;,p)
+            newNode = ParseTree(&#34;comparison&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3746,9 +3746,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3761,9 +3761,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3776,9 +3776,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3791,9 +3791,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3806,9 +3806,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3821,9 +3821,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3836,9 +3836,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3851,9 +3851,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3866,9 +3866,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3881,9 +3881,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3896,9 +3896,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3911,9 +3911,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3926,9 +3926,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;unary&#34;,p)
+            newNode = ParseTree(&#34;unary&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3941,9 +3941,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;unary&#34;,p)
+            newNode = ParseTree(&#34;unary&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3956,9 +3956,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;unary&#34;,p)
+            newNode = ParseTree(&#34;unary&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3971,9 +3971,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;unary&#34;,p)
+            newNode = ParseTree(&#34;unary&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3986,9 +3986,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;unary&#34;,p)
+            newNode = ParseTree(&#34;unary&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -4001,9 +4001,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;unary&#34;,p)
+            newNode = ParseTree(&#34;unary&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -4016,9 +4016,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;unary&#34;,p)
+            newNode = ParseTree(&#34;unary&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -4031,9 +4031,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;unary&#34;,p)
+            newNode = ParseTree(&#34;unary&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -4046,9 +4046,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;unary&#34;,p)
+            newNode = ParseTree(&#34;unary&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -4061,9 +4061,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -4076,9 +4076,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -4091,9 +4091,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -4106,9 +4106,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+            newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -4121,9 +4121,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;value&#34;,p)
+            newNode = ParseTree(&#34;value&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -4136,9 +4136,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;value&#34;,p)
+            newNode = ParseTree(&#34;value&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -4151,9 +4151,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;value&#34;,p)
+            newNode = ParseTree(&#34;value&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -4166,9 +4166,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;value&#34;,p)
+            newNode = ParseTree(&#34;value&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -4181,9 +4181,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;value&#34;,p)
+            newNode = ParseTree(&#34;value&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -4196,9 +4196,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;value&#34;,p)
+            newNode = ParseTree(&#34;value&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -4211,9 +4211,9 @@ class Parser():
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = AbstractSyntaxTree(&#34;value&#34;,p)
+            newNode = ParseTree(&#34;value&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -4251,7 +4251,7 @@ class Parser():
 
     def print_error(self):
         &#34;&#34;&#34;
-        Prints parser error message. This function ultimately iterates through the AST that was returned after the parser found an error. AST&#39;s consist of tokens as well as other AST&#39;s so we need to iterate to find the first token and then print its source position.
+        Prints parser error message. This function ultimately iterates through the ParseTree that was returned after the parser found an error. ParseTree&#39;s consist of tokens as well as other ParseTree&#39;s so we need to iterate to find the first token and then print its source position.
         &#34;&#34;&#34;
         # TODO: add some more in-depth error processing to print
         # out a more detailed description of what went wrong, and possibly some suggestions 
@@ -4277,14 +4277,14 @@ class Parser():
             else:
                 # Set head to last element.
                 # If this code executes then I can assume that the 
-                # last element is an AST.
+                # last element is an ParseTree.
                 head = head.content[len(head.content)-1]
 
         if token:
             print(f&#34;ParsingError: Last token  \&#39;{token.value}\&#39; parsed successfully at, {token.source_pos}\n&#34;)
         else:
             # Never found a token to report, need to exit
-            print(&#34;ParsingError: No AST obtained\n&#34;)
+            print(&#34;ParsingError: No ParseTree obtained\n&#34;)
             exit()</code></pre>
 </details>
 <h3>Methods</h3>
@@ -4355,9 +4355,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;program&#34;,p)
+        newNode = ParseTree(&#34;program&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4370,9 +4370,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;definitionList&#34;,p)
+        newNode = ParseTree(&#34;definitionList&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4385,9 +4385,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;definitionList&#34;,p)
+        newNode = ParseTree(&#34;definitionList&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4400,9 +4400,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;definitionList&#34;,p)
+        newNode = ParseTree(&#34;definitionList&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4415,9 +4415,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;definitionList&#34;,p)
+        newNode = ParseTree(&#34;definitionList&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4430,9 +4430,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;function definition&#34;,p)
+        newNode = ParseTree(&#34;function definition&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4445,9 +4445,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;function definition&#34;,p)
+        newNode = ParseTree(&#34;function definition&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4460,9 +4460,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;functionDeclaration&#34;,p)
+        newNode = ParseTree(&#34;functionDeclaration&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4475,9 +4475,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;functionDeclaration&#34;,p)
+        newNode = ParseTree(&#34;functionDeclaration&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4490,9 +4490,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;args&#34;,p)
+        newNode = ParseTree(&#34;args&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4505,9 +4505,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;args&#34;,p)
+        newNode = ParseTree(&#34;args&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4520,9 +4520,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;arg_terminal&#34;,p)
+        newNode = ParseTree(&#34;arg_terminal&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4535,9 +4535,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;arg_terminal&#34;,p)
+        newNode = ParseTree(&#34;arg_terminal&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4550,9 +4550,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;block&#34;,p)
+        newNode = ParseTree(&#34;block&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4565,9 +4565,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;block&#34;,p)
+        newNode = ParseTree(&#34;block&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4580,9 +4580,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;block&#34;,p)
+        newNode = ParseTree(&#34;block&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4595,9 +4595,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;block&#34;,p)
+        newNode = ParseTree(&#34;block&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4610,9 +4610,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;block&#34;,p)
+        newNode = ParseTree(&#34;block&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4625,9 +4625,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;content&#34;,p)
+        newNode = ParseTree(&#34;content&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4640,9 +4640,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;content&#34;,p)
+        newNode = ParseTree(&#34;content&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4655,9 +4655,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;content_terminal&#34;,p)
+        newNode = ParseTree(&#34;content_terminal&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4670,9 +4670,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;content_terminal&#34;,p)
+        newNode = ParseTree(&#34;content_terminal&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4685,9 +4685,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;content_terminal&#34;,p)
+        newNode = ParseTree(&#34;content_terminal&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4700,9 +4700,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;content_terminal&#34;,p)
+        newNode = ParseTree(&#34;content_terminal&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4715,9 +4715,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;content_terminal&#34;,p)
+        newNode = ParseTree(&#34;content_terminal&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4730,9 +4730,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;single_line&#34;,p)
+        newNode = ParseTree(&#34;single_line&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4745,9 +4745,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;single_line&#34;,p)
+        newNode = ParseTree(&#34;single_line&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4760,9 +4760,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;single_line&#34;,p)
+        newNode = ParseTree(&#34;single_line&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4775,9 +4775,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;single_line&#34;,p)
+        newNode = ParseTree(&#34;single_line&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4790,9 +4790,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;single_line&#34;,p)
+        newNode = ParseTree(&#34;single_line&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4805,9 +4805,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;single_line&#34;,p)
+        newNode = ParseTree(&#34;single_line&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4820,9 +4820,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;function call&#34;,p)
+        newNode = ParseTree(&#34;function call&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4835,9 +4835,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;function call&#34;,p)
+        newNode = ParseTree(&#34;function call&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4850,9 +4850,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;paramater&#34;,p)
+        newNode = ParseTree(&#34;paramater&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4865,9 +4865,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;parameter&#34;,p)
+        newNode = ParseTree(&#34;parameter&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4880,9 +4880,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;param_terminal&#34;,p)
+        newNode = ParseTree(&#34;param_terminal&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4895,9 +4895,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;while loop&#34;,p)
+        newNode = ParseTree(&#34;while loop&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4910,9 +4910,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;while loop&#34;,p)
+        newNode = ParseTree(&#34;while loop&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4925,9 +4925,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;for loop&#34;,p)
+        newNode = ParseTree(&#34;for loop&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4940,9 +4940,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;for loop&#34;,p)
+        newNode = ParseTree(&#34;for loop&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4955,9 +4955,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;do loop&#34;,p)
+        newNode = ParseTree(&#34;do loop&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4970,9 +4970,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;do loop&#34;,p)
+        newNode = ParseTree(&#34;do loop&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4985,9 +4985,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;if&#34;,p)
+        newNode = ParseTree(&#34;if&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5000,9 +5000,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;if&#34;,p)
+        newNode = ParseTree(&#34;if&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5015,9 +5015,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;if_body&#34;,p)
+        newNode = ParseTree(&#34;if_body&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5030,9 +5030,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;if_body&#34;,p)
+        newNode = ParseTree(&#34;if_body&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5045,9 +5045,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;if_expansion&#34;,p)
+        newNode = ParseTree(&#34;if_expansion&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5060,9 +5060,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;switch&#34;,p)
+        newNode = ParseTree(&#34;switch&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5075,9 +5075,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;switch_body&#34;,p)
+        newNode = ParseTree(&#34;switch_body&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5090,9 +5090,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;switch_body&#34;,p)
+        newNode = ParseTree(&#34;switch_body&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5105,9 +5105,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;cases&#34;,p)
+        newNode = ParseTree(&#34;cases&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5120,9 +5120,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;cases&#34;,p)
+        newNode = ParseTree(&#34;cases&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5135,9 +5135,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;cases&#34;,p)
+        newNode = ParseTree(&#34;cases&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5150,9 +5150,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;case&#34;,p)
+        newNode = ParseTree(&#34;case&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5165,9 +5165,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;case&#34;,p)
+        newNode = ParseTree(&#34;case&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5180,9 +5180,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;default&#34;,p)
+        newNode = ParseTree(&#34;default&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5195,9 +5195,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;case_body&#34;,p)
+        newNode = ParseTree(&#34;case_body&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5210,9 +5210,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;case_body&#34;,p)
+        newNode = ParseTree(&#34;case_body&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5225,9 +5225,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;goto&#34;,p)
+        newNode = ParseTree(&#34;goto&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5240,9 +5240,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;goto&#34;,p)
+        newNode = ParseTree(&#34;goto&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5255,9 +5255,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;goto&#34;,p)
+        newNode = ParseTree(&#34;goto&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5270,9 +5270,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;return&#34;,p)
+        newNode = ParseTree(&#34;return&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5285,9 +5285,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;return&#34;,p)
+        newNode = ParseTree(&#34;return&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5300,9 +5300,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;return&#34;,p)
+        newNode = ParseTree(&#34;return&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5315,9 +5315,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;return&#34;,p)
+        newNode = ParseTree(&#34;return&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5330,9 +5330,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;jump&#34;,p)
+        newNode = ParseTree(&#34;jump&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5345,9 +5345,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;break&#34;,p)
+        newNode = ParseTree(&#34;break&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5360,9 +5360,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;continue&#34;,p)
+        newNode = ParseTree(&#34;continue&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5375,9 +5375,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;initialization&#34;,p)
+        newNode = ParseTree(&#34;initialization&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5390,9 +5390,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;initialization&#34;,p)
+        newNode = ParseTree(&#34;initialization&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5405,9 +5405,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;initialization&#34;,p)
+        newNode = ParseTree(&#34;initialization&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5420,9 +5420,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;for param 1&#34;,p)
+        newNode = ParseTree(&#34;for param 1&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5435,9 +5435,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;for param 1&#34;,p)
+        newNode = ParseTree(&#34;for param 1&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5450,9 +5450,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;for param 1&#34;,p)
+        newNode = ParseTree(&#34;for param 1&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5465,9 +5465,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;for param 2&#34;,p)
+        newNode = ParseTree(&#34;for param 2&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5480,9 +5480,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;for param 2&#34;,p)
+        newNode = ParseTree(&#34;for param 2&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5495,9 +5495,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;for param 3&#34;,p)
+        newNode = ParseTree(&#34;for param 3&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5510,9 +5510,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;for param 3&#34;,p)
+        newNode = ParseTree(&#34;for param 3&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5525,9 +5525,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;designation&#34;,p)
+        newNode = ParseTree(&#34;designation&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5540,9 +5540,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;designation&#34;,p)
+        newNode = ParseTree(&#34;designation&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5555,9 +5555,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;designation&#34;,p)
+        newNode = ParseTree(&#34;designation&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5570,9 +5570,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+        newNode = ParseTree(&#34;assignment&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5585,9 +5585,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+        newNode = ParseTree(&#34;assignment&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5600,9 +5600,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+        newNode = ParseTree(&#34;assignment&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5615,9 +5615,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+        newNode = ParseTree(&#34;assignment&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5630,9 +5630,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+        newNode = ParseTree(&#34;assignment&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5645,9 +5645,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+        newNode = ParseTree(&#34;assignment&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5660,9 +5660,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+        newNode = ParseTree(&#34;assignment&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5675,9 +5675,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+        newNode = ParseTree(&#34;assignment&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5690,9 +5690,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+        newNode = ParseTree(&#34;assignment&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5705,9 +5705,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+        newNode = ParseTree(&#34;assignment&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5720,9 +5720,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;assignment&#34;,p)
+        newNode = ParseTree(&#34;assignment&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5735,9 +5735,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;collation&#34;,p)
+        newNode = ParseTree(&#34;collation&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5750,9 +5750,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;collation&#34;,p)
+        newNode = ParseTree(&#34;collation&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5765,9 +5765,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;comparison&#34;,p)
+        newNode = ParseTree(&#34;comparison&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5780,9 +5780,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;comparison&#34;,p)
+        newNode = ParseTree(&#34;comparison&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5795,9 +5795,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;comparison&#34;,p)
+        newNode = ParseTree(&#34;comparison&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5810,9 +5810,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;comparison&#34;,p)
+        newNode = ParseTree(&#34;comparison&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5825,9 +5825,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;comparison&#34;,p)
+        newNode = ParseTree(&#34;comparison&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5840,9 +5840,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;comparison&#34;,p)
+        newNode = ParseTree(&#34;comparison&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5855,9 +5855,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+        newNode = ParseTree(&#34;arithmetic&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5870,9 +5870,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+        newNode = ParseTree(&#34;arithmetic&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5885,9 +5885,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+        newNode = ParseTree(&#34;arithmetic&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5900,9 +5900,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+        newNode = ParseTree(&#34;arithmetic&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5915,9 +5915,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+        newNode = ParseTree(&#34;arithmetic&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5930,9 +5930,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+        newNode = ParseTree(&#34;arithmetic&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5945,9 +5945,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+        newNode = ParseTree(&#34;arithmetic&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5960,9 +5960,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+        newNode = ParseTree(&#34;arithmetic&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5975,9 +5975,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+        newNode = ParseTree(&#34;arithmetic&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5990,9 +5990,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+        newNode = ParseTree(&#34;arithmetic&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -6005,9 +6005,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+        newNode = ParseTree(&#34;arithmetic&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -6020,9 +6020,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+        newNode = ParseTree(&#34;arithmetic&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -6035,9 +6035,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;unary&#34;,p)
+        newNode = ParseTree(&#34;unary&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -6050,9 +6050,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;unary&#34;,p)
+        newNode = ParseTree(&#34;unary&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -6065,9 +6065,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;unary&#34;,p)
+        newNode = ParseTree(&#34;unary&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -6080,9 +6080,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;unary&#34;,p)
+        newNode = ParseTree(&#34;unary&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -6095,9 +6095,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;unary&#34;,p)
+        newNode = ParseTree(&#34;unary&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -6110,9 +6110,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;unary&#34;,p)
+        newNode = ParseTree(&#34;unary&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -6125,9 +6125,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;unary&#34;,p)
+        newNode = ParseTree(&#34;unary&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -6140,9 +6140,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;unary&#34;,p)
+        newNode = ParseTree(&#34;unary&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -6155,9 +6155,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;unary&#34;,p)
+        newNode = ParseTree(&#34;unary&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -6170,9 +6170,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+        newNode = ParseTree(&#34;arithmetic&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -6185,9 +6185,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+        newNode = ParseTree(&#34;arithmetic&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -6200,9 +6200,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+        newNode = ParseTree(&#34;arithmetic&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -6215,9 +6215,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;arithmetic&#34;,p)
+        newNode = ParseTree(&#34;arithmetic&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -6230,9 +6230,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;value&#34;,p)
+        newNode = ParseTree(&#34;value&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -6245,9 +6245,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;value&#34;,p)
+        newNode = ParseTree(&#34;value&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -6260,9 +6260,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;value&#34;,p)
+        newNode = ParseTree(&#34;value&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -6275,9 +6275,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;value&#34;,p)
+        newNode = ParseTree(&#34;value&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -6290,9 +6290,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;value&#34;,p)
+        newNode = ParseTree(&#34;value&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -6305,9 +6305,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;value&#34;,p)
+        newNode = ParseTree(&#34;value&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -6320,9 +6320,9 @@ class Parser():
             p: The matching set of tokens.
 
         Returns:
-            The node of the abstract syntax tree.
+            The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = AbstractSyntaxTree(&#34;value&#34;,p)
+        newNode = ParseTree(&#34;value&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -6342,14 +6342,14 @@ class Parser():
 <span>def <span class="ident">print_error</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Prints parser error message. This function ultimately iterates through the AST that was returned after the parser found an error. AST's consist of tokens as well as other AST's so we need to iterate to find the first token and then print its source position.</p></section>
+<section class="desc"><p>Prints parser error message. This function ultimately iterates through the ParseTree that was returned after the parser found an error. ParseTree's consist of tokens as well as other ParseTree's so we need to iterate to find the first token and then print its source position.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def print_error(self):
     &#34;&#34;&#34;
-    Prints parser error message. This function ultimately iterates through the AST that was returned after the parser found an error. AST&#39;s consist of tokens as well as other AST&#39;s so we need to iterate to find the first token and then print its source position.
+    Prints parser error message. This function ultimately iterates through the ParseTree that was returned after the parser found an error. ParseTree&#39;s consist of tokens as well as other ParseTree&#39;s so we need to iterate to find the first token and then print its source position.
     &#34;&#34;&#34;
     # TODO: add some more in-depth error processing to print
     # out a more detailed description of what went wrong, and possibly some suggestions 
@@ -6375,14 +6375,14 @@ class Parser():
         else:
             # Set head to last element.
             # If this code executes then I can assume that the 
-            # last element is an AST.
+            # last element is an ParseTree.
             head = head.content[len(head.content)-1]
 
     if token:
         print(f&#34;ParsingError: Last token  \&#39;{token.value}\&#39; parsed successfully at, {token.source_pos}\n&#34;)
     else:
         # Never found a token to report, need to exit
-        print(&#34;ParsingError: No AST obtained\n&#34;)
+        print(&#34;ParsingError: No ParseTree obtained\n&#34;)
         exit()</code></pre>
 </details>
 </dd>
@@ -6405,7 +6405,7 @@ class Parser():
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="src.frontend.parser.AbstractSyntaxTree" href="#src.frontend.parser.AbstractSyntaxTree">AbstractSyntaxTree</a></code></h4>
+<h4><code><a title="src.frontend.parser.ParseTree" href="#src.frontend.parser.ParseTree">ParseTree</a></code></h4>
 </li>
 <li>
 <h4><code><a title="src.frontend.parser.Parser" href="#src.frontend.parser.Parser">Parser</a></code></h4>

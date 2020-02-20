@@ -27,8 +27,8 @@
 <pre><code class="python">import importlib,re
 from collections import namedtuple
 
-lex = importlib.import_module(&#34;lexer&#34;, &#34;.&#34;)
-ast = importlib.import_module(&#34;AST_builder&#34;, &#34;.&#34;)
+lex = importlib.import_module(&#34;lexer&#34;, __name__)
+ast = importlib.import_module(&#34;AST_builder&#34;, __name__)
 
 class Entry():
     def __init__(self, is_func, nam, typ, scop):

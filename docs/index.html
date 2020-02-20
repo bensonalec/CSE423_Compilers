@@ -53,6 +53,17 @@
      </span>
     </div>
     <section id="section-intro">
+     <details class="source">
+      <summary>
+       <span>
+        Expand source code
+       </span>
+      </summary>
+      <pre><code class="python">import os
+import sys
+
+sys.path.insert(0, os.path.dirname(__file__))</code></pre>
+     </details>
      <section>
       <style>
        .note {
@@ -3694,7 +3705,7 @@ Unrecoverable exception occured. Exiting...
            </dd>
            <dt>
             <h4>
-             while_loop
+             Arithmetic_As_Function_Input
             </h4>
            </dt>
            <dd>
@@ -3717,13 +3728,362 @@ Unrecoverable exception occured. Exiting...
             </div>
             <div class="example_representations">
              <div class="representation_6" style="display: block;">
+              <pre style="overflow-x: auto;"><code class="C++ hljs">int func(int arithmetic_input) {
+    return arithmetic_input;
+}
+
+int main() {
+
+    int value_1 = func(1);
+
+    int value_2 = func(1 + 1);
+
+    int value_3 = func(1 + 1 * 1);
+
+    int value_4 = func((1 + 1 * 1));
+
+    int value_5 = func((1 + 1) * 1);
+
+}</code></pre>
+             </div>
+             <div class="representation_6" style="display: none;">
+              <pre style="overflow-x: auto;">Token('TYPE', 'int')
+Token('SELF_DEFINED', 'func')
+Token('OPEN_PAREN', '(')
+Token('TYPE', 'int')
+Token('SELF_DEFINED', 'arithmetic_input')
+Token('CLOSE_PAREN', ')')
+Token('OPEN_BRACE', '{')
+Token('RETURN', 'return')
+Token('SELF_DEFINED', 'arithmetic_input')
+Token('SEMICOLON', ';')
+Token('CLOSE_BRACE', '}')
+Token('TYPE', 'int')
+Token('SELF_DEFINED', 'main')
+Token('OPEN_PAREN', '(')
+Token('CLOSE_PAREN', ')')
+Token('OPEN_BRACE', '{')
+Token('TYPE', 'int')
+Token('SELF_DEFINED', 'value_1')
+Token('SET', '=')
+Token('SELF_DEFINED', 'func')
+Token('OPEN_PAREN', '(')
+Token('INTEGER', '1')
+Token('CLOSE_PAREN', ')')
+Token('SEMICOLON', ';')
+Token('TYPE', 'int')
+Token('SELF_DEFINED', 'value_2')
+Token('SET', '=')
+Token('SELF_DEFINED', 'func')
+Token('OPEN_PAREN', '(')
+Token('INTEGER', '1')
+Token('ADD', '+')
+Token('INTEGER', '1')
+Token('CLOSE_PAREN', ')')
+Token('SEMICOLON', ';')
+Token('TYPE', 'int')
+Token('SELF_DEFINED', 'value_3')
+Token('SET', '=')
+Token('SELF_DEFINED', 'func')
+Token('OPEN_PAREN', '(')
+Token('INTEGER', '1')
+Token('ADD', '+')
+Token('INTEGER', '1')
+Token('MUL', '*')
+Token('INTEGER', '1')
+Token('CLOSE_PAREN', ')')
+Token('SEMICOLON', ';')
+Token('TYPE', 'int')
+Token('SELF_DEFINED', 'value_4')
+Token('SET', '=')
+Token('SELF_DEFINED', 'func')
+Token('OPEN_PAREN', '(')
+Token('OPEN_PAREN', '(')
+Token('INTEGER', '1')
+Token('ADD', '+')
+Token('INTEGER', '1')
+Token('MUL', '*')
+Token('INTEGER', '1')
+Token('CLOSE_PAREN', ')')
+Token('CLOSE_PAREN', ')')
+Token('SEMICOLON', ';')
+Token('TYPE', 'int')
+Token('SELF_DEFINED', 'value_5')
+Token('SET', '=')
+Token('SELF_DEFINED', 'func')
+Token('OPEN_PAREN', '(')
+Token('OPEN_PAREN', '(')
+Token('INTEGER', '1')
+Token('ADD', '+')
+Token('INTEGER', '1')
+Token('CLOSE_PAREN', ')')
+Token('MUL', '*')
+Token('INTEGER', '1')
+Token('CLOSE_PAREN', ')')
+Token('SEMICOLON', ';')
+Token('CLOSE_BRACE', '}')
+
+Unrecoverable exception occured. Exiting...
+</pre>
+             </div>
+             <div class="representation_6" style="display: none;">
+              <pre style="overflow-x: auto;">`-- program
+    `-- definitionList
+        |-- function definition
+        |   |-- Token('TYPE', 'int')
+        |   |-- Token('SELF_DEFINED', 'func')
+        |   |-- Token('OPEN_PAREN', '(')
+        |   |-- args
+        |   |   `-- arg_terminal
+        |   |       |-- Token('TYPE', 'int')
+        |   |       `-- Token('SELF_DEFINED', 'arithmetic_input')
+        |   |-- Token('CLOSE_PAREN', ')')
+        |   `-- block
+        |       |-- Token('OPEN_BRACE', '{')
+        |       |-- content
+        |       |   `-- content_terminal
+        |       |       `-- single_line
+        |       |           |-- return
+        |       |           |   |-- Token('RETURN', 'return')
+        |       |           |   `-- Token('SELF_DEFINED', 'arithmetic_input')
+        |       |           `-- Token('SEMICOLON', ';')
+        |       `-- Token('CLOSE_BRACE', '}')
+        `-- definitionList
+            |-- function definition
+            |   |-- Token('TYPE', 'int')
+            |   |-- Token('SELF_DEFINED', 'main')
+            |   |-- Token('OPEN_PAREN', '(')
+            |   |-- Token('CLOSE_PAREN', ')')
+            |   `-- block
+            |       |-- Token('OPEN_BRACE', '{')
+            |       |-- content
+            |       |   |-- content_terminal
+            |       |   |   `-- single_line
+            |       |   |       |-- initialization
+            |       |   |       |   |-- Token('TYPE', 'int')
+            |       |   |       |   `-- designation
+            |       |   |       |       |-- Token('SELF_DEFINED', 'value_1')
+            |       |   |       |       |-- assignment
+            |       |   |       |       |   `-- Token('SET', '=')
+            |       |   |       |       `-- function call
+            |       |   |       |           |-- Token('SELF_DEFINED', 'func')
+            |       |   |       |           |-- Token('OPEN_PAREN', '(')
+            |       |   |       |           |-- paramater
+            |       |   |       |           |   `-- param_terminal
+            |       |   |       |           |       `-- arithmetic
+            |       |   |       |           |           `-- value
+            |       |   |       |           |               `-- Token('INTEGER', '1')
+            |       |   |       |           `-- Token('CLOSE_PAREN', ')')
+            |       |   |       `-- Token('SEMICOLON', ';')
+            |       |   `-- content
+            |       |       |-- content_terminal
+            |       |       |   `-- single_line
+            |       |       |       |-- initialization
+            |       |       |       |   |-- Token('TYPE', 'int')
+            |       |       |       |   `-- designation
+            |       |       |       |       |-- Token('SELF_DEFINED', 'value_2')
+            |       |       |       |       |-- assignment
+            |       |       |       |       |   `-- Token('SET', '=')
+            |       |       |       |       `-- function call
+            |       |       |       |           |-- Token('SELF_DEFINED', 'func')
+            |       |       |       |           |-- Token('OPEN_PAREN', '(')
+            |       |       |       |           |-- paramater
+            |       |       |       |           |   `-- param_terminal
+            |       |       |       |           |       `-- arithmetic
+            |       |       |       |           |           |-- arithmetic
+            |       |       |       |           |           |   `-- value
+            |       |       |       |           |           |       `-- Token('INTEGER', '1')
+            |       |       |       |           |           |-- Token('ADD', '+')
+            |       |       |       |           |           `-- arithmetic
+            |       |       |       |           |               `-- value
+            |       |       |       |           |                   `-- Token('INTEGER', '1')
+            |       |       |       |           `-- Token('CLOSE_PAREN', ')')
+            |       |       |       `-- Token('SEMICOLON', ';')
+            |       |       `-- content
+            |       |           |-- content_terminal
+            |       |           |   `-- single_line
+            |       |           |       |-- initialization
+            |       |           |       |   |-- Token('TYPE', 'int')
+            |       |           |       |   `-- designation
+            |       |           |       |       |-- Token('SELF_DEFINED', 'value_3')
+            |       |           |       |       |-- assignment
+            |       |           |       |       |   `-- Token('SET', '=')
+            |       |           |       |       `-- function call
+            |       |           |       |           |-- Token('SELF_DEFINED', 'func')
+            |       |           |       |           |-- Token('OPEN_PAREN', '(')
+            |       |           |       |           |-- paramater
+            |       |           |       |           |   `-- param_terminal
+            |       |           |       |           |       `-- arithmetic
+            |       |           |       |           |           |-- arithmetic
+            |       |           |       |           |           |   `-- value
+            |       |           |       |           |           |       `-- Token('INTEGER', '1')
+            |       |           |       |           |           |-- Token('ADD', '+')
+            |       |           |       |           |           `-- arithmetic
+            |       |           |       |           |               |-- arithmetic
+            |       |           |       |           |               |   `-- value
+            |       |           |       |           |               |       `-- Token('INTEGER', '1')
+            |       |           |       |           |               |-- Token('MUL', '*')
+            |       |           |       |           |               `-- arithmetic
+            |       |           |       |           |                   `-- value
+            |       |           |       |           |                       `-- Token('INTEGER', '1')
+            |       |           |       |           `-- Token('CLOSE_PAREN', ')')
+            |       |           |       `-- Token('SEMICOLON', ';')
+            |       |           `-- content
+            |       |               |-- content_terminal
+            |       |               |   `-- single_line
+            |       |               |       |-- initialization
+            |       |               |       |   |-- Token('TYPE', 'int')
+            |       |               |       |   `-- designation
+            |       |               |       |       |-- Token('SELF_DEFINED', 'value_4')
+            |       |               |       |       |-- assignment
+            |       |               |       |       |   `-- Token('SET', '=')
+            |       |               |       |       `-- function call
+            |       |               |       |           |-- Token('SELF_DEFINED', 'func')
+            |       |               |       |           |-- Token('OPEN_PAREN', '(')
+            |       |               |       |           |-- paramater
+            |       |               |       |           |   `-- param_terminal
+            |       |               |       |           |       `-- arithmetic
+            |       |               |       |           |           |-- Token('OPEN_PAREN', '(')
+            |       |               |       |           |           |-- arithmetic
+            |       |               |       |           |           |   |-- arithmetic
+            |       |               |       |           |           |   |   `-- value
+            |       |               |       |           |           |   |       `-- Token('INTEGER', '1')
+            |       |               |       |           |           |   |-- Token('ADD', '+')
+            |       |               |       |           |           |   `-- arithmetic
+            |       |               |       |           |           |       |-- arithmetic
+            |       |               |       |           |           |       |   `-- value
+            |       |               |       |           |           |       |       `-- Token('INTEGER', '1')
+            |       |               |       |           |           |       |-- Token('MUL', '*')
+            |       |               |       |           |           |       `-- arithmetic
+            |       |               |       |           |           |           `-- value
+            |       |               |       |           |           |               `-- Token('INTEGER', '1')
+            |       |               |       |           |           `-- Token('CLOSE_PAREN', ')')
+            |       |               |       |           `-- Token('CLOSE_PAREN', ')')
+            |       |               |       `-- Token('SEMICOLON', ';')
+            |       |               `-- content
+            |       |                   `-- content_terminal
+            |       |                       `-- single_line
+            |       |                           |-- initialization
+            |       |                           |   |-- Token('TYPE', 'int')
+            |       |                           |   `-- designation
+            |       |                           |       |-- Token('SELF_DEFINED', 'value_5')
+            |       |                           |       |-- assignment
+            |       |                           |       |   `-- Token('SET', '=')
+            |       |                           |       `-- function call
+            |       |                           |           |-- Token('SELF_DEFINED', 'func')
+            |       |                           |           |-- Token('OPEN_PAREN', '(')
+            |       |                           |           |-- paramater
+            |       |                           |           |   `-- param_terminal
+            |       |                           |           |       `-- arithmetic
+            |       |                           |           |           |-- arithmetic
+            |       |                           |           |           |   |-- Token('OPEN_PAREN', '(')
+            |       |                           |           |           |   |-- arithmetic
+            |       |                           |           |           |   |   |-- arithmetic
+            |       |                           |           |           |   |   |   `-- value
+            |       |                           |           |           |   |   |       `-- Token('INTEGER', '1')
+            |       |                           |           |           |   |   |-- Token('ADD', '+')
+            |       |                           |           |           |   |   `-- arithmetic
+            |       |                           |           |           |   |       `-- value
+            |       |                           |           |           |   |           `-- Token('INTEGER', '1')
+            |       |                           |           |           |   `-- Token('CLOSE_PAREN', ')')
+            |       |                           |           |           |-- Token('MUL', '*')
+            |       |                           |           |           `-- arithmetic
+            |       |                           |           |               `-- value
+            |       |                           |           |                   `-- Token('INTEGER', '1')
+            |       |                           |           `-- Token('CLOSE_PAREN', ')')
+            |       |                           `-- Token('SEMICOLON', ';')
+            |       `-- Token('CLOSE_BRACE', '}')
+            `-- definitionList
+Unrecoverable exception occured. Exiting...
+</pre>
+             </div>
+             <div class="representation_6" style="display: none;">
+              <pre style="overflow-x: auto;">`-- Program
+    |-- func
+    |   |-- int
+    |   |-- func
+    |   |-- param
+    |   |   `-- var
+    |   |       |-- int
+    |   |       `-- arithmetic_input
+    |   `-- body
+    |       `-- return
+    `-- func
+        |-- int
+        |-- main
+        |-- param
+        `-- body
+            |-- =
+            |   |-- var
+            |   |   |-- int
+            |   |   `-- value_1
+            |   `-- call
+            |       `-- func
+            |-- =
+            |   |-- var
+            |   |   |-- int
+            |   |   `-- value_2
+            |   `-- call
+            |       `-- func
+            |-- =
+            |   |-- var
+            |   |   |-- int
+            |   |   `-- value_3
+            |   `-- call
+            |       `-- func
+            |-- =
+            |   |-- var
+            |   |   |-- int
+            |   |   `-- value_4
+            |   `-- call
+            |       `-- func
+            `-- =
+                |-- var
+                |   |-- int
+                |   `-- value_5
+                `-- call
+                    `-- func
+Unrecoverable exception occured. Exiting...
+</pre>
+             </div>
+             <div class="representation_6" style="display: none;">
+              <pre style="overflow-x: auto;">Unrecoverable exception occured. Exiting...
+</pre>
+             </div>
+            </div>
+           </dd>
+           <dt>
+            <h4>
+             while_loop
+            </h4>
+           </dt>
+           <dd>
+            <div class="example_buttons">
+             <a onclick='[...document.getElementsByClassName("representation_7")].forEach(function(elem, index) { if (index === 0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Program
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_7")].forEach(function(elem, index) { if (index === 1) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Token List
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_7")].forEach(function(elem, index) { if (index === 2) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Parse Tree
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_7")].forEach(function(elem, index) { if (index === 3) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Abstract Syntax Tree
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_7")].forEach(function(elem, index) { if (index === 4) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Symbol Table
+             </a>
+            </div>
+            <div class="example_representations">
+             <div class="representation_7" style="display: block;">
               <pre style="overflow-x: auto;"><code class="C++ hljs">int main() {
     while(1) {
         return 1;
     }
 }</code></pre>
              </div>
-             <div class="representation_6" style="display: none;">
+             <div class="representation_7" style="display: none;">
               <pre style="overflow-x: auto;">Token('TYPE', 'int')
 Token('SELF_DEFINED', 'main')
 Token('OPEN_PAREN', '(')
@@ -3742,7 +4102,7 @@ Token('CLOSE_BRACE', '}')
 
 </pre>
              </div>
-             <div class="representation_6" style="display: none;">
+             <div class="representation_7" style="display: none;">
               <pre style="overflow-x: auto;">`-- program
     `-- definitionList
         |-- function definition
@@ -3778,7 +4138,7 @@ Token('CLOSE_BRACE', '}')
         `-- definitionList
 </pre>
              </div>
-             <div class="representation_6" style="display: none;">
+             <div class="representation_7" style="display: none;">
               <pre style="overflow-x: auto;">`-- Program
     `-- func
         |-- int
@@ -3792,7 +4152,7 @@ Token('CLOSE_BRACE', '}')
                         `-- 1
 </pre>
              </div>
-             <div class="representation_6" style="display: none;">
+             <div class="representation_7" style="display: none;">
               <pre style="overflow-x: auto;">Name | Function? | Type | Scope
 -----+-----------+------+-------
 main |      True |  int | /    
@@ -3809,24 +4169,24 @@ No undefined symbols available
            </dt>
            <dd>
             <div class="example_buttons">
-             <a onclick='[...document.getElementsByClassName("representation_7")].forEach(function(elem, index) { if (index === 0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_8")].forEach(function(elem, index) { if (index === 0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Program
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_7")].forEach(function(elem, index) { if (index === 1) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_8")].forEach(function(elem, index) { if (index === 1) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Token List
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_7")].forEach(function(elem, index) { if (index === 2) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_8")].forEach(function(elem, index) { if (index === 2) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Parse Tree
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_7")].forEach(function(elem, index) { if (index === 3) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_8")].forEach(function(elem, index) { if (index === 3) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Abstract Syntax Tree
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_7")].forEach(function(elem, index) { if (index === 4) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_8")].forEach(function(elem, index) { if (index === 4) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Symbol Table
              </a>
             </div>
             <div class="example_representations">
-             <div class="representation_7" style="display: block;">
+             <div class="representation_8" style="display: block;">
               <pre style="overflow-x: auto;"><code class="C++ hljs">int main() {
     int a = (1 + 2 + 3);
     int b = (56 * 78 * 5 / 20 - 3);
@@ -3837,7 +4197,7 @@ No undefined symbols available
     b = c - d / a;
 }</code></pre>
              </div>
-             <div class="representation_7" style="display: none;">
+             <div class="representation_8" style="display: none;">
               <pre style="overflow-x: auto;">Token('TYPE', 'int')
 Token('SELF_DEFINED', 'main')
 Token('OPEN_PAREN', '(')
@@ -3901,7 +4261,7 @@ Token('CLOSE_BRACE', '}')
 
 </pre>
              </div>
-             <div class="representation_7" style="display: none;">
+             <div class="representation_8" style="display: none;">
               <pre style="overflow-x: auto;">`-- program
     `-- definitionList
         |-- function definition
@@ -4044,7 +4404,7 @@ Token('CLOSE_BRACE', '}')
         `-- definitionList
 </pre>
              </div>
-             <div class="representation_7" style="display: none;">
+             <div class="representation_8" style="display: none;">
               <pre style="overflow-x: auto;">`-- Program
     `-- func
         |-- int
@@ -4109,7 +4469,7 @@ Token('CLOSE_BRACE', '}')
                             `-- a
 </pre>
              </div>
-             <div class="representation_7" style="display: none;">
+             <div class="representation_8" style="display: none;">
               <pre style="overflow-x: auto;">Name | Function? | Type | Scope 
 -----+-----------+------+--------
 main |      True |  int | /     
@@ -4130,24 +4490,24 @@ No undefined symbols available
            </dt>
            <dd>
             <div class="example_buttons">
-             <a onclick='[...document.getElementsByClassName("representation_8")].forEach(function(elem, index) { if (index === 0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_9")].forEach(function(elem, index) { if (index === 0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Program
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_8")].forEach(function(elem, index) { if (index === 1) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_9")].forEach(function(elem, index) { if (index === 1) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Token List
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_8")].forEach(function(elem, index) { if (index === 2) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_9")].forEach(function(elem, index) { if (index === 2) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Parse Tree
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_8")].forEach(function(elem, index) { if (index === 3) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_9")].forEach(function(elem, index) { if (index === 3) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Abstract Syntax Tree
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_8")].forEach(function(elem, index) { if (index === 4) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_9")].forEach(function(elem, index) { if (index === 4) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Symbol Table
              </a>
             </div>
             <div class="example_representations">
-             <div class="representation_8" style="display: block;">
+             <div class="representation_9" style="display: block;">
               <pre style="overflow-x: auto;"><code class="C++ hljs">int main() {
     while(1) {
         int k;
@@ -4165,7 +4525,7 @@ No undefined symbols available
     // while(1)
 }</code></pre>
              </div>
-             <div class="representation_8" style="display: none;">
+             <div class="representation_9" style="display: none;">
               <pre style="overflow-x: auto;">Token('TYPE', 'int')
 Token('SELF_DEFINED', 'main')
 Token('OPEN_PAREN', '(')
@@ -4207,7 +4567,7 @@ Token('CLOSE_BRACE', '}')
 
 </pre>
              </div>
-             <div class="representation_8" style="display: none;">
+             <div class="representation_9" style="display: none;">
               <pre style="overflow-x: auto;">`-- program
     `-- definitionList
         |-- function definition
@@ -4294,7 +4654,7 @@ Token('CLOSE_BRACE', '}')
         `-- definitionList
 </pre>
              </div>
-             <div class="representation_8" style="display: none;">
+             <div class="representation_9" style="display: none;">
               <pre style="overflow-x: auto;">`-- Program
     `-- func
         |-- int
@@ -4327,7 +4687,7 @@ Token('CLOSE_BRACE', '}')
                         `-- 0
 </pre>
              </div>
-             <div class="representation_8" style="display: none;">
+             <div class="representation_9" style="display: none;">
               <pre style="overflow-x: auto;">Name | Function? | Type | Scope 
 -----+-----------+------+--------
 main |      True |  int | /     
@@ -4347,24 +4707,24 @@ No undefined symbols available
            </dt>
            <dd>
             <div class="example_buttons">
-             <a onclick='[...document.getElementsByClassName("representation_9")].forEach(function(elem, index) { if (index === 0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_10")].forEach(function(elem, index) { if (index === 0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Program
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_9")].forEach(function(elem, index) { if (index === 1) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_10")].forEach(function(elem, index) { if (index === 1) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Token List
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_9")].forEach(function(elem, index) { if (index === 2) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_10")].forEach(function(elem, index) { if (index === 2) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Parse Tree
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_9")].forEach(function(elem, index) { if (index === 3) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_10")].forEach(function(elem, index) { if (index === 3) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Abstract Syntax Tree
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_9")].forEach(function(elem, index) { if (index === 4) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_10")].forEach(function(elem, index) { if (index === 4) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Symbol Table
              </a>
             </div>
             <div class="example_representations">
-             <div class="representation_9" style="display: block;">
+             <div class="representation_10" style="display: block;">
               <pre style="overflow-x: auto;"><code class="C++ hljs">int main() {
 
     if (1) {
@@ -4384,7 +4744,7 @@ No undefined symbols available
 
 }</code></pre>
              </div>
-             <div class="representation_9" style="display: none;">
+             <div class="representation_10" style="display: none;">
               <pre style="overflow-x: auto;">Token('TYPE', 'int')
 Token('SELF_DEFINED', 'main')
 Token('OPEN_PAREN', '(')
@@ -4431,7 +4791,7 @@ Token('CLOSE_BRACE', '}')
 
 </pre>
              </div>
-             <div class="representation_9" style="display: none;">
+             <div class="representation_10" style="display: none;">
               <pre style="overflow-x: auto;">`-- program
     `-- definitionList
         |-- function definition
@@ -4533,7 +4893,7 @@ Token('CLOSE_BRACE', '}')
         `-- definitionList
 </pre>
              </div>
-             <div class="representation_9" style="display: none;">
+             <div class="representation_10" style="display: none;">
               <pre style="overflow-x: auto;">`-- Program
     `-- func
         |-- int
@@ -4569,7 +4929,7 @@ Token('CLOSE_BRACE', '}')
                         `-- 2
 </pre>
              </div>
-             <div class="representation_9" style="display: none;">
+             <div class="representation_10" style="display: none;">
               <pre style="overflow-x: auto;">Name | Function? | Type | Scope 
 -----+-----------+------+--------
 main |      True |  int | /     
@@ -4588,24 +4948,24 @@ No undefined symbols available
            </dt>
            <dd>
             <div class="example_buttons">
-             <a onclick='[...document.getElementsByClassName("representation_10")].forEach(function(elem, index) { if (index === 0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_11")].forEach(function(elem, index) { if (index === 0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Program
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_10")].forEach(function(elem, index) { if (index === 1) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_11")].forEach(function(elem, index) { if (index === 1) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Token List
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_10")].forEach(function(elem, index) { if (index === 2) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_11")].forEach(function(elem, index) { if (index === 2) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Parse Tree
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_10")].forEach(function(elem, index) { if (index === 3) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_11")].forEach(function(elem, index) { if (index === 3) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Abstract Syntax Tree
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_10")].forEach(function(elem, index) { if (index === 4) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_11")].forEach(function(elem, index) { if (index === 4) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Symbol Table
              </a>
             </div>
             <div class="example_representations">
-             <div class="representation_10" style="display: block;">
+             <div class="representation_11" style="display: block;">
               <pre style="overflow-x: auto;"><code class="C++ hljs">int main() {
     while(1) {
 
@@ -4614,7 +4974,7 @@ No undefined symbols available
     }
 }</code></pre>
              </div>
-             <div class="representation_10" style="display: none;">
+             <div class="representation_11" style="display: none;">
               <pre style="overflow-x: auto;">Token('TYPE', 'int')
 Token('SELF_DEFINED', 'main')
 Token('OPEN_PAREN', '(')
@@ -4632,7 +4992,7 @@ Token('CLOSE_BRACE', '}')
 
 </pre>
              </div>
-             <div class="representation_10" style="display: none;">
+             <div class="representation_11" style="display: none;">
               <pre style="overflow-x: auto;">`-- program
     `-- definitionList
         |-- function definition
@@ -4665,7 +5025,7 @@ Token('CLOSE_BRACE', '}')
         `-- definitionList
 </pre>
              </div>
-             <div class="representation_10" style="display: none;">
+             <div class="representation_11" style="display: none;">
               <pre style="overflow-x: auto;">`-- Program
     `-- func
         |-- int
@@ -4678,7 +5038,7 @@ Token('CLOSE_BRACE', '}')
                     `-- break
 </pre>
              </div>
-             <div class="representation_10" style="display: none;">
+             <div class="representation_11" style="display: none;">
               <pre style="overflow-x: auto;">Name | Function? | Type | Scope
 -----+-----------+------+-------
 main |      True |  int | /    
@@ -4695,24 +5055,24 @@ No undefined symbols available
            </dt>
            <dd>
             <div class="example_buttons">
-             <a onclick='[...document.getElementsByClassName("representation_11")].forEach(function(elem, index) { if (index === 0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_12")].forEach(function(elem, index) { if (index === 0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Program
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_11")].forEach(function(elem, index) { if (index === 1) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_12")].forEach(function(elem, index) { if (index === 1) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Token List
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_11")].forEach(function(elem, index) { if (index === 2) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_12")].forEach(function(elem, index) { if (index === 2) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Parse Tree
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_11")].forEach(function(elem, index) { if (index === 3) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_12")].forEach(function(elem, index) { if (index === 3) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Abstract Syntax Tree
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_11")].forEach(function(elem, index) { if (index === 4) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_12")].forEach(function(elem, index) { if (index === 4) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Symbol Table
              </a>
             </div>
             <div class="example_representations">
-             <div class="representation_11" style="display: block;">
+             <div class="representation_12" style="display: block;">
               <pre style="overflow-x: auto;"><code class="C++ hljs">int main() {
     int a = -10;
     int b = -a;
@@ -4722,7 +5082,7 @@ No undefined symbols available
     if (~2) { }
 }</code></pre>
              </div>
-             <div class="representation_11" style="display: none;">
+             <div class="representation_12" style="display: none;">
               <pre style="overflow-x: auto;">Token('TYPE', 'int')
 Token('SELF_DEFINED', 'main')
 Token('OPEN_PAREN', '(')
@@ -4763,7 +5123,7 @@ Token('CLOSE_BRACE', '}')
 
 </pre>
              </div>
-             <div class="representation_11" style="display: none;">
+             <div class="representation_12" style="display: none;">
               <pre style="overflow-x: auto;">`-- program
     `-- definitionList
         |-- function definition
@@ -4850,7 +5210,7 @@ Token('CLOSE_BRACE', '}')
         `-- definitionList
 </pre>
              </div>
-             <div class="representation_11" style="display: none;">
+             <div class="representation_12" style="display: none;">
               <pre style="overflow-x: auto;">`-- Program
     `-- func
         |-- int
@@ -4888,7 +5248,7 @@ Token('CLOSE_BRACE', '}')
                     `-- body
 </pre>
              </div>
-             <div class="representation_11" style="display: none;">
+             <div class="representation_12" style="display: none;">
               <pre style="overflow-x: auto;">Name | Function? | Type | Scope 
 -----+-----------+------+--------
 main |      True |  int | /     
@@ -4908,24 +5268,24 @@ No undefined symbols available
            </dt>
            <dd>
             <div class="example_buttons">
-             <a onclick='[...document.getElementsByClassName("representation_12")].forEach(function(elem, index) { if (index === 0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_13")].forEach(function(elem, index) { if (index === 0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Program
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_12")].forEach(function(elem, index) { if (index === 1) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_13")].forEach(function(elem, index) { if (index === 1) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Token List
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_12")].forEach(function(elem, index) { if (index === 2) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_13")].forEach(function(elem, index) { if (index === 2) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Parse Tree
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_12")].forEach(function(elem, index) { if (index === 3) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_13")].forEach(function(elem, index) { if (index === 3) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Abstract Syntax Tree
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_12")].forEach(function(elem, index) { if (index === 4) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_13")].forEach(function(elem, index) { if (index === 4) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Symbol Table
              </a>
             </div>
             <div class="example_representations">
-             <div class="representation_12" style="display: block;">
+             <div class="representation_13" style="display: block;">
               <pre style="overflow-x: auto;"><code class="C++ hljs">int main() {
     int x;
     short t;
@@ -4935,7 +5295,7 @@ No undefined symbols available
     int y = NULL;
 }</code></pre>
              </div>
-             <div class="representation_12" style="display: none;">
+             <div class="representation_13" style="display: none;">
               <pre style="overflow-x: auto;">Token('TYPE', 'int')
 Token('SELF_DEFINED', 'main')
 Token('OPEN_PAREN', '(')
@@ -4965,7 +5325,7 @@ Token('CLOSE_BRACE', '}')
 
 </pre>
              </div>
-             <div class="representation_12" style="display: none;">
+             <div class="representation_13" style="display: none;">
               <pre style="overflow-x: auto;">`-- program
     `-- definitionList
         |-- function definition
@@ -5027,7 +5387,7 @@ Token('CLOSE_BRACE', '}')
         `-- definitionList
 </pre>
              </div>
-             <div class="representation_12" style="display: none;">
+             <div class="representation_13" style="display: none;">
               <pre style="overflow-x: auto;">`-- Program
     `-- func
         |-- int
@@ -5066,7 +5426,7 @@ Token('CLOSE_BRACE', '}')
                 `-- NULL
 </pre>
              </div>
-             <div class="representation_12" style="display: none;">
+             <div class="representation_13" style="display: none;">
               <pre style="overflow-x: auto;">Name | Function? |  Type  | Scope 
 -----+-----------+--------+--------
 main |      True |    int | /     
@@ -5089,24 +5449,24 @@ No undefined symbols available
            </dt>
            <dd>
             <div class="example_buttons">
-             <a onclick='[...document.getElementsByClassName("representation_13")].forEach(function(elem, index) { if (index === 0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_14")].forEach(function(elem, index) { if (index === 0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Program
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_13")].forEach(function(elem, index) { if (index === 1) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_14")].forEach(function(elem, index) { if (index === 1) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Token List
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_13")].forEach(function(elem, index) { if (index === 2) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_14")].forEach(function(elem, index) { if (index === 2) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Parse Tree
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_13")].forEach(function(elem, index) { if (index === 3) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_14")].forEach(function(elem, index) { if (index === 3) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Abstract Syntax Tree
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_13")].forEach(function(elem, index) { if (index === 4) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_14")].forEach(function(elem, index) { if (index === 4) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Symbol Table
              </a>
             </div>
             <div class="example_representations">
-             <div class="representation_13" style="display: block;">
+             <div class="representation_14" style="display: block;">
               <pre style="overflow-x: auto;"><code class="C++ hljs">int main () {
     return 1;
     return func();
@@ -5114,7 +5474,7 @@ No undefined symbols available
     return (1+2);
 }</code></pre>
              </div>
-             <div class="representation_13" style="display: none;">
+             <div class="representation_14" style="display: none;">
               <pre style="overflow-x: auto;">Token('TYPE', 'int')
 Token('SELF_DEFINED', 'main')
 Token('OPEN_PAREN', '(')
@@ -5146,7 +5506,7 @@ Function Undefined func
 Unrecoverable exception occured. Exiting...
 </pre>
              </div>
-             <div class="representation_13" style="display: none;">
+             <div class="representation_14" style="display: none;">
               <pre style="overflow-x: auto;">`-- program
     `-- definitionList
         |-- function definition
@@ -5212,7 +5572,7 @@ Function Undefined func
 Unrecoverable exception occured. Exiting...
 </pre>
              </div>
-             <div class="representation_13" style="display: none;">
+             <div class="representation_14" style="display: none;">
               <pre style="overflow-x: auto;">`-- Program
     `-- func
         |-- int
@@ -5236,7 +5596,7 @@ Function Undefined func
 Unrecoverable exception occured. Exiting...
 </pre>
              </div>
-             <div class="representation_13" style="display: none;">
+             <div class="representation_14" style="display: none;">
               <pre style="overflow-x: auto;">Function Undefined func
 Unrecoverable exception occured. Exiting...
 </pre>
@@ -5246,59 +5606,6 @@ Unrecoverable exception occured. Exiting...
            <dt>
             <h4>
              importingLibraries
-            </h4>
-           </dt>
-           <dd>
-            <div class="example_buttons">
-             <a onclick='[...document.getElementsByClassName("representation_14")].forEach(function(elem, index) { if (index === 0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Program
-             </a>
-             <a onclick='[...document.getElementsByClassName("representation_14")].forEach(function(elem, index) { if (index === 1) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Token List
-             </a>
-             <a onclick='[...document.getElementsByClassName("representation_14")].forEach(function(elem, index) { if (index === 2) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Parse Tree
-             </a>
-             <a onclick='[...document.getElementsByClassName("representation_14")].forEach(function(elem, index) { if (index === 3) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Abstract Syntax Tree
-             </a>
-             <a onclick='[...document.getElementsByClassName("representation_14")].forEach(function(elem, index) { if (index === 4) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Symbol Table
-             </a>
-            </div>
-            <div class="example_representations">
-             <div class="representation_14" style="display: block;">
-              <pre style="overflow-x: auto;"><code class="C++ hljs">#include &lt;stdio.h&gt;
-#include "library.h"</code></pre>
-             </div>
-             <div class="representation_14" style="display: none;">
-              <pre style="overflow-x: auto;">Token('PREPROCESSOR', '#include &lt;stdio.h&gt;')
-Token('PREPROCESSOR', '#include "library.h"')
-
-ParsingError: No AST obtained
-
-</pre>
-             </div>
-             <div class="representation_14" style="display: none;">
-              <pre style="overflow-x: auto;">ParsingError: No AST obtained
-
-</pre>
-             </div>
-             <div class="representation_14" style="display: none;">
-              <pre style="overflow-x: auto;">ParsingError: No AST obtained
-
-</pre>
-             </div>
-             <div class="representation_14" style="display: none;">
-              <pre style="overflow-x: auto;">ParsingError: No AST obtained
-
-</pre>
-             </div>
-            </div>
-           </dd>
-           <dt>
-            <h4>
-             comparison
             </h4>
            </dt>
            <dd>
@@ -5321,6 +5628,59 @@ ParsingError: No AST obtained
             </div>
             <div class="example_representations">
              <div class="representation_15" style="display: block;">
+              <pre style="overflow-x: auto;"><code class="C++ hljs">#include &lt;stdio.h&gt;
+#include "library.h"</code></pre>
+             </div>
+             <div class="representation_15" style="display: none;">
+              <pre style="overflow-x: auto;">Token('PREPROCESSOR', '#include &lt;stdio.h&gt;')
+Token('PREPROCESSOR', '#include "library.h"')
+
+ParsingError: No ParseTree obtained
+
+</pre>
+             </div>
+             <div class="representation_15" style="display: none;">
+              <pre style="overflow-x: auto;">ParsingError: No ParseTree obtained
+
+</pre>
+             </div>
+             <div class="representation_15" style="display: none;">
+              <pre style="overflow-x: auto;">ParsingError: No ParseTree obtained
+
+</pre>
+             </div>
+             <div class="representation_15" style="display: none;">
+              <pre style="overflow-x: auto;">ParsingError: No ParseTree obtained
+
+</pre>
+             </div>
+            </div>
+           </dd>
+           <dt>
+            <h4>
+             comparison
+            </h4>
+           </dt>
+           <dd>
+            <div class="example_buttons">
+             <a onclick='[...document.getElementsByClassName("representation_16")].forEach(function(elem, index) { if (index === 0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Program
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_16")].forEach(function(elem, index) { if (index === 1) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Token List
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_16")].forEach(function(elem, index) { if (index === 2) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Parse Tree
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_16")].forEach(function(elem, index) { if (index === 3) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Abstract Syntax Tree
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_16")].forEach(function(elem, index) { if (index === 4) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Symbol Table
+             </a>
+            </div>
+            <div class="example_representations">
+             <div class="representation_16" style="display: block;">
               <pre style="overflow-x: auto;"><code class="C++ hljs">int main() {
     if (100 &gt; 10) {}
     if (100 &lt; 10) {}
@@ -5330,7 +5690,7 @@ ParsingError: No AST obtained
     if (100 &amp; 10 &amp;&amp; 100 | 10 || 100 ^ 10) {}
 }</code></pre>
              </div>
-             <div class="representation_15" style="display: none;">
+             <div class="representation_16" style="display: none;">
               <pre style="overflow-x: auto;">Token('TYPE', 'int')
 Token('SELF_DEFINED', 'main')
 Token('OPEN_PAREN', '(')
@@ -5396,7 +5756,7 @@ Token('CLOSE_BRACE', '}')
 
 </pre>
              </div>
-             <div class="representation_15" style="display: none;">
+             <div class="representation_16" style="display: none;">
               <pre style="overflow-x: auto;">`-- program
     `-- definitionList
         |-- function definition
@@ -5554,7 +5914,7 @@ Token('CLOSE_BRACE', '}')
         `-- definitionList
 </pre>
              </div>
-             <div class="representation_15" style="display: none;">
+             <div class="representation_16" style="display: none;">
               <pre style="overflow-x: auto;">`-- Program
     `-- func
         |-- int
@@ -5607,7 +5967,7 @@ Token('CLOSE_BRACE', '}')
                     `-- body
 </pre>
              </div>
-             <div class="representation_15" style="display: none;">
+             <div class="representation_16" style="display: none;">
               <pre style="overflow-x: auto;">Name | Function? | Type | Scope
 -----+-----------+------+-------
 main |      True |  int | /    
@@ -5620,80 +5980,6 @@ No undefined symbols available
            <dt>
             <h4>
              strings
-            </h4>
-           </dt>
-           <dd>
-            <div class="example_buttons">
-             <a onclick='[...document.getElementsByClassName("representation_16")].forEach(function(elem, index) { if (index === 0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Program
-             </a>
-             <a onclick='[...document.getElementsByClassName("representation_16")].forEach(function(elem, index) { if (index === 1) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Token List
-             </a>
-             <a onclick='[...document.getElementsByClassName("representation_16")].forEach(function(elem, index) { if (index === 2) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Parse Tree
-             </a>
-             <a onclick='[...document.getElementsByClassName("representation_16")].forEach(function(elem, index) { if (index === 3) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Abstract Syntax Tree
-             </a>
-             <a onclick='[...document.getElementsByClassName("representation_16")].forEach(function(elem, index) { if (index === 4) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Symbol Table
-             </a>
-            </div>
-            <div class="example_representations">
-             <div class="representation_16" style="display: block;">
-              <pre style="overflow-x: auto;"><code class="C++ hljs">char a[] = "test string";
-char b[] = "test \n";
-char c[] = "t\best \\ \n \t hello\rw world %d";
-</code></pre>
-             </div>
-             <div class="representation_16" style="display: none;">
-              <pre style="overflow-x: auto;">Token('TYPE', 'char')
-Token('SELF_DEFINED', 'a')
-Token('ACCESS', '[')
-Token('ACCESS', ']')
-Token('SET', '=')
-Token('STRING', '"test string"')
-Token('SEMICOLON', ';')
-Token('TYPE', 'char')
-Token('SELF_DEFINED', 'b')
-Token('ACCESS', '[')
-Token('ACCESS', ']')
-Token('SET', '=')
-Token('STRING', '"test \\n"')
-Token('SEMICOLON', ';')
-Token('TYPE', 'char')
-Token('SELF_DEFINED', 'c')
-Token('ACCESS', '[')
-Token('ACCESS', ']')
-Token('SET', '=')
-Token('STRING', '"t\\best \\\\ \\n \\t hello\\rw world %d"')
-Token('SEMICOLON', ';')
-
-ParsingError: No AST obtained
-
-</pre>
-             </div>
-             <div class="representation_16" style="display: none;">
-              <pre style="overflow-x: auto;">ParsingError: No AST obtained
-
-</pre>
-             </div>
-             <div class="representation_16" style="display: none;">
-              <pre style="overflow-x: auto;">ParsingError: No AST obtained
-
-</pre>
-             </div>
-             <div class="representation_16" style="display: none;">
-              <pre style="overflow-x: auto;">ParsingError: No AST obtained
-
-</pre>
-             </div>
-            </div>
-           </dd>
-           <dt>
-            <h4>
-             complex
             </h4>
            </dt>
            <dd>
@@ -5716,6 +6002,80 @@ ParsingError: No AST obtained
             </div>
             <div class="example_representations">
              <div class="representation_17" style="display: block;">
+              <pre style="overflow-x: auto;"><code class="C++ hljs">char a[] = "test string";
+char b[] = "test \n";
+char c[] = "t\best \\ \n \t hello\rw world %d";
+</code></pre>
+             </div>
+             <div class="representation_17" style="display: none;">
+              <pre style="overflow-x: auto;">Token('TYPE', 'char')
+Token('SELF_DEFINED', 'a')
+Token('ACCESS', '[')
+Token('ACCESS', ']')
+Token('SET', '=')
+Token('STRING', '"test string"')
+Token('SEMICOLON', ';')
+Token('TYPE', 'char')
+Token('SELF_DEFINED', 'b')
+Token('ACCESS', '[')
+Token('ACCESS', ']')
+Token('SET', '=')
+Token('STRING', '"test \\n"')
+Token('SEMICOLON', ';')
+Token('TYPE', 'char')
+Token('SELF_DEFINED', 'c')
+Token('ACCESS', '[')
+Token('ACCESS', ']')
+Token('SET', '=')
+Token('STRING', '"t\\best \\\\ \\n \\t hello\\rw world %d"')
+Token('SEMICOLON', ';')
+
+ParsingError: No ParseTree obtained
+
+</pre>
+             </div>
+             <div class="representation_17" style="display: none;">
+              <pre style="overflow-x: auto;">ParsingError: No ParseTree obtained
+
+</pre>
+             </div>
+             <div class="representation_17" style="display: none;">
+              <pre style="overflow-x: auto;">ParsingError: No ParseTree obtained
+
+</pre>
+             </div>
+             <div class="representation_17" style="display: none;">
+              <pre style="overflow-x: auto;">ParsingError: No ParseTree obtained
+
+</pre>
+             </div>
+            </div>
+           </dd>
+           <dt>
+            <h4>
+             complex
+            </h4>
+           </dt>
+           <dd>
+            <div class="example_buttons">
+             <a onclick='[...document.getElementsByClassName("representation_18")].forEach(function(elem, index) { if (index === 0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Program
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_18")].forEach(function(elem, index) { if (index === 1) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Token List
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_18")].forEach(function(elem, index) { if (index === 2) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Parse Tree
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_18")].forEach(function(elem, index) { if (index === 3) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Abstract Syntax Tree
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_18")].forEach(function(elem, index) { if (index === 4) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Symbol Table
+             </a>
+            </div>
+            <div class="example_representations">
+             <div class="representation_18" style="display: block;">
               <pre style="overflow-x: auto;"><code class="C++ hljs">int main() {
 	x=1 + 2 - 3 / 5 * 6 + 99 % 10
 	z = 13
@@ -5743,7 +6103,7 @@ ParsingError: No AST obtained
 	return 1;
 }</code></pre>
              </div>
-             <div class="representation_17" style="display: none;">
+             <div class="representation_18" style="display: none;">
               <pre style="overflow-x: auto;">Token('TYPE', 'int')
 Token('SELF_DEFINED', 'main')
 Token('OPEN_PAREN', '(')
@@ -5858,21 +6218,21 @@ Received AssertionError(s) from parser, continuing with what was parsed...
 
 </pre>
              </div>
-             <div class="representation_17" style="display: none;">
+             <div class="representation_18" style="display: none;">
               <pre style="overflow-x: auto;">ParsingError: Last token  '%' parsed successfully at, SourcePosition(idx=39, lineno=2, colno=27)
 
 Received AssertionError(s) from parser, continuing with what was parsed...
 
 </pre>
              </div>
-             <div class="representation_17" style="display: none;">
+             <div class="representation_18" style="display: none;">
               <pre style="overflow-x: auto;">ParsingError: Last token  '%' parsed successfully at, SourcePosition(idx=39, lineno=2, colno=27)
 
 Received AssertionError(s) from parser, continuing with what was parsed...
 
 </pre>
              </div>
-             <div class="representation_17" style="display: none;">
+             <div class="representation_18" style="display: none;">
               <pre style="overflow-x: auto;">ParsingError: Last token  '%' parsed successfully at, SourcePosition(idx=39, lineno=2, colno=27)
 
 Received AssertionError(s) from parser, continuing with what was parsed...
@@ -5888,24 +6248,24 @@ Received AssertionError(s) from parser, continuing with what was parsed...
            </dt>
            <dd>
             <div class="example_buttons">
-             <a onclick='[...document.getElementsByClassName("representation_18")].forEach(function(elem, index) { if (index === 0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_19")].forEach(function(elem, index) { if (index === 0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Program
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_18")].forEach(function(elem, index) { if (index === 1) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_19")].forEach(function(elem, index) { if (index === 1) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Token List
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_18")].forEach(function(elem, index) { if (index === 2) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_19")].forEach(function(elem, index) { if (index === 2) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Parse Tree
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_18")].forEach(function(elem, index) { if (index === 3) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_19")].forEach(function(elem, index) { if (index === 3) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Abstract Syntax Tree
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_18")].forEach(function(elem, index) { if (index === 4) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_19")].forEach(function(elem, index) { if (index === 4) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Symbol Table
              </a>
             </div>
             <div class="example_representations">
-             <div class="representation_18" style="display: block;">
+             <div class="representation_19" style="display: block;">
               <pre style="overflow-x: auto;"><code class="C++ hljs">int main() {
 
 /* this is a comment */
@@ -5929,7 +6289,7 @@ Received AssertionError(s) from parser, continuing with what was parsed...
 }
 </code></pre>
              </div>
-             <div class="representation_18" style="display: none;">
+             <div class="representation_19" style="display: none;">
               <pre style="overflow-x: auto;">Token('TYPE', 'int')
 Token('SELF_DEFINED', 'main')
 Token('OPEN_PAREN', '(')
@@ -5945,7 +6305,7 @@ Token('CLOSE_BRACE', '}')
 
 </pre>
              </div>
-             <div class="representation_18" style="display: none;">
+             <div class="representation_19" style="display: none;">
               <pre style="overflow-x: auto;">`-- program
     `-- definitionList
         |-- function definition
@@ -5977,7 +6337,7 @@ Token('CLOSE_BRACE', '}')
         `-- definitionList
 </pre>
              </div>
-             <div class="representation_18" style="display: none;">
+             <div class="representation_19" style="display: none;">
               <pre style="overflow-x: auto;">`-- Program
     `-- func
         |-- int
@@ -5986,7 +6346,7 @@ Token('CLOSE_BRACE', '}')
         `-- body
 </pre>
              </div>
-             <div class="representation_18" style="display: none;">
+             <div class="representation_19" style="display: none;">
               <pre style="overflow-x: auto;">Name | Function? | Type | Scope
 -----+-----------+------+-------
 main |      True |  int | /    
@@ -6003,24 +6363,24 @@ No undefined symbols available
            </dt>
            <dd>
             <div class="example_buttons">
-             <a onclick='[...document.getElementsByClassName("representation_19")].forEach(function(elem, index) { if (index === 0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_20")].forEach(function(elem, index) { if (index === 0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Program
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_19")].forEach(function(elem, index) { if (index === 1) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_20")].forEach(function(elem, index) { if (index === 1) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Token List
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_19")].forEach(function(elem, index) { if (index === 2) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_20")].forEach(function(elem, index) { if (index === 2) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Parse Tree
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_19")].forEach(function(elem, index) { if (index === 3) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_20")].forEach(function(elem, index) { if (index === 3) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Abstract Syntax Tree
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_19")].forEach(function(elem, index) { if (index === 4) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_20")].forEach(function(elem, index) { if (index === 4) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Symbol Table
              </a>
             </div>
             <div class="example_representations">
-             <div class="representation_19" style="display: block;">
+             <div class="representation_20" style="display: block;">
               <pre style="overflow-x: auto;"><code class="C++ hljs">int main() {
     int a = (1 + 2 + 3);
     int b = (56 * 78 * 5 / 20 - 3);
@@ -6032,7 +6392,7 @@ No undefined symbols available
     c /= 4;
 }</code></pre>
              </div>
-             <div class="representation_19" style="display: none;">
+             <div class="representation_20" style="display: none;">
               <pre style="overflow-x: auto;">Token('TYPE', 'int')
 Token('SELF_DEFINED', 'main')
 Token('OPEN_PAREN', '(')
@@ -6096,7 +6456,7 @@ Token('CLOSE_BRACE', '}')
 
 </pre>
              </div>
-             <div class="representation_19" style="display: none;">
+             <div class="representation_20" style="display: none;">
               <pre style="overflow-x: auto;">`-- program
     `-- definitionList
         |-- function definition
@@ -6247,7 +6607,7 @@ Token('CLOSE_BRACE', '}')
         `-- definitionList
 </pre>
              </div>
-             <div class="representation_19" style="display: none;">
+             <div class="representation_20" style="display: none;">
               <pre style="overflow-x: auto;">`-- Program
     `-- func
         |-- int
@@ -6306,7 +6666,7 @@ Token('CLOSE_BRACE', '}')
                 `-- 4
 </pre>
              </div>
-             <div class="representation_19" style="display: none;">
+             <div class="representation_20" style="display: none;">
               <pre style="overflow-x: auto;">Name | Function? | Type | Scope 
 -----+-----------+------+--------
 main |      True |  int | /     
@@ -6327,30 +6687,30 @@ No undefined symbols available
            </dt>
            <dd>
             <div class="example_buttons">
-             <a onclick='[...document.getElementsByClassName("representation_20")].forEach(function(elem, index) { if (index === 0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_21")].forEach(function(elem, index) { if (index === 0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Program
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_20")].forEach(function(elem, index) { if (index === 1) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_21")].forEach(function(elem, index) { if (index === 1) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Token List
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_20")].forEach(function(elem, index) { if (index === 2) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_21")].forEach(function(elem, index) { if (index === 2) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Parse Tree
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_20")].forEach(function(elem, index) { if (index === 3) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_21")].forEach(function(elem, index) { if (index === 3) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Abstract Syntax Tree
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_20")].forEach(function(elem, index) { if (index === 4) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_21")].forEach(function(elem, index) { if (index === 4) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Symbol Table
              </a>
             </div>
             <div class="example_representations">
-             <div class="representation_20" style="display: block;">
+             <div class="representation_21" style="display: block;">
               <pre style="overflow-x: auto;"><code class="C++ hljs">int main() {
 
     int bin = 0b010101;
 }</code></pre>
              </div>
-             <div class="representation_20" style="display: none;">
+             <div class="representation_21" style="display: none;">
               <pre style="overflow-x: auto;">Token('TYPE', 'int')
 Token('SELF_DEFINED', 'main')
 Token('OPEN_PAREN', '(')
@@ -6365,7 +6725,7 @@ Token('CLOSE_BRACE', '}')
 
 </pre>
              </div>
-             <div class="representation_20" style="display: none;">
+             <div class="representation_21" style="display: none;">
               <pre style="overflow-x: auto;">`-- program
     `-- definitionList
         |-- function definition
@@ -6392,7 +6752,7 @@ Token('CLOSE_BRACE', '}')
         `-- definitionList
 </pre>
              </div>
-             <div class="representation_20" style="display: none;">
+             <div class="representation_21" style="display: none;">
               <pre style="overflow-x: auto;">`-- Program
     `-- func
         |-- int
@@ -6406,7 +6766,7 @@ Token('CLOSE_BRACE', '}')
                 `-- 0b010101
 </pre>
              </div>
-             <div class="representation_20" style="display: none;">
+             <div class="representation_21" style="display: none;">
               <pre style="overflow-x: auto;">Name | Function? | Type | Scope 
 -----+-----------+------+--------
 main |      True |  int | /     
@@ -6420,84 +6780,6 @@ No undefined symbols available
            <dt>
             <h4>
              preProcessor
-            </h4>
-           </dt>
-           <dd>
-            <div class="example_buttons">
-             <a onclick='[...document.getElementsByClassName("representation_21")].forEach(function(elem, index) { if (index === 0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Program
-             </a>
-             <a onclick='[...document.getElementsByClassName("representation_21")].forEach(function(elem, index) { if (index === 1) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Token List
-             </a>
-             <a onclick='[...document.getElementsByClassName("representation_21")].forEach(function(elem, index) { if (index === 2) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Parse Tree
-             </a>
-             <a onclick='[...document.getElementsByClassName("representation_21")].forEach(function(elem, index) { if (index === 3) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Abstract Syntax Tree
-             </a>
-             <a onclick='[...document.getElementsByClassName("representation_21")].forEach(function(elem, index) { if (index === 4) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Symbol Table
-             </a>
-            </div>
-            <div class="example_representations">
-             <div class="representation_21" style="display: block;">
-              <pre style="overflow-x: auto;"><code class="C++ hljs">#include &lt;stdio.h&gt;
-#define TEST 100
-#undef FFF
-#ifdef FFF
-#endif
-#ifndef FFF
-#endif
-#if FFF
-#else
-#endif
-#if FFF
-#endif
-#pragma
-#line 4
-</code></pre>
-             </div>
-             <div class="representation_21" style="display: none;">
-              <pre style="overflow-x: auto;">Token('PREPROCESSOR', '#include &lt;stdio.h&gt;')
-Token('PREPROCESSOR', '#define TEST 100')
-Token('PREPROCESSOR', '#undef FFF')
-Token('PREPROCESSOR', '#ifdef FFF')
-Token('PREPROCESSOR', '#endif')
-Token('PREPROCESSOR', '#ifndef FFF')
-Token('PREPROCESSOR', '#endif')
-Token('PREPROCESSOR', '#if FFF')
-Token('PREPROCESSOR', '#else')
-Token('PREPROCESSOR', '#endif')
-Token('PREPROCESSOR', '#if FFF')
-Token('PREPROCESSOR', '#endif')
-Token('PREPROCESSOR', '#pragma')
-Token('PREPROCESSOR', '#line 4')
-
-ParsingError: No AST obtained
-
-</pre>
-             </div>
-             <div class="representation_21" style="display: none;">
-              <pre style="overflow-x: auto;">ParsingError: No AST obtained
-
-</pre>
-             </div>
-             <div class="representation_21" style="display: none;">
-              <pre style="overflow-x: auto;">ParsingError: No AST obtained
-
-</pre>
-             </div>
-             <div class="representation_21" style="display: none;">
-              <pre style="overflow-x: auto;">ParsingError: No AST obtained
-
-</pre>
-             </div>
-            </div>
-           </dd>
-           <dt>
-            <h4>
-             typeAssignHexOctInt
             </h4>
            </dt>
            <dd>
@@ -6520,32 +6802,54 @@ ParsingError: No AST obtained
             </div>
             <div class="example_representations">
              <div class="representation_22" style="display: block;">
-              <pre style="overflow-x: auto;"><code class="C++ hljs">unsigned char b=0xFAFA;</code></pre>
+              <pre style="overflow-x: auto;"><code class="C++ hljs">#include &lt;stdio.h&gt;
+#define TEST 100
+#undef FFF
+#ifdef FFF
+#endif
+#ifndef FFF
+#endif
+#if FFF
+#else
+#endif
+#if FFF
+#endif
+#pragma
+#line 4
+</code></pre>
              </div>
              <div class="representation_22" style="display: none;">
-              <pre style="overflow-x: auto;">Token('BOTH_MODIF', 'unsigned')
-Token('TYPE', 'char')
-Token('SELF_DEFINED', 'b')
-Token('SET', '=')
-Token('HEX', '0xFAFA')
-Token('SEMICOLON', ';')
+              <pre style="overflow-x: auto;">Token('PREPROCESSOR', '#include &lt;stdio.h&gt;')
+Token('PREPROCESSOR', '#define TEST 100')
+Token('PREPROCESSOR', '#undef FFF')
+Token('PREPROCESSOR', '#ifdef FFF')
+Token('PREPROCESSOR', '#endif')
+Token('PREPROCESSOR', '#ifndef FFF')
+Token('PREPROCESSOR', '#endif')
+Token('PREPROCESSOR', '#if FFF')
+Token('PREPROCESSOR', '#else')
+Token('PREPROCESSOR', '#endif')
+Token('PREPROCESSOR', '#if FFF')
+Token('PREPROCESSOR', '#endif')
+Token('PREPROCESSOR', '#pragma')
+Token('PREPROCESSOR', '#line 4')
 
-ParsingError: No AST obtained
+ParsingError: No ParseTree obtained
 
 </pre>
              </div>
              <div class="representation_22" style="display: none;">
-              <pre style="overflow-x: auto;">ParsingError: No AST obtained
+              <pre style="overflow-x: auto;">ParsingError: No ParseTree obtained
 
 </pre>
              </div>
              <div class="representation_22" style="display: none;">
-              <pre style="overflow-x: auto;">ParsingError: No AST obtained
+              <pre style="overflow-x: auto;">ParsingError: No ParseTree obtained
 
 </pre>
              </div>
              <div class="representation_22" style="display: none;">
-              <pre style="overflow-x: auto;">ParsingError: No AST obtained
+              <pre style="overflow-x: auto;">ParsingError: No ParseTree obtained
 
 </pre>
              </div>
@@ -6553,7 +6857,7 @@ ParsingError: No AST obtained
            </dd>
            <dt>
             <h4>
-             keywords
+             typeAssignHexOctInt
             </h4>
            </dt>
            <dd>
@@ -6576,6 +6880,62 @@ ParsingError: No AST obtained
             </div>
             <div class="example_representations">
              <div class="representation_23" style="display: block;">
+              <pre style="overflow-x: auto;"><code class="C++ hljs">unsigned char b=0xFAFA;</code></pre>
+             </div>
+             <div class="representation_23" style="display: none;">
+              <pre style="overflow-x: auto;">Token('BOTH_MODIF', 'unsigned')
+Token('TYPE', 'char')
+Token('SELF_DEFINED', 'b')
+Token('SET', '=')
+Token('HEX', '0xFAFA')
+Token('SEMICOLON', ';')
+
+ParsingError: No ParseTree obtained
+
+</pre>
+             </div>
+             <div class="representation_23" style="display: none;">
+              <pre style="overflow-x: auto;">ParsingError: No ParseTree obtained
+
+</pre>
+             </div>
+             <div class="representation_23" style="display: none;">
+              <pre style="overflow-x: auto;">ParsingError: No ParseTree obtained
+
+</pre>
+             </div>
+             <div class="representation_23" style="display: none;">
+              <pre style="overflow-x: auto;">ParsingError: No ParseTree obtained
+
+</pre>
+             </div>
+            </div>
+           </dd>
+           <dt>
+            <h4>
+             keywords
+            </h4>
+           </dt>
+           <dd>
+            <div class="example_buttons">
+             <a onclick='[...document.getElementsByClassName("representation_24")].forEach(function(elem, index) { if (index === 0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Program
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_24")].forEach(function(elem, index) { if (index === 1) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Token List
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_24")].forEach(function(elem, index) { if (index === 2) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Parse Tree
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_24")].forEach(function(elem, index) { if (index === 3) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Abstract Syntax Tree
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_24")].forEach(function(elem, index) { if (index === 4) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Symbol Table
+             </a>
+            </div>
+            <div class="example_representations">
+             <div class="representation_24" style="display: block;">
               <pre style="overflow-x: auto;"><code class="C++ hljs">#include &lt;stdio.h&gt;
 int main() {
     if (1) {
@@ -6616,7 +6976,7 @@ int main() {
     return 1;
 }</code></pre>
              </div>
-             <div class="representation_23" style="display: none;">
+             <div class="representation_24" style="display: none;">
               <pre style="overflow-x: auto;">Token('PREPROCESSOR', '#include &lt;stdio.h&gt;')
 Token('TYPE', 'int')
 Token('SELF_DEFINED', 'main')
@@ -6740,22 +7100,22 @@ Token('INTEGER', '1')
 Token('SEMICOLON', ';')
 Token('CLOSE_BRACE', '}')
 
-ParsingError: No AST obtained
+ParsingError: No ParseTree obtained
 
 </pre>
              </div>
-             <div class="representation_23" style="display: none;">
-              <pre style="overflow-x: auto;">ParsingError: No AST obtained
+             <div class="representation_24" style="display: none;">
+              <pre style="overflow-x: auto;">ParsingError: No ParseTree obtained
 
 </pre>
              </div>
-             <div class="representation_23" style="display: none;">
-              <pre style="overflow-x: auto;">ParsingError: No AST obtained
+             <div class="representation_24" style="display: none;">
+              <pre style="overflow-x: auto;">ParsingError: No ParseTree obtained
 
 </pre>
              </div>
-             <div class="representation_23" style="display: none;">
-              <pre style="overflow-x: auto;">ParsingError: No AST obtained
+             <div class="representation_24" style="display: none;">
+              <pre style="overflow-x: auto;">ParsingError: No ParseTree obtained
 
 </pre>
              </div>
@@ -6768,24 +7128,24 @@ ParsingError: No AST obtained
            </dt>
            <dd>
             <div class="example_buttons">
-             <a onclick='[...document.getElementsByClassName("representation_24")].forEach(function(elem, index) { if (index === 0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_25")].forEach(function(elem, index) { if (index === 0) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Program
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_24")].forEach(function(elem, index) { if (index === 1) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_25")].forEach(function(elem, index) { if (index === 1) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Token List
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_24")].forEach(function(elem, index) { if (index === 2) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_25")].forEach(function(elem, index) { if (index === 2) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Parse Tree
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_24")].forEach(function(elem, index) { if (index === 3) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_25")].forEach(function(elem, index) { if (index === 3) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Abstract Syntax Tree
              </a>
-             <a onclick='[...document.getElementsByClassName("representation_24")].forEach(function(elem, index) { if (index === 4) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+             <a onclick='[...document.getElementsByClassName("representation_25")].forEach(function(elem, index) { if (index === 4) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
               Symbol Table
              </a>
             </div>
             <div class="example_representations">
-             <div class="representation_24" style="display: block;">
+             <div class="representation_25" style="display: block;">
               <pre style="overflow-x: auto;"><code class="C++ hljs">int main() {
     double a = 0.099090;
     float b = -10.0;
@@ -6795,7 +7155,7 @@ ParsingError: No AST obtained
 
 }</code></pre>
              </div>
-             <div class="representation_24" style="display: none;">
+             <div class="representation_25" style="display: none;">
               <pre style="overflow-x: auto;">Token('TYPE', 'int')
 Token('SELF_DEFINED', 'main')
 Token('OPEN_PAREN', '(')
@@ -6839,7 +7199,7 @@ Type mismatch for add
 Type mismatch for add
 </pre>
              </div>
-             <div class="representation_24" style="display: none;">
+             <div class="representation_25" style="display: none;">
               <pre style="overflow-x: auto;">`-- program
     `-- definitionList
         |-- function definition
@@ -6933,7 +7293,7 @@ Type mismatch for add
 Type mismatch for add
 </pre>
              </div>
-             <div class="representation_24" style="display: none;">
+             <div class="representation_25" style="display: none;">
               <pre style="overflow-x: auto;">`-- Program
     `-- func
         |-- int
@@ -6976,7 +7336,7 @@ Type mismatch for add
 Type mismatch for add
 </pre>
              </div>
-             <div class="representation_24" style="display: none;">
+             <div class="representation_25" style="display: none;">
               <pre style="overflow-x: auto;">Type mismatch for x , unexpected precision 0.222
 Type mismatch for y , unexpected precision 12123232323.0000
 Type mismatch for add
