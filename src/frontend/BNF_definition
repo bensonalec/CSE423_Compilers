@@ -153,12 +153,12 @@ assignment : AEQ #assignment
 assignment : SEQ #assignment
 assignment : MEQ #assignment
 assignment : DEQ #assignment
+assignment : MODEQ #assignment
 assignment : LSEQ #assignment
 assignment : RSEQ #assignment
 assignment : BOEQ #assignment
 assignment : BAEQ #assignment
 assignment : XEQ #assignment
-assignment : CEQ #assignment
 assignment : SET #assignment
 
 collation : collation comparison collation #collation
