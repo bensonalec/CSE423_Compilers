@@ -233,10 +233,10 @@ class symbol_table():
                     
                     #get params of the node currently being visited
                     params = [x for x in cur.Node.children[2].children]
-                    params = [(x.children[0].name,x.children[1].name) for x in params]
+                    params = [(x.children[0].name) for x in params]
                     # print(params)
                     #get the expected params
-                    expected = ([(x.type,x.name) for x in self.symbols if x.is_param and f"/{funcname}/" == x.scope])
+                    expected = ([(x.type) for x in self.symbols if x.is_param and f"/{funcname}/" == x.scope])
 
                     if expected != params:
                         print("Parameters in function prototype do not match function definition in ",funcname)
