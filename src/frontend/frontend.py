@@ -2,6 +2,7 @@
 This module acts as the interface for running all the seperate portions of the front end. It allows
 for command line arguments that can be used to determine which portion is run.
 """
+import os
 import argparse
 import importlib
 import traceback
@@ -215,7 +216,7 @@ if __name__ == "__main__":
 
     cmd_options.add_argument('-s','--symbol_table', help='Prints out the known and unknown symbols encountered during semantic analysis.', action="store_true")
 
-    cmd_options.add_argument('-b', '--bnf', nargs='?', const='./BNF_definition', type=str, help='Rebuilds the parser using the current BNF grammar')
+    cmd_options.add_argument('-b', '--bnf', nargs='?', const=os.path.realpath("./BNF_definition"), type=str, help='Rebuilds the parser using the current BNF grammar')
 
 
     #generate arguements
