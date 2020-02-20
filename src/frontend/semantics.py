@@ -105,6 +105,7 @@ class symbol_table():
         b = False
 
         # Simple implementation of a DFS
+        funcname = ""
         while ntv != []:
             # Grabs the first element which will be the residual left most child
             cur = ntv[0]
@@ -138,7 +139,9 @@ class symbol_table():
                             #this is the variable that is being assigned to
                             var = chil[-1]
                             #get the expected type from symbol table
-                            tblEntry = [x for x in self.symbols if x.name == var.name and cur.Scope in x.scope]
+                            
+                            tblEntry = [x for x in self.symbols if x.name == var.name and funcname in x.scope]
+                            
                             if(expectedType == ""):
                                 if(len(tblEntry) == 1):
                                     #it is in the table already (good)
@@ -237,7 +240,7 @@ class symbol_table():
                     # print(params)
                     #get the expected params
                     expected = ([(x.type) for x in self.symbols if x.is_param and f"/{funcname}/" == x.scope])
-
+                    
                     if expected != params:
                         print("Parameters in function prototype do not match function definition in ",funcname)
 
