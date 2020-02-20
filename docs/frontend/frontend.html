@@ -33,6 +33,7 @@ for command line arguments that can be used to determine which portion is run.
 &#34;&#34;&#34;
 import argparse
 import importlib
+import traceback
 
 from rply.errors import LexingError
 from copy import deepcopy
@@ -41,6 +42,7 @@ lex = importlib.import_module(&#34;lexer&#34;, &#34;.&#34;)
 par = importlib.import_module(&#34;parser&#34;, &#34;.&#34;)
 btp = importlib.import_module(&#34;bnfToParser&#34;, &#34;.&#34;)
 ast = importlib.import_module(&#34;AST_builder&#34;, &#34;.&#34;)
+sem = importlib.import_module(&#34;semantics&#34;, &#34;.&#34;)
 
 
 def getTree(head,level):
@@ -161,9 +163,28 @@ def main(args, fi):
         # Retrieve the head of the AST
         head = pg.getTree()
 
+        if args.all:
+            printTree(head, 0)
+
+        if args.tree or args.all:
+            print(getTree(head,0))
+
+        if args.pretty or args.all:
+            pprint_tree(head)
+
         astree = ast.buildAST(head)
 
-        ast.print_AST(astree)
+        if args.ast or args.all:
+            ast.print_AST(astree)
+
+        sym = sem.symbol_table(astree)
+
+        sym.analyze()
+
+        if args.symbol_table or args.all:
+            sym.print_symbol_table()
+            print (&#34;&#34;)
+            sym.print_unknown_symbols()
 
     except LexingError as err:
         print(&#34;Received error(s) from token validation. Exiting...&#34;)
@@ -175,18 +196,9 @@ def main(args, fi):
         print(&#34;Received AssertionError(s) from parser, continuing with what was parsed...\n&#34;)
 
     except BaseException as err:
-        print(f&#34;BaseException: {err}. Exiting...&#34;)
+        traceback.print_exc()
+        print(f&#34;Unrecoverable exception occured. Exiting...&#34;)
         exit()
-    
-
-    if args.tree or args.all:
-        print(getTree(head,0))
-    
-    if args.pretty or args.all:
-        pprint_tree(head)
-
-    if args.all:
-        printTree(head, 0)
 
 if __name__ == &#34;__main__&#34;:
     #command line arguements
@@ -194,21 +206,26 @@ if __name__ == &#34;__main__&#34;:
     #decription of the comiler
     cmd_options = argparse.ArgumentParser(description=&#39;Frontend of the compiler. Can produce tokens and syntax tree&#39;)
     
+    cmd_options.add_argument(&#39;--all&#39;,help=&#39;Prints out all intermediate representations as they are encountered in the compilation process&#39;, action=&#34;store_true&#34;)
+
     #input file option
     cmd_options.add_argument(&#39;input_file&#39;, metavar=&#39;&lt;filename.c&gt;&#39;, type=str, help=&#39;Input c file.&#39;)
     
     #Arguement to print tokens from lexer
     cmd_options.add_argument(&#39;-l&#39;,&#39;--lex&#39;, help=&#39;Prints out tokens from lexer&#39;, action=&#39;store_true&#39;)
-    
-    #Print all output from lexer, parser, etc....
-    cmd_options.add_argument(&#39;-a&#39;,&#39;--all&#39;, help=&#39;Prints out all intermediate ouputs.&#39;, action=&#34;store_true&#34;)
 
     #Prints string representation of parse tree....
     cmd_options.add_argument(&#39;-t&#39;,&#39;--tree&#39;, help=&#39;Prints string representation of parse tree.&#39;, action=&#34;store_true&#34;)
 
     cmd_options.add_argument(&#39;-p&#39;,&#39;--pretty&#39;,help=&#39;Prints a pretty verision of the tree, and does not print the tokens&#39;, action=&#34;store_true&#34;)
 
+    #Print all output from lexer, parser, etc....
+    cmd_options.add_argument(&#39;-a&#39;,&#39;--ast&#39;, help=&#39;Prints out the abstract syntax tree.&#39;, action=&#34;store_true&#34;)
+
+    cmd_options.add_argument(&#39;-s&#39;,&#39;--symbol_table&#39;, help=&#39;Prints out the known and unknown symbols encountered during semantic analysis.&#39;, action=&#34;store_true&#34;)
+
     cmd_options.add_argument(&#39;-b&#39;, &#39;--bnf&#39;, nargs=&#39;?&#39;, const=&#39;./BNF_definition&#39;, type=str, help=&#39;Rebuilds the parser using the current BNF grammar&#39;)
+
 
     #generate arguements
     args = cmd_options.parse_args()
@@ -338,9 +355,28 @@ if __name__ == &#34;__main__&#34;:
         # Retrieve the head of the AST
         head = pg.getTree()
 
+        if args.all:
+            printTree(head, 0)
+
+        if args.tree or args.all:
+            print(getTree(head,0))
+
+        if args.pretty or args.all:
+            pprint_tree(head)
+
         astree = ast.buildAST(head)
 
-        ast.print_AST(astree)
+        if args.ast or args.all:
+            ast.print_AST(astree)
+
+        sym = sem.symbol_table(astree)
+
+        sym.analyze()
+
+        if args.symbol_table or args.all:
+            sym.print_symbol_table()
+            print (&#34;&#34;)
+            sym.print_unknown_symbols()
 
     except LexingError as err:
         print(&#34;Received error(s) from token validation. Exiting...&#34;)
@@ -352,18 +388,9 @@ if __name__ == &#34;__main__&#34;:
         print(&#34;Received AssertionError(s) from parser, continuing with what was parsed...\n&#34;)
 
     except BaseException as err:
-        print(f&#34;BaseException: {err}. Exiting...&#34;)
-        exit()
-    
-
-    if args.tree or args.all:
-        print(getTree(head,0))
-    
-    if args.pretty or args.all:
-        pprint_tree(head)
-
-    if args.all:
-        printTree(head, 0)</code></pre>
+        traceback.print_exc()
+        print(f&#34;Unrecoverable exception occured. Exiting...&#34;)
+        exit()</code></pre>
 </details>
 </dd>
 <dt id="src.frontend.frontend.pprint_tree"><code class="name flex">
