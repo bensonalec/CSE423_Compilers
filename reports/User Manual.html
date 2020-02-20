@@ -9,6 +9,9 @@
         flex-grow: 1;
         text-align: center;
     }
+    tbody th, tbody td {
+        border-bottom: 1px solid rgb(150, 150, 150);
+    }
 </style>
 <dl>
     <dt><h2 id="header-usermanual">User Manual</h2></dt>
@@ -19,7 +22,7 @@
                 The compiler is split up into three modules, the frontend, the optimizer, and the backend. So far only the frontend is implemented, and can so far only be executed by running the <code>frontend.py</code> located in <code>./src/frontend</code>. The frontend supports a variety of commandline options such as:
                 <dl>
                     <dt><code>-a</code></dt>
-                    <dd>Displays all intermediate outputs produced by both the lexer and parser.</dd>
+                    <dd>Displays all intermediate outputs produced by the lexer, parser, and AST.</dd>
                     <dt><code>-b</code></dt>
                     <dd>Allows for rebuilding of BNF grammar and parser before the frontend touches the input.</dd>
                     <dt><code>-h</code></dt>
@@ -31,554 +34,803 @@
                     <dt><code>-t</code></dt>
                     <dd>Prints a list like tree structure of the tokens after they have been parsed.</dd>
                 </dl>
+                We plan to implement the same functionality into <code>run.py</code> located in <code>./src</code> but have yet to do so.
             </dd>
             <dt><h3>Subset of C supported</h3></dt>
             <dd>
                 The plan is to support the whole set of C instructions for as much of the compilation process as possible. As such here is a table of what parts of the compiler supports what features:
-                <table>
-                    <tr>
-                        <th>Feature</th>
-                        <th>Lexer</th>
-                        <th>Parser</th>
-                    </tr>
-                    <tr>
-                        <th colspan="3">Declaration, Definition, and Calling</th>
-                    </tr>
-                    <tr>
-                        <td>Declaring Variables</td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td>Defining Variables</td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td>Declaring Functions</td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td>Defining Functions</td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td>Declaring Functions with Arguments</td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td>Defining Functions with Arguments</td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td>Calling Functions without Parameters</td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td>Calling Functions with Parameters</td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <th colspan="3">Assignment</th>
-                    </tr>
-                    <tr>
-                        <td><code>=</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>+=</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>-=</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>*=</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>/=</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>%=</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>&lt;&lt;=</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>&gt;&gt;=</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>|=</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>&amp;=</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>^=</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>~=</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <th colspan="3">Keywords</th>
-                    </tr>
-                    <tr>
-                        <td><code>sizeof</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>typedef</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>inline</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>register</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>volatile</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>const</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>signed</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>static</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>unsigned</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>extern</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <th colspan="3">Arithmetic Operations with Precedence</th>
-                    </tr>
-                    <tr>
-                        <td><code>+</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>-</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>*</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>/</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>%</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>&lt;&lt;</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>&gt;&gt;</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>|</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>&amp;</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>^</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>~</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td>Using Integers</td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td>Using Floating Point</td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td>Using Characters</td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td>Using Hex</td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td>Using Octal</td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td>Using Binary</td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <th colspan="3">Comperative Operations</th>
-                    </tr>
-                    <tr>
-                        <td><code>==</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>&lt;=</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>&gt;=</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>!=</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>&lt;</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>&gt;</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <th colspan="3">Branching</th>
-                    </tr>
-                    <tr>
-                        <td><code>If</code> (With a closed scope after it)</td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>If</code> (With a single line after it)</td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>Else If</code> (With a closed scope after it)</td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>Else If</code> (With a single line after it)</td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>Else</code> (With a closed scope after it)</td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>Else</code> (With a single line after it)</td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>Switch</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <th colspan="3">Unary</th>
-                    </tr>
-                    <tr>
-                        <td><code>+</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>-</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>++</code> (Pre)</td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>--</code> (Pre)</td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>++</code> (Post)</td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>--</code> (Post)</td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>!</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>~</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td>Casting</td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>sizeof</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <th colspan="3">Loops</th>
-                    </tr>
-                    <tr>
-                        <td><code>While</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>For</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>Do While</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <th colspan="3">Jumps</th>
-                    </tr>
-                    <tr>
-                        <td><code>Return</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>Goto</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>Break</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>Continue</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <th colspan="3">Types</th>
-                    </tr>
-                    <tr>
-                        <td><code>auto</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>long double</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>double</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>float</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>long long int</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>long</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>int</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>short</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>char</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td><code>void</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2713;</td>
-                    </tr>
-                    <tr>
-                        <td>Immutable Strings</td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <th colspan="3">Preprocessor Keywords</th>
-                    </tr>
-                    <tr>
-                        <td><code>#Warning</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>#Include</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>#Define</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>#Undef</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>#If</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>#Ifdef</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>#Ifndef</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>#Elif</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>#Else</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>#Endif</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>#Pragma</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>#Error</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
-                    <tr>
-                        <td><code>#Line</code></td>
-                        <td>&#x2713;</td>
-                        <td>&#x2715;</td>
-                    </tr>
+                <table style="overflow-x: auto;">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Preprocessor</th>
+                            <th>Lexer</th>
+                            <th>Parser</th>
+                            <th>AST Building</th>
+                            <th>Semantic Analysis</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <td style="border: 0px 0px 50px 0px solid black;"><div>
+                            1: With and without arguments/parameters. <br>
+                            2: With a specific scope and with only one line following it. <br>
+                            3: Both pre and post operators. <br>
+                            4: Both <code>long long int</code> and <code>long long</code> are accepted. <br>
+                            5: Only local header files currently due to platform interaction. <br>
+                            6: Implemented, but has yet to be merged. <br>
+                        </div></td>
+                    </tfoot>
+                    <tbody >
+                        <tr>
+                            <th>Declaration, Definition, and Calling</th>
+                        </tr>
+                        <tr>
+                            <td>Declaring Variables</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td>Assigning Variables</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td>Declaring Functions<sup>[1]</sup></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td>Defining Functions<sup>[1]</sup></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td>Calling Functions<sup>[1]</sup></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <th>Assignment</th>
+                        </tr>
+                        <tr>
+                            <td><code>=</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>+=</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>-=</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>*=</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>/=</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>%=</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>&lt;&lt;=</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>&gt;&gt;=</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>|=</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>&amp;=</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>^=</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <th>Keywords</th>
+                        </tr>
+                        <tr>
+                            <td><code>sizeof</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>typedef</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>inline</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>register</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>volatile</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>const</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>signed</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>static</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>unsigned</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>extern</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <th>Arithmetic Operations with Precedence</th>
+                        </tr>
+                        <tr>
+                            <td><code>+</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>-</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>*</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>/</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>%</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>&lt;&lt;</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>&gt;&gt;</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>|</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>&amp;</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>^</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>~</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td>Using Integers</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td>Using Floating Point</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td>Using Characters</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td>Using Hex</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td>Using Octal</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td>Using Binary</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <th>Comperative Operations</th>
+                        </tr>
+                        <tr>
+                            <td><code>==</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>&lt;=</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>&gt;=</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>!=</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>&lt;</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>&gt;</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <th>Branching</th>
+                        </tr>
+                        <tr>
+                            <td><code>If</code><sup>[2]</sup></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>Else If</code><sup>[2]</sup></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>Else</code><sup>[2]</sup></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>Switch</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <th>Unary</th>
+                        </tr>
+                        <tr>
+                            <td><code>+</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>-</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>++</code><sup>[3]</sup></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>--</code><sup>[3]</sup></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>!</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>~</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td>Casting</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>sizeof</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <th>Loops</th>
+                        </tr>
+                        <tr>
+                            <td><code>While</code><sup>[2]</sup></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>For</code><sup>[2]</sup></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>Do While</code><sup>[2]</sup></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <th>Jumps</th>
+                        </tr>
+                        <tr>
+                            <td><code>Return</code><sup>[1]</sup></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>Goto</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>Break</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>Continue</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <th>Types</th>
+                        </tr>
+                        <tr>
+                            <td><code>auto</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>long double</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>double</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>float</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>long long int</code><sup>[4]</sup></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>long</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>int</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>short</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>char</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td><code>void</code></td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <td>Immutable Strings</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                            <td>&#x2715;</td>
+                        </tr>
+                        <tr>
+                            <th>Preprocessor Directives</th>
+                        </tr>
+                        <tr>
+                            <td><code>#Warning</code></td>
+                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2212;</td>
+                        </tr>
+                        <tr>
+                            <td><code>#Include</code><sup>[5][6]</sup></td>
+                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2212;</td>
+                        </tr>
+                        <tr>
+                            <td><code>#Define</code><sup>[6]</sup></td>
+                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2212;</td>
+                        </tr>
+                        <tr>
+                            <td><code>#Undef</code></td>
+                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2212;</td>
+                        </tr>
+                        <tr>
+                            <td><code>#If</code></td>
+                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2212;</td>
+                        </tr>
+                        <tr>
+                            <td><code>#Ifdef</code></td>
+                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2212;</td>
+                        </tr>
+                        <tr>
+                            <td><code>#Ifndef</code></td>
+                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2212;</td>
+                        </tr>
+                        <tr>
+                            <td><code>#Elif</code></td>
+                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2212;</td>
+                        </tr>
+                        <tr>
+                            <td><code>#Else</code></td>
+                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2212;</td>
+                        </tr>
+                        <tr>
+                            <td><code>#Endif</code></td>
+                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2212;</td>
+                        </tr>
+                        <tr>
+                            <td><code>#Pragma</code></td>
+                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2212;</td>
+                        </tr>
+                        <tr>
+                            <td><code>#Error</code></td>
+                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2212;</td>
+                        </tr>
+                        <tr>
+                            <td><code>#Line</code></td>
+                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2212;</td>
+                            <td>&#x2212;</td>
+                        </tr>
+                    </tbody>
                 </table>
             </dd>
             <dt><h3>Examples of C Programs and their Intermediate Representations</h3></dt>
@@ -589,7 +841,8 @@
                         <div class="example_buttons">
                             <a>Program</a>
                             <a>Token List</a>
-                            <a>Parse Tree</a>
+                            <a>Parse Tree (List View)</a>
+                            <a>Parse Tree (Tree View)</a>
                             <a>Abstract Syntax Tree</a>
                         </div>
                         <div class="example_representations">
@@ -612,7 +865,7 @@ Token('SEMICOLON', ';')
 Token('CLOSE_BRACE', '}')</pre>
                             </div>
                             <div>
-                                <h5>Parse Tree:</h5>
+                                <h5>Parse Tree (List View):</h5>
 <pre>1 : ['definitionList']
 2 : ['function definition', 'definitionList']
 3 : [Token('TYPE', 'int'), Token('SELF_DEFINED', 'main'), Token('OPEN_PAREN', '('), Token('CLOSE_PAREN', ')'), 'block']
@@ -625,7 +878,7 @@ Token('CLOSE_BRACE', '}')</pre>
 3 : []</pre>
                             </div>
                             <div>
-                                <h5>Abstract Syntax Tree:</h5>
+                                <h5>Parse Tree (Tree View):</h5>
 <pre>`-- program
     `-- definitionList
         |-- function definition
@@ -646,6 +899,15 @@ Token('CLOSE_BRACE', '}')</pre>
         |       `-- Token('CLOSE_BRACE', '}')
         `-- definitionList</pre>
                             </div>
+                            <div>
+                                <h5>Abstract Syntax Tree</h5>
+<pre>`-- Program
+    `-- int main
+        |-- param
+        `-- body
+            `-- return
+                `-- 1</pre>
+                            </div>
                         </div>
                     </dd>
                     <dt><h4>Arithmetical Operations</h4></dt>
@@ -653,7 +915,8 @@ Token('CLOSE_BRACE', '}')</pre>
                         <div class="example_buttons">
                             <a>Program</a>
                             <a>Token List</a>
-                            <a>Parse Tree</a>
+                            <a>Parse Tree (List View)</a>
+                            <a>Parse Tree (Tree View)</a>
                             <a>Abstract Syntax Tree</a>
                         </div>
                         <div class="example_representations">
@@ -734,7 +997,7 @@ Token('SEMICOLON', ';')
 Token('CLOSE_BRACE', '}')</pre>
                             </div>
                             <div>
-                                <h5>Parse Tree:</h5>
+                                <h5>Parse Tree (List View):</h5>
 <pre>1 : ['definitionList']
 2 : ['function definition', 'definitionList']
 3 : [Token('TYPE', 'int'), Token('SELF_DEFINED', 'main'), Token('OPEN_PAREN', '('), Token('CLOSE_PAREN', ')'), 'block']
@@ -817,7 +1080,7 @@ Token('CLOSE_BRACE', '}')</pre>
 3 : []</pre>
                             </div>
                             <div>
-                                <h5>Abstract Syntax Tree:</h5>
+                                <h5>Parse Tree (Tree View):</h5>
 <pre>`-- program
     `-- definitionList
         |-- function definition
@@ -958,6 +1221,51 @@ Token('CLOSE_BRACE', '}')</pre>
         |       |                                   `-- Token('SEMICOLON', ';')
         |       `-- Token('CLOSE_BRACE', '}')
         `-- definitionList</pre>
+                            </div>
+                            <div>
+                                <h5>Abstract Syntax Tree</h5>
+<pre>`-- Program
+    `-- int main
+        |-- param
+        `-- body
+            |-- =
+            |   |-- int a
+            |   `-- +
+            |       |-- +
+            |       |   |-- 1
+            |       |   `-- 2
+            |       `-- 3
+            |-- =
+            |   |-- int b
+            |   `-- -
+            |       |-- /
+            |       |   |-- *
+            |       |   |   |-- *
+            |       |   |   |   |-- 56
+            |       |   |   |   `-- 78
+            |       |   |   `-- 5
+            |       |   `-- 20
+            |       `-- 3
+            |-- =
+            |   |-- int c
+            |   `-- %
+            |       |-- 56
+            |       `-- 2
+            |-- =
+            |   |-- int d
+            |   `-- -10
+            |-- +=
+            |   |-- c
+            |   `-- 3
+            |-- -=
+            |   |-- c
+            |   `-- 3
+            |-- *=
+            |   |-- c
+            |   `-- 2
+            `-- /=
+                |-- c
+                `-- 4</pre>
                             </div>
                         </div>
                     </dd>
