@@ -1,8 +1,8 @@
 import importlib,re
 from collections import namedtuple
 
-lex = importlib.import_module("lexer", ".")
-ast = importlib.import_module("AST_builder", ".")
+lex = importlib.import_module("lexer", __name__)
+ast = importlib.import_module("AST_builder", __name__)
 
 class Entry():
     def __init__(self, is_func, nam, typ, scop):
