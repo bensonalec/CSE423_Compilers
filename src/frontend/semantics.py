@@ -236,7 +236,7 @@ class symbol_table():
                     params = [(x.children[0].name,x.children[1].name) for x in params]
                     # print(params)
                     #get the expected params
-                    expected = ([(x.type,x.name) for x in self.symbols if x.is_param and funcname in x.scope])
+                    expected = ([(x.type,x.name) for x in self.symbols if x.is_param and f"/{funcname}/" == x.scope])
 
                     if expected != params:
                         print("Parameters in function prototype do not match function definition in ",funcname)
