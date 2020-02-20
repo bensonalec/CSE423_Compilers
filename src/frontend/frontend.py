@@ -15,7 +15,7 @@ par = importlib.import_module("parser", __name__)
 btp = importlib.import_module("bnfToParser", __name__)
 ast = importlib.import_module("AST_builder", __name__)
 sem = importlib.import_module("semantics", __name__)
-pre = importlib.import_module("preprocessor", ".")
+pre = importlib.import_module("preprocessor", __name__)
 
 
 def getTree(head,level):
