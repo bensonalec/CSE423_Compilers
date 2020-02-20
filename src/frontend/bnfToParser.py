@@ -3,6 +3,7 @@ This module reads in a BNF and produces a parser for use with rply.The BNF expec
 """
 
 import re
+import os
 
     
 funcTemp = """
@@ -224,8 +225,7 @@ class Parser():
     totalOutput = totalOutput.replace("FUNCLISTSPOT",functionList)
 
     print("Overwriting ")
-
-    with open("parser.py", 'w') as f:
+    with open(os.path.dirname(__file__) + "/parser.py", 'w') as f:
         f.write(totalOutput)
 
 if __name__ == "__main__":

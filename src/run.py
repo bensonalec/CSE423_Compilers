@@ -1,3 +1,4 @@
+import os
 import argparse
 import importlib
 
@@ -46,7 +47,7 @@ if __name__ == "__main__":
 
     cmd_options.add_argument('-s','--symbol_table', help='Prints out the known and unknown symbols encountered during semantic analysis.', action="store_true")
 
-    cmd_options.add_argument('-b', '--bnf', nargs='?', const='./frontend/BNF_definition', type=str, help='Rebuilds the parser using the current BNF grammar')
+    cmd_options.add_argument('-b', '--bnf', nargs='?', const=os.path.realpath("./frontend/BNF_definition"), type=str, help='Rebuilds the parser using the current BNF grammar')
 
 
     #generate arguements
