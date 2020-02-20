@@ -15,9 +15,9 @@ funcTemp = """
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             \"\"\"
-            newNode = AbstractSyntaxTree("NAMESPOT",p)
+            newNode = ParseTree("NAMESPOT",p)
             self.Head = newNode
             return newNode
 """
@@ -31,9 +31,9 @@ headTemp = """
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             \"\"\"
-            newNode = AbstractSyntaxTree("NAMESPOT",p)
+            newNode = ParseTree("NAMESPOT",p)
             self.Head = newNode
             return newNode
 """
@@ -117,7 +117,7 @@ def main(path):
 
     totalOutput = """
 \"\"\"
-This module contains definitions for the AbstractSyntaxTree and Parser classes, as well as some ansillary functions to assist.
+This module contains definitions for the ParseTree and Parser classes, as well as some ansillary functions to assist.
 \"\"\"
 from rply import ParserGenerator
 from rply.errors import ParserGeneratorWarning
@@ -127,13 +127,13 @@ from rply.token import Token
 #we get werid 'non-descriptive' warnings from ParserGenerator, this ignores those
 simplefilter('ignore', ParserGeneratorWarning)
 
-class AbstractSyntaxTree():
+class ParseTree():
     \"\"\"
-    AbstractSyntaxTree is a class that acts as each node in an Abstract Syntax Tree
+    ParseTree is a class that acts as each node in an ParseTree
     \"\"\"
     def __init__(self, token, content):
         \"\"\"
-        Construct a new AbstractSyntaxTree object
+        Construct a new ParseTree object
 
         Args:
             token: The token type of the node.
@@ -189,7 +189,7 @@ class Parser():
 
     def print_error(self):
         \"\"\"
-        Prints parser error message. This function ultimately iterates through the AST that was returned after the parser found an error. AST's consist of tokens as well as other AST's so we need to iterate to find the first token and then print its source position.
+        Prints parser error message. This function ultimately iterates through the ParseTree that was returned after the parser found an error. ParseTree's consist of tokens as well as other ParseTree's so we need to iterate to find the first token and then print its source position.
         \"\"\"
         # TODO: add some more in-depth error processing to print
         # out a more detailed description of what went wrong, and possibly some suggestions 
@@ -215,14 +215,14 @@ class Parser():
             else:
                 # Set head to last element.
                 # If this code executes then I can assume that the 
-                # last element is an AST.
+                # last element is an ParseTree.
                 head = head.content[len(head.content)-1]
 
         if token:
             print(f"ParsingError: Last token  \\\'{token.value}\\\' parsed successfully at, {token.source_pos}\\n")
         else:
             # Never found a token to report, need to exit
-            print("ParsingError: No AST obtained\\n")
+            print("ParsingError: No ParseTree obtained\\n")
             exit()
 
 
