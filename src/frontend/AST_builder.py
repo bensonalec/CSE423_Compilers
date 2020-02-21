@@ -33,8 +33,9 @@ def buildAST(parseHead):
             ASTcurrent = ASTcurrent.children[-1]
             ASTcurrent.children.append(ASTNode("var", ASTcurrent))
             ASTcurrent.children[-1].children.append(ASTNode(c[0].content[1].value, ASTcurrent))
-
-            expansion =[(x, ASTcurrent.children[-1]) for x in c[0].content if 'content' in x.__dict__ and x.token == "var_type"] + [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__ and x.token != "var_type"]
+            if len(c[0].content) == 2:
+                ASTcurrent.children.append(ASTNode("NULL", ASTcurrent.parent))
+            expansion =[(x, ASTcurrent.children[0]) for x in c[0].content if 'content' in x.__dict__ and x.token == "var_type"] + [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__ and x.token != "var_type"]
         elif typ == "designation":
             ASTcurrent.children.append(ASTNode(c[0].content[1].content[0].value, ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
@@ -268,7 +269,6 @@ class ASTNode():
         Args:
             name: The name of the Node (Its contents).
             parent: A node that is the parent of this current node.
-            children: The children of this node (In a list).
         """
         self.name = name
         self.parent = parent
