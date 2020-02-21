@@ -16,6 +16,7 @@ par = importlib.import_module("parser", __name__)
 btp = importlib.import_module("bnfToParser", __name__)
 ast = importlib.import_module("AST_builder", __name__)
 sem = importlib.import_module("semantics", __name__)
+pre = importlib.import_module("preprocessor", __name__)
 
 
 def getTree(head,level):
@@ -129,6 +130,9 @@ def main(args, fi):
         #Read in file
         text_input = fi.read()
         fi.close()
+
+        #Pre-process the text
+        text_input = pre.run(text_input)
 
         #setup lexer, produce tokens, check for invalid tokens
         lexer = lex.Lexer().get_lexer()
