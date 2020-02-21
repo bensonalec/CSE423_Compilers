@@ -62,7 +62,6 @@ def buildAST(parseHead):
             ASTcurrent.children.append(ASTNode(c[0].content[0].value, ASTcurrent, []))
             ASTcurrent.children.append(ASTNode(c[0].content[1].value, ASTcurrent, []))
             ASTcurrent.children.append(ASTNode("param", ASTcurrent, []))
-            # ASTcurrent.children.append(ASTNode("body", ASTcurrent, []))
 
             # split the content of the function definition up
             expansion = [(x, ASTcurrent.children[2]) for x in c[0].content if 'content' in x.__dict__ and x.token == 'args'] + [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__ and x.token == 'block']
@@ -87,7 +86,6 @@ def buildAST(parseHead):
             ASTcurrent.children.append(ASTNode("case", ASTcurrent, []))
             ASTcurrent = ASTcurrent.children[-1]
             ASTcurrent.children.append(ASTNode("", ASTcurrent, []))
-            # ASTcurrent.children.append(ASTNode("body", ASTcurrent, []))
 
             # split the condition from the body
             expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if 'content' in x.__dict__ and x.token == 'collation'] + [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__ and x.token == 'if_body'] + [(x, ASTcurrent.parent) for x in c[0].content if 'content' in x.__dict__ and x.token == "if_expansion"]
@@ -131,7 +129,6 @@ def buildAST(parseHead):
             ASTcurrent.children.append(ASTNode("while", ASTcurrent, []))
             ASTcurrent = ASTcurrent.children[-1]
             ASTcurrent.children.append(ASTNode("", ASTcurrent, []))
-            # ASTcurrent.children.append(ASTNode("body", ASTcurrent, []))
 
             print ([(x.token, ASTcurrent.name) for x in c[0].content if 'content' in x.__dict__ and (x.token == "block" or x.token == "content_terminal")])
             expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if 'content' in x.__dict__ and x.token == "collation"] + [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__ and (x.token == "block" or x.token == "content_terminal")]
@@ -148,7 +145,6 @@ def buildAST(parseHead):
             ASTcurrent.children.append(ASTNode("do_while", ASTcurrent, []))
             ASTcurrent = ASTcurrent.children[-1]
             ASTcurrent.children.append(ASTNode("", ASTcurrent, []))
-            # ASTcurrent.children.append(ASTNode("body", ASTcurrent, []))
 
             expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if 'content' in x.__dict__ and x.token == "collation"] + [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__ and (x.token == "block" or x.token == "content_terminal")]
         elif typ == "unary":
