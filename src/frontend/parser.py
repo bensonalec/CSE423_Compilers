@@ -224,24 +224,6 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production('block : OPEN_BRACE block block CLOSE_BRACE ')
-        def block___OPEN_BRACE_block_block_CLOSE_BRACE_(p):
-            newNode = ParseTree("block",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('block : OPEN_BRACE block content CLOSE_BRACE ')
-        def block___OPEN_BRACE_block_content_CLOSE_BRACE_(p):
-            newNode = ParseTree("block",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('block : OPEN_BRACE content block CLOSE_BRACE ')
-        def block___OPEN_BRACE_content_block_CLOSE_BRACE_(p):
-            newNode = ParseTree("block",p)
-            self.Head = newNode
-            return newNode
-
         @self.pg.production('block : OPEN_BRACE content CLOSE_BRACE ')
         def block___OPEN_BRACE_content_CLOSE_BRACE_(p):
             newNode = ParseTree("block",p)
@@ -292,6 +274,12 @@ class Parser():
 
         @self.pg.production('content_terminal : COMMENT ')
         def content_terminal___COMMENT_(p):
+            newNode = ParseTree("content_terminal",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('content_terminal : block ')
+        def content_terminal___block_(p):
             newNode = ParseTree("content_terminal",p)
             self.Head = newNode
             return newNode
@@ -368,33 +356,15 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production('loop : WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN block ')
-        def loop___WHILE_LOOP_OPEN_PAREN_collation_CLOSE_PAREN_block_(p):
-            newNode = ParseTree("while loop",p)
-            self.Head = newNode
-            return newNode
-
         @self.pg.production('loop : WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN content_terminal ')
         def loop___WHILE_LOOP_OPEN_PAREN_collation_CLOSE_PAREN_content_terminal_(p):
             newNode = ParseTree("while loop",p)
             self.Head = newNode
             return newNode
 
-        @self.pg.production('loop : FOR_LOOP OPEN_PAREN for_part_1 SEMICOLON for_part_2 SEMICOLON for_part_3 CLOSE_PAREN block ')
-        def loop___FOR_LOOP_OPEN_PAREN_for_part_1_SEMICOLON_for_part_2_SEMICOLON_for_part_3_CLOSE_PAREN_block_(p):
-            newNode = ParseTree("for loop",p)
-            self.Head = newNode
-            return newNode
-
         @self.pg.production('loop : FOR_LOOP OPEN_PAREN for_part_1 SEMICOLON for_part_2 SEMICOLON for_part_3 CLOSE_PAREN content_terminal ')
         def loop___FOR_LOOP_OPEN_PAREN_for_part_1_SEMICOLON_for_part_2_SEMICOLON_for_part_3_CLOSE_PAREN_content_terminal_(p):
             newNode = ParseTree("for loop",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('loop : DO_LOOP block WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN SEMICOLON ')
-        def loop___DO_LOOP_block_WHILE_LOOP_OPEN_PAREN_collation_CLOSE_PAREN_SEMICOLON_(p):
-            newNode = ParseTree("do loop",p)
             self.Head = newNode
             return newNode
 
@@ -413,12 +383,6 @@ class Parser():
         @self.pg.production('branch : IF_BRANCH OPEN_PAREN collation CLOSE_PAREN if_body if_expansion ')
         def branch___IF_BRANCH_OPEN_PAREN_collation_CLOSE_PAREN_if_body_if_expansion_(p):
             newNode = ParseTree("if",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('if_body : block ')
-        def if_body___block_(p):
-            newNode = ParseTree("if_body",p)
             self.Head = newNode
             return newNode
 
@@ -494,21 +458,9 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production('case_body : block ')
-        def case_body___block_(p):
-            newNode = ParseTree("case_body",p)
-            self.Head = newNode
-            return newNode
-
         @self.pg.production('case_body : content ')
         def case_body___content_(p):
             newNode = ParseTree("case_body",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('goto : SELF_DEFINED COLON block ')
-        def goto___SELF_DEFINED_COLON_block_(p):
-            newNode = ParseTree("goto",p)
             self.Head = newNode
             return newNode
 

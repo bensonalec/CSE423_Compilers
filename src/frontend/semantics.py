@@ -26,10 +26,9 @@ class symbol_table():
     def analyze(self):
 
         ntv = [Node(self.AST, "/")]
-
+        scopenum = 0
         typ = None
         b = False
-
         # Simple implementation of a DFS
         while ntv != []:
             # Grabs the first element which will be the residual left most child
@@ -37,7 +36,7 @@ class symbol_table():
 
             # checks whether the current node is an operation that will need to access the symbol table 
             try:                
-                index = ["func", "decl", "call", "var"].index(cur.Node.name)
+                index = ["func", "decl", "call", "var", "body"].index(cur.Node.name)
                 
                 # Function Declaration
                 if index == 0:
@@ -81,7 +80,10 @@ class symbol_table():
                             self.undefined.append(Entry(False,  cur.Node.children[0].name, "None", cur.Scope)) 
                             
                         pass
-
+                elif index == 4:
+                    cur = cur._replace(Scope = f"{cur.Scope}{scopenum}/")
+                    scopenum += 1
+                    pass
          
             except ValueError:
                 # This means that the token is not in that list
