@@ -130,7 +130,6 @@ def buildAST(parseHead):
             ASTcurrent = ASTcurrent.children[-1]
             ASTcurrent.children.append(ASTNode("", ASTcurrent, []))
 
-            print ([(x.token, ASTcurrent.name) for x in c[0].content if 'content' in x.__dict__ and (x.token == "block" or x.token == "content_terminal")])
             expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if 'content' in x.__dict__ and x.token == "collation"] + [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__ and (x.token == "block" or x.token == "content_terminal")]
             pass
         elif typ == "break":

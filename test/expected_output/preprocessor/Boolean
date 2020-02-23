@@ -1,0 +1,10 @@
+int main() {
+    int one = 1;
+    if (one) { }
+    if (one > one) { }
+    if (one < one) { }
+    if (one == one) { }
+    if (one != one) { }
+    if (one >= one) { }
+    if (one <= one) { }
+}

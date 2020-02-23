@@ -61,7 +61,7 @@ def print_tokens(tokens):
     print(lex.tokensToString(deepcopy(tokens)))
 
 
-def print_list_view(head,level):
+def getListView(head,level):
     """
     Prints a simple list version of the tree for output. Calls itself recursively
 
@@ -69,6 +69,7 @@ def print_list_view(head,level):
         head: The head node of the tree.
         level: The current level of the tree.
     """
+    string = ""
     level += 1
     token = head.token
     content = head.content
@@ -80,13 +81,14 @@ def print_list_view(head,level):
         else:
             li.append(node.token)
     
-    print(level,":",li)
-
+    string += f"{level} : {li}\n"
 
     #iterate through the components of the BNF
     for node in content:
         if(type(node) == type(par.ParseTree("sample","sample"))):
-            print_list_view(node,level)
+            string += getListView(node,level)
+
+    return string
 
 
 def pprint_tree(node, file=None, _prefix="", _last=True):
@@ -154,7 +156,7 @@ def main(args, fi):
 
         if args.tree or args.all:
             # Represent parse tree as a list with levels
-            print_list_view(head, 0)
+            print(getListView(head, 0))
 
         if args.all:
             # Represent parse tree as single line (mainly for unit testing)
