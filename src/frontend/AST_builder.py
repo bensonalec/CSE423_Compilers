@@ -28,7 +28,7 @@ def buildAST(parseHead):
 
         #This block checks the type of the ASTNode that is  being visited, and acts as a monstrous switch statement, for each visited node a proper AST segment or node is built
         if typ == "program":
-            ASTHead = ASTNode("Program")
+            ASTHead = ASTNode("program")
             ASTcurrent = ASTHead
         elif typ == "initialization":
             ASTcurrent.children.append(ASTNode("", ASTcurrent,[]))
