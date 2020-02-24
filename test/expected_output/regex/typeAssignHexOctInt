@@ -1,6 +1,0 @@
-Token('BOTH_MODIF', 'unsigned')
-Token('TYPE', 'char')
-Token('SELF_DEFINED', 'b')
-Token('SET', '=')
-Token('HEX', '0xFAFA')
-Token('SEMICOLON', ';')

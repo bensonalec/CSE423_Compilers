@@ -1,1 +1,0 @@
-unsigned char b=0xFAFA;
