@@ -38,6 +38,11 @@ class symbol_table():
             # checks whether the current node is an operation that will need to access the symbol table 
             try:                
                 index = ["func", "decl", "call", "var", "body"].index(cur.Node.name)
+
+                #Catches edge case where var or func is used an self_defined name
+                if cur.Node.children == []:
+                    ntv = [Node(x, cur.Scope) for x in cur.Node.children if 'children' in x.__dict__] + ntv[1:]
+                    continue
                 
                 # Function Declaration
                 if index == 0:
@@ -115,6 +120,11 @@ class symbol_table():
             # checks whether the current node is an operation that will need to access the symbol table 
             try:
                 index = ["=","call","func"].index(cur.Node.name)
+
+                #Catches edge case where var or func is used an self_defined name
+                if cur.Node.children == []:
+                    ntv = [Node(x, cur.Scope) for x in cur.Node.children if 'children' in x.__dict__] + ntv[1:]
+                    continue
                 
                 # Function Declaration
                 if index == 0:
