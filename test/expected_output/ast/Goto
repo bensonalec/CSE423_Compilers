@@ -1,0 +1,14 @@
+`-- Program
+    `-- func
+        |-- int
+        |-- main
+        |-- param
+        `-- body
+            |-- goto
+            |   `-- label
+            |-- =
+            |   |-- var
+            |   |   |-- int
+            |   |   `-- random_var
+            |   `-- 0
+            `-- label:

@@ -1,0 +1,35 @@
+`-- Program
+    `-- func
+        |-- int
+        |-- main
+        |-- param
+        `-- body
+            |-- =
+            |   |-- var
+            |   |   |-- int
+            |   |   `-- a
+            |   `-- -10
+            |-- =
+            |   |-- var
+            |   |   |-- int
+            |   |   `-- b
+            |   `-- -
+            |       `-- var
+            |           `-- a
+            |-- =
+            |   |-- var
+            |   |   |-- int
+            |   |   `-- c
+            |   `-- +
+            |       `-- var
+            |           `-- a
+            |-- branch
+            |   `-- case
+            |       |-- !
+            |       |   `-- 2
+            |       `-- body
+            `-- branch
+                `-- case
+                    |-- ~
+                    |   `-- 2
+                    `-- body
