@@ -17,9 +17,6 @@ args : arg_terminal #args
 arg_terminal : TYPE SELF_DEFINED #arg_terminal
 arg_terminal : TYPE #arg_terminal
 
-block : OPEN_BRACE block block CLOSE_BRACE #block
-block : OPEN_BRACE block content CLOSE_BRACE #block
-block : OPEN_BRACE content block CLOSE_BRACE #block
 block : OPEN_BRACE content CLOSE_BRACE #block
 block : OPEN_BRACE CLOSE_BRACE #block
 
@@ -31,6 +28,7 @@ content_terminal : loop #content_terminal
 content_terminal : branch #content_terminal
 content_terminal : goto #content_terminal
 content_terminal : COMMENT #content_terminal
+content_terminal : block #content_terminal
 
 single_line : initialization SEMICOLON #single_line
 single_line : function_call SEMICOLON #single_line
@@ -42,24 +40,20 @@ single_line : SEMICOLON #single_line
 function_call : SELF_DEFINED OPEN_PAREN param CLOSE_PAREN #function call
 function_call : SELF_DEFINED OPEN_PAREN CLOSE_PAREN #function call
 
-param : param_terminal #paramater
+param : param_terminal #parameter
 param : param_terminal COMMA param #parameter
 
 param_terminal : arithmetic #param_terminal
 
-loop : WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN block #while loop
 loop : WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN content_terminal #while loop
 
-loop : FOR_LOOP OPEN_PAREN for_part_1 SEMICOLON for_part_2 SEMICOLON for_part_3 CLOSE_PAREN block #for loop
 loop : FOR_LOOP OPEN_PAREN for_part_1 SEMICOLON for_part_2 SEMICOLON for_part_3 CLOSE_PAREN content_terminal #for loop
 
-loop : DO_LOOP block WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN SEMICOLON #do loop
 loop : DO_LOOP content_terminal WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN SEMICOLON #do loop
 
 branch : IF_BRANCH OPEN_PAREN collation CLOSE_PAREN if_body#if
 branch : IF_BRANCH OPEN_PAREN collation CLOSE_PAREN if_body if_expansion #if
 
-if_body : block #if_body
 if_body : content_terminal #if_body
 
 if_expansion : ELSE_BRANCH if_body #if_expansion
@@ -78,10 +72,8 @@ case : CASE value COLON case_body #case
 
 default : DEFAULT COLON case_body #default
 
-case_body : block #case_body
 case_body : content #case_body
 
-goto : SELF_DEFINED COLON block #goto
 goto : SELF_DEFINED COLON content_terminal #goto
 goto : SELF_DEFINED COLON #goto
 
