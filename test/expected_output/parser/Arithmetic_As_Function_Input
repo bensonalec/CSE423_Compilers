@@ -17,7 +17,7 @@
 9 : [Token('TYPE', 'int'), 'designation']
 10 : [Token('SELF_DEFINED', 'value_1'), 'assignment', 'function call']
 11 : [Token('SET', '=')]
-11 : [Token('SELF_DEFINED', 'function'), Token('OPEN_PAREN', '('), 'paramater', Token('CLOSE_PAREN', ')')]
+11 : [Token('SELF_DEFINED', 'function'), Token('OPEN_PAREN', '('), 'parameter', Token('CLOSE_PAREN', ')')]
 12 : ['param_terminal']
 13 : ['arithmetic']
 14 : ['value']
