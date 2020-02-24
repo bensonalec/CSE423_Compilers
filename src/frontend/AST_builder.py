@@ -28,7 +28,7 @@ def buildAST(parseHead):
 
         #This block checks the type of the ASTNode that is  being visited, and acts as a monstrous switch statement, for each visited node a proper AST segment or node is built
         if typ == "program":
-            ASTHead = ASTNode("Program")
+            ASTHead = ASTNode("program")
             ASTcurrent = ASTHead
         elif typ == "initialization":
             ASTcurrent.children.append(ASTNode("", ASTcurrent,[]))
@@ -130,7 +130,6 @@ def buildAST(parseHead):
             ASTcurrent = ASTcurrent.children[-1]
             ASTcurrent.children.append(ASTNode("", ASTcurrent, []))
 
-            print ([(x.token, ASTcurrent.name) for x in c[0].content if 'content' in x.__dict__ and (x.token == "block" or x.token == "content_terminal")])
             expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if 'content' in x.__dict__ and x.token == "collation"] + [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__ and (x.token == "block" or x.token == "content_terminal")]
             pass
         elif typ == "break":

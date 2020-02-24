@@ -541,7 +541,7 @@ class Parser():
             Returns:
                 The node of the ParseTree.
             """
-            newNode = ParseTree("paramater",p)
+            newNode = ParseTree("parameter",p)
             self.Head = newNode
             return newNode
 
