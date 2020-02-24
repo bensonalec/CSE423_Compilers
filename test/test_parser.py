@@ -19,11 +19,13 @@ class ParserTests(unittest.TestCase):
     maxDiff = None
 
     def test_parser(self):
-        print()
+        print(' ')
 
         for c_filename in os.listdir(path_to_C_files):
             
             if c_filename.endswith('.c') and c_filename not in self.skip_programs:
+
+                status = "FAIL" #Will change if test passes
 
                 fi = open(path_to_C_files + c_filename)
                 text_input = fi.read()
@@ -46,9 +48,11 @@ class ParserTests(unittest.TestCase):
                 expected = fi.read()
                 fi.close()
 
-                self.assertEqual(frontend.getListView(head,0), expected)
-                print(f"Parser test passed with: {c_filename}")
-
+                with self.subTest():
+                    self.assertEqual(frontend.getListView(head,0), expected)
+                    status = "ok"
+                
+                print(f"{'Parser test for '+c_filename:65} {status}")
 
 if __name__ == '__main__':
 	unittest.main()
