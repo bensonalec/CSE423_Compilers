@@ -75,10 +75,12 @@ class symbol_table():
                     if len(cur.Node.children) > 1:
                         #add to symbol table this should also handle function param being that they are still within the same scope as there parent function
                         if([x for x in self.symbols if x.name == cur.Node.children[1].name and cur.Scope in x.scope] == []):
-                            if cur.Node.parent.parent.name != "func" or cur.Node.parent.parent.children[1].name == "main":
+                            if cur.Node.parent.parent.name == "func" or cur.Node.parent.parent.name == "decl":
                                 if cur.Node.parent.name == "param":
                                     self.symbols.append(Entry(False,True,  False,cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
                                 else:
+                                    self.symbols.append(Entry(False,False,  False,cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
+                            else:
                                     self.symbols.append(Entry(False,False,  False,cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
                         elif(cur.Node.parent.name != "param"):
                             print(f'Variable Already Declared {cur.Node.children[1].name} {cur.Node.children[0].name}')
@@ -108,10 +110,8 @@ class symbol_table():
                         for i in labels:
                             #checks if label is already in the symbol table.
                             if [x for x in self.symbols if x.name == i.name] == []:
-                                print("if",i.name)
                                 self.symbols.append(Entry(False,False, True,  i.name, "None", cur.Scope)) 
                             else:
-                                print(i.name)
                                 self.undefined.append(Entry(False,False, True,  i.name, "None", cur.Scope)) 
                                 
                     pass
