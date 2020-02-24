@@ -31,6 +31,7 @@ for command line arguments that can be used to determine which portion is run.</
 This module acts as the interface for running all the seperate portions of the front end. It allows
 for command line arguments that can be used to determine which portion is run.
 &#34;&#34;&#34;
+import os
 import argparse
 import importlib
 import traceback
@@ -44,6 +45,7 @@ par = importlib.import_module(&#34;parser&#34;, __name__)
 btp = importlib.import_module(&#34;bnfToParser&#34;, __name__)
 ast = importlib.import_module(&#34;AST_builder&#34;, __name__)
 sem = importlib.import_module(&#34;semantics&#34;, __name__)
+pre = importlib.import_module(&#34;preprocessor&#34;, __name__)
 
 
 def getTree(head,level):
@@ -88,7 +90,7 @@ def print_tokens(tokens):
     print(lex.tokensToString(deepcopy(tokens)))
 
 
-def print_list_view(head,level):
+def getListView(head,level):
     &#34;&#34;&#34;
     Prints a simple list version of the tree for output. Calls itself recursively
 
@@ -96,6 +98,7 @@ def print_list_view(head,level):
         head: The head node of the tree.
         level: The current level of the tree.
     &#34;&#34;&#34;
+    string = &#34;&#34;
     level += 1
     token = head.token
     content = head.content
@@ -107,13 +110,14 @@ def print_list_view(head,level):
         else:
             li.append(node.token)
     
-    print(level,&#34;:&#34;,li)
-
+    string += f&#34;{level} : {li}\n&#34;
 
     #iterate through the components of the BNF
     for node in content:
         if(type(node) == type(par.ParseTree(&#34;sample&#34;,&#34;sample&#34;))):
-            print_list_view(node,level)
+            string += getListView(node,level)
+
+    return string
 
 
 def pprint_tree(node, file=None, _prefix=&#34;&#34;, _last=True):
@@ -158,6 +162,9 @@ def main(args, fi):
         text_input = fi.read()
         fi.close()
 
+        #Pre-process the text
+        text_input = pre.run(text_input)
+
         #setup lexer, produce tokens, check for invalid tokens
         lexer = lex.Lexer().get_lexer()
         tokens = lexer.lex(text_input)
@@ -178,7 +185,7 @@ def main(args, fi):
 
         if args.tree or args.all:
             # Represent parse tree as a list with levels
-            print_list_view(head, 0)
+            print(getListView(head, 0))
 
         if args.all:
             # Represent parse tree as single line (mainly for unit testing)
@@ -244,7 +251,7 @@ if __name__ == &#34;__main__&#34;:
 
     cmd_options.add_argument(&#39;-s&#39;,&#39;--symbol_table&#39;, help=&#39;Prints out the known and unknown symbols encountered during semantic analysis.&#39;, action=&#34;store_true&#34;)
 
-    cmd_options.add_argument(&#39;-b&#39;, &#39;--bnf&#39;, nargs=&#39;?&#39;, const=&#39;./BNF_definition&#39;, type=str, help=&#39;Rebuilds the parser using the current BNF grammar&#39;)
+    cmd_options.add_argument(&#39;-b&#39;, &#39;--bnf&#39;, nargs=&#39;?&#39;, const=os.path.realpath(&#34;./BNF_definition&#34;), type=str, help=&#39;Rebuilds the parser using the current BNF grammar&#39;)
 
 
     #generate arguements
@@ -270,6 +277,52 @@ if __name__ == &#34;__main__&#34;:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="src.frontend.frontend.getListView"><code class="name flex">
+<span>def <span class="ident">getListView</span></span>(<span>head, level)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Prints a simple list version of the tree for output. Calls itself recursively</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>head</code></strong></dt>
+<dd>The head node of the tree.</dd>
+<dt><strong><code>level</code></strong></dt>
+<dd>The current level of the tree.</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getListView(head,level):
+    &#34;&#34;&#34;
+    Prints a simple list version of the tree for output. Calls itself recursively
+
+    Args:
+        head: The head node of the tree.
+        level: The current level of the tree.
+    &#34;&#34;&#34;
+    string = &#34;&#34;
+    level += 1
+    token = head.token
+    content = head.content
+    li = []
+    out = &#34;&#34;
+    for node in content:
+        if(type(node) != type(par.ParseTree(&#34;sample&#34;,&#34;sample&#34;))):
+            li.append(node)
+        else:
+            li.append(node.token)
+    
+    string += f&#34;{level} : {li}\n&#34;
+
+    #iterate through the components of the BNF
+    for node in content:
+        if(type(node) == type(par.ParseTree(&#34;sample&#34;,&#34;sample&#34;))):
+            string += getListView(node,level)
+
+    return string</code></pre>
+</details>
+</dd>
 <dt id="src.frontend.frontend.getTree"><code class="name flex">
 <span>def <span class="ident">getTree</span></span>(<span>head, level)</span>
 </code></dt>
@@ -358,6 +411,9 @@ if __name__ == &#34;__main__&#34;:
         text_input = fi.read()
         fi.close()
 
+        #Pre-process the text
+        text_input = pre.run(text_input)
+
         #setup lexer, produce tokens, check for invalid tokens
         lexer = lex.Lexer().get_lexer()
         tokens = lexer.lex(text_input)
@@ -378,7 +434,7 @@ if __name__ == &#34;__main__&#34;:
 
         if args.tree or args.all:
             # Represent parse tree as a list with levels
-            print_list_view(head, 0)
+            print(getListView(head, 0))
 
         if args.all:
             # Represent parse tree as single line (mainly for unit testing)
@@ -456,50 +512,6 @@ _last: A boolean that indicates if a node is the last in it's immediate surround
         print(_prefix, &#34;`-- &#34; if _last else &#34;|-- &#34;, node, sep=&#34;&#34;, file=file)</code></pre>
 </details>
 </dd>
-<dt id="src.frontend.frontend.print_list_view"><code class="name flex">
-<span>def <span class="ident">print_list_view</span></span>(<span>head, level)</span>
-</code></dt>
-<dd>
-<section class="desc"><p>Prints a simple list version of the tree for output. Calls itself recursively</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>head</code></strong></dt>
-<dd>The head node of the tree.</dd>
-<dt><strong><code>level</code></strong></dt>
-<dd>The current level of the tree.</dd>
-</dl></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def print_list_view(head,level):
-    &#34;&#34;&#34;
-    Prints a simple list version of the tree for output. Calls itself recursively
-
-    Args:
-        head: The head node of the tree.
-        level: The current level of the tree.
-    &#34;&#34;&#34;
-    level += 1
-    token = head.token
-    content = head.content
-    li = []
-    out = &#34;&#34;
-    for node in content:
-        if(type(node) != type(par.ParseTree(&#34;sample&#34;,&#34;sample&#34;))):
-            li.append(node)
-        else:
-            li.append(node.token)
-    
-    print(level,&#34;:&#34;,li)
-
-
-    #iterate through the components of the BNF
-    for node in content:
-        if(type(node) == type(par.ParseTree(&#34;sample&#34;,&#34;sample&#34;))):
-            print_list_view(node,level)</code></pre>
-</details>
-</dd>
 <dt id="src.frontend.frontend.print_tokens"><code class="name flex">
 <span>def <span class="ident">print_tokens</span></span>(<span>tokens)</span>
 </code></dt>
@@ -542,10 +554,10 @@ _last: A boolean that indicates if a node is the last in it's immediate surround
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="src.frontend.frontend.getListView" href="#src.frontend.frontend.getListView">getListView</a></code></li>
 <li><code><a title="src.frontend.frontend.getTree" href="#src.frontend.frontend.getTree">getTree</a></code></li>
 <li><code><a title="src.frontend.frontend.main" href="#src.frontend.frontend.main">main</a></code></li>
 <li><code><a title="src.frontend.frontend.pprint_tree" href="#src.frontend.frontend.pprint_tree">pprint_tree</a></code></li>
-<li><code><a title="src.frontend.frontend.print_list_view" href="#src.frontend.frontend.print_list_view">print_list_view</a></code></li>
 <li><code><a title="src.frontend.frontend.print_tokens" href="#src.frontend.frontend.print_tokens">print_tokens</a></code></li>
 </ul>
 </li>

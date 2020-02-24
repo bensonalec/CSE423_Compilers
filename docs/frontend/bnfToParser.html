@@ -30,6 +30,7 @@ This module reads in a BNF and produces a parser for use with rply.The BNF expec
 &#34;&#34;&#34;
 
 import re
+import os
 
     
 funcTemp = &#34;&#34;&#34;
@@ -262,8 +263,7 @@ class Parser():
     # print (totalOutput)
 
     print(&#34;Overwriting &#34;)
-
-    with open(&#34;parser.py&#34;, &#39;w&#39;) as f:
+    with open(os.path.dirname(__file__) + &#34;/parser.py&#34;, &#39;w&#39;) as f:
         f.write(totalOutput)
 
 if __name__ == &#34;__main__&#34;:
@@ -460,8 +460,7 @@ class Parser():
     # print (totalOutput)
 
     print(&#34;Overwriting &#34;)
-
-    with open(&#34;parser.py&#34;, &#39;w&#39;) as f:
+    with open(os.path.dirname(__file__) + &#34;/parser.py&#34;, &#39;w&#39;) as f:
         f.write(totalOutput)</code></pre>
 </details>
 </dd>

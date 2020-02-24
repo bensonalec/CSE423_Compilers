@@ -19,26 +19,25 @@
         <dl>
             <dt><h3>How to use the compiler</h3></dt>
             <dd>
-                The compiler is split up into three modules, the frontend, the optimizer, and the backend. So far only the frontend is implemented, and can so far only be executed by running the <code>frontend.py</code> located in <code>./src/frontend</code>. The frontend supports a variety of commandline options such as:
+                The compiler is split up into three modules, the frontend, the optimizer, and the backend. So far only the frontend is implemented, but there are two alternatives for how to execute the compiler. <code>run.py</code> is located in <code>./src</code> and provides the interface to the whole compiler. However if you desire to run the frontend by itself you can execute the file <code>frontend.py</code> located in <code>./src/frontend</code>. Both of these files will accept the following arguments:
                 <dl>
                     <dt><code>-h</code></dt>
                     <dd>Displays the help message.</dd>
                     <dt><code>--all</code></dt>
                     <dd>Prints out all intermediate representations as they are encountered in the compilation process.</dd>
-                    <dt><code>-l</code> <code>--lex</code></dt>
+                    <dt><code>-l</code> or <code>--lex</code></dt>
                     <dd>Prints out the tokens produced by the lexer in a list.</dd>
-                    <dt><code>-t</code> <code>--tree</code></dt>
+                    <dt><code>-t</code> or <code>--tree</code></dt>
                     <dd>Prints a list like tree structure of the tokens after they have been parsed.</dd>
-                    <dt><code>-p</code> <code>--pretty</code></dt>
+                    <dt><code>-p</code> or <code>--pretty</code></dt>
                     <dd>Prints a tree structure of the tokens after they have been parsed.</dd>
-                    <dt><code>-a</code> <code>--ast</code></dt>
+                    <dt><code>-a</code> or <code>--ast</code></dt>
                     <dd>Prints out the abstract syntax tree.</dd>
-                    <dt><code>-s</code> <code>--symbol_table</code></dt>
+                    <dt><code>-s</code> or <code>--symbol_table</code></dt>
                     <dd>Prints out the known and unknown symbols encountered during semantic Analysis.</dd>
-                    <dt><code>-b</code> <code>--bnf</code></dt>
-                    <dd>Allows for rebuilding of BNF grammar and parser before the frontend touches the input.</dd>
+                    <dt><code>-b</code> <code>[INPUT FILE]</code> or <code>--bnf</code> <code>[INPUT FILE]</code></dt>
+                    <dd>Allows for rebuilding of BNF grammar and parser before the frontend touches the input. <code>[INPUT FILE]</code> defaults to the file <code>BNF_defintion</code> located in <code>./src/frontend</code>. The BNF grammar is not updated unless this option is provided</dd>
                 </dl>
-                We plan to implement the same functionality into <code>run.py</code> located in <code>./src</code> but have yet to do so.
             </dd>
             <dt><h3>Subset of C supported</h3></dt>
             <dd>
@@ -74,7 +73,7 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td>Assigning Variables</td>
@@ -82,7 +81,7 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td>Declaring Functions<sup>[1]</sup></td>
@@ -90,7 +89,7 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td>Defining Functions<sup>[1]</sup></td>
@@ -98,7 +97,7 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td>Calling Functions<sup>[1]</sup></td>
@@ -106,7 +105,7 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <th>Assignment</th>
@@ -117,7 +116,7 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>+=</code></td>
@@ -125,7 +124,7 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>-=</code></td>
@@ -133,7 +132,7 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>*=</code></td>
@@ -141,7 +140,7 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>/=</code></td>
@@ -149,7 +148,7 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>%=</code></td>
@@ -181,7 +180,7 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>&amp;=</code></td>
@@ -189,7 +188,7 @@
                             <td>&#x2713;</td>
                             <td>&#x2715;</td>
                             <td>&#x2715;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>^=</code></td>
@@ -197,7 +196,7 @@
                             <td>&#x2713;</td>
                             <td>&#x2715;</td>
                             <td>&#x2715;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <th>Keywords</th>

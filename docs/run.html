@@ -24,7 +24,8 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import argparse
+<pre><code class="python">import os
+import argparse
 import importlib
 
 frontend = importlib.import_module(&#34;frontend.frontend&#34;, __name__)
@@ -72,12 +73,10 @@ if __name__ == &#34;__main__&#34;:
 
     cmd_options.add_argument(&#39;-s&#39;,&#39;--symbol_table&#39;, help=&#39;Prints out the known and unknown symbols encountered during semantic analysis.&#39;, action=&#34;store_true&#34;)
 
-    cmd_options.add_argument(&#39;-b&#39;, &#39;--bnf&#39;, nargs=&#39;?&#39;, const=&#39;./BNF_definition&#39;, type=str, help=&#39;Rebuilds the parser using the current BNF grammar&#39;)
-
+    cmd_options.add_argument(&#39;-b&#39;, &#39;--bnf&#39;, nargs=&#39;?&#39;, const=os.path.abspath(os.path.dirname(__file__)) + &#34;/frontend/BNF_definition&#34;, type=str, help=&#39;Rebuilds the parser using the current BNF grammar&#39;)
 
     #generate arguements
     args = cmd_options.parse_args()
-
 
     #open file and pass into main.
     if args.input_file and args.input_file.endswith(&#34;.c&#34;):

@@ -135,12 +135,13 @@ if __name__ == "__main__":
     header.insert_after(names)
 
     doc_loc = usr_parser.select("dl")[-1]
-    comp_loc = pathlib.Path("../src/frontend/frontend.py")
+    comp_loc = pathlib.Path("../src/run.py")
     # comp_loc = pathlib.Path("../src/run.py")
     comp_flags = [("-l", "Token List"), ("-p", "Parse Tree"), ("-a", "Abstract Syntax Tree"), ("-s", "Symbol Table")]
     # comp_flags = [("-l", "Token List"), ("-p", "Parse Tree")]
 
-    for program in [y for x in pathlib.Path("../test/C_testing_code").iterdir() if x.is_dir() for y in x.iterdir() if y.suffix == '.c' ]:
+    for program in [x for x in pathlib.Path("../test/programs").iterdir() if x.suffix == '.c' ]:
+        print (program)
         title = usr_parser.new_tag("dt")
         title.string = program.stem
         title.string.wrap(usr_parser.new_tag("h4"))

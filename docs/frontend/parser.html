@@ -286,51 +286,6 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production(&#39;block : OPEN_BRACE block block CLOSE_BRACE &#39;)
-        def block___OPEN_BRACE_block_block_CLOSE_BRACE_(p):
-            &#34;&#34;&#34;
-            Boilerplate BNF function
-            
-            Args:
-                p: The matching set of tokens.
-
-            Returns:
-                The node of the ParseTree.
-            &#34;&#34;&#34;
-            newNode = ParseTree(&#34;block&#34;,p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production(&#39;block : OPEN_BRACE block content CLOSE_BRACE &#39;)
-        def block___OPEN_BRACE_block_content_CLOSE_BRACE_(p):
-            &#34;&#34;&#34;
-            Boilerplate BNF function
-            
-            Args:
-                p: The matching set of tokens.
-
-            Returns:
-                The node of the ParseTree.
-            &#34;&#34;&#34;
-            newNode = ParseTree(&#34;block&#34;,p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production(&#39;block : OPEN_BRACE content block CLOSE_BRACE &#39;)
-        def block___OPEN_BRACE_content_block_CLOSE_BRACE_(p):
-            &#34;&#34;&#34;
-            Boilerplate BNF function
-            
-            Args:
-                p: The matching set of tokens.
-
-            Returns:
-                The node of the ParseTree.
-            &#34;&#34;&#34;
-            newNode = ParseTree(&#34;block&#34;,p)
-            self.Head = newNode
-            return newNode
-
         @self.pg.production(&#39;block : OPEN_BRACE content CLOSE_BRACE &#39;)
         def block___OPEN_BRACE_content_CLOSE_BRACE_(p):
             &#34;&#34;&#34;
@@ -453,6 +408,21 @@ class Parser():
 
         @self.pg.production(&#39;content_terminal : COMMENT &#39;)
         def content_terminal___COMMENT_(p):
+            &#34;&#34;&#34;
+            Boilerplate BNF function
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the ParseTree.
+            &#34;&#34;&#34;
+            newNode = ParseTree(&#34;content_terminal&#34;,p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production(&#39;content_terminal : block &#39;)
+        def content_terminal___block_(p):
             &#34;&#34;&#34;
             Boilerplate BNF function
             
@@ -597,7 +567,7 @@ class Parser():
             Returns:
                 The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = ParseTree(&#34;paramater&#34;,p)
+            newNode = ParseTree(&#34;parameter&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -631,21 +601,6 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production(&#39;loop : WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN block &#39;)
-        def loop___WHILE_LOOP_OPEN_PAREN_collation_CLOSE_PAREN_block_(p):
-            &#34;&#34;&#34;
-            Boilerplate BNF function
-            
-            Args:
-                p: The matching set of tokens.
-
-            Returns:
-                The node of the ParseTree.
-            &#34;&#34;&#34;
-            newNode = ParseTree(&#34;while loop&#34;,p)
-            self.Head = newNode
-            return newNode
-
         @self.pg.production(&#39;loop : WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN content_terminal &#39;)
         def loop___WHILE_LOOP_OPEN_PAREN_collation_CLOSE_PAREN_content_terminal_(p):
             &#34;&#34;&#34;
@@ -661,21 +616,6 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production(&#39;loop : FOR_LOOP OPEN_PAREN for_part_1 SEMICOLON for_part_2 SEMICOLON for_part_3 CLOSE_PAREN block &#39;)
-        def loop___FOR_LOOP_OPEN_PAREN_for_part_1_SEMICOLON_for_part_2_SEMICOLON_for_part_3_CLOSE_PAREN_block_(p):
-            &#34;&#34;&#34;
-            Boilerplate BNF function
-            
-            Args:
-                p: The matching set of tokens.
-
-            Returns:
-                The node of the ParseTree.
-            &#34;&#34;&#34;
-            newNode = ParseTree(&#34;for loop&#34;,p)
-            self.Head = newNode
-            return newNode
-
         @self.pg.production(&#39;loop : FOR_LOOP OPEN_PAREN for_part_1 SEMICOLON for_part_2 SEMICOLON for_part_3 CLOSE_PAREN content_terminal &#39;)
         def loop___FOR_LOOP_OPEN_PAREN_for_part_1_SEMICOLON_for_part_2_SEMICOLON_for_part_3_CLOSE_PAREN_content_terminal_(p):
             &#34;&#34;&#34;
@@ -688,21 +628,6 @@ class Parser():
                 The node of the ParseTree.
             &#34;&#34;&#34;
             newNode = ParseTree(&#34;for loop&#34;,p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production(&#39;loop : DO_LOOP block WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN SEMICOLON &#39;)
-        def loop___DO_LOOP_block_WHILE_LOOP_OPEN_PAREN_collation_CLOSE_PAREN_SEMICOLON_(p):
-            &#34;&#34;&#34;
-            Boilerplate BNF function
-            
-            Args:
-                p: The matching set of tokens.
-
-            Returns:
-                The node of the ParseTree.
-            &#34;&#34;&#34;
-            newNode = ParseTree(&#34;do loop&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -748,21 +673,6 @@ class Parser():
                 The node of the ParseTree.
             &#34;&#34;&#34;
             newNode = ParseTree(&#34;if&#34;,p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production(&#39;if_body : block &#39;)
-        def if_body___block_(p):
-            &#34;&#34;&#34;
-            Boilerplate BNF function
-            
-            Args:
-                p: The matching set of tokens.
-
-            Returns:
-                The node of the ParseTree.
-            &#34;&#34;&#34;
-            newNode = ParseTree(&#34;if_body&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -931,21 +841,6 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production(&#39;case_body : block &#39;)
-        def case_body___block_(p):
-            &#34;&#34;&#34;
-            Boilerplate BNF function
-            
-            Args:
-                p: The matching set of tokens.
-
-            Returns:
-                The node of the ParseTree.
-            &#34;&#34;&#34;
-            newNode = ParseTree(&#34;case_body&#34;,p)
-            self.Head = newNode
-            return newNode
-
         @self.pg.production(&#39;case_body : content &#39;)
         def case_body___content_(p):
             &#34;&#34;&#34;
@@ -958,21 +853,6 @@ class Parser():
                 The node of the ParseTree.
             &#34;&#34;&#34;
             newNode = ParseTree(&#34;case_body&#34;,p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production(&#39;goto : SELF_DEFINED COLON block &#39;)
-        def goto___SELF_DEFINED_COLON_block_(p):
-            &#34;&#34;&#34;
-            Boilerplate BNF function
-            
-            Args:
-                p: The matching set of tokens.
-
-            Returns:
-                The node of the ParseTree.
-            &#34;&#34;&#34;
-            newNode = ParseTree(&#34;goto&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2432,51 +2312,6 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production(&#39;block : OPEN_BRACE block block CLOSE_BRACE &#39;)
-        def block___OPEN_BRACE_block_block_CLOSE_BRACE_(p):
-            &#34;&#34;&#34;
-            Boilerplate BNF function
-            
-            Args:
-                p: The matching set of tokens.
-
-            Returns:
-                The node of the ParseTree.
-            &#34;&#34;&#34;
-            newNode = ParseTree(&#34;block&#34;,p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production(&#39;block : OPEN_BRACE block content CLOSE_BRACE &#39;)
-        def block___OPEN_BRACE_block_content_CLOSE_BRACE_(p):
-            &#34;&#34;&#34;
-            Boilerplate BNF function
-            
-            Args:
-                p: The matching set of tokens.
-
-            Returns:
-                The node of the ParseTree.
-            &#34;&#34;&#34;
-            newNode = ParseTree(&#34;block&#34;,p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production(&#39;block : OPEN_BRACE content block CLOSE_BRACE &#39;)
-        def block___OPEN_BRACE_content_block_CLOSE_BRACE_(p):
-            &#34;&#34;&#34;
-            Boilerplate BNF function
-            
-            Args:
-                p: The matching set of tokens.
-
-            Returns:
-                The node of the ParseTree.
-            &#34;&#34;&#34;
-            newNode = ParseTree(&#34;block&#34;,p)
-            self.Head = newNode
-            return newNode
-
         @self.pg.production(&#39;block : OPEN_BRACE content CLOSE_BRACE &#39;)
         def block___OPEN_BRACE_content_CLOSE_BRACE_(p):
             &#34;&#34;&#34;
@@ -2599,6 +2434,21 @@ class Parser():
 
         @self.pg.production(&#39;content_terminal : COMMENT &#39;)
         def content_terminal___COMMENT_(p):
+            &#34;&#34;&#34;
+            Boilerplate BNF function
+            
+            Args:
+                p: The matching set of tokens.
+
+            Returns:
+                The node of the ParseTree.
+            &#34;&#34;&#34;
+            newNode = ParseTree(&#34;content_terminal&#34;,p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production(&#39;content_terminal : block &#39;)
+        def content_terminal___block_(p):
             &#34;&#34;&#34;
             Boilerplate BNF function
             
@@ -2743,7 +2593,7 @@ class Parser():
             Returns:
                 The node of the ParseTree.
             &#34;&#34;&#34;
-            newNode = ParseTree(&#34;paramater&#34;,p)
+            newNode = ParseTree(&#34;parameter&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2777,21 +2627,6 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production(&#39;loop : WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN block &#39;)
-        def loop___WHILE_LOOP_OPEN_PAREN_collation_CLOSE_PAREN_block_(p):
-            &#34;&#34;&#34;
-            Boilerplate BNF function
-            
-            Args:
-                p: The matching set of tokens.
-
-            Returns:
-                The node of the ParseTree.
-            &#34;&#34;&#34;
-            newNode = ParseTree(&#34;while loop&#34;,p)
-            self.Head = newNode
-            return newNode
-
         @self.pg.production(&#39;loop : WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN content_terminal &#39;)
         def loop___WHILE_LOOP_OPEN_PAREN_collation_CLOSE_PAREN_content_terminal_(p):
             &#34;&#34;&#34;
@@ -2807,21 +2642,6 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production(&#39;loop : FOR_LOOP OPEN_PAREN for_part_1 SEMICOLON for_part_2 SEMICOLON for_part_3 CLOSE_PAREN block &#39;)
-        def loop___FOR_LOOP_OPEN_PAREN_for_part_1_SEMICOLON_for_part_2_SEMICOLON_for_part_3_CLOSE_PAREN_block_(p):
-            &#34;&#34;&#34;
-            Boilerplate BNF function
-            
-            Args:
-                p: The matching set of tokens.
-
-            Returns:
-                The node of the ParseTree.
-            &#34;&#34;&#34;
-            newNode = ParseTree(&#34;for loop&#34;,p)
-            self.Head = newNode
-            return newNode
-
         @self.pg.production(&#39;loop : FOR_LOOP OPEN_PAREN for_part_1 SEMICOLON for_part_2 SEMICOLON for_part_3 CLOSE_PAREN content_terminal &#39;)
         def loop___FOR_LOOP_OPEN_PAREN_for_part_1_SEMICOLON_for_part_2_SEMICOLON_for_part_3_CLOSE_PAREN_content_terminal_(p):
             &#34;&#34;&#34;
@@ -2834,21 +2654,6 @@ class Parser():
                 The node of the ParseTree.
             &#34;&#34;&#34;
             newNode = ParseTree(&#34;for loop&#34;,p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production(&#39;loop : DO_LOOP block WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN SEMICOLON &#39;)
-        def loop___DO_LOOP_block_WHILE_LOOP_OPEN_PAREN_collation_CLOSE_PAREN_SEMICOLON_(p):
-            &#34;&#34;&#34;
-            Boilerplate BNF function
-            
-            Args:
-                p: The matching set of tokens.
-
-            Returns:
-                The node of the ParseTree.
-            &#34;&#34;&#34;
-            newNode = ParseTree(&#34;do loop&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -2894,21 +2699,6 @@ class Parser():
                 The node of the ParseTree.
             &#34;&#34;&#34;
             newNode = ParseTree(&#34;if&#34;,p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production(&#39;if_body : block &#39;)
-        def if_body___block_(p):
-            &#34;&#34;&#34;
-            Boilerplate BNF function
-            
-            Args:
-                p: The matching set of tokens.
-
-            Returns:
-                The node of the ParseTree.
-            &#34;&#34;&#34;
-            newNode = ParseTree(&#34;if_body&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -3077,21 +2867,6 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production(&#39;case_body : block &#39;)
-        def case_body___block_(p):
-            &#34;&#34;&#34;
-            Boilerplate BNF function
-            
-            Args:
-                p: The matching set of tokens.
-
-            Returns:
-                The node of the ParseTree.
-            &#34;&#34;&#34;
-            newNode = ParseTree(&#34;case_body&#34;,p)
-            self.Head = newNode
-            return newNode
-
         @self.pg.production(&#39;case_body : content &#39;)
         def case_body___content_(p):
             &#34;&#34;&#34;
@@ -3104,21 +2879,6 @@ class Parser():
                 The node of the ParseTree.
             &#34;&#34;&#34;
             newNode = ParseTree(&#34;case_body&#34;,p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production(&#39;goto : SELF_DEFINED COLON block &#39;)
-        def goto___SELF_DEFINED_COLON_block_(p):
-            &#34;&#34;&#34;
-            Boilerplate BNF function
-            
-            Args:
-                p: The matching set of tokens.
-
-            Returns:
-                The node of the ParseTree.
-            &#34;&#34;&#34;
-            newNode = ParseTree(&#34;goto&#34;,p)
             self.Head = newNode
             return newNode
 
@@ -4541,51 +4301,6 @@ class Parser():
         self.Head = newNode
         return newNode
 
-    @self.pg.production(&#39;block : OPEN_BRACE block block CLOSE_BRACE &#39;)
-    def block___OPEN_BRACE_block_block_CLOSE_BRACE_(p):
-        &#34;&#34;&#34;
-        Boilerplate BNF function
-        
-        Args:
-            p: The matching set of tokens.
-
-        Returns:
-            The node of the ParseTree.
-        &#34;&#34;&#34;
-        newNode = ParseTree(&#34;block&#34;,p)
-        self.Head = newNode
-        return newNode
-
-    @self.pg.production(&#39;block : OPEN_BRACE block content CLOSE_BRACE &#39;)
-    def block___OPEN_BRACE_block_content_CLOSE_BRACE_(p):
-        &#34;&#34;&#34;
-        Boilerplate BNF function
-        
-        Args:
-            p: The matching set of tokens.
-
-        Returns:
-            The node of the ParseTree.
-        &#34;&#34;&#34;
-        newNode = ParseTree(&#34;block&#34;,p)
-        self.Head = newNode
-        return newNode
-
-    @self.pg.production(&#39;block : OPEN_BRACE content block CLOSE_BRACE &#39;)
-    def block___OPEN_BRACE_content_block_CLOSE_BRACE_(p):
-        &#34;&#34;&#34;
-        Boilerplate BNF function
-        
-        Args:
-            p: The matching set of tokens.
-
-        Returns:
-            The node of the ParseTree.
-        &#34;&#34;&#34;
-        newNode = ParseTree(&#34;block&#34;,p)
-        self.Head = newNode
-        return newNode
-
     @self.pg.production(&#39;block : OPEN_BRACE content CLOSE_BRACE &#39;)
     def block___OPEN_BRACE_content_CLOSE_BRACE_(p):
         &#34;&#34;&#34;
@@ -4708,6 +4423,21 @@ class Parser():
 
     @self.pg.production(&#39;content_terminal : COMMENT &#39;)
     def content_terminal___COMMENT_(p):
+        &#34;&#34;&#34;
+        Boilerplate BNF function
+        
+        Args:
+            p: The matching set of tokens.
+
+        Returns:
+            The node of the ParseTree.
+        &#34;&#34;&#34;
+        newNode = ParseTree(&#34;content_terminal&#34;,p)
+        self.Head = newNode
+        return newNode
+
+    @self.pg.production(&#39;content_terminal : block &#39;)
+    def content_terminal___block_(p):
         &#34;&#34;&#34;
         Boilerplate BNF function
         
@@ -4852,7 +4582,7 @@ class Parser():
         Returns:
             The node of the ParseTree.
         &#34;&#34;&#34;
-        newNode = ParseTree(&#34;paramater&#34;,p)
+        newNode = ParseTree(&#34;parameter&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -4886,21 +4616,6 @@ class Parser():
         self.Head = newNode
         return newNode
 
-    @self.pg.production(&#39;loop : WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN block &#39;)
-    def loop___WHILE_LOOP_OPEN_PAREN_collation_CLOSE_PAREN_block_(p):
-        &#34;&#34;&#34;
-        Boilerplate BNF function
-        
-        Args:
-            p: The matching set of tokens.
-
-        Returns:
-            The node of the ParseTree.
-        &#34;&#34;&#34;
-        newNode = ParseTree(&#34;while loop&#34;,p)
-        self.Head = newNode
-        return newNode
-
     @self.pg.production(&#39;loop : WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN content_terminal &#39;)
     def loop___WHILE_LOOP_OPEN_PAREN_collation_CLOSE_PAREN_content_terminal_(p):
         &#34;&#34;&#34;
@@ -4916,21 +4631,6 @@ class Parser():
         self.Head = newNode
         return newNode
 
-    @self.pg.production(&#39;loop : FOR_LOOP OPEN_PAREN for_part_1 SEMICOLON for_part_2 SEMICOLON for_part_3 CLOSE_PAREN block &#39;)
-    def loop___FOR_LOOP_OPEN_PAREN_for_part_1_SEMICOLON_for_part_2_SEMICOLON_for_part_3_CLOSE_PAREN_block_(p):
-        &#34;&#34;&#34;
-        Boilerplate BNF function
-        
-        Args:
-            p: The matching set of tokens.
-
-        Returns:
-            The node of the ParseTree.
-        &#34;&#34;&#34;
-        newNode = ParseTree(&#34;for loop&#34;,p)
-        self.Head = newNode
-        return newNode
-
     @self.pg.production(&#39;loop : FOR_LOOP OPEN_PAREN for_part_1 SEMICOLON for_part_2 SEMICOLON for_part_3 CLOSE_PAREN content_terminal &#39;)
     def loop___FOR_LOOP_OPEN_PAREN_for_part_1_SEMICOLON_for_part_2_SEMICOLON_for_part_3_CLOSE_PAREN_content_terminal_(p):
         &#34;&#34;&#34;
@@ -4943,21 +4643,6 @@ class Parser():
             The node of the ParseTree.
         &#34;&#34;&#34;
         newNode = ParseTree(&#34;for loop&#34;,p)
-        self.Head = newNode
-        return newNode
-
-    @self.pg.production(&#39;loop : DO_LOOP block WHILE_LOOP OPEN_PAREN collation CLOSE_PAREN SEMICOLON &#39;)
-    def loop___DO_LOOP_block_WHILE_LOOP_OPEN_PAREN_collation_CLOSE_PAREN_SEMICOLON_(p):
-        &#34;&#34;&#34;
-        Boilerplate BNF function
-        
-        Args:
-            p: The matching set of tokens.
-
-        Returns:
-            The node of the ParseTree.
-        &#34;&#34;&#34;
-        newNode = ParseTree(&#34;do loop&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5003,21 +4688,6 @@ class Parser():
             The node of the ParseTree.
         &#34;&#34;&#34;
         newNode = ParseTree(&#34;if&#34;,p)
-        self.Head = newNode
-        return newNode
-
-    @self.pg.production(&#39;if_body : block &#39;)
-    def if_body___block_(p):
-        &#34;&#34;&#34;
-        Boilerplate BNF function
-        
-        Args:
-            p: The matching set of tokens.
-
-        Returns:
-            The node of the ParseTree.
-        &#34;&#34;&#34;
-        newNode = ParseTree(&#34;if_body&#34;,p)
         self.Head = newNode
         return newNode
 
@@ -5186,21 +4856,6 @@ class Parser():
         self.Head = newNode
         return newNode
 
-    @self.pg.production(&#39;case_body : block &#39;)
-    def case_body___block_(p):
-        &#34;&#34;&#34;
-        Boilerplate BNF function
-        
-        Args:
-            p: The matching set of tokens.
-
-        Returns:
-            The node of the ParseTree.
-        &#34;&#34;&#34;
-        newNode = ParseTree(&#34;case_body&#34;,p)
-        self.Head = newNode
-        return newNode
-
     @self.pg.production(&#39;case_body : content &#39;)
     def case_body___content_(p):
         &#34;&#34;&#34;
@@ -5213,21 +4868,6 @@ class Parser():
             The node of the ParseTree.
         &#34;&#34;&#34;
         newNode = ParseTree(&#34;case_body&#34;,p)
-        self.Head = newNode
-        return newNode
-
-    @self.pg.production(&#39;goto : SELF_DEFINED COLON block &#39;)
-    def goto___SELF_DEFINED_COLON_block_(p):
-        &#34;&#34;&#34;
-        Boilerplate BNF function
-        
-        Args:
-            p: The matching set of tokens.
-
-        Returns:
-            The node of the ParseTree.
-        &#34;&#34;&#34;
-        newNode = ParseTree(&#34;goto&#34;,p)
         self.Head = newNode
         return newNode
 
