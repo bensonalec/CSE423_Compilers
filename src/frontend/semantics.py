@@ -137,7 +137,7 @@ class symbol_table():
 
             # checks whether the current node is an operation that will need to access the symbol table 
             try:
-                index = ["=","call","func"].index(cur.Node.name)
+                index = ["=","call","func","goto"].index(cur.Node.name)
 
                 #Catches edge case where var or func is used an self_defined name
                 if cur.Node.children == []:
@@ -273,6 +273,16 @@ class symbol_table():
                     expected = ([(x.type) for x in self.symbols if x.is_param and f"/{funcname}/" == x.scope])
                     if expected != params:
                         print("Parameters in function prototype do not match function definition in ",funcname)
+                elif index == 3:
+                    label = cur.Node.children[0]
+                    labelName = label.name
+                    #look for labelName: in the symbol table
+                    toLook = labelName + ":"
+                    found = ([x.name for x in self.symbols if x.is_goto and x.name == toLook])
+                    if(found == []):
+                        print("Label", labelName,"not found")
+                    elif(len(found) > 1):
+                        print("Multiple labels with name",  labelName,"found")
 
             except ValueError:
                 # This means that the token is not in that list
@@ -301,8 +311,8 @@ class symbol_table():
 
         self.symbols.sort(key=lambda x: x.scope)
 
-        print (f"{'Name':^{col_lengths[0]}} | {'Function?':^{col_lengths[1]}} | {'Type':^{col_lengths[2]}} | {'Scope':^{col_lengths[3]}} |  {'Param?':^{col_lengths[4]}} | {'Param?':^{col_lengths[5]}} ")
-        print (f"{'-'*col_lengths[0]}-+-{'-'*col_lengths[1]}-+-{'-'*col_lengths[2]}-+-{'-'*col_lengths[3]}-+-{'-'*col_lengths[4]}-")
+        print (f"{'Name':^{col_lengths[0]}} | {'Function?':^{col_lengths[1]}} | {'Type':^{col_lengths[2]}} | {'Scope':^{col_lengths[3]}} | {'Param?':^{col_lengths[4]}} | {'Label?':^{col_lengths[5]}} ")
+        print (f"{'-'*col_lengths[0]}-+-{'-'*col_lengths[1]}-+-{'-'*col_lengths[2]}-+-{'-'*col_lengths[3]}-+-{'-'*col_lengths[4]}-+-{'-'*col_lengths[5]}-")
         for x in self.symbols: print(f"{x.name:>{col_lengths[0]}} | {str(x.is_function) :>{col_lengths[1]}} | {x.type :>{col_lengths[2]}} | {x.scope :<{col_lengths[3]}} | {str(x.is_param) :>{col_lengths[4]}} | {str(x.is_goto) :>{col_lengths[5]}}")
 
     def print_unknown_symbols(self):
