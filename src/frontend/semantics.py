@@ -5,9 +5,10 @@ lex = importlib.import_module("lexer", __name__)
 ast = importlib.import_module("AST_builder", __name__)
 
 class Entry():
-    def __init__(self, is_func,is_param, nam, typ, scop):
+    def __init__(self, is_func,is_param, is_goto, nam, typ, scop):
         self.is_function = is_func
         self.is_param = is_param
+        self.is_goto = is_goto
         self.name = nam
         self.type = typ
         self.scope = scop
@@ -43,19 +44,20 @@ class symbol_table():
                 if cur.Node.children == []:
                     ntv = [Node(x, cur.Scope) for x in cur.Node.children if 'children' in x.__dict__] + ntv[1:]
                     continue
+
                 
                 # Function Declaration
                 if index == 0:
                     if [x for x in self.symbols if x.name == "main"] != [] and [x for x in self.symbols if cur.Node.children[1].name == x.name] == []:
                         print(f'Function Not Properly Declared {cur.Node.children[0].name}')
-                        self.undefined.append(Entry(True,False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope))
+                        self.undefined.append(Entry(True,False, False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope))
                     else:
-                        self.symbols.append(Entry(True,False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
+                        self.symbols.append(Entry(True,False, False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
                         cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + "/")
 
                 #Function Prototype Declaration
                 elif index == 1:
-                    self.symbols.append(Entry(True,False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
+                    self.symbols.append(Entry(True,False, False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
                     cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + "/")
                     pass
                 
@@ -64,7 +66,7 @@ class symbol_table():
                 elif index == 2:
                     if [x for x in self.symbols if x.is_function == True and x.name == cur.Node.children[0].name] == []:
                         print(f'Function Undefined {cur.Node.children[0].name}')
-                        self.undefined.append(Entry(True,False, cur.Node.children[0].name, "None", cur.Scope))
+                        self.undefined.append(Entry(True,False,  False,cur.Node.children[0].name, "None", cur.Scope))
                     pass
                 # Initialization and Usage
                 elif index == 3:
@@ -75,27 +77,43 @@ class symbol_table():
                         if([x for x in self.symbols if x.name == cur.Node.children[1].name and cur.Scope in x.scope] == []):
                             if cur.Node.parent.parent.name != "func" or cur.Node.parent.parent.children[1].name == "main":
                                 if cur.Node.parent.name == "param":
-                                    self.symbols.append(Entry(False,True, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
+                                    self.symbols.append(Entry(False,True,  False,cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
                                 else:
-                                    self.symbols.append(Entry(False,False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
+                                    self.symbols.append(Entry(False,False,  False,cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
                         elif(cur.Node.parent.name != "param"):
                             print(f'Variable Already Declared {cur.Node.children[1].name} {cur.Node.children[0].name}')
-                            self.undefined.append(Entry(False,False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
+                            self.undefined.append(Entry(False,False, False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
                         elif(cur.Node.parent.name == "param" and [x for x in self.symbols if cur.Node.children[1].name == x.name] == []):                
                             print(f'Undeclared parameter{cur.Node.children[1].name} {cur.Node.children[0].name}')
-                            self.undefined.append(Entry(False,False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
+                            self.undefined.append(Entry(False,False, False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
                 
                         pass
                     #usage of varible
                     else:
                         if ([x for x in self.symbols if x.name == cur.Node.children[0].name and cur.Scope in x.scope] == []):
                             print(f'Variable Undeclared {cur.Node.children[0].name}')
-                            self.undefined.append(Entry(False,False,  cur.Node.children[0].name, "None", cur.Scope)) 
+                            self.undefined.append(Entry(False,False, False,  cur.Node.children[0].name, "None", cur.Scope)) 
                             
                         pass
                 elif index == 4:
                     cur = cur._replace(Scope = f"{cur.Scope}{scopenum}/")
                     scopenum += 1
+
+                    #gets all labels declared in body of a function
+                    labels = [x for x in cur.Node.children if x.name.endswith(":")]
+                    
+                    if labels != []:
+
+                        #for each label in the body
+                        for i in labels:
+                            #checks if label is already in the symbol table.
+                            if [x for x in self.symbols if x.name == i.name] == []:
+                                print("if",i.name)
+                                self.symbols.append(Entry(False,False, True,  i.name, "None", cur.Scope)) 
+                            else:
+                                print(i.name)
+                                self.undefined.append(Entry(False,False, True,  i.name, "None", cur.Scope)) 
+                                
                     pass
          
             except ValueError:
@@ -275,6 +293,7 @@ class symbol_table():
             max(max([len(x.type) for x in self.symbols]), len("Type")),
             max(max([len(x.scope) for x in self.symbols]), len("Scope")),
             max(max([len(str(x.is_param)) for x in self.symbols]), len("Param?")),
+            max(max([len(str(x.is_goto)) for x in self.symbols]), len("Goto?")),           
             max(max([len(x.references) for x in self.symbols]), len("References")),
             max(max([len(x.modifiers) for x in self.symbols]), len("Modifiers")),
             
@@ -282,9 +301,9 @@ class symbol_table():
 
         self.symbols.sort(key=lambda x: x.scope)
 
-        print (f"{'Name':^{col_lengths[0]}} | {'Function?':^{col_lengths[1]}} | {'Type':^{col_lengths[2]}} | {'Scope':^{col_lengths[3]}} |  {'Param?':^{col_lengths[4]}} ")
+        print (f"{'Name':^{col_lengths[0]}} | {'Function?':^{col_lengths[1]}} | {'Type':^{col_lengths[2]}} | {'Scope':^{col_lengths[3]}} |  {'Param?':^{col_lengths[4]}} | {'Param?':^{col_lengths[5]}} ")
         print (f"{'-'*col_lengths[0]}-+-{'-'*col_lengths[1]}-+-{'-'*col_lengths[2]}-+-{'-'*col_lengths[3]}-+-{'-'*col_lengths[4]}-")
-        for x in self.symbols: print(f"{x.name:>{col_lengths[0]}} | {str(x.is_function) :>{col_lengths[1]}} | {x.type :>{col_lengths[2]}} | {x.scope :<{col_lengths[3]}} | {str(x.is_param) :>{col_lengths[4]}}")
+        for x in self.symbols: print(f"{x.name:>{col_lengths[0]}} | {str(x.is_function) :>{col_lengths[1]}} | {x.type :>{col_lengths[2]}} | {x.scope :<{col_lengths[3]}} | {str(x.is_param) :>{col_lengths[4]}} | {str(x.is_goto) :>{col_lengths[5]}}")
 
     def print_unknown_symbols(self):
         if len(self.undefined) == 0:
@@ -294,7 +313,7 @@ class symbol_table():
         col_lengths = [
             max(max([len(x.name) for x in self.undefined]), len("Name")),
             max(max([len(str(x.is_function)) for x in self.undefined]), len("Function?")),
-            max(max([len(x.scope) for x in self.undefined]), len("Scope")),
+            max(max([len(x.scope) for x in self.undefined]), len("Scope")),  
         ]
 
         self.undefined.sort(key=lambda x: x.scope)
