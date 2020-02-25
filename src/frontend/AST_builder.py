@@ -127,6 +127,8 @@ def buildAST(parseHead):
             expansion += [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__ and (x.token == "block" or x.token == "content_terminal")]
         elif typ == "break":
             ASTcurrent.children.append(ASTNode("break", ASTcurrent))
+        elif typ == "continue":
+            ASTcurrent.children.append(ASTNode("continue", ASTcurrent))
         elif typ == "jump":
             ASTcurrent.children.append(ASTNode("goto", ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
@@ -169,18 +171,20 @@ def buildAST(parseHead):
             if [x for x in c[0].content if 'content' in x.__dict__] == []:
                 ASTcurrent.children.append(ASTNode(c[0].content[0].value, ASTcurrent))
         elif typ == "for loop":
-            pass
+            #pass
             ASTcurrent.children.append(ASTNode("for", ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
 
             ASTcurrent.children.append(ASTNode("", ASTcurrent))
             ASTcurrent.children.append(ASTNode("", ASTcurrent))
             ASTcurrent.children.append(ASTNode("", ASTcurrent))
-
+            ASTcurrent.children.append(ASTNode("", ASTcurrent))
+           
             expansion =  [(x, ASTcurrent.children[0]) for x in c[0].content if 'content' in x.__dict__ and x.token == "for param 1"]
             expansion += [(x, ASTcurrent.children[1]) for x in c[0].content if 'content' in x.__dict__ and x.token == "for param 2"]
             expansion += [(x, ASTcurrent.children[2]) for x in c[0].content if 'content' in x.__dict__ and x.token == "for param 3"]
             expansion += [(x, ASTcurrent.children[3]) for x in c[0].content if 'content' in x.__dict__ and (x.token == "content_terminal" or x.token == "block")]
+        
         elif typ == "switch":
             ASTcurrent.children.append(ASTNode("branch", ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
