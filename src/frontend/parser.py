@@ -67,7 +67,7 @@ class ParseTree():
         #iterate through the components of the BNF
         for node in content:
             if(type(node) == type(ParseTree("sample","sample"))):
-                string += getListView(node,level)
+                string += node.getListView(level)
 
         return string
 
@@ -531,18 +531,6 @@ class Parser():
 
         @self.pg.production('response : RETURN arithmetic ')
         def response___RETURN_arithmetic_(p):
-            newNode = ParseTree("return",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('response : RETURN function_call ')
-        def response___RETURN_function_call_(p):
-            newNode = ParseTree("return",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('response : RETURN SELF_DEFINED ')
-        def response___RETURN_SELF_DEFINED_(p):
             newNode = ParseTree("return",p)
             self.Head = newNode
             return newNode

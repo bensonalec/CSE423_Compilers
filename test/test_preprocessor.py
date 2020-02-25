@@ -35,7 +35,7 @@ class PreProcessorTests(unittest.TestCase):
                 fi.close()
 
                 with self.subTest():
-                    self.assertEqual(run(text_input), expected)
+                    self.assertEqual(run(text_input, path_to_C_files + c_filename), expected)
                     status = "ok"
 
                 print(f"{'PreProcessor test for '+c_filename:65} {status}")

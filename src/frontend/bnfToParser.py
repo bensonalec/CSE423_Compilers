@@ -176,7 +176,7 @@ class ParseTree():
         #iterate through the components of the BNF
         for node in content:
             if(type(node) == type(ParseTree("sample","sample"))):
-                string += getListView(node,level)
+                string += node.getListView(level)
 
         return string
 

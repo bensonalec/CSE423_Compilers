@@ -62,7 +62,7 @@ def print_tokens(tokens):
 
 
 
-def main(args, fi):
+def main(args):
     """
     The main function of the frontend, takes in command line input via an object from argparse, and the name of the file.
     
@@ -78,12 +78,14 @@ def main(args, fi):
 
     try:
 
+        fi = open(args.input_file, "r")
+
         #Read in file
         text_input = fi.read()
         fi.close()
 
         #Pre-process the text
-        text_input = pre.run(text_input)
+        text_input = pre.run(text_input, args.input_file)
 
         #setup lexer, produce tokens, check for invalid tokens
         lexer = lex.Lexer().get_lexer()
@@ -177,12 +179,12 @@ if __name__ == "__main__":
 
     #open file and pass into main.
     if args.input_file and args.input_file.endswith(".c"):
-        fi = open(args.input_file, "r")
+        main(args)
     else:
         #if not c file.
         if not args.input_file.endswith(".c"):
             print("Error file must end with .c")
         cmd_options.print_help()
         exit()
-    main(args, fi)
+    
 

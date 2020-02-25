@@ -8,7 +8,8 @@
     |   |       `-- arithmetic_input
     |   `-- body
     |       `-- return
-    |           `-- arithmetic_input
+    |           `-- var
+    |               `-- arithmetic_input
     `-- func
         |-- int
         |-- main

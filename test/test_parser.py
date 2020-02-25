@@ -4,7 +4,7 @@ sys.path.insert(0, '../src/frontend')
 
 import unittest
 from lexer import Lexer, tokensToString
-from parser import Parser
+from parser import Parser, ParseTree
 from preprocessor import run
 import frontend
 
@@ -30,7 +30,7 @@ class ParserTests(unittest.TestCase):
                 text_input = fi.read()
                 fi.close()
 
-                text_input = run(text_input)
+                text_input = run(text_input, path_to_C_files + c_filename)
 
                 lexer = Lexer().get_lexer()
                 tokens = lexer.lex(text_input)
@@ -48,7 +48,7 @@ class ParserTests(unittest.TestCase):
                 fi.close()
 
                 with self.subTest():
-                    self.assertEqual(frontend.getListView(head,0), expected)
+                    self.assertEqual(head.getListView(0), expected)
                     status = "ok"
                 
                 print(f"{'Parser test for '+c_filename:65} {status}")

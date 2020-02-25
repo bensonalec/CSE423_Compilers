@@ -98,8 +98,6 @@ goto : SELF_DEFINED COLON content_terminal #goto
 goto : SELF_DEFINED COLON #goto
 
 response : RETURN arithmetic #return
-response : RETURN function_call #return
-response : RETURN SELF_DEFINED #return
 response : RETURN #return
 
 response : GOTO SELF_DEFINED #jump

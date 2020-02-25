@@ -39,4 +39,5 @@
 8 : ['content_terminal']
 9 : ['single_line']
 10 : ['return', Token('SEMICOLON', ';')]
-11 : [Token('RETURN', 'return'), Token('SELF_DEFINED', 'x')]
+11 : [Token('RETURN', 'return'), 'arithmetic']
+12 : [Token('SELF_DEFINED', 'x')]

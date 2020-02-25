@@ -9,7 +9,7 @@ from lexer import Lexer, tokensToString
 from parser import Parser
 from frontend import *
 from preprocessor import run
-from AST_builder import buildAST, print_AST, ASTNode
+from AST_builder import buildAST, ASTNode
 
 
 path_to_C_files = "./programs/"
@@ -35,7 +35,7 @@ class AbstractSyntaxTreeTests(unittest.TestCase):
                 text_input = fi.read()
                 fi.close()
 
-                text_input = run(text_input)
+                text_input = run(text_input, path_to_C_files + c_filename)
 
                 lexer = Lexer().get_lexer()
                 tokens = lexer.lex(text_input)
@@ -57,7 +57,7 @@ class AbstractSyntaxTreeTests(unittest.TestCase):
                 with self.subTest():
                     # Redirect std-out to test that AST print output is correct
                     with patch('sys.stdout', new = StringIO()) as fake_stdout:
-                        print_AST(astree)
+                        astree.print_AST()
                         self.assertEqual(fake_stdout.getvalue(), expected)
                     
                     status = "ok"

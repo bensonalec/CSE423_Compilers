@@ -4,6 +4,7 @@ sys.path.insert(0, '../src/frontend')
 
 import unittest
 from lexer import Lexer, tokensToString
+from preprocessor import run
 
 path_to_C_files = "./programs/"
 path_to_output_files = "./expected_output/lexer/"
@@ -27,6 +28,8 @@ class LexerTests(unittest.TestCase):
                 fi = open(path_to_C_files + c_filename)
                 text_input = fi.read()
                 fi.close()
+
+                text_input = run(text_input, path_to_C_files + c_filename)
 
                 lexer = Lexer().get_lexer()
                 tokens = lexer.lex(text_input)

@@ -112,12 +112,6 @@ def buildAST(parseHead):
             ASTcurrent.children.append(ASTNode("return", ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
 
-            # Checking if their are any terminals after 'return' such as 'SELF_DEFINED'
-            # TODO: OJ, is there a better way to do this? (not including editing BNF)
-            return_tokens = [x for x in c[0].content if 'value' in x.__dict__]
-            if len(return_tokens) > 1:
-                ASTcurrent.children.append(ASTNode(c[0].content[1].value, ASTcurrent))
-
         elif typ == "function call":
             ASTcurrent.children.append(ASTNode("call", ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
