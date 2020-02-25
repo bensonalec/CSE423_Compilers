@@ -64,7 +64,6 @@ def buildAST(parseHead):
         elif typ == "arg_terminal":
             ASTcurrent.children.append(ASTNode("var", ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
-            ASTcurrent.children.append(ASTNode(c[0].content[0].value, ASTcurrent))
             ASTcurrent.children.append(ASTNode(c[0].content[1].value, ASTcurrent))
         elif typ == "if":
             # Check if the node is already within a branch
