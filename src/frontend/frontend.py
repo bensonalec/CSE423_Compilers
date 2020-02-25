@@ -61,55 +61,6 @@ def print_tokens(tokens):
     print(lex.tokensToString(deepcopy(tokens)))
 
 
-def getListView(head,level):
-    """
-    Prints a simple list version of the tree for output. Calls itself recursively
-
-    Args:
-        head: The head node of the tree.
-        level: The current level of the tree.
-    """
-    string = ""
-    level += 1
-    token = head.token
-    content = head.content
-    li = []
-    out = ""
-    for node in content:
-        if(type(node) != type(par.ParseTree("sample","sample"))):
-            li.append(node)
-        else:
-            li.append(node.token)
-    
-    string += f"{level} : {li}\n"
-
-    #iterate through the components of the BNF
-    for node in content:
-        if(type(node) == type(par.ParseTree("sample","sample"))):
-            string += getListView(node,level)
-
-    return string
-
-
-def pprint_tree(node, file=None, _prefix="", _last=True):
-    """
-    Prints the ParseTree in depth first order
-
-    Args: 
-        node: The head node of the tree.
-        file: The file to be written to (Defaults to Stdout).
-        _prefix: A string indicating the spacing from the left side of the screen.
-        _last: A boolean that indicates if a node is the last in it's immediate surroundings.
-    """
-    if type(node) == type(par.ParseTree("test", "test")):
-        print(_prefix, "`-- " if _last else "|-- ", node.token, sep="", file=file)
-        _prefix += "    " if _last else "|   "
-        child_count = len(node.content)
-        for i, child in enumerate(node.content):
-            _last = i == (child_count - 1)
-            pprint_tree(child, file, _prefix, _last)
-    else:
-        print(_prefix, "`-- " if _last else "|-- ", node, sep="", file=file)
 
 def main(args, fi):
     """
@@ -126,8 +77,6 @@ def main(args, fi):
     
 
     try:
-
-        #print(sys.modules)
 
         #Read in file
         text_input = fi.read()
@@ -156,22 +105,19 @@ def main(args, fi):
 
         if args.tree or args.all:
             # Represent parse tree as a list with levels
-            print(getListView(head, 0))
-
-        if args.all:
-            # Represent parse tree as single line (mainly for unit testing)
-            print(getTree(head, 0)) 
+            print(head.getListView(0))
 
         if args.pretty or args.all:
             # Pretty print parse tree
-            pprint_tree(head)
+            # pprint_tree(head)
+            head.print_ParseTree()
 
         # Build Abstract Syntax Tree
         astree = ast.buildAST(head)
 
         if args.ast or args.all:
             # Pretty print AST
-            ast.print_AST(astree)
+            astree.print_AST()
 
         # Initialize symbol table and begin semantic analysis
         sym = sem.symbol_table(astree)

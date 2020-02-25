@@ -33,9 +33,12 @@ def buildAST(parseHead):
             ASTcurrent = ASTcurrent.children[-1]
             ASTcurrent.children.append(ASTNode("var", ASTcurrent))
             ASTcurrent.children[-1].children.append(ASTNode(c[0].content[1].value, ASTcurrent))
+
             if len(c[0].content) == 2:
                 ASTcurrent.children.append(ASTNode("NULL", ASTcurrent.parent))
-            expansion =[(x, ASTcurrent.children[0]) for x in c[0].content if 'content' in x.__dict__ and x.token == "var_type"] + [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__ and x.token != "var_type"]
+            
+            expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if 'content' in x.__dict__ and x.token == "var_type"]
+            expansion += [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__ and x.token != "var_type"]
         elif typ == "designation":
             ASTcurrent.children.append(ASTNode(c[0].content[1].content[0].value, ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
@@ -54,7 +57,9 @@ def buildAST(parseHead):
 
            
             # split the content of the function definition up
-            expansion = [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__ and x.token == 'func_type'] + [(x, ASTcurrent.children[1]) for x in c[0].content if 'content' in x.__dict__ and x.token == 'args'] + [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__ and x.token == 'block']
+            expansion = [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__ and x.token == 'func_type']
+            expansion += [(x, ASTcurrent.children[1]) for x in c[0].content if 'content' in x.__dict__ and x.token == 'args']
+            expansion += [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__ and x.token == 'block']
         elif typ == "functionDeclaration":
             ASTcurrent.children.append(ASTNode("decl", ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
@@ -75,7 +80,9 @@ def buildAST(parseHead):
             ASTcurrent.children.append(ASTNode("", ASTcurrent))
 
             # split the condition from the body
-            expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if 'content' in x.__dict__ and x.token == 'collation'] + [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__ and x.token == 'if_body'] + [(x, ASTcurrent.parent) for x in c[0].content if 'content' in x.__dict__ and x.token == "if_expansion"]
+            expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if 'content' in x.__dict__ and x.token == 'collation']
+            expansion += [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__ and x.token == 'if_body']
+            expansion += [(x, ASTcurrent.parent) for x in c[0].content if 'content' in x.__dict__ and x.token == "if_expansion"]
         elif typ == "if_expansion":
             # Check if it's the last else in the if statement
             if c[0].content[1].content[0].token == 'content_terminal' and c[0].content[1].content[0].content[0].token == "if":
@@ -122,7 +129,8 @@ def buildAST(parseHead):
             ASTcurrent = ASTcurrent.children[-1]
             ASTcurrent.children.append(ASTNode("", ASTcurrent))
 
-            expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if 'content' in x.__dict__ and x.token == "collation"] + [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__ and (x.token == "block" or x.token == "content_terminal")]
+            expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if 'content' in x.__dict__ and x.token == "collation"]
+            expansion += [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__ and (x.token == "block" or x.token == "content_terminal")]
         elif typ == "break":
             ASTcurrent.children.append(ASTNode("break", ASTcurrent))
         elif typ == "jump":
@@ -138,7 +146,8 @@ def buildAST(parseHead):
             ASTcurrent = ASTcurrent.children[-1]
             ASTcurrent.children.append(ASTNode("", ASTcurrent))
 
-            expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if 'content' in x.__dict__ and x.token == "collation"] + [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__ and (x.token == "block" or x.token == "content_terminal")]
+            expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if 'content' in x.__dict__ and x.token == "collation"]
+            expansion += [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__ and (x.token == "block" or x.token == "content_terminal")]
         elif typ == "unary":
             if len([x for x in c[0].content if 'content' in x.__dict__]):
                 index = [x for x in range(2) if x != [y.token if 'content' in y.__dict__ else y.name for y in c[0].content].index("arithmetic")][0]
@@ -243,26 +252,7 @@ def buildAST(parseHead):
             c.parent.children = c.children + c.parent.children[1:]
         ntv = [x for x in c.children] + ntv[1:]
 
-
-
     return ASTHead
-
-def print_AST(node, file=None, _prefix="", _last=True):
-    """
-    Prints the AST given the head
-
-    Args:
-        node: The head node of the tree.
-        file: The file to be written to (Defaults to Stdout).
-        _prefix: A string indicating the spacing from the left side of the screen.
-        _last: A boolean that indicates if a node is the last in it's immediate surroundings.
-    """
-    print(_prefix, "`-- " if _last else "|-- ", node.name, sep="", file=file)
-    _prefix += "    " if _last else "|   "
-    child_count = len(node.children)
-    for i, child in enumerate(node.children):
-        _last = i == (child_count - 1)
-        print_AST(child, file, _prefix, _last)
 
 
 class ASTNode():
@@ -281,3 +271,19 @@ class ASTNode():
         self.name = name
         self.parent = parent
         self.children = []
+
+    def print_AST(self, file=None, _prefix="", _last=True):
+        """
+        Prints the AST given the head
+
+        Args:
+            file: The file to be written to (Defaults to Stdout).
+            _prefix: A string indicating the spacing from the left side of the screen.
+            _last: A boolean that indicates if a node is the last in it's immediate surroundings.
+        """
+        print(f"{_prefix}{'`-- ' if _last else '|-- '}{self.name}", file=file)
+        _prefix += "    " if _last else "|   "
+        for i, child in enumerate(self.children):
+            _last = i == len(self.children)-1
+            child.print_AST(file, _prefix, _last)
+        

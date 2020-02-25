@@ -25,6 +25,59 @@ class ParseTree():
         self.token = token
         self.content = content
 
+    def print_ParseTree(self, file=None, _prefix="", _last=True):
+        """
+        Prints the ParseTree in depth first order
+
+        Args:
+            file: The file to be written to (Defaults to Stdout).
+            _prefix: A string indicating the spacing from the left side of the screen.
+            _last: A boolean that indicates if a self is the last in it's immediate surroundings.
+        """
+        print(f"{_prefix}{'`-- ' if _last else '|-- '}{self.token}", file=file)
+        _prefix += "    " if _last else "|   "
+        for i, child in enumerate(self.content):
+            _last = i == len(self.content)-1
+            if 'content' in child.__dict__:
+                child.print_ParseTree(file, _prefix, _last)
+            else:
+                print(f"{_prefix}{'`-- ' if _last else '|-- '}{child}", file=file)
+
+    def getListView(self, level):
+        """
+        Prints a simple list version of the tree for output. Calls itself recursively
+
+        Args:
+            level: The current level of the tree.
+        """
+        string = ""
+        level += 1
+        token = self.token
+        content = self.content
+        li = []
+        out = ""
+        for node in content:
+            if(type(node) != type(ParseTree("sample","sample"))):
+                li.append(node)
+            else:
+                li.append(node.token)
+        
+        string += f"{level} : {li}\n"
+
+        #iterate through the components of the BNF
+        for node in content:
+            if(type(node) == type(ParseTree("sample","sample"))):
+                string += getListView(node,level)
+
+        return string
+
+
+
+        #iterate through the components of the BNF
+        for node in content:
+            if(type(node) == type(ParseTree("sample","sample"))):
+                out += getTree(node,level)
+        return out
 
 #setup parser class
 class Parser():
