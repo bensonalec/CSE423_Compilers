@@ -92,7 +92,7 @@ class Parser():
         """
 
         self.pg = ParserGenerator(
-            ['COMMENT','SELF_DEFINED','OPEN_PAREN','CLOSE_PAREN','SEMICOLON','TYPE','FUNC_MODIF','BOTH_MODIF','VAR_MODIF','COMMA','OPEN_BRACE','CLOSE_BRACE','STRING','WHILE_LOOP','FOR_LOOP','DO_LOOP','IF_BRANCH','ELSE_BRANCH','SWITCH_BRANCH','CASE','COLON','DEFAULT','RETURN','GOTO','BREAK','CONTINUE','SET','OPEN_BRACK','INTEGER','CLOSE_BRACK','MUL','AEQ','SEQ','MEQ','DEQ','MODEQ','LSEQ','RSEQ','BOEQ','BAEQ','XEQ','EQ','LEQ','GEQ','NEQ','LT','GT','OR','AND','BOR','XOR','BAND','LSH','RSH','ADD','SUB','DIV','MOD','NOT','COMP','INC','DEC','PRECISION','CHAR','HEX','OCT','BIN','NULL'] , 
+            ['COMMENT','SELF_DEFINED','OPEN_PAREN','CLOSE_PAREN','SEMICOLON','TYPE','FUNC_MODIF','BOTH_MODIF','VAR_MODIF','COMMA','OPEN_BRACK','CLOSE_BRACK','OPEN_BRACE','CLOSE_BRACE','STRING','WHILE_LOOP','FOR_LOOP','DO_LOOP','IF_BRANCH','ELSE_BRANCH','SWITCH_BRANCH','CASE','COLON','DEFAULT','RETURN','GOTO','BREAK','CONTINUE','SET','INTEGER','MUL','AEQ','SEQ','MEQ','DEQ','MODEQ','LSEQ','RSEQ','BOEQ','BAEQ','XEQ','EQ','LEQ','GEQ','NEQ','LT','GT','OR','AND','BOR','XOR','BAND','LSH','RSH','ADD','SUB','DIV','MOD','NOT','COMP','INC','DEC','PRECISION','CHAR','HEX','OCT','BIN','NULL'] , 
             precedence=[
                 ('right', ['SET', 'AEQ', 'SEQ', 'MEQ', 'DEQ', 'MODEQ', 'LSEQ', 'RSEQ', 'BAEQ', 'XEQ', 'BOEQ']),
                 ('left',  ['OR']),
@@ -271,6 +271,12 @@ class Parser():
             self.Head = newNode
             return newNode
 
+        @self.pg.production('arg_terminal : var_type SELF_DEFINED OPEN_BRACK CLOSE_BRACK ')
+        def arg_terminal___var_type_SELF_DEFINED_OPEN_BRACK_CLOSE_BRACK_(p):
+            newNode = ParseTree("arg_terminal",p)
+            self.Head = newNode
+            return newNode
+
         @self.pg.production('arg_terminal : var_type ')
         def arg_terminal___var_type_(p):
             newNode = ParseTree("arg_terminal",p)
@@ -382,6 +388,12 @@ class Parser():
         @self.pg.production('function_call : SELF_DEFINED OPEN_PAREN CLOSE_PAREN ')
         def function_call___SELF_DEFINED_OPEN_PAREN_CLOSE_PAREN_(p):
             newNode = ParseTree("function call",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('string_literal : STRING ')
+        def string_literal___STRING_(p):
+            newNode = ParseTree("string literal",p)
             self.Head = newNode
             return newNode
 
@@ -583,8 +595,8 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production('initialization : var_type SELF_DEFINED array_init assignment STRING ')
-        def initialization___var_type_SELF_DEFINED_array_init_assignment_STRING_(p):
+        @self.pg.production('initialization : var_type SELF_DEFINED array_init SET initialization_terminal ')
+        def initialization___var_type_SELF_DEFINED_array_init_SET_initialization_terminal_(p):
             newNode = ParseTree("initialization",p)
             self.Head = newNode
             return newNode
@@ -615,6 +627,12 @@ class Parser():
 
         @self.pg.production('initialization_terminal : function_call ')
         def initialization_terminal___function_call_(p):
+            newNode = ParseTree("initialization_terminal",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('initialization_terminal : string_literal ')
+        def initialization_terminal___string_literal_(p):
             newNode = ParseTree("initialization_terminal",p)
             self.Head = newNode
             return newNode

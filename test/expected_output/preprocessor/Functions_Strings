@@ -1,0 +1,8 @@
+int return_strings(char string[], int i) {
+    return 1;
+}
+
+int main() {
+
+    int i = return_strings("test", 1);
+}

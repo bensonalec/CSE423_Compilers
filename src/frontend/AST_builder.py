@@ -34,7 +34,7 @@ def buildAST(parseHead):
             ASTcurrent.children.append(ASTNode("var", ASTcurrent))
             ASTcurrent.children[-1].children.append(ASTNode(c[0].content[1].value, ASTcurrent))
 
-            if len(c[0].content) == 2:
+            if not [x for x in c[0].content if 'value' in x.__dict__ and x.value == "="]:
                 ASTcurrent.children.append(ASTNode("NULL", ASTcurrent.parent))
             
             expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if 'content' in x.__dict__ and x.token == "var_type"]
@@ -111,6 +111,10 @@ def buildAST(parseHead):
         elif typ == "return":
             ASTcurrent.children.append(ASTNode("return", ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
+
+        elif typ == "string literal":
+            ASTcurrent.children.append(ASTNode(c[0].content[0].value, ASTcurrent))
+            #ASTcurrent = ASTcurrent.children[-1]
 
         elif typ == "function call":
             ASTcurrent.children.append(ASTNode("call", ASTcurrent))

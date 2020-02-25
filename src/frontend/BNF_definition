@@ -33,6 +33,7 @@ args : arg_terminal COMMA args #args
 args : arg_terminal #args
 
 arg_terminal : var_type SELF_DEFINED #arg_terminal
+arg_terminal : var_type SELF_DEFINED OPEN_BRACK CLOSE_BRACK #arg_terminal
 arg_terminal : var_type #arg_terminal
 
 block : OPEN_BRACE content CLOSE_BRACE #block
@@ -57,6 +58,8 @@ single_line : SEMICOLON #single_line
 
 function_call : SELF_DEFINED OPEN_PAREN param CLOSE_PAREN #function call
 function_call : SELF_DEFINED OPEN_PAREN CLOSE_PAREN #function call
+
+string_literal : STRING #string literal
 
 param : param_terminal #parameter
 param : param_terminal COMMA param #parameter
@@ -109,7 +112,7 @@ initialization : var_type SELF_DEFINED SET initialization_terminal #initializati
 initialization : var_type SELF_DEFINED #initialization
 initialization : var_type SELF_DEFINED OPEN_BRACK INTEGER CLOSE_BRACK #initialization
 initialization : var_type MUL designation #initialization
-initialization : var_type SELF_DEFINED array_init assignment STRING #initialization
+initialization : var_type SELF_DEFINED array_init SET initialization_terminal #initialization
 initialization : var_type SELF_DEFINED array_init assignment OPEN_BRACE arr_list CLOSE_BRACE #initialization
 
 array_init : OPEN_BRACK INTEGER CLOSE_BRACK #array_init
@@ -117,6 +120,7 @@ array_init : OPEN_BRACK CLOSE_BRACK #array_init
 
 initialization_terminal : arithmetic #initialization_terminal
 initialization_terminal : function_call #initialization_terminal
+initialization_terminal : string_literal #initialization_terminal
 
 var_type : var_modif TYPE #var_type
 var_type : TYPE #var_type
