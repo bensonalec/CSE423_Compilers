@@ -8,6 +8,7 @@
     |   |       `-- arithmetic_input
     |   `-- body
     |       `-- return
+    |           `-- arithmetic_input
     `-- func
         |-- int
         |-- main
@@ -19,3 +20,4 @@
                 |   `-- value_1
                 `-- call
                     `-- function
+                        `-- 1

@@ -40,6 +40,9 @@ class PreProcessorTests(unittest.TestCase):
 
                 print(f"{'PreProcessor test for '+c_filename:65} {status}")
 
+            elif c_filename.endswith('.c'):
+                print(f"{'PreProcessor test for '+c_filename:65} skipped")
+
 if __name__ == '__main__':
 	unittest.main()
 

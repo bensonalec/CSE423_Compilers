@@ -18,7 +18,7 @@ path_to_output_files = "./expected_output/ast/"
 class AbstractSyntaxTreeTests(unittest.TestCase):
 
     # Add program into list if for some reason, we shouldn't test it.
-    skip_programs = ["Arithmetic_As_Function_Input.c","If_Else.c","Identifiers_Variables_Functions.c", "Pre_Processor.c"]
+    skip_programs = []
 
     maxDiff = None
 
@@ -63,6 +63,9 @@ class AbstractSyntaxTreeTests(unittest.TestCase):
                     status = "ok"
                 
                 print(f"{'AST test for '+c_filename:65} {status}")
+                
+            elif c_filename.endswith('.c'):
+                print(f"{'AST test for '+c_filename:65} skipped")
 
 if __name__ == '__main__':
 	unittest.main()

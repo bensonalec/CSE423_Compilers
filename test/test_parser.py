@@ -14,7 +14,7 @@ path_to_output_files = "./expected_output/parser/"
 class ParserTests(unittest.TestCase):
 
     # Add program into list if for some reason, we shouldn't test it.
-    skip_programs = ["Pre_Processor.c"]
+    skip_programs = []
 
     maxDiff = None
 
@@ -52,6 +52,9 @@ class ParserTests(unittest.TestCase):
                     status = "ok"
                 
                 print(f"{'Parser test for '+c_filename:65} {status}")
+
+            elif c_filename.endswith('.c'):
+                print(f"{'Parser test for '+c_filename:65} skipped")
 
 
 if __name__ == '__main__':

@@ -22,7 +22,7 @@
 10 : ['var_type', Token('SELF_DEFINED', 'value_1'), Token('SET', '='), 'initialization_terminal']
 11 : [Token('TYPE', 'int')]
 11 : ['function call']
-12 : [Token('SELF_DEFINED', 'function'), Token('OPEN_PAREN', '('), 'paramater', Token('CLOSE_PAREN', ')')]
+12 : [Token('SELF_DEFINED', 'function'), Token('OPEN_PAREN', '('), 'parameter', Token('CLOSE_PAREN', ')')]
 13 : ['param_terminal']
 14 : ['arithmetic']
 15 : ['value']

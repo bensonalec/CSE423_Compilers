@@ -8,17 +8,15 @@
             |   |-- case
             |   |   |-- 1
             |   |   `-- body
-            |   `-- body
-            |       `-- branch
-            |           |-- case
-            |           |   |-- 0
-            |           |   `-- body
-            |           `-- default
-            |               `-- body
-            |                   `-- branch
-            |                       `-- case
-            |                           |-- 1
-            |                           `-- body
+            |   |-- case
+            |   |   |-- 0
+            |   |   `-- body
+            |   `-- default
+            |       `-- body
+            |           `-- branch
+            |               `-- case
+            |                   |-- 1
+            |                   `-- body
             `-- branch
                 |-- case
                 |   |-- 1

@@ -42,6 +42,9 @@ class LexerTests(unittest.TestCase):
                     status = "ok"
 
                 print(f"{'Lexer test for '+c_filename:65} {status}")
+
+            elif c_filename.endswith('.c'):
+                print(f"{'Lexer test for '+c_filename:65} skipped")
  
 if __name__ == '__main__':
 	unittest.main()

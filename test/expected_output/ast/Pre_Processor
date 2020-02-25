@@ -1,13 +1,8 @@
 `-- program
-    |-- =
-    |   |-- var
-    |   |   |-- int
-    |   |   `-- a
-    |   `-- 501
     |-- decl
-    |   |-- int
-    |   |-- header_function
+    |   |-- func_type
     |   `-- param
+    |       |-- int
     |       |-- var
     |       |   |-- int
     |       |   `-- a
