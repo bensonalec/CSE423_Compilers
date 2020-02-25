@@ -1,0 +1,26 @@
+`-- program
+    |-- =
+    |   |-- var
+    |   |   |-- int
+    |   |   `-- a
+    |   `-- 501
+    |-- decl
+    |   |-- int
+    |   |-- header_function
+    |   `-- param
+    |       |-- var
+    |       |   |-- int
+    |       |   `-- a
+    |       |-- var
+    |       |   |-- int
+    |       |   `-- b
+    |       `-- var
+    |           |-- int
+    |           `-- c
+    `-- func
+        |-- int
+        |-- main
+        |-- param
+        `-- body
+            `-- return
+                `-- 500
