@@ -58,7 +58,7 @@ single_line : SEMICOLON #single_line
 function_call : SELF_DEFINED OPEN_PAREN param CLOSE_PAREN #function call
 function_call : SELF_DEFINED OPEN_PAREN CLOSE_PAREN #function call
 
-param : param_terminal #paramater
+param : param_terminal #parameter
 param : param_terminal COMMA param #parameter
 
 param_terminal : arithmetic #param_terminal

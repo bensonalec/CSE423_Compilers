@@ -334,7 +334,7 @@ class Parser():
 
         @self.pg.production('param : param_terminal ')
         def param___param_terminal_(p):
-            newNode = ParseTree("paramater",p)
+            newNode = ParseTree("parameter",p)
             self.Head = newNode
             return newNode
 

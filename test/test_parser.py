@@ -14,7 +14,7 @@ path_to_output_files = "./expected_output/parser/"
 class ParserTests(unittest.TestCase):
 
     # Add program into list if for some reason, we shouldn't test it.
-    skip_programs = []
+    skip_programs = ["Pre_Processor.c"]
 
     maxDiff = None
 
