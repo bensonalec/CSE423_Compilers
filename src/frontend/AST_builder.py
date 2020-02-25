@@ -79,7 +79,9 @@ def buildAST(parseHead):
             expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if 'content' in x.__dict__ and x.token == 'collation'] + [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__ and x.token == 'if_body'] + [(x, ASTcurrent.parent) for x in c[0].content if 'content' in x.__dict__ and x.token == "if_expansion"]
         elif typ == "if_expansion":
             # Check if it's the last else in the if statement
-            if not (c[0].content[1].content[0].token == 'content_terminal' and c[0].content[1].content[0].content[0].token == "if"):
+            if c[0].content[1].content[0].token == 'content_terminal' and c[0].content[1].content[0].content[0].token == "if":
+                expansion = [(x, ASTcurrent) for x in c[0].content[1].content[0].content if 'content' in x.__dict__ and x.token == "if"]
+            else:
                 ASTcurrent.children.append(ASTNode("default", ASTcurrent))
                 ASTcurrent = ASTcurrent.children[-1]
         elif typ == "comparison":
