@@ -44,10 +44,21 @@ class LexerTests(unittest.TestCase):
                     self.assertEqual(tokensToString(tokens), expected)
                     status = "ok"
 
-                print(f"{'Lexer test for '+c_filename:65} {status}")
-
+                print(f"{'Lexer test for '+c_filename:65}", end="")
+                if status == "ok":
+                    print(Colors.green, f"{status}", Colors.reset)
+                else:
+                    print(Colors.red, f"{status}", Colors.reset)
+                
             elif c_filename.endswith('.c'):
-                print(f"{'Lexer test for '+c_filename:65} skipped")
- 
+                print(f"{'Lexer test for '+c_filename:65}", end="")
+                print(Colors.blue, "skipped", Colors.reset)
+
+class Colors: 
+        red='\033[31m'
+        green='\033[32m'
+        blue='\033[34m'
+        reset='\033[00m'
+
 if __name__ == '__main__':
 	unittest.main()
