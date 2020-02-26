@@ -182,6 +182,9 @@ def main(args, fi):
             print ("")
             sym.print_unknown_symbols()
 
+        if args.errors or args.all:
+            sym.printSemanticErrors()
+
     except LexingError as err:
         print("Received error(s) from token validation. Exiting...")
         exit()
@@ -224,6 +227,7 @@ if __name__ == "__main__":
 
     cmd_options.add_argument('-b', '--bnf', nargs='?', const=os.path.realpath("./BNF_definition"), type=str, help='Rebuilds the parser using the current BNF grammar')
 
+    cmd_options.add_argument('-e', '--errors',help='Prints out the errors in the semantic analysis',action="store_true")
 
     #generate arguements
     args = cmd_options.parse_args()
