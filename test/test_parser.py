@@ -4,7 +4,7 @@ sys.path.insert(0, '../src/frontend')
 
 import unittest
 from lexer import Lexer, tokensToString
-from parser import Parser
+from parser import Parser, ParseTree
 from preprocessor import run
 import frontend
 
@@ -19,17 +19,18 @@ class ParserTests(unittest.TestCase):
     maxDiff = None
 
     def test_parser(self):
-        print()
+        print(' ')
 
         for c_filename in os.listdir(path_to_C_files):
-            
             if c_filename.endswith('.c') and c_filename not in self.skip_programs:
+
+                status = "FAIL" #Will change if test passes
 
                 fi = open(path_to_C_files + c_filename)
                 text_input = fi.read()
                 fi.close()
 
-                text_input = run(text_input)
+                text_input = run(text_input, path_to_C_files + c_filename)
 
                 lexer = Lexer().get_lexer()
                 tokens = lexer.lex(text_input)
@@ -46,9 +47,24 @@ class ParserTests(unittest.TestCase):
                 expected = fi.read()
                 fi.close()
 
-                self.assertEqual(frontend.getListView(head,0), expected)
-                print(f"Parser test passed with: {c_filename}")
+                with self.subTest():
+                    self.assertEqual(head.getListView(0), expected)
+                    status = "ok"
+                
+                print(f"{'Parser test for '+c_filename:65}", end="")
+                if status == "ok":
+                    print(Colors.green, f"{status}", Colors.reset)
+                else:
+                    print(Colors.red, f"{status}", Colors.reset)
+                
+            elif c_filename.endswith('.c'):
+                print(f"{'Parser test for '+c_filename:65}", end="")
+                print(Colors.blue, "skipped", Colors.reset)
 
-
+class Colors: 
+        red='\033[31m'
+        green='\033[32m'
+        blue='\033[34m'
+        reset='\033[00m'
 if __name__ == '__main__':
-	unittest.main()
+    unittest.main()

@@ -6,12 +6,14 @@ frontend = importlib.import_module("frontend.frontend", __name__)
 optimizer = importlib.import_module("optimizer.optimizer", __name__)
 #backend = importlib.import_module("backend.backend", package="backend")
 
-def main(args, fi):
+def main(args):
 
     # Execution of the Frontend. 
     # This returns the Abstract Syntax Tree and Symbol Table
-    ast, sym = frontend.main(args, fi)
-    
+    ast, sym = frontend.main(args)
+
+
+
     # Execution of Optimization
     optimizer.mainAST(args,ast,sym)
 
@@ -58,12 +60,10 @@ if __name__ == "__main__":
 
     #open file and pass into main.
     if args.input_file and args.input_file.endswith(".c"):
-        fi = open(args.input_file, "r")
+        main(args)
     else:
         #if not c file.
         if not args.input_file.endswith(".c"):
             print("Error file must end with .c")
         cmd_options.print_help()
         exit()
-
-    main(args, fi)

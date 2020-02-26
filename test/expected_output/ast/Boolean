@@ -1,0 +1,64 @@
+`-- program
+    `-- func
+        |-- int
+        |-- main
+        |-- param
+        `-- body
+            |-- =
+            |   |-- var
+            |   |   |-- int
+            |   |   `-- one
+            |   `-- 1
+            |-- branch
+            |   `-- case
+            |       |-- var
+            |       |   `-- one
+            |       `-- body
+            |-- branch
+            |   `-- case
+            |       |-- >
+            |       |   |-- var
+            |       |   |   `-- one
+            |       |   `-- var
+            |       |       `-- one
+            |       `-- body
+            |-- branch
+            |   `-- case
+            |       |-- <
+            |       |   |-- var
+            |       |   |   `-- one
+            |       |   `-- var
+            |       |       `-- one
+            |       `-- body
+            |-- branch
+            |   `-- case
+            |       |-- ==
+            |       |   |-- var
+            |       |   |   `-- one
+            |       |   `-- var
+            |       |       `-- one
+            |       `-- body
+            |-- branch
+            |   `-- case
+            |       |-- !=
+            |       |   |-- var
+            |       |   |   `-- one
+            |       |   `-- var
+            |       |       `-- one
+            |       `-- body
+            |-- branch
+            |   `-- case
+            |       |-- >=
+            |       |   |-- var
+            |       |   |   `-- one
+            |       |   `-- var
+            |       |       `-- one
+            |       `-- body
+            `-- branch
+                `-- case
+                    |-- <=
+                    |   |-- var
+                    |   |   `-- one
+                    |   `-- var
+                    |       `-- one
+                    `-- body

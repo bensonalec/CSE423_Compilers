@@ -1,0 +1,21 @@
+`-- program
+    `-- func
+        |-- int
+        |-- main
+        |-- param
+        `-- body
+            |-- =
+            |   |-- var
+            |   |   |-- char
+            |   |   `-- string
+            |   `-- "test string"
+            |-- =
+            |   |-- var
+            |   |   |-- char
+            |   |   `-- string_two
+            |   `-- 'test string'
+            `-- =
+                |-- var
+                |   |-- char
+                |   `-- string_special
+                `-- "\n\t\\\'\"\%\$%&*$%&%*$&@@   __  +=-"
