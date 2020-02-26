@@ -30,21 +30,13 @@ This module reads in a BNF and produces a parser for use with rply.The BNF expec
 &#34;&#34;&#34;
 
 import re
+import os
 
     
 funcTemp = &#34;&#34;&#34;
         @self.pg.production(&#39;BNFSPOT&#39;)
         def FUNCNAMESPOT(p):
-            \&#34;\&#34;\&#34;
-            Boilerplate BNF function
-            
-            Args:
-                p: The matching set of tokens.
-
-            Returns:
-                The node of the abstract syntax tree.
-            \&#34;\&#34;\&#34;
-            newNode = AbstractSyntaxTree(&#34;NAMESPOT&#34;,p)
+            newNode = ParseTree(&#34;NAMESPOT&#34;,p)
             self.Head = newNode
             return newNode
 &#34;&#34;&#34;
@@ -58,9 +50,9 @@ headTemp = &#34;&#34;&#34;
                 p: The matching set of tokens.
 
             Returns:
-                The node of the abstract syntax tree.
+                The node of the ParseTree.
             \&#34;\&#34;\&#34;
-            newNode = AbstractSyntaxTree(&#34;NAMESPOT&#34;,p)
+            newNode = ParseTree(&#34;NAMESPOT&#34;,p)
             self.Head = newNode
             return newNode
 &#34;&#34;&#34;
@@ -144,7 +136,7 @@ def main(path):
 
     totalOutput = &#34;&#34;&#34;
 \&#34;\&#34;\&#34;
-This module contains definitions for the AbstractSyntaxTree and Parser classes, as well as some ansillary functions to assist.
+This module contains definitions for the ParseTree and Parser classes, as well as some ansillary functions to assist.
 \&#34;\&#34;\&#34;
 from rply import ParserGenerator
 from rply.errors import ParserGeneratorWarning
@@ -154,13 +146,13 @@ from rply.token import Token
 #we get werid &#39;non-descriptive&#39; warnings from ParserGenerator, this ignores those
 simplefilter(&#39;ignore&#39;, ParserGeneratorWarning)
 
-class AbstractSyntaxTree():
+class ParseTree():
     \&#34;\&#34;\&#34;
-    AbstractSyntaxTree is a class that acts as each node in an Abstract Syntax Tree
+    ParseTree is a class that acts as each node in an ParseTree
     \&#34;\&#34;\&#34;
     def __init__(self, token, content):
         \&#34;\&#34;\&#34;
-        Construct a new AbstractSyntaxTree object
+        Construct a new ParseTree object
 
         Args:
             token: The token type of the node.
@@ -169,6 +161,59 @@ class AbstractSyntaxTree():
         self.token = token
         self.content = content
 
+    def print_ParseTree(self, file=None, _prefix=&#34;&#34;, _last=True):
+        \&#34;\&#34;\&#34;
+        Prints the ParseTree in depth first order
+
+        Args:
+            file: The file to be written to (Defaults to Stdout).
+            _prefix: A string indicating the spacing from the left side of the screen.
+            _last: A boolean that indicates if a self is the last in it&#39;s immediate surroundings.
+        \&#34;\&#34;\&#34;
+        print(f&#34;{_prefix}{&#39;`-- &#39; if _last else &#39;|-- &#39;}{self.token}&#34;, file=file)
+        _prefix += &#34;    &#34; if _last else &#34;|   &#34;
+        for i, child in enumerate(self.content):
+            _last = i == len(self.content)-1
+            if &#39;content&#39; in child.__dict__:
+                child.print_ParseTree(file, _prefix, _last)
+            else:
+                print(f&#34;{_prefix}{&#39;`-- &#39; if _last else &#39;|-- &#39;}{child}&#34;, file=file)
+
+    def getListView(self, level):
+        \&#34;\&#34;\&#34;
+        Prints a simple list version of the tree for output. Calls itself recursively
+
+        Args:
+            level: The current level of the tree.
+        \&#34;\&#34;\&#34;
+        string = &#34;&#34;
+        level += 1
+        token = self.token
+        content = self.content
+        li = []
+        out = &#34;&#34;
+        for node in content:
+            if(type(node) != type(ParseTree(&#34;sample&#34;,&#34;sample&#34;))):
+                li.append(node)
+            else:
+                li.append(node.token)
+        
+        string += f&#34;{level} : {li}\\n&#34;
+
+        #iterate through the components of the BNF
+        for node in content:
+            if(type(node) == type(ParseTree(&#34;sample&#34;,&#34;sample&#34;))):
+                string += node.getListView(level)
+
+        return string
+
+
+
+        #iterate through the components of the BNF
+        for node in content:
+            if(type(node) == type(ParseTree(&#34;sample&#34;,&#34;sample&#34;))):
+                out += getTree(node,level)
+        return out
 
 #setup parser class
 class Parser():
@@ -216,7 +261,7 @@ class Parser():
 
     def print_error(self):
         \&#34;\&#34;\&#34;
-        Prints parser error message. This function ultimately iterates through the AST that was returned after the parser found an error. AST&#39;s consist of tokens as well as other AST&#39;s so we need to iterate to find the first token and then print its source position.
+        Prints parser error message. This function ultimately iterates through the ParseTree that was returned after the parser found an error. ParseTree&#39;s consist of tokens as well as other ParseTree&#39;s so we need to iterate to find the first token and then print its source position.
         \&#34;\&#34;\&#34;
         # TODO: add some more in-depth error processing to print
         # out a more detailed description of what went wrong, and possibly some suggestions 
@@ -242,14 +287,14 @@ class Parser():
             else:
                 # Set head to last element.
                 # If this code executes then I can assume that the 
-                # last element is an AST.
+                # last element is an ParseTree.
                 head = head.content[len(head.content)-1]
 
         if token:
             print(f&#34;ParsingError: Last token  \\\&#39;{token.value}\\\&#39; parsed successfully at, {token.source_pos}\\n&#34;)
         else:
             # Never found a token to report, need to exit
-            print(&#34;ParsingError: No AST obtained\\n&#34;)
+            print(&#34;ParsingError: No ParseTree obtained\\n&#34;)
             exit()
 
 
@@ -259,11 +304,8 @@ class Parser():
     totalOutput = totalOutput.replace(&#34;INITSPOT&#34;,initFunc)
     totalOutput = totalOutput.replace(&#34;FUNCLISTSPOT&#34;,functionList)
 
-    # print (totalOutput)
-
     print(&#34;Overwriting &#34;)
-
-    with open(&#34;parser.py&#34;, &#39;w&#39;) as f:
+    with open(os.path.dirname(__file__) + &#34;/parser.py&#34;, &#39;w&#39;) as f:
         f.write(totalOutput)
 
 if __name__ == &#34;__main__&#34;:
@@ -342,7 +384,7 @@ if __name__ == &#34;__main__&#34;:
 
     totalOutput = &#34;&#34;&#34;
 \&#34;\&#34;\&#34;
-This module contains definitions for the AbstractSyntaxTree and Parser classes, as well as some ansillary functions to assist.
+This module contains definitions for the ParseTree and Parser classes, as well as some ansillary functions to assist.
 \&#34;\&#34;\&#34;
 from rply import ParserGenerator
 from rply.errors import ParserGeneratorWarning
@@ -352,13 +394,13 @@ from rply.token import Token
 #we get werid &#39;non-descriptive&#39; warnings from ParserGenerator, this ignores those
 simplefilter(&#39;ignore&#39;, ParserGeneratorWarning)
 
-class AbstractSyntaxTree():
+class ParseTree():
     \&#34;\&#34;\&#34;
-    AbstractSyntaxTree is a class that acts as each node in an Abstract Syntax Tree
+    ParseTree is a class that acts as each node in an ParseTree
     \&#34;\&#34;\&#34;
     def __init__(self, token, content):
         \&#34;\&#34;\&#34;
-        Construct a new AbstractSyntaxTree object
+        Construct a new ParseTree object
 
         Args:
             token: The token type of the node.
@@ -367,6 +409,59 @@ class AbstractSyntaxTree():
         self.token = token
         self.content = content
 
+    def print_ParseTree(self, file=None, _prefix=&#34;&#34;, _last=True):
+        \&#34;\&#34;\&#34;
+        Prints the ParseTree in depth first order
+
+        Args:
+            file: The file to be written to (Defaults to Stdout).
+            _prefix: A string indicating the spacing from the left side of the screen.
+            _last: A boolean that indicates if a self is the last in it&#39;s immediate surroundings.
+        \&#34;\&#34;\&#34;
+        print(f&#34;{_prefix}{&#39;`-- &#39; if _last else &#39;|-- &#39;}{self.token}&#34;, file=file)
+        _prefix += &#34;    &#34; if _last else &#34;|   &#34;
+        for i, child in enumerate(self.content):
+            _last = i == len(self.content)-1
+            if &#39;content&#39; in child.__dict__:
+                child.print_ParseTree(file, _prefix, _last)
+            else:
+                print(f&#34;{_prefix}{&#39;`-- &#39; if _last else &#39;|-- &#39;}{child}&#34;, file=file)
+
+    def getListView(self, level):
+        \&#34;\&#34;\&#34;
+        Prints a simple list version of the tree for output. Calls itself recursively
+
+        Args:
+            level: The current level of the tree.
+        \&#34;\&#34;\&#34;
+        string = &#34;&#34;
+        level += 1
+        token = self.token
+        content = self.content
+        li = []
+        out = &#34;&#34;
+        for node in content:
+            if(type(node) != type(ParseTree(&#34;sample&#34;,&#34;sample&#34;))):
+                li.append(node)
+            else:
+                li.append(node.token)
+        
+        string += f&#34;{level} : {li}\\n&#34;
+
+        #iterate through the components of the BNF
+        for node in content:
+            if(type(node) == type(ParseTree(&#34;sample&#34;,&#34;sample&#34;))):
+                string += node.getListView(level)
+
+        return string
+
+
+
+        #iterate through the components of the BNF
+        for node in content:
+            if(type(node) == type(ParseTree(&#34;sample&#34;,&#34;sample&#34;))):
+                out += getTree(node,level)
+        return out
 
 #setup parser class
 class Parser():
@@ -414,7 +509,7 @@ class Parser():
 
     def print_error(self):
         \&#34;\&#34;\&#34;
-        Prints parser error message. This function ultimately iterates through the AST that was returned after the parser found an error. AST&#39;s consist of tokens as well as other AST&#39;s so we need to iterate to find the first token and then print its source position.
+        Prints parser error message. This function ultimately iterates through the ParseTree that was returned after the parser found an error. ParseTree&#39;s consist of tokens as well as other ParseTree&#39;s so we need to iterate to find the first token and then print its source position.
         \&#34;\&#34;\&#34;
         # TODO: add some more in-depth error processing to print
         # out a more detailed description of what went wrong, and possibly some suggestions 
@@ -440,14 +535,14 @@ class Parser():
             else:
                 # Set head to last element.
                 # If this code executes then I can assume that the 
-                # last element is an AST.
+                # last element is an ParseTree.
                 head = head.content[len(head.content)-1]
 
         if token:
             print(f&#34;ParsingError: Last token  \\\&#39;{token.value}\\\&#39; parsed successfully at, {token.source_pos}\\n&#34;)
         else:
             # Never found a token to report, need to exit
-            print(&#34;ParsingError: No AST obtained\\n&#34;)
+            print(&#34;ParsingError: No ParseTree obtained\\n&#34;)
             exit()
 
 
@@ -457,11 +552,8 @@ class Parser():
     totalOutput = totalOutput.replace(&#34;INITSPOT&#34;,initFunc)
     totalOutput = totalOutput.replace(&#34;FUNCLISTSPOT&#34;,functionList)
 
-    # print (totalOutput)
-
     print(&#34;Overwriting &#34;)
-
-    with open(&#34;parser.py&#34;, &#39;w&#39;) as f:
+    with open(os.path.dirname(__file__) + &#34;/parser.py&#34;, &#39;w&#39;) as f:
         f.write(totalOutput)</code></pre>
 </details>
 </dd>
