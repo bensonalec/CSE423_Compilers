@@ -29,19 +29,19 @@ import argparse
 import importlib
 
 frontend = importlib.import_module(&#34;frontend.frontend&#34;, __name__)
-#optimization = importlib.import_module(&#34;optimization.optimization&#34;, package=&#34;optimization)
+optimizer = importlib.import_module(&#34;optimizer.optimizer&#34;, __name__)
 #backend = importlib.import_module(&#34;backend.backend&#34;, package=&#34;backend&#34;)
 
-def main(args, fi):
+def main(args):
 
     # Execution of the Frontend. 
     # This returns the Abstract Syntax Tree and Symbol Table
-    ast, sym = frontend.main(args, fi)
+    ast, sym = frontend.main(args)
 
 
 
     # Execution of Optimization
-
+    optimizer.mainAST(args,ast,sym)
 
     # Execution of Backend
 
@@ -75,20 +75,24 @@ if __name__ == &#34;__main__&#34;:
 
     cmd_options.add_argument(&#39;-b&#39;, &#39;--bnf&#39;, nargs=&#39;?&#39;, const=os.path.abspath(os.path.dirname(__file__)) + &#34;/frontend/BNF_definition&#34;, type=str, help=&#39;Rebuilds the parser using the current BNF grammar&#39;)
 
+    cmd_options.add_argument(&#39;-O0&#39;,help=&#39;Does no optimization&#39;)
+
+    cmd_options.add_argument(&#39;-O1&#39;,help=&#39;Optimize the symbol table and AST&#39;)
+
+    cmd_options.add_argument(&#39;-IR1&#39;,help=&#39;Output the first level of IR in the optimizer phase&#39;)
+
     #generate arguements
     args = cmd_options.parse_args()
 
     #open file and pass into main.
     if args.input_file and args.input_file.endswith(&#34;.c&#34;):
-        fi = open(args.input_file, &#34;r&#34;)
+        main(args)
     else:
         #if not c file.
         if not args.input_file.endswith(&#34;.c&#34;):
             print(&#34;Error file must end with .c&#34;)
         cmd_options.print_help()
-        exit()
-
-    main(args, fi)</code></pre>
+        exit()</code></pre>
 </details>
 </section>
 <section>
@@ -99,7 +103,7 @@ if __name__ == &#34;__main__&#34;:
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="src.run.main"><code class="name flex">
-<span>def <span class="ident">main</span></span>(<span>args, fi)</span>
+<span>def <span class="ident">main</span></span>(<span>args)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -107,11 +111,16 @@ if __name__ == &#34;__main__&#34;:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def main(args, fi):
+<pre><code class="python">def main(args):
 
     # Execution of the Frontend. 
     # This returns the Abstract Syntax Tree and Symbol Table
-    ast, sym = frontend.main(args, fi)</code></pre>
+    ast, sym = frontend.main(args)
+
+
+
+    # Execution of Optimization
+    optimizer.mainAST(args,ast,sym)</code></pre>
 </details>
 </dd>
 </dl>

@@ -43,7 +43,9 @@ class Entry():
 
 
 Node = namedtuple(&#34;Node&#34;, [&#34;Node&#34;, &#34;Scope&#34;])
-
+Node.__docstring__ = &#34;&#34;&#34;
+A simple namedtuple to allow for better readability when performing the depth first search required for the semantic analysis.
+&#34;&#34;&#34;
 class symbol_table():
     def __init__(self,AST):
         self.AST = AST

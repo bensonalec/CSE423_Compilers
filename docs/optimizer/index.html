@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.4" />
-<title>src.frontend API documentation</title>
+<title>src.optimizer API documentation</title>
 <meta name="description" content="" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -17,7 +17,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>src.frontend</code></h1>
+<h1 class="title">Module <code>src.optimizer</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
@@ -33,34 +33,13 @@ sys.path.insert(0, os.path.dirname(__file__))</code></pre>
 <section>
 <h2 class="section-title" id="header-submodules">Sub-modules</h2>
 <dl>
-<dt><code class="name"><a title="src.frontend.AST_builder" href="AST_builder.html">src.frontend.AST_builder</a></code></dt>
-<dd>
-<section class="desc"><p>This module takes in the parse tree, and produces an Abstract Syntax Tree.This is done using a Depth First Traversal. By taking the Concrete Syntax …</p></section>
-</dd>
-<dt><code class="name"><a title="src.frontend.bnfToParser" href="bnfToParser.html">src.frontend.bnfToParser</a></code></dt>
-<dd>
-<section class="desc"><p>This module reads in a BNF and produces a parser for use with rply.The BNF expects the form X : Y Y #name, where the name determines what the node …</p></section>
-</dd>
-<dt><code class="name"><a title="src.frontend.frontend" href="frontend.html">src.frontend.frontend</a></code></dt>
-<dd>
-<section class="desc"><p>This module acts as the interface for running all the seperate portions of the front end. It allows
-for command line arguments that can be used to …</p></section>
-</dd>
-<dt><code class="name"><a title="src.frontend.lexer" href="lexer.html">src.frontend.lexer</a></code></dt>
-<dd>
-<section class="desc"><p>The lexer class definition. Uses rplys lexer as a jumping off point, and regexes and token names are added in order to tokenize.</p></section>
-</dd>
-<dt><code class="name"><a title="src.frontend.parser" href="parser.html">src.frontend.parser</a></code></dt>
-<dd>
-<section class="desc"><p>This module contains definitions for the ParseTree and Parser classes, as well as some ansillary functions to assist.</p></section>
-</dd>
-<dt><code class="name"><a title="src.frontend.preprocessor" href="preprocessor.html">src.frontend.preprocessor</a></code></dt>
+<dt><code class="name"><a title="src.optimizer.IR_Lv1_Builder" href="IR_Lv1_Builder.html">src.optimizer.IR_Lv1_Builder</a></code></dt>
 <dd>
 <section class="desc"></section>
 </dd>
-<dt><code class="name"><a title="src.frontend.semantics" href="semantics.html">src.frontend.semantics</a></code></dt>
+<dt><code class="name"><a title="src.optimizer.optimizer" href="optimizer.html">src.optimizer.optimizer</a></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>This module serves as the main interface to the optimization process in order to streamline the compiler.</p></section>
 </dd>
 </dl>
 </section>
@@ -84,13 +63,8 @@ for command line arguments that can be used to …</p></section>
 </li>
 <li><h3><a href="#header-submodules">Sub-modules</a></h3>
 <ul>
-<li><code><a title="src.frontend.AST_builder" href="AST_builder.html">src.frontend.AST_builder</a></code></li>
-<li><code><a title="src.frontend.bnfToParser" href="bnfToParser.html">src.frontend.bnfToParser</a></code></li>
-<li><code><a title="src.frontend.frontend" href="frontend.html">src.frontend.frontend</a></code></li>
-<li><code><a title="src.frontend.lexer" href="lexer.html">src.frontend.lexer</a></code></li>
-<li><code><a title="src.frontend.parser" href="parser.html">src.frontend.parser</a></code></li>
-<li><code><a title="src.frontend.preprocessor" href="preprocessor.html">src.frontend.preprocessor</a></code></li>
-<li><code><a title="src.frontend.semantics" href="semantics.html">src.frontend.semantics</a></code></li>
+<li><code><a title="src.optimizer.IR_Lv1_Builder" href="IR_Lv1_Builder.html">src.optimizer.IR_Lv1_Builder</a></code></li>
+<li><code><a title="src.optimizer.optimizer" href="optimizer.html">src.optimizer.optimizer</a></code></li>
 </ul>
 </li>
 </ul>

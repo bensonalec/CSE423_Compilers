@@ -24,7 +24,8 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import re
+<pre><code class="python">import os
+import re
 
 def remove_comments(text):
     &#34;&#34;&#34;
@@ -61,7 +62,7 @@ def find_preprocessors(text):
 
 
 
-def get_text(file_name):
+def get_text(file_name, path):
     &#34;&#34;&#34;
     Opens and retrieves the text from an import file and preprocesses this text.
 
@@ -71,13 +72,12 @@ def get_text(file_name):
     Returns:
         Text of the import file.
     &#34;&#34;&#34;
-
-    fi = open(file_name, &#34;r&#34;)
+    fi = open(path + &#34;/&#34; + file_name, &#34;r&#34;)
     text = fi.read()
     fi.close()
 
     # Run preprocessing on imported file
-    text = run(text)
+    text = run(text, path)
 
     return text
 
@@ -104,7 +104,7 @@ def cleanup(text):
 
 
 
-def run(text):
+def run(text, path):
     &#34;&#34;&#34;
     Performs pre-processing on C code text.
 
@@ -160,8 +160,8 @@ def run(text):
             if file_name:
 
                 # Delete the pre-processor instruction from the C code
-                text = re.sub(rf&#39;\s*#include [&#34;|\&#39;]{file_name[0]}[&#34;|\&#39;]\n&#39;, &#34;&#34;, text)
-                text = get_text(file_name[0]) + text
+                text = re.sub(rf&#39;\s*#include \&#34;{file_name[0]}\&#34;\n&#39;, &#34;&#34;, text)
+                text = get_text(file_name[0], os.path.abspath(os.path.dirname(path))) + text
 
             else:
                 raise BaseException(&#34;Invalid &#39;#include&#39; statement&#34;)
@@ -262,7 +262,7 @@ if __name__ == &#34;__main__&#34;:
 </details>
 </dd>
 <dt id="src.frontend.preprocessor.get_text"><code class="name flex">
-<span>def <span class="ident">get_text</span></span>(<span>file_name)</span>
+<span>def <span class="ident">get_text</span></span>(<span>file_name, path)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Opens and retrieves the text from an import file and preprocesses this text.</p>
@@ -277,7 +277,7 @@ if __name__ == &#34;__main__&#34;:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_text(file_name):
+<pre><code class="python">def get_text(file_name, path):
     &#34;&#34;&#34;
     Opens and retrieves the text from an import file and preprocesses this text.
 
@@ -287,13 +287,12 @@ if __name__ == &#34;__main__&#34;:
     Returns:
         Text of the import file.
     &#34;&#34;&#34;
-
-    fi = open(file_name, &#34;r&#34;)
+    fi = open(path + &#34;/&#34; + file_name, &#34;r&#34;)
     text = fi.read()
     fi.close()
 
     # Run preprocessing on imported file
-    text = run(text)
+    text = run(text, path)
 
     return text</code></pre>
 </details>
@@ -350,7 +349,7 @@ if __name__ == &#34;__main__&#34;:
 </details>
 </dd>
 <dt id="src.frontend.preprocessor.run"><code class="name flex">
-<span>def <span class="ident">run</span></span>(<span>text)</span>
+<span>def <span class="ident">run</span></span>(<span>text, path)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Performs pre-processing on C code text.</p>
@@ -365,7 +364,7 @@ if __name__ == &#34;__main__&#34;:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def run(text):
+<pre><code class="python">def run(text, path):
     &#34;&#34;&#34;
     Performs pre-processing on C code text.
 
@@ -421,8 +420,8 @@ if __name__ == &#34;__main__&#34;:
             if file_name:
 
                 # Delete the pre-processor instruction from the C code
-                text = re.sub(rf&#39;\s*#include [&#34;|\&#39;]{file_name[0]}[&#34;|\&#39;]\n&#39;, &#34;&#34;, text)
-                text = get_text(file_name[0]) + text
+                text = re.sub(rf&#39;\s*#include \&#34;{file_name[0]}\&#34;\n&#39;, &#34;&#34;, text)
+                text = get_text(file_name[0], os.path.abspath(os.path.dirname(path))) + text
 
             else:
                 raise BaseException(&#34;Invalid &#39;#include&#39; statement&#34;)
