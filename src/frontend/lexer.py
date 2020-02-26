@@ -5,6 +5,7 @@ The lexer class definition. Uses rplys lexer as a jumping off point, and regexes
 from rply import LexerGenerator
 from rply.errors import LexingError
 import copy
+import re
 
 class Lexer():
     """
@@ -20,21 +21,16 @@ class Lexer():
         """
         Adds tokens to the rply lexer object
         """
-        self.lexer.add("COMMENT",       r"(\/\/.*|\/\*.*\*\/|/\*[^*]*\*+(?:[^/*][^*]*\*+)*/)") # Catches both multi-line and single line comments
+        self.lexer.add("COMMENT",       r"/(\*(\w|\W)*?\*/|/([^\n]*))") # Catches both multi-line and single line comments
         self.lexer.add("PREPROCESSOR",  r"#\s*(warning|else|endif|include|undef|ifdef|ifndef|if|elif|pragma|define|if|elif|error|pragma|line)([\t\f ]+[^\s]+)*")
-        self.lexer.add("CHAR",          r"\'[\w\;\\ \%\"\']\'")
-        self.lexer.add("STRING",        r"(\"[\w+\;\\ \%\"\']*\")") # Classifies single characters and multiple characters as a string
+        self.lexer.add("CHAR",          r"\'\\?[\w\;\\ \%\"\']\'")
+        self.lexer.add("STRING",        r"(\"[^\n]*?(?<!\\)\")|(\'[^\n]*?(?<!\\)\')") # Classifies single characters and multiple characters as a string
         self.lexer.add("HEX",           r"0x[\dA-Fa-f]+")
         self.lexer.add("OCT",           r"0[0-7]{1,3}")
         self.lexer.add("BIN",           r"0b[01]+")
-        self.lexer.add("PRECISION",     r"\-?(\d\.\d+|[1-9]\d*\.\d+)")
+        self.lexer.add("PRECISION",     r"\-?(\d|[1-9]\d+)\.\d*")
         self.lexer.add("INTEGER",       r"\-?([1-9]\d*|\d)")
         self.lexer.add("EQ",            r"={2}")
-        self.lexer.add("LEQ",           r"<=")
-        self.lexer.add("GEQ",           r">=")
-        self.lexer.add("NEQ",           r"!=")
-        self.lexer.add("LT",            r"<")
-        self.lexer.add("GT",            r">")
         self.lexer.add("AEQ",           r"\+=")
         self.lexer.add("SEQ",           r"-=")
         self.lexer.add("MEQ",           r"\*=")
@@ -42,10 +38,16 @@ class Lexer():
         self.lexer.add("MODEQ",         r"%=")
         self.lexer.add("LSEQ",          r"<{2}=")
         self.lexer.add("RSEQ",          r">{2}=")
+        self.lexer.add("LSH",           r"<{2}")
+        self.lexer.add("RSH",           r">{2}")
         self.lexer.add("BOEQ",          r"\|=")
         self.lexer.add("BAEQ",          r"&=")
         self.lexer.add("XEQ",           r"\^=")
-        self.lexer.add("CEQ",           r"~=")
+        self.lexer.add("LEQ",           r"<=")
+        self.lexer.add("GEQ",           r">=")
+        self.lexer.add("NEQ",           r"!=")
+        self.lexer.add("LT",            r"<")
+        self.lexer.add("GT",            r">")
         self.lexer.add("SET",           r"=")
         self.lexer.add("INC",           r"\+{2}")
         self.lexer.add("DEC",           r"-{2}")
@@ -57,13 +59,11 @@ class Lexer():
         self.lexer.add("ADD",           r"\+")
         self.lexer.add("SUB",           r"-")
         self.lexer.add("NOT",           r"!")
-        self.lexer.add("LSH",           r"<{2}")
-        self.lexer.add("RSH",           r">{2}")
         self.lexer.add("BOR",           r"\|")
         self.lexer.add("BAND",          r"&")
         self.lexer.add("XOR",           r"\^")
         self.lexer.add("COMP",          r"~")
-        self.lexer.add("ACCESS",        r"->|\.|\[|\]")
+        self.lexer.add("ACCESS",        r"->|\.")
         self.lexer.add("SIZEOF",        r"\bsizeof\b")
         self.lexer.add("TYPEDEF",       r"\btypedef\b")
         self.lexer.add("FUNC_MODIF",    r"\binline\b")
@@ -82,13 +82,15 @@ class Lexer():
         self.lexer.add("CASE",          r"\bcase\b")
         self.lexer.add("DEFAULT",       r"\bdefault\b")
         self.lexer.add("NULL",          r"\bNULL\b")
-        self.lexer.add("TYPE",          r"\b(auto|long double|double|float|long long (int)?|long|int|short|char|void)\b")
+        self.lexer.add("TYPE",          r"\b(auto|long double|double|float|long long( int)?|long|int|short|char|void)\b")
         self.lexer.add("MEM_STRUCT",    r"\b(struct|union|enum)\b")
         self.lexer.add("SELF_DEFINED",  r"[a-zA-Z_]\w*")
         self.lexer.add("OPEN_PAREN",    r"\(")
         self.lexer.add("CLOSE_PAREN",   r"\)")
         self.lexer.add("OPEN_BRACE",    r"\{")
         self.lexer.add("CLOSE_BRACE",   r"\}")
+        self.lexer.add("OPEN_BRACK",    r"\[")
+        self.lexer.add("CLOSE_BRACK",   r"\]")
         self.lexer.add("SEMICOLON",     r";")
         self.lexer.add("COLON",         r":")
         self.lexer.add("COMMA",         r",")
