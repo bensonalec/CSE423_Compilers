@@ -68,9 +68,11 @@ def buildAST(parseHead):
         elif typ == "functionDeclaration":
             ASTcurrent.children.append(ASTNode("decl", ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
-            ASTcurrent.children.append(ASTNode(c[0].content[0].token, ASTcurrent))
+            ASTcurrent.children.append(ASTNode(c[0].content[1].value, ASTcurrent))
             ASTcurrent.children.append(ASTNode("param", ASTcurrent))
-            ASTcurrent = ASTcurrent.children[-1]
+
+            expansion = [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__ and x.token == 'func_type']
+            expansion += [(x, ASTcurrent.children[1]) for x in c[0].content if 'content' in x.__dict__ and x.token == 'args']
         
         elif typ == "arg_terminal":
             ASTcurrent.children.append(ASTNode("var", ASTcurrent))
