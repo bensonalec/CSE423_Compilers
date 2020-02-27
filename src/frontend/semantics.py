@@ -50,13 +50,15 @@ class symbol_table():
                 
                 # Function Declaration
                 if index == 0:
-                    if [x for x in self.symbols if x.name == "main"] != [] and [x for x in self.symbols if cur.Node.children[1].name == x.name] == []:
+                    print([x.name for x in self.symbols if cur.Node.children[1].name == x.name])
+                    if [x for x in self.symbols if x.name == "main" and x.is_function] != [] and [x for x in self.symbols if cur.Node.children[1].name == x.name] == []:
                         print(f'Function Not Properly Declared {cur.Node.children[0].name}')
                         self.undefined.append(Entry(True,False, False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope))
-                    else:
+                    elif [x for x in self.symbols if x.name == "main" and x.is_function] == []:
                         self.symbols.append(Entry(True,False, False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
                         cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + "/")
-
+                    else:
+                        cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + "/")
                 #Function Prototype Declaration
                 elif index == 1:
                     self.symbols.append(Entry(True,False, False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
