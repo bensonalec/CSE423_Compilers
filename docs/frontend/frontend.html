@@ -31,20 +31,26 @@ for command line arguments that can be used to determine which portion is run.</
 This module acts as the interface for running all the seperate portions of the front end. It allows
 for command line arguments that can be used to determine which portion is run.
 &#34;&#34;&#34;
+import os
 import argparse
 import importlib
+import traceback
+import sys
 
 from rply.errors import LexingError
 from copy import deepcopy
 
-lex = importlib.import_module(&#34;lexer&#34;, &#34;.&#34;)
-par = importlib.import_module(&#34;parser&#34;, &#34;.&#34;)
-btp = importlib.import_module(&#34;bnfToParser&#34;, &#34;.&#34;)
+lex = importlib.import_module(&#34;lexer&#34;, __name__)
+par = importlib.import_module(&#34;parser&#34;, __name__)
+btp = importlib.import_module(&#34;bnfToParser&#34;, __name__)
+ast = importlib.import_module(&#34;AST_builder&#34;, __name__)
+sem = importlib.import_module(&#34;semantics&#34;, __name__)
+pre = importlib.import_module(&#34;preprocessor&#34;, __name__)
 
 
 def getTree(head,level):
     &#34;&#34;&#34;
-    Outputs a string version of the Abstract Syntax Tree that can be used in unit testing. Calls itself recursively
+    Outputs a string version of the ParseTree that can be used in unit testing. Calls itself recursively
 
     Args:
         head: The head node of the tree.
@@ -59,7 +65,7 @@ def getTree(head,level):
     li = []
     out = &#34;&#34;
     for node in content:
-        if(type(node) != type(par.AbstractSyntaxTree(&#34;sample&#34;,&#34;sample&#34;))):
+        if(type(node) != type(par.ParseTree(&#34;sample&#34;,&#34;sample&#34;))):
             li.append(node)
         else:
             li.append(node.token)
@@ -69,60 +75,25 @@ def getTree(head,level):
 
     #iterate through the components of the BNF
     for node in content:
-        if(type(node) == type(par.AbstractSyntaxTree(&#34;sample&#34;,&#34;sample&#34;))):
+        if(type(node) == type(par.ParseTree(&#34;sample&#34;,&#34;sample&#34;))):
             out += getTree(node,level)
     return out
 
-def printTree(head,level):
+
+def print_tokens(tokens):
     &#34;&#34;&#34;
-    Prints a simple version of the tree for output. Calls itself recursively
+    Prints tokens returned from Lexer
 
     Args:
-        head: The head node of the tree.
-        level: The current level of the tree.
+        tokens: Tokens generated from the Lexer
     &#34;&#34;&#34;
-    level += 1
-    token = head.token
-    content = head.content
-    li = []
-    out = &#34;&#34;
-    for node in content:
-        if(type(node) != type(par.AbstractSyntaxTree(&#34;sample&#34;,&#34;sample&#34;))):
-            li.append(node)
-        else:
-            li.append(node.token)
-    
-    print(level,&#34;:&#34;,li)
+    print(lex.tokensToString(deepcopy(tokens)))
 
 
-    #iterate through the components of the BNF
-    for node in content:
-        if(type(node) == type(par.AbstractSyntaxTree(&#34;sample&#34;,&#34;sample&#34;))):
-            printTree(node,level)
 
-
-def pprint_tree(node, file=None, _prefix=&#34;&#34;, _last=True):
+def main(args):
     &#34;&#34;&#34;
-    Prints the abstract syntax tree in correct order
-
-    Args:
-        node: The node in the AST being printed
-        file: The file the AST is being printed to
-    &#34;&#34;&#34;
-    if type(node) == type(par.AbstractSyntaxTree(&#34;test&#34;, &#34;test&#34;)):
-        print(_prefix, &#34;`-- &#34; if _last else &#34;|-- &#34;, node.token, sep=&#34;&#34;, file=file)
-        _prefix += &#34;    &#34; if _last else &#34;|   &#34;
-        child_count = len(node.content)
-        for i, child in enumerate(node.content):
-            _last = i == (child_count - 1)
-            pprint_tree(child, file, _prefix, _last)
-    else:
-        print(_prefix, &#34;`-- &#34; if _last else &#34;|-- &#34;, node, sep=&#34;&#34;, file=file)
-
-#main function to control the frontend with different command line options.
-def main(args, fi):
-    &#34;&#34;&#34;
-    The main function of this, takes in command line input via an object from argparse, and the name of the file.
+    The main function of the frontend, takes in command line input via an object from argparse, and the name of the file.
     
     Args:
         args: The object that contains the command line arguements.
@@ -136,25 +107,57 @@ def main(args, fi):
 
     try:
 
+        fi = open(args.input_file, &#34;r&#34;)
+
         #Read in file
         text_input = fi.read()
         fi.close()
+
+        #Pre-process the text
+        text_input = pre.run(text_input, args.input_file)
 
         #setup lexer, produce tokens, check for invalid tokens
         lexer = lex.Lexer().get_lexer()
         tokens = lexer.lex(text_input)
         lex.validateTokens(tokens)
         
-        #if -l or --lex is true print the tokens from the lexer 
         if args.lex or args.all:
-            # temp_print = lexer.lex(text_input) #need to run lexer so that tokens are deleted for parser
-            print(lex.tokensToString(deepcopy(tokens)))
+            # Print the tokens from the lexer 
+            print_tokens(tokens)
 
         #set up parser and parse the given tokens
         pg = par.Parser()
         pg.parse()
         parser = pg.get_parser()
         parser.parse(tokens)
+
+        # Retrieve the head of the parse tree
+        head = pg.getTree()
+
+        if args.tree or args.all:
+            # Represent parse tree as a list with levels
+            print(head.getListView(0))
+
+        if args.pretty or args.all:
+            # Pretty print parse tree
+            # pprint_tree(head)
+            head.print_ParseTree()
+
+        # Build Abstract Syntax Tree
+        astree = ast.buildAST(head)
+
+        if args.ast or args.all:
+            # Pretty print AST
+            astree.print_AST()
+
+        # Initialize symbol table and begin semantic analysis
+        sym = sem.symbol_table(astree)
+        sym.analyze()
+
+        if args.symbol_table or args.all:
+            sym.print_symbol_table()
+            print (&#34;&#34;)
+            sym.print_unknown_symbols()
 
     except LexingError as err:
         print(&#34;Received error(s) from token validation. Exiting...&#34;)
@@ -166,22 +169,11 @@ def main(args, fi):
         print(&#34;Received AssertionError(s) from parser, continuing with what was parsed...\n&#34;)
 
     except BaseException as err:
-        print(f&#34;BaseException: {err}. Exiting...&#34;)
+        traceback.print_exc()
+        print(f&#34;Unrecoverable exception occured. Exiting...&#34;)
         exit()
-    
-    # Retrieve the head of the AST
-    head = pg.getTree()
 
-    if args.tree or args.all:
-        print(getTree(head,0))
-    
-    if args.pretty or args.all:
-        #prettyPrint(head,0,None)
-        pprint_tree(head)
-
-
-    if args.all:
-        printTree(head, 0)
+    return astree, sym
 
 if __name__ == &#34;__main__&#34;:
     #command line arguements
@@ -189,21 +181,26 @@ if __name__ == &#34;__main__&#34;:
     #decription of the comiler
     cmd_options = argparse.ArgumentParser(description=&#39;Frontend of the compiler. Can produce tokens and syntax tree&#39;)
     
+    cmd_options.add_argument(&#39;--all&#39;,help=&#39;Prints out all intermediate representations as they are encountered in the compilation process&#39;, action=&#34;store_true&#34;)
+
     #input file option
     cmd_options.add_argument(&#39;input_file&#39;, metavar=&#39;&lt;filename.c&gt;&#39;, type=str, help=&#39;Input c file.&#39;)
     
     #Arguement to print tokens from lexer
     cmd_options.add_argument(&#39;-l&#39;,&#39;--lex&#39;, help=&#39;Prints out tokens from lexer&#39;, action=&#39;store_true&#39;)
-    
-    #Print all output from lexer, parser, etc....
-    cmd_options.add_argument(&#39;-a&#39;,&#39;--all&#39;, help=&#39;Prints out all intermediate ouputs.&#39;, action=&#34;store_true&#34;)
 
     #Prints string representation of parse tree....
     cmd_options.add_argument(&#39;-t&#39;,&#39;--tree&#39;, help=&#39;Prints string representation of parse tree.&#39;, action=&#34;store_true&#34;)
 
     cmd_options.add_argument(&#39;-p&#39;,&#39;--pretty&#39;,help=&#39;Prints a pretty verision of the tree, and does not print the tokens&#39;, action=&#34;store_true&#34;)
 
-    cmd_options.add_argument(&#39;-b&#39;, &#39;--bnf&#39;, nargs=&#39;?&#39;, const=&#39;./BNF_definition&#39;, type=str, help=&#39;Rebuilds the parser using the current BNF grammar&#39;)
+    #Print all output from lexer, parser, etc....
+    cmd_options.add_argument(&#39;-a&#39;,&#39;--ast&#39;, help=&#39;Prints out the abstract syntax tree.&#39;, action=&#34;store_true&#34;)
+
+    cmd_options.add_argument(&#39;-s&#39;,&#39;--symbol_table&#39;, help=&#39;Prints out the known and unknown symbols encountered during semantic analysis.&#39;, action=&#34;store_true&#34;)
+
+    cmd_options.add_argument(&#39;-b&#39;, &#39;--bnf&#39;, nargs=&#39;?&#39;, const=os.path.realpath(&#34;./BNF_definition&#34;), type=str, help=&#39;Rebuilds the parser using the current BNF grammar&#39;)
+
 
     #generate arguements
     args = cmd_options.parse_args()
@@ -211,14 +208,14 @@ if __name__ == &#34;__main__&#34;:
 
     #open file and pass into main.
     if args.input_file and args.input_file.endswith(&#34;.c&#34;):
-        fi = open(args.input_file, &#34;r&#34;)
+        main(args)
     else:
         #if not c file.
         if not args.input_file.endswith(&#34;.c&#34;):
             print(&#34;Error file must end with .c&#34;)
         cmd_options.print_help()
         exit()
-    main(args, fi)</code></pre>
+    </code></pre>
 </details>
 </section>
 <section>
@@ -232,7 +229,7 @@ if __name__ == &#34;__main__&#34;:
 <span>def <span class="ident">getTree</span></span>(<span>head, level)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Outputs a string version of the Abstract Syntax Tree that can be used in unit testing. Calls itself recursively</p>
+<section class="desc"><p>Outputs a string version of the ParseTree that can be used in unit testing. Calls itself recursively</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>head</code></strong></dt>
@@ -248,7 +245,7 @@ if __name__ == &#34;__main__&#34;:
 </summary>
 <pre><code class="python">def getTree(head,level):
     &#34;&#34;&#34;
-    Outputs a string version of the Abstract Syntax Tree that can be used in unit testing. Calls itself recursively
+    Outputs a string version of the ParseTree that can be used in unit testing. Calls itself recursively
 
     Args:
         head: The head node of the tree.
@@ -263,7 +260,7 @@ if __name__ == &#34;__main__&#34;:
     li = []
     out = &#34;&#34;
     for node in content:
-        if(type(node) != type(par.AbstractSyntaxTree(&#34;sample&#34;,&#34;sample&#34;))):
+        if(type(node) != type(par.ParseTree(&#34;sample&#34;,&#34;sample&#34;))):
             li.append(node)
         else:
             li.append(node.token)
@@ -273,16 +270,16 @@ if __name__ == &#34;__main__&#34;:
 
     #iterate through the components of the BNF
     for node in content:
-        if(type(node) == type(par.AbstractSyntaxTree(&#34;sample&#34;,&#34;sample&#34;))):
+        if(type(node) == type(par.ParseTree(&#34;sample&#34;,&#34;sample&#34;))):
             out += getTree(node,level)
     return out</code></pre>
 </details>
 </dd>
 <dt id="src.frontend.frontend.main"><code class="name flex">
-<span>def <span class="ident">main</span></span>(<span>args, fi)</span>
+<span>def <span class="ident">main</span></span>(<span>args)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>The main function of this, takes in command line input via an object from argparse, and the name of the file.</p>
+<section class="desc"><p>The main function of the frontend, takes in command line input via an object from argparse, and the name of the file.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>args</code></strong></dt>
@@ -294,9 +291,9 @@ if __name__ == &#34;__main__&#34;:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def main(args, fi):
+<pre><code class="python">def main(args):
     &#34;&#34;&#34;
-    The main function of this, takes in command line input via an object from argparse, and the name of the file.
+    The main function of the frontend, takes in command line input via an object from argparse, and the name of the file.
     
     Args:
         args: The object that contains the command line arguements.
@@ -310,25 +307,57 @@ if __name__ == &#34;__main__&#34;:
 
     try:
 
+        fi = open(args.input_file, &#34;r&#34;)
+
         #Read in file
         text_input = fi.read()
         fi.close()
+
+        #Pre-process the text
+        text_input = pre.run(text_input, args.input_file)
 
         #setup lexer, produce tokens, check for invalid tokens
         lexer = lex.Lexer().get_lexer()
         tokens = lexer.lex(text_input)
         lex.validateTokens(tokens)
         
-        #if -l or --lex is true print the tokens from the lexer 
         if args.lex or args.all:
-            # temp_print = lexer.lex(text_input) #need to run lexer so that tokens are deleted for parser
-            print(lex.tokensToString(deepcopy(tokens)))
+            # Print the tokens from the lexer 
+            print_tokens(tokens)
 
         #set up parser and parse the given tokens
         pg = par.Parser()
         pg.parse()
         parser = pg.get_parser()
         parser.parse(tokens)
+
+        # Retrieve the head of the parse tree
+        head = pg.getTree()
+
+        if args.tree or args.all:
+            # Represent parse tree as a list with levels
+            print(head.getListView(0))
+
+        if args.pretty or args.all:
+            # Pretty print parse tree
+            # pprint_tree(head)
+            head.print_ParseTree()
+
+        # Build Abstract Syntax Tree
+        astree = ast.buildAST(head)
+
+        if args.ast or args.all:
+            # Pretty print AST
+            astree.print_AST()
+
+        # Initialize symbol table and begin semantic analysis
+        sym = sem.symbol_table(astree)
+        sym.analyze()
+
+        if args.symbol_table or args.all:
+            sym.print_symbol_table()
+            print (&#34;&#34;)
+            sym.print_unknown_symbols()
 
     except LexingError as err:
         print(&#34;Received error(s) from token validation. Exiting...&#34;)
@@ -340,101 +369,35 @@ if __name__ == &#34;__main__&#34;:
         print(&#34;Received AssertionError(s) from parser, continuing with what was parsed...\n&#34;)
 
     except BaseException as err:
-        print(f&#34;BaseException: {err}. Exiting...&#34;)
+        traceback.print_exc()
+        print(f&#34;Unrecoverable exception occured. Exiting...&#34;)
         exit()
-    
-    # Retrieve the head of the AST
-    head = pg.getTree()
 
-    if args.tree or args.all:
-        print(getTree(head,0))
-    
-    if args.pretty or args.all:
-        #prettyPrint(head,0,None)
-        pprint_tree(head)
-
-
-    if args.all:
-        printTree(head, 0)</code></pre>
+    return astree, sym</code></pre>
 </details>
 </dd>
-<dt id="src.frontend.frontend.pprint_tree"><code class="name flex">
-<span>def <span class="ident">pprint_tree</span></span>(<span>node, file=None)</span>
+<dt id="src.frontend.frontend.print_tokens"><code class="name flex">
+<span>def <span class="ident">print_tokens</span></span>(<span>tokens)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Prints the abstract syntax tree in correct order</p>
+<section class="desc"><p>Prints tokens returned from Lexer</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>node</code></strong></dt>
-<dd>The node in the AST being printed</dd>
-<dt><strong><code>file</code></strong></dt>
-<dd>The file the AST is being printed to</dd>
+<dt><strong><code>tokens</code></strong></dt>
+<dd>Tokens generated from the Lexer</dd>
 </dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def pprint_tree(node, file=None, _prefix=&#34;&#34;, _last=True):
+<pre><code class="python">def print_tokens(tokens):
     &#34;&#34;&#34;
-    Prints the abstract syntax tree in correct order
+    Prints tokens returned from Lexer
 
     Args:
-        node: The node in the AST being printed
-        file: The file the AST is being printed to
+        tokens: Tokens generated from the Lexer
     &#34;&#34;&#34;
-    if type(node) == type(par.AbstractSyntaxTree(&#34;test&#34;, &#34;test&#34;)):
-        print(_prefix, &#34;`-- &#34; if _last else &#34;|-- &#34;, node.token, sep=&#34;&#34;, file=file)
-        _prefix += &#34;    &#34; if _last else &#34;|   &#34;
-        child_count = len(node.content)
-        for i, child in enumerate(node.content):
-            _last = i == (child_count - 1)
-            pprint_tree(child, file, _prefix, _last)
-    else:
-        print(_prefix, &#34;`-- &#34; if _last else &#34;|-- &#34;, node, sep=&#34;&#34;, file=file)</code></pre>
-</details>
-</dd>
-<dt id="src.frontend.frontend.printTree"><code class="name flex">
-<span>def <span class="ident">printTree</span></span>(<span>head, level)</span>
-</code></dt>
-<dd>
-<section class="desc"><p>Prints a simple version of the tree for output. Calls itself recursively</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>head</code></strong></dt>
-<dd>The head node of the tree.</dd>
-<dt><strong><code>level</code></strong></dt>
-<dd>The current level of the tree.</dd>
-</dl></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def printTree(head,level):
-    &#34;&#34;&#34;
-    Prints a simple version of the tree for output. Calls itself recursively
-
-    Args:
-        head: The head node of the tree.
-        level: The current level of the tree.
-    &#34;&#34;&#34;
-    level += 1
-    token = head.token
-    content = head.content
-    li = []
-    out = &#34;&#34;
-    for node in content:
-        if(type(node) != type(par.AbstractSyntaxTree(&#34;sample&#34;,&#34;sample&#34;))):
-            li.append(node)
-        else:
-            li.append(node.token)
-    
-    print(level,&#34;:&#34;,li)
-
-
-    #iterate through the components of the BNF
-    for node in content:
-        if(type(node) == type(par.AbstractSyntaxTree(&#34;sample&#34;,&#34;sample&#34;))):
-            printTree(node,level)</code></pre>
+    print(lex.tokensToString(deepcopy(tokens)))</code></pre>
 </details>
 </dd>
 </dl>
@@ -457,8 +420,7 @@ if __name__ == &#34;__main__&#34;:
 <ul class="">
 <li><code><a title="src.frontend.frontend.getTree" href="#src.frontend.frontend.getTree">getTree</a></code></li>
 <li><code><a title="src.frontend.frontend.main" href="#src.frontend.frontend.main">main</a></code></li>
-<li><code><a title="src.frontend.frontend.pprint_tree" href="#src.frontend.frontend.pprint_tree">pprint_tree</a></code></li>
-<li><code><a title="src.frontend.frontend.printTree" href="#src.frontend.frontend.printTree">printTree</a></code></li>
+<li><code><a title="src.frontend.frontend.print_tokens" href="#src.frontend.frontend.print_tokens">print_tokens</a></code></li>
 </ul>
 </li>
 </ul>

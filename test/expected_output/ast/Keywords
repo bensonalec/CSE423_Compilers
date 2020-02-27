@@ -1,0 +1,36 @@
+`-- program
+    `-- func
+        |-- int
+        |-- main
+        |-- param
+        `-- body
+            |-- =
+            |   |-- var
+            |   |   |-- int
+            |   |   `-- x
+            |   `-- NULL
+            |-- =
+            |   |-- var
+            |   |   |-- short
+            |   |   `-- t
+            |   `-- NULL
+            |-- =
+            |   |-- var
+            |   |   |-- long
+            |   |   `-- rrr
+            |   `-- NULL
+            |-- =
+            |   |-- var
+            |   |   |-- float
+            |   |   `-- qqq
+            |   `-- NULL
+            |-- =
+            |   |-- var
+            |   |   |-- double
+            |   |   `-- aaa
+            |   `-- NULL
+            `-- =
+                |-- var
+                |   |-- int
+                |   `-- y
+                `-- NULL

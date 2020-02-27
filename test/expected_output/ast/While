@@ -1,0 +1,26 @@
+`-- program
+    `-- func
+        |-- int
+        |-- main
+        |-- param
+        `-- body
+            |-- while
+            |   |-- 1
+            |   `-- body
+            |       `-- =
+            |           |-- var
+            |           |   |-- int
+            |           |   `-- k
+            |           `-- NULL
+            |-- do_while
+            |   |-- 1
+            |   `-- body
+            |       `-- =
+            |           |-- var
+            |           |   |-- int
+            |           |   `-- j
+            |           `-- NULL
+            `-- while
+                |-- 2
+                `-- body
+                    `-- break

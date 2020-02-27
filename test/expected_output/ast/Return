@@ -1,0 +1,33 @@
+`-- program
+    |-- func
+    |   |-- int
+    |   |-- function
+    |   |-- param
+    |   `-- body
+    |       `-- return
+    `-- func
+        |-- int
+        |-- main
+        |-- param
+        `-- body
+            |-- =
+            |   |-- var
+            |   |   |-- int
+            |   |   `-- a
+            |   `-- NULL
+            |-- return
+            |   `-- 1
+            |-- return
+            |   `-- call
+            |       `-- function
+            |-- return
+            |   `-- +
+            |       |-- 1
+            |       `-- 1
+            |-- return
+            |   `-- +
+            |       |-- 1
+            |       `-- 2
+            `-- return
+                `-- var
+                    `-- a

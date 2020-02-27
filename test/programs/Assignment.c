@@ -1,0 +1,9 @@
+int function() { return 1; }
+
+int main() {
+
+    int a = 1;
+    int b = 1 + 1;
+    int c = function();
+
+}
