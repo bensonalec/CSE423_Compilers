@@ -50,7 +50,6 @@ class symbol_table():
                 
                 # Function Declaration
                 if index == 0:
-                    print([x.name for x in self.symbols if cur.Node.children[1].name == x.name])
                     if [x for x in self.symbols if x.name == "main" and x.is_function] != [] and [x for x in self.symbols if cur.Node.children[1].name == x.name] == []:
                         print(f'Function Not Properly Declared {cur.Node.children[0].name}')
                         self.undefined.append(Entry(True,False, False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope))
@@ -313,7 +312,7 @@ class symbol_table():
             
         ]
 
-        self.symbols.sort(key=lambda x: x.scope)
+        # self.symbols.sort(key=lambda x: x.scope)
 
         print (f"{'Name':^{col_lengths[0]}} | {'Function?':^{col_lengths[1]}} | {'Type':^{col_lengths[2]}} | {'Scope':^{col_lengths[3]}} | {'Param?':^{col_lengths[4]}} | {'Label?':^{col_lengths[5]}} ")
         print (f"{'-'*col_lengths[0]}-+-{'-'*col_lengths[1]}-+-{'-'*col_lengths[2]}-+-{'-'*col_lengths[3]}-+-{'-'*col_lengths[4]}-+-{'-'*col_lengths[5]}-")
