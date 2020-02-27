@@ -76,9 +76,7 @@ def returnLines(node,returnVarName):
             elif ind == 4: 
                 #Return
 
-                # It returns some type of arithmetic, break it down.
-                # TODO: it currently breaks down single values like "return 1;"
-                #       should I keep this? or test if it is "complicated" arithmetic?
+                # If returns some type of arithmetic expression, breaks it down.
                 if len(element.children) > 0:
                     lines += breakdownArithmetic(element.children[0], f"{returnVarName}")
                     lines.append(f"return {returnVarName};") 
@@ -123,8 +121,24 @@ def breakdownArithmetic(root, varName):
     while ntv != []:
         cur = ntv[0]
         Stack.append(cur.name)
-        ntv = [x for x in cur.children] + ntv[1:]
 
+        # Beginning of function call parameters
+        if cur.parent.name == 'call':
+            
+            # params exist
+            if cur.children != []:
+                lines += breakdownArithmetic(cur.children[0], "param_var")
+
+                #remove params so they dont get added to Stack
+                ntv[0].children = []
+
+                Stack.append("param_var") #tmp variable (should be some 'D.xxxx' variable)
+            
+            # params don't exist
+            else:
+                Stack.append('')
+
+        ntv = [x for x in cur.children] + ntv[1:]
 
     last = len(Stack)
     for i in Stack[::-1]:
@@ -137,7 +151,7 @@ def breakdownArithmetic(root, varName):
             v2 = Stack[ind+2]
 
             # append the operation
-            lines.append(f"_{lastVarName} = {v1}{i}{v2}")
+            lines.append(f"_{lastVarName} = {v1} {i} {v2};")
 
             # modify the stack to get rid of operands but keep new tmp variable
             Stack = Stack[:ind] + [f"_{lastVarName}"] + Stack[ind+3:]
@@ -152,14 +166,14 @@ def breakdownArithmetic(root, varName):
 
         elif(i == "call"):
 
-            # get name of function call
-            call_name = Stack[ind+1]
-
-            #TODO: NEED TO CAPTURE PARAMETERS
-            Stack[ind+1] = call_name
-
+            # modify function name to include parameter tmp variable
+            Stack[ind+1] = Stack[ind+1] + f" ({Stack[ind+2]})"
+            
             # modify stack to get rid of 'call'
             Stack = Stack[:ind] + Stack[ind+1:]
+
+            # modify stack to get rid of parameter tmp variable
+            Stack = Stack[:ind+1] + Stack[ind+2:]
 
         else:
             pass
@@ -167,6 +181,6 @@ def breakdownArithmetic(root, varName):
         last -= 1
 
     # final assignment to the passed in variable
-    lines.append(f"{varName} = {Stack[0]}")
+    lines.append(f"{varName} = {Stack[0]};")
 
     return lines
