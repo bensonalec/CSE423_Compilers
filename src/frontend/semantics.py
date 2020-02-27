@@ -17,7 +17,7 @@ class Entry():
 
 
 Node = namedtuple("Node", ["Node", "Scope"])
-Node.__docstring__ = """
+Node.__doc__ = """
 A simple namedtuple to allow for better readability when performing the depth first search required for the semantic analysis.
 """
 class symbol_table():
