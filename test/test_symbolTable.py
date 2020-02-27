@@ -20,10 +20,7 @@ path_to_output_files = "./expected_output/symboltable/"
 class SymbolTableTests(unittest.TestCase):
 
     # Add program into list if for some reason, we shouldn't test it.
-    skip_programs = ["Arithmetic_As_Function_Input.c", "Break.c", "Identifiers_Variables_Functions.c",
-                     "Pre_Processor.c", "While.c", "For_Loops.c" , "If_Else.c", "Return.c",
-                      "Assignment.c" , "Functions_Strings.c", "Initialization_Strings.c", "Switch.c",
-                    "Boolean.c", "Goto.c", "Keywords.c" , "Unary.c"]
+    skip_programs = ["Functions_Strings.c", "Initialization_Strings.c"]
 
     maxDiff = None
 
