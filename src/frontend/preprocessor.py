@@ -1,3 +1,6 @@
+"""
+This module serves as the pre-processor for any given C program. By searching for any pre-processor keywords it will perform the necessary manipulation of the C program to complete any pre-processing operations.
+"""
 import os
 import re
 
