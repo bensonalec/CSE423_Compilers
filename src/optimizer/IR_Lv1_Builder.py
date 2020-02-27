@@ -13,6 +13,7 @@ class LevelOneIR():
         varIndex = 0
         lastVarName = "_" + str(varIndex)
         bodyList = []
+        all_lines = []
 
         # list of all bodies within functions in our C program
         for x in self.astHead.children:
@@ -20,12 +21,13 @@ class LevelOneIR():
                 bodyList.append((x.children[1].name,x.children[3]))
 
         returnDigit = 1234
-        returnVarName = f"D.{returnDigit}"
         for i in bodyList:
-            for x in returnLines(i[1], returnVarName):
-                print(x)
-            returnDigit += 1
-            returnVarName = f"D.{returnDigit}"
+            tmp = returnLines(i[1], f"D.{returnDigit}")
+            returnDigit = tmp[1] + 1
+            all_lines += tmp[0]
+            
+            for x in tmp[0]:
+                print (x)
 
 def buildBoilerPlate(symTable):
     namesandparams = []
@@ -46,7 +48,9 @@ def buildBoilerPlate(symTable):
             namesandparams.append((x[0],paramsLi,x[1]))
     return namesandparams
 
-def returnLines(node,returnVarName):
+def returnLines(node, returnVarName, lastLabelIndex = None):
+    if lastLabelIndex == None:
+        lastLabelIndex = returnVarName.split('.')[1]
     lines = []
     for element in node.children:
         try:
@@ -91,7 +95,19 @@ def returnLines(node,returnVarName):
                 #Function Call
                 pass
             elif ind == 6:
-                print("While and do while")
+                # While and Do While
+                conditionLabel = None
+                if element.name == "while":
+                    lastLabelIndex += 1;
+                    conditionLabel = lastLabelIndex
+                    lines.append(f"goto <D.{lastLabelIndex}>;")
+                lastLabelIndex += 1;
+                loopStart = lastLabelIndex
+                lines.append(f"<D.{lastLabelIndex}>:")
+                tmp, lastLabelIndex = returnLines(element.children[1], returnVarName, lastLabelIndex)
+                lines.extend(tmp)
+                lines.append(f"<D.{conditionLabel}>:")
+
             elif ind == 7:
                 print("Break")
             elif ind == 8:
@@ -107,7 +123,7 @@ def returnLines(node,returnVarName):
             print("Exception: ", err)
             pass
     
-    return lines
+    return lines, 
 
 def breakdownArithmetic(root, varName):
     ntv = [root]
@@ -170,3 +186,8 @@ def breakdownArithmetic(root, varName):
     lines.append(f"{varName} = {Stack[0]}")
 
     return lines
+
+def breakdownCollation(root, lastLabelIndex):
+    lines = []
+
+    
