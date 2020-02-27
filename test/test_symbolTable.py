@@ -20,7 +20,7 @@ path_to_output_files = "./expected_output/symboltable/"
 class SymbolTableTests(unittest.TestCase):
 
     # Add program into list if for some reason, we shouldn't test it.
-    skip_programs = ["Functions_Strings.c", "Initialization_Strings.c"]
+    skip_programs = ["Functions_Strings.c", "Initialization_Strings.c", "Switch.c"]
 
     maxDiff = None
 

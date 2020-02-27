@@ -1,0 +1,9 @@
+     Name       | Function? | Type |       Scope       | Param? | Label? 
+----------------+-----------+------+-------------------+--------+-------
+header_function |      True |  int | /                 |  False | False
+           main |      True |  int | /                 |  False | False
+              a |     False |  int | /header_function/ |   True | False
+              b |     False |  int | /header_function/ |   True | False
+              c |     False |  int | /header_function/ |   True | False
+
+No undefined symbols available
