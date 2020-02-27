@@ -87,7 +87,17 @@ def returnLines(node,returnVarName):
 
             elif ind == 5:
                 #Function Call
-                pass
+                func_call = element.children[0]
+
+                # function call has parameters
+                if func_call.children != []:
+                    lines += breakdownArithmetic(func_call.children[0], "param_var")
+                    lines.append(f"{func_call.name}(param_var);")
+                
+                # no parameters
+                else:
+                    lines.append(f"{func_call.name}();")
+
             elif ind == 6:
                 print("While and do while")
             elif ind == 7:
@@ -168,7 +178,7 @@ def breakdownArithmetic(root, varName):
 
             # modify function name to include parameter tmp variable
             Stack[ind+1] = Stack[ind+1] + f" ({Stack[ind+2]})"
-            
+
             # modify stack to get rid of 'call'
             Stack = Stack[:ind] + Stack[ind+1:]
 
