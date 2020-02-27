@@ -94,7 +94,7 @@ class symbol_table():
                         pass
                     #usage of varible
                     else:
-                        if ([x for x in self.symbols if x.name == cur.Node.children[0].name and cur.Scope in x.scope] == []):
+                        if ([x for x in self.symbols if x.name == cur.Node.children[0].name and x.scope in cur.Scope] == []):
                             print(f'Variable Undeclared {cur.Node.children[0].name}')
                             self.undefined.append(Entry(False,False, False,  cur.Node.children[0].name, "None", cur.Scope)) 
                             
