@@ -22,7 +22,7 @@ class LevelOneIR():
         returnDigit = 1234
         returnVarName = f"D.{returnDigit}"
         for i in bodyList:
-            for x in returnLines(i[1],0, returnVarName)[0]:
+            for x in returnLines(i[1], returnVarName):
                 print(x)
             returnDigit += 1
             returnVarName = f"D.{returnDigit}"
@@ -46,7 +46,7 @@ def buildBoilerPlate(symTable):
             namesandparams.append((x[0],paramsLi,x[1]))
     return namesandparams
 
-def returnLines(node,lastVarName, returnVarName):
+def returnLines(node,returnVarName):
     lines = []
     for element in node.children:
         try:
@@ -56,7 +56,7 @@ def returnLines(node,lastVarName, returnVarName):
             if ind == 0:
                 #Assignment
 
-                varName = element.children[0].children[0].name
+                varName = element.children[0].children[0].name #temporary
                 
                 # Initialize variable (if needed)
                 if len(element.children[0].children) > 1:
@@ -71,7 +71,6 @@ def returnLines(node,lastVarName, returnVarName):
                 print("For loop")
             elif ind == 2:
                 print("Body")
-                ret,lastVarName = returnLines(element,lastVarName)
             elif ind == 3:
                 print("If")
             elif ind == 4: 
@@ -81,9 +80,7 @@ def returnLines(node,lastVarName, returnVarName):
                 # TODO: it currently breaks down single values like "return 1;"
                 #       should I keep this? or test if it is "complicated" arithmetic?
                 if len(element.children) > 0:
-                    lines += breakdownArithmetic(element.children[0], f"_{lastVarName}")
-                    lines.append(f"{returnVarName} = _{lastVarName}")
-                    lastVarName += 1
+                    lines += breakdownArithmetic(element.children[0], f"{returnVarName}")
                     lines.append(f"return {returnVarName};") 
                 
                 # Returns nothing
@@ -91,7 +88,8 @@ def returnLines(node,lastVarName, returnVarName):
                     lines.append(f"return;") 
 
             elif ind == 5:
-                print("Call")
+                #Function Call
+                pass
             elif ind == 6:
                 print("While and do while")
             elif ind == 7:
@@ -109,48 +107,66 @@ def returnLines(node,lastVarName, returnVarName):
             print("Exception: ", err)
             pass
     
-    return lines,lastVarName
+    return lines
 
 def breakdownArithmetic(root, varName):
     ntv = [root]
-    
+
     isOp = r'\+|\-|\/|\*'
     opCheck = re.compile(isOp)
-    opStack = []
+    Stack = []
 
     lines = []
+    lastVarName = 0
     
+    # fill up stack with all operands / operations 
     while ntv != []:
         cur = ntv[0]
-        opStack.append(cur.name)
+        Stack.append(cur.name)
         ntv = [x for x in cur.children] + ntv[1:]
 
-    last = len(opStack)
-    for i in opStack[::-1]:
+
+    last = len(Stack)
+    for i in Stack[::-1]:
         ind = last- 1
         
         if(opCheck.match(i)):
-            v1 = opStack[ind+1]
-            v2 = opStack[ind+2]
 
-            lines.append(f"{varName} = {v1}{i}{v2}")
-            opStack = opStack[:ind] + [f"{varName}"] + opStack[ind+3:]
-            pass
+            # two operands
+            v1 = Stack[ind+1]
+            v2 = Stack[ind+2]
+
+            # append the operation
+            lines.append(f"_{lastVarName} = {v1}{i}{v2}")
+
+            # modify the stack to get rid of operands but keep new tmp variable
+            Stack = Stack[:ind] + [f"_{lastVarName}"] + Stack[ind+3:]
+
+            # increment tmp variable for IR
+            lastVarName += 1
 
         elif(i == "var"):
-            pass
-        elif(i == "call"):
-            #TODO: NEED TO CAPTURE PARAMETERS
-            varName += 1
-            expansion = []
-            pass
 
-        #There is only one value.
-        #I think this will only happen when numbers are passed in and not operators? 
-        #maybe it will happen when function calls are passed in?
-        elif(len(opStack) == 1):
-            lines.append(f"{varName} = {i}")
+            # modify stack to get rid of 'var'
+            Stack = Stack[:ind] + Stack[ind+1:]
+
+        elif(i == "call"):
+
+            # get name of function call
+            call_name = Stack[ind+1]
+
+            #TODO: NEED TO CAPTURE PARAMETERS
+            Stack[ind+1] = call_name
+
+            # modify stack to get rid of 'call'
+            Stack = Stack[:ind] + Stack[ind+1:]
+
+        else:
+            pass
 
         last -= 1
+
+    # final assignment to the passed in variable
+    lines.append(f"{varName} = {Stack[0]}")
 
     return lines
