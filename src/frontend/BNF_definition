@@ -118,8 +118,7 @@ initialization : var_type SELF_DEFINED array_init assignment OPEN_BRACE arr_list
 array_init : OPEN_BRACK INTEGER CLOSE_BRACK #array_init
 array_init : OPEN_BRACK CLOSE_BRACK #array_init
 
-initialization_terminal : arithmetic #initialization_terminal
-initialization_terminal : function_call #initialization_terminal
+initialization_terminal : collation #initialization_terminal
 initialization_terminal : string_literal #initialization_terminal
 
 var_type : var_modif TYPE #var_type
@@ -136,12 +135,10 @@ for_part_3 : designation #for param 3
 for_part_3 : arithmetic #for param 3
 for_part_3 : #for param 3
 
-designation : SELF_DEFINED assignment arithmetic #designation
-designation : SELF_DEFINED assignment function_call #designation
-designation : SELF_DEFINED array_access assignment arithmetic #designation
+designation : var_access assignment arithmetic #designation
 
-arr_list : value #arr_list
-arr_list : value COMMA arr_list #arr_list
+arr_list : collation #arr_list
+arr_list : collation COMMA arr_list #arr_list
 
 assignment : AEQ #assignment
 assignment : SEQ #assignment
@@ -155,49 +152,87 @@ assignment : BAEQ #assignment
 assignment : XEQ #assignment
 assignment : SET #assignment
 
-collation : collation comparison collation #collation
-collation : arithmetic #collation
-collation : OPEN_PAREN initialization CLOSE_PAREN #collation
-collation : OPEN_PAREN designation CLOSE_PAREN #collation
+collation : collation_or #collation
+collation : OPEN_PAREN collation CLOSE_PAREN #collation
+collation : collation_and #collation
+collation : collation_bor #collation
+collation : collation_xor #collation
+collation : collation_band #collation
+collation : collation_eq #collation
+collation : collation_rel #collation
 
-comparison : EQ #comparison
-comparison : LEQ #comparison
-comparison : GEQ #comparison
-comparison : NEQ #comparison
-comparison : LT #comparison
-comparison : GT #comparison
+collation_or : collation_and #collation_or
+collation_or : collation_or OR collation_and #collation_or
 
-arithmetic : arithmetic OR arithmetic #arithmetic
-arithmetic : arithmetic AND arithmetic #arithmetic
-arithmetic : arithmetic BOR arithmetic #arithmetic
-arithmetic : arithmetic XOR arithmetic #arithmetic
-arithmetic : arithmetic BAND arithmetic #arithmetic
-arithmetic : arithmetic LSH arithmetic #arithmetic
-arithmetic : arithmetic RSH arithmetic #arithmetic
-arithmetic : arithmetic ADD arithmetic #arithmetic
-arithmetic : arithmetic SUB arithmetic #arithmetic
-arithmetic : arithmetic MUL arithmetic #arithmetic
-arithmetic : arithmetic DIV arithmetic #arithmetic
-arithmetic : arithmetic MOD arithmetic #arithmetic
-arithmetic : ADD arithmetic #unary
-arithmetic : SUB arithmetic #unary
-arithmetic : NOT arithmetic #unary
-arithmetic : COMP arithmetic #unary
-arithmetic : BAND arithmetic #unary
-arithmetic : OPEN_PAREN var_modif TYPE CLOSE_PAREN arithmetic #unary
-arithmetic : INC SELF_DEFINED #unary
-arithmetic : DEC SELF_DEFINED #unary
-arithmetic : SELF_DEFINED INC #unary
-arithmetic : SELF_DEFINED DEC #unary
+collation_and : collation_bor #collation_and
+collation_and : collation_and AND collation_bor #collation_and
+
+collation_bor : collation_xor #collation_bor
+collation_bor : collation_bor BOR collation_xor #collation_bor
+
+collation_xor : collation_band #collation_xor
+collation_xor : collation_xor XOR collation_band #collation_xor
+
+collation_band : collation_eq #collation_band
+collation_band : collation_band BAND collation_eq #collation_band
+
+collation_eq : collation_rel #collation_eq
+collation_eq : collation_eq EQ collation_rel #collation_eq
+collation_eq : collation_eq NEQ collation_rel #collation_eq
+
+collation_rel : arithmetic #collation_rel
+collation_rel : collation_rel LT arithmetic #collation_rel
+collation_rel : collation_rel GT arithmetic #collation_rel
+collation_rel : collation_rel LEQ arithmetic #collation_rel
+collation_rel : collation_rel GEQ arithmetic #collation_rel
+
+arithmetic : arithmetic_sh #arithmetic
 arithmetic : OPEN_PAREN arithmetic CLOSE_PAREN #arithmetic
-arithmetic : value #arithmetic
-arithmetic : SELF_DEFINED #arithmetic
-arithmetic : SELF_DEFINED array_access #arithmetic
-arithmetic : function_call #arithmetic
+arithmetic : arithmetic_pm #arithmetic
+arithmetic : arithmetic_mul #arithmetic
+arithmetic : arithmetic_cast #arithmetic
+arithmetic : arithmetic_unary #arithmetic
+arithmetic : arithmetic_post #arithmetic
 
-array_access : OPEN_BRACK INTEGER CLOSE_BRACK #array_access
-array_access : OPEN_BRACK SELF_DEFINED CLOSE_BRACK #array_access
-array_access : OPEN_BRACK function_call CLOSE_BRACK #array_access
+arithmetic_sh : arithmetic_pm #arithmetic_sh
+arithmetic_sh : arithmetic_sh LSH arithmetic_pm #arithmetic_sh
+arithmetic_sh : arithmetic_sh RSH arithmetic_pm #arithmetic_sh
+
+arithmetic_pm : arithmetic_mul #arithmetic_pm
+arithmetic_pm : arithmetic_pm ADD arithmetic_mul #arithmetic_pm
+arithmetic_pm : arithmetic_pm SUB arithmetic_mul #arithmetic_pm
+
+arithmetic_mul : arithmetic_cast #arithmetic_mul
+arithmetic_mul : arithmetic_mul MUL arithmetic_cast #arithmetic_mul
+arithmetic_mul : arithmetic_mul DIV arithmetic_cast #arithmetic_mul
+arithmetic_mul : arithmetic_mul MOD arithmetic_cast #arithmetic_mul
+
+arithmetic_cast : arithmetic_unary #arithmetic_cast
+arithmetic_cast : OPEN_PAREN var_type CLOSE_PAREN arithmetic_unary #arithmetic_cast
+
+arithmetic_unary : arithmetic_post #arithmetic_unary
+arithmetic_unary : INC var_access #arithmetic_unary
+arithmetic_unary : DEC var_access #arithmetic_unary
+arithmetic_unary : unary_op arithmetic_cast #arithmetic_unary
+arithmetic_unary : SIZEOF arithmetic_unary #arithmetic_unary
+arithmetic_unary : SIZEOF var_type #arithmetic_unary
+
+arithmetic_post : value #arithmetic_post
+arithmetic_post : function_call #arithmetic_post
+arithmetic_post : var_access #arithmetic_post
+arithmetic_post : var_access INC #arithmetic_post
+arithmetic_post : var_access DEC #arithmetic_post
+arithmetic_post : OPEN_PAREN collation CLOSE_PAREN #arithmetic_post
+
+unary_op : BAND #unary_op
+unary_op : MUL #unary_op
+unary_op : ADD #unary_op
+unary_op : SUB #unary_op
+unary_op : COMP #unary_op
+unary_op : NOT #unary_op
+
+var_access : SELF_DEFINED #var_access
+var_access : SELF_DEFINED OPEN_BRACK collation CLOSE_BRACK #var_access
 
 value : INTEGER #value
 value : PRECISION #value
