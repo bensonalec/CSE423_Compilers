@@ -39,21 +39,6 @@ initTemp = """
 
         self.pg = ParserGenerator(
             TOKENSPOT , 
-            precedence=[
-                ('right', ['SET', 'AEQ', 'SEQ', 'MEQ', 'DEQ', 'MODEQ', 'LSEQ', 'RSEQ', 'BAEQ', 'XEQ', 'BOEQ']),
-                ('left',  ['OR']),
-                ('left',  ['AND']),
-                ('left',  ['BOR']),
-                ('left',  ['XOR']),
-                ('left',  ['BAND']),
-                ('left',  ['EQ', 'NEQ']),
-                ('left',  ['GE', 'GEQ']),
-                ('left',  ['LE', 'LEQ']),
-                ('left',  ['LSH', 'RSH']),
-                ('left',  ['ADD', 'SUB']),
-                ('left',  ['MUL', 'DIV', 'MOD']),
-                ('right', ['INC', 'DEC', 'NOT', 'COMP']),
-            ]
         )
         #initialzie head and current node
         self.Head = None
