@@ -20,12 +20,10 @@ class LevelOneIR():
                 bodyList.append((x.children[1].name,x.children[3]))
 
         returnDigit = 1234
-        returnVarName = f"D.{returnDigit}"
         for i in bodyList:
-            for x in returnLines(i[1], returnVarName):
+            for x in returnLines(i[1], returnDigit):
                 print(x)
             returnDigit += 1
-            returnVarName = f"D.{returnDigit}"
 
 def buildBoilerPlate(symTable):
     namesandparams = []
@@ -46,7 +44,7 @@ def buildBoilerPlate(symTable):
             namesandparams.append((x[0],paramsLi,x[1]))
     return namesandparams
 
-def returnLines(node,returnVarName):
+def returnLines(node,returnDigit):
     lines = []
     for element in node.children:
         try:
@@ -78,8 +76,8 @@ def returnLines(node,returnVarName):
 
                 # If returns some type of arithmetic expression, breaks it down.
                 if len(element.children) > 0:
-                    lines += breakdownArithmetic(element.children[0], f"{returnVarName}")
-                    lines.append(f"return {returnVarName};") 
+                    lines += breakdownArithmetic(element.children[0], f"D.{returnDigit}")
+                    lines.append(f"return D.{returnDigit};") 
                 
                 # Returns nothing
                 else:
@@ -91,8 +89,9 @@ def returnLines(node,returnVarName):
 
                 # function call has parameters
                 if func_call.children != []:
-                    lines += breakdownArithmetic(func_call.children[0], "param_var")
-                    lines.append(f"{func_call.name}(param_var);")
+                    lines += breakdownArithmetic(func_call.children[0], f"D.{returnDigit}")
+                    lines.append(f"{func_call.name}(D.{returnDigit});")
+                    returnDigit += 1
                 
                 # no parameters
                 else:
@@ -120,7 +119,7 @@ def returnLines(node,returnVarName):
 def breakdownArithmetic(root, varName):
     ntv = [root]
 
-    isOp = r'\+|\-|\/|\*'
+    isOp = r'^(\+|\-|\/|\*|\%)$'
     opCheck = re.compile(isOp)
     Stack = []
 
@@ -137,12 +136,12 @@ def breakdownArithmetic(root, varName):
             
             # params exist
             if cur.children != []:
-                lines += breakdownArithmetic(cur.children[0], "param_var")
+                lines += breakdownArithmetic(cur.children[0], varName)
 
                 #remove params so they dont get added to Stack
                 ntv[0].children = []
 
-                Stack.append("param_var") #tmp variable (should be some 'D.xxxx' variable)
+                Stack.append(varName) #tmp variable (should be some 'D.xxxx' variable eventually?)
             
             # params don't exist
             else:
