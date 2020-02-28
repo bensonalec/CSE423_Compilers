@@ -100,14 +100,13 @@ def buildAST(parseHead):
                 ASTcurrent = ASTcurrent.children[-1]
         
         elif typ.startswith('arithmetic'):
-            if len(c[0].content) == 1:
-                if 'value' in c[0].content[0].__dict__:
-                    ASTcurrent.children.append(ASTNode("var", ASTcurrent))
-                    ASTcurrent = ASTcurrent.children[-1]
-                    ASTcurrent.children.append(ASTNode(c[0].content[0].value, ASTcurrent))
-            elif len(c[0].content) == 2:
+
+            if len(c[0].content) == 2:
+                # To catch unary operations
                 if typ.endswith('unary'):
+                    # All operations with two children are pre ops.
                     if 'value' in c[0].content[0].__dict__:
+                        # If the first child is a terminal it can either be a pre increment or a sizeof call
                         ASTcurrent.children.append(ASTNode(c[0].content[0].value, ASTcurrent))
                         ASTcurrent = ASTcurrent.children[-1]
                         if ASTcurrent.name == "sizeof":
@@ -117,10 +116,12 @@ def buildAST(parseHead):
                             ASTcurrent.children.append(ASTNode("", ASTcurrent))
                             ASTcurrent = ASTcurrent.children[-1]
                     else:
+                        # if the first value is a terminal its an operation that is either dereferencing, referencing, positive, negative, complement, and logical negation
                         ASTcurrent.children.append(ASTNode(c[0].content[0].content[0].value, ASTcurrent))
                         ASTcurrent = ASTcurrent.children[-1]
 
                 elif typ.endswith('post'):
+                    # The only post operations with two children are increment and decrement 
                     ASTcurrent.children.append(ASTNode(c[0].content[1].value, ASTcurrent))
                     ASTcurrent = ASTcurrent.children[-1]
                     ASTcurrent.children.append(ASTNode("", ASTcurrent))
@@ -133,6 +134,7 @@ def buildAST(parseHead):
 
                     expansion = [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__]
             elif len(c[0].content) == 3:
+                # If there are binary operations
                 if 'value' in c[0].content[1].__dict__:
                     ASTcurrent.children.append(ASTNode(c[0].content[1].value, ASTcurrent))
                     ASTcurrent = ASTcurrent.children[-1]
@@ -143,11 +145,8 @@ def buildAST(parseHead):
                 pass
         
         elif typ.startswith('collation'):
-            if len(c[0].content) == 1:
-                pass
-            elif len(c[0].content) == 2:
-                pass
-            elif len(c[0].content) == 3:
+            if len(c[0].content) == 3:
+                # To ensure that there are no false positives since arithmetic is directly linked to collation
                 if 'value' in c[0].content[1].__dict__:
                     ASTcurrent.children.append(ASTNode(c[0].content[1].value, ASTcurrent))
                     ASTcurrent = ASTcurrent.children[-1]
@@ -305,6 +304,7 @@ def buildAST(parseHead):
                 ASTcurrent.children.append(ASTNode("body", ASTcurrent))
                 ASTcurrent = ASTcurrent.children[-1]
         elif typ == "var_access":
+            # Abstracted the access of a single value
             ASTcurrent.children.append(ASTNode("var", ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
             ASTcurrent.children.append(ASTNode(c[0].content[0].value, ASTcurrent))
