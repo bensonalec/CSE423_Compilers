@@ -21,5 +21,6 @@
 8 : ['single_line']
 9 : ['return', Token('SEMICOLON', ';')]
 10 : [Token('RETURN', 'return'), 'arithmetic']
-11 : ['value']
-12 : [Token('INTEGER', '500')]
+11 : ['arithmetic_post']
+12 : ['value']
+13 : [Token('INTEGER', '500')]
