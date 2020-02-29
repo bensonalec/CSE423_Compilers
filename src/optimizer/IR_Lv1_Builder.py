@@ -160,10 +160,12 @@ def breakdownArithmetic(root, varName):
             v2 = Stack[ind+2]
 
             # append the operation
-            lines.append(f"_{lastVarName} = {v1} {i} {v2};")
+            #lines.append(f"_{lastVarName} = {v1} {i} {v2};")
+            lines.append(f"{varName} = {v1} {i} {v2};")
 
             # modify the stack to get rid of operands but keep new tmp variable
-            Stack = Stack[:ind] + [f"_{lastVarName}"] + Stack[ind+3:]
+            #Stack = Stack[:ind] + [f"_{lastVarName}"] + Stack[ind+3:]
+            Stack = Stack[:ind] + [f"{varName}"] + Stack[ind+3:]
 
             # increment tmp variable for IR
             lastVarName += 1
