@@ -76,7 +76,7 @@ class symbol_table():
                     #declaration of variable
                     if len(cur.Node.children) > 1:
                         #add to symbol table this should also handle function param being that they are still within the same scope as there parent function
-                        if([x for x in self.symbols if x.name == cur.Node.children[1].name and cur.Scope in x.scope] == []):
+                        if([x for x in self.symbols if x.name == cur.Node.children[1].name and x.scope in cur.Scope] == []):
                             if cur.Node.parent.parent.name == "func" or cur.Node.parent.parent.name == "decl":
                                 if cur.Node.parent.name == "param":
                                     self.symbols.append(Entry(False,True,  False,cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
@@ -94,7 +94,7 @@ class symbol_table():
                         pass
                     #usage of varible
                     else:
-                        if ([x for x in self.symbols if x.name == cur.Node.children[0].name and cur.Scope in x.scope] == []):
+                        if ([x for x in self.symbols if x.name == cur.Node.children[0].name and x.scope in cur.Scope] == []):
                             print(f'Variable Undeclared {cur.Node.children[0].name}')
                             self.undefined.append(Entry(False,False, False,  cur.Node.children[0].name, "None", cur.Scope)) 
                             
@@ -104,8 +104,7 @@ class symbol_table():
                     scopenum += 1
 
                     #gets all labels declared in body of a function
-                    labels = [x for x in cur.Node.children if x.name.endswith(":")]
-                    
+                    labels = [x.children[0] for x in cur.Node.children if x.name == "label"]
                     if labels != []:
 
                         #for each label in the body

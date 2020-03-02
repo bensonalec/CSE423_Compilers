@@ -1,0 +1,7 @@
+  Name   | Function? | Type |  Scope   | Param? | Label? 
+---------+-----------+------+----------+--------+-------
+function |      True |  int | /        |  False | False
+    main |      True |  int | /        |  False | False
+       a |     False |  int | /main/1/ |  False | False
+
+No undefined symbols available
