@@ -71,6 +71,49 @@ def returnLines(node,returnDigit):
                 print("Body")
             elif ind == 3:
                 print("If")
+
+                #move this eventually
+                def build_case(node):
+                    #does not handle complex booleans.
+
+                    #first node is the opperator
+                    opp = node.children[0].name
+
+                    #next find first arguement
+                    if node.children[0].children[0].name == "var" or node.children[0].children[0].name == "call":
+                        first_arg = node.children[0].children[0].children[0].name
+                    else:
+                        first_arg = node.children[0].children[0].name
+
+                    #next find second arguement
+                    if node.children[0].children[0].name == "var" or node.children[0].children[0].name == "call":
+                        second_arg = node.children[0].children[0].children[0].name
+                    else:
+                        second_arg = node.children[0].children[0].name
+
+                    return f'{first_arg} {opp} {second_arg}'
+
+                for case in element.children:
+
+                    if case.name == "default":
+                       lines.append(returnLines(case.children[0],returnDigit))
+                       continue
+
+                    temp_label1 = f'<D.{returnDigit}>'
+                    returnDigit += 1
+                    temp_label2 = f'<D.{returnDigit}>'
+                    returnDigit += 1
+                    #create if gimple statement with gotos
+                    lines.append(f'if ({build_case(case)}) goto {temp_label1}; else goto {temp_label2}')
+                    #label 1:
+                    lines.append(f'{temp_label1}:')
+                    #Body
+                    lines.append(returnLines(case.children[1],returnDigit))
+                    #label 2:
+                    lines.append(f'{temp_label2}:')
+
+                    
+
             elif ind == 4: 
                 #Return
 
