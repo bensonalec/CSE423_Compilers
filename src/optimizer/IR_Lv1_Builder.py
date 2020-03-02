@@ -86,10 +86,10 @@ def returnLines(node,returnDigit):
                         first_arg = node.children[0].children[0].name
 
                     #next find second arguement
-                    if node.children[0].children[0].name == "var" or node.children[0].children[0].name == "call":
-                        second_arg = node.children[0].children[0].children[0].name
+                    if node.children[0].children[1].name == "var" or node.children[0].children[1].name == "call":
+                        second_arg = node.children[0].children[1].children[0].name
                     else:
-                        second_arg = node.children[0].children[0].name
+                        second_arg = node.children[0].children[1].name
 
                     return f'{first_arg} {opp} {second_arg}'
 
