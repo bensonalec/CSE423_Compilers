@@ -3,11 +3,12 @@ import os
 sys.path.insert(0,'../src/frontend')
 
 import unittest
-import lexer as lex
-import parser as par
-import preprocessor as pre
-import AST_builder as ast
-import semantics as sem
+from lexer import Lexer, tokensToString
+from parser import Parser
+from frontend import *
+from preprocessor import run
+from AST_builder import buildAST, ASTNode
+from semantics import symbol_table
 
 
 path_to_C_files = "./programs/"
@@ -16,7 +17,7 @@ path_to_output_files = "./expected_output/semantic/"
 class SemanticAnalysisTest(unittest.TestCase):
 
     # Add program into list if for some reason, we shouldn't test it.
-    skip_programs = ["While.c","Identifiers_Variables_Functions.c","Unary.c","Pre_Processor.c","Assignment.c","Goto.c","If_Else.c","Return.c"]
+    skip_programs = ["For_Loops.c","Switch.c","Pre_Processor.c","Initialization_Strings.c","Functions_Strings.c"]
 
     maxDiff = None
 
@@ -36,20 +37,19 @@ class SemanticAnalysisTest(unittest.TestCase):
                 fi = open(path_to_output_files + expected_filename)
                 expected = fi.read()
                 fi.close()
-                lexer = lex.Lexer().get_lexer()
+
+                lexer = Lexer().get_lexer()
                 tokens = lexer.lex(text_input)
-                lex.validateTokens(tokens)
 
-                pg = par.Parser()
+                pg = Parser()
                 pg.parse()
-                parser = pg.get_parser()
-                parser.parse(tokens)
-
+                parse = pg.get_parser()
+                parse.parse(tokens)
                 head = pg.getTree()
 
-                astree = ast.buildAST(head)
+                astree = buildAST(head)
 
-                sym = sem.symbol_table(astree)
+                sym = symbol_table(astree)
                 sym.analyze()
                 
                 self.assertEqual(sym.lineSemanticErrors(), expected)
