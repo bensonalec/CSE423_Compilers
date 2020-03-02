@@ -106,7 +106,9 @@ def returnLines(node,returnDigit):
             elif ind == 9:
                 print("Goto")
             elif ind == 10:
-                print("Label")
+                #Gimple handles labels the say I just need to pass the label.
+                #print("Label")
+                lines.append(element.children[0].name)
             else:
                 print("Unsupported at this time")
 
