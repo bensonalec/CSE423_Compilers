@@ -17,7 +17,7 @@ path_to_output_files = "./expected_output/semantic/"
 class SemanticAnalysisTest(unittest.TestCase):
 
     # Add program into list if for some reason, we shouldn't test it.
-    skip_programs = ["For_Loops.c","Switch.c","Pre_Processor.c","Initialization_Strings.c","Functions_Strings.c"]
+    skip_programs = ["Pre_Processor.c","Initialization_Strings.c","Functions_Strings.c"]
 
     maxDiff = None
 
