@@ -93,6 +93,9 @@ def returnLines(node,returnDigit):
 
                     return f'{first_arg} {opp} {second_arg}'
 
+
+                end_if = []
+
                 for case in element.children:
 
                     if case.name == "default":
@@ -103,14 +106,20 @@ def returnLines(node,returnDigit):
                     returnDigit += 1
                     temp_label2 = f'<D.{returnDigit}>'
                     returnDigit += 1
+                    end_if.append(f'<D.{returnDigit}>')
+                    returnDigit += 1                    
                     #create if gimple statement with gotos
                     lines.append(f'if ({build_case(case)}) goto {temp_label1}; else goto {temp_label2}')
                     #label 1:
                     lines.append(f'{temp_label1}:')
                     #Body
                     lines.append(returnLines(case.children[1],returnDigit))
+                    #add goto here to skip over other statements
+                    lines.append(f'goto {end_if[-1]};')
                     #label 2:
                     lines.append(f'{temp_label2}:')
+                for i in end_if:
+                    lines.append(f'{i}:')
 
                     
 
