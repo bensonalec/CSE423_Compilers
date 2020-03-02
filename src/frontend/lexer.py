@@ -91,6 +91,7 @@ class Lexer():
         self.lexer.add("CLOSE_BRACE",   r"\}")
         self.lexer.add("OPEN_BRACK",    r"\[")
         self.lexer.add("CLOSE_BRACK",   r"\]")
+        self.lexer.add("QUESTION",      r"\?")
         self.lexer.add("SEMICOLON",     r";")
         self.lexer.add("COLON",         r":")
         self.lexer.add("COMMA",         r",")

@@ -1,8 +1,8 @@
 `-- program
     |-- decl
-    |   |-- func_type
+    |   |-- int
+    |   |-- header_function
     |   `-- param
-    |       |-- int
     |       |-- var
     |       |   |-- int
     |       |   `-- a

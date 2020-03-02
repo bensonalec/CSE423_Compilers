@@ -1,0 +1,8 @@
+      Name       | Function? | Type |   Scope    | Param? | Label? 
+-----------------+-----------+------+------------+--------+-------
+        function |      True |  int | /          |  False | False
+            main |      True |  int | /          |  False | False
+arithmetic_input |     False |  int | /function/ |   True | False
+         value_1 |     False |  int | /main/1/   |  False | False
+
+No undefined symbols available
