@@ -27,7 +27,7 @@
 <pre><code class="python">import os
 import sys
 
-sys.path.append(os.path.dirname(__file__))</code></pre>
+sys.path.insert(0, os.path.dirname(__file__))</code></pre>
 </details>
 </section>
 <section>
@@ -35,8 +35,7 @@ sys.path.append(os.path.dirname(__file__))</code></pre>
 <dl>
 <dt><code class="name"><a title="src.frontend.AST_builder" href="AST_builder.html">src.frontend.AST_builder</a></code></dt>
 <dd>
-<section class="desc"><p>This module takes in the parse tree, and produces an Abstract Syntax Tree.
-This is done using a Depth First Traversal. By taking the Concrete Syntax …</p></section>
+<section class="desc"><p>This module takes in the parse tree, and produces an Abstract Syntax Tree.This is done using a Depth First Traversal. By taking the Concrete Syntax …</p></section>
 </dd>
 <dt><code class="name"><a title="src.frontend.bnfToParser" href="bnfToParser.html">src.frontend.bnfToParser</a></code></dt>
 <dd>
@@ -53,7 +52,15 @@ for command line arguments that can be used to …</p></section>
 </dd>
 <dt><code class="name"><a title="src.frontend.parser" href="parser.html">src.frontend.parser</a></code></dt>
 <dd>
-<section class="desc"><p>This module contains definitions for the AbstractSyntaxTree and Parser classes, as well as some ansillary functions to assist.</p></section>
+<section class="desc"><p>This module contains definitions for the ParseTree and Parser classes, as well as some ansillary functions to assist.</p></section>
+</dd>
+<dt><code class="name"><a title="src.frontend.preprocessor" href="preprocessor.html">src.frontend.preprocessor</a></code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt><code class="name"><a title="src.frontend.semantics" href="semantics.html">src.frontend.semantics</a></code></dt>
+<dd>
+<section class="desc"></section>
 </dd>
 </dl>
 </section>
@@ -82,6 +89,8 @@ for command line arguments that can be used to …</p></section>
 <li><code><a title="src.frontend.frontend" href="frontend.html">src.frontend.frontend</a></code></li>
 <li><code><a title="src.frontend.lexer" href="lexer.html">src.frontend.lexer</a></code></li>
 <li><code><a title="src.frontend.parser" href="parser.html">src.frontend.parser</a></code></li>
+<li><code><a title="src.frontend.preprocessor" href="preprocessor.html">src.frontend.preprocessor</a></code></li>
+<li><code><a title="src.frontend.semantics" href="semantics.html">src.frontend.semantics</a></code></li>
 </ul>
 </li>
 </ul>

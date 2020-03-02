@@ -5,6 +5,7 @@ This module is only supposed to generate the documentation for the compiler as a
 import os
 import re
 import itertools
+import pathlib
 
 import bs4
 
@@ -50,7 +51,7 @@ if __name__ == "__main__":
         style = "text-align: center; "
         
         if td.string == "✓":
-            style += "background: #aaffaa;"
+            style += "background: rgb(170, 255, 170);"
         elif td.string == "✕":
             style += "background: rgb(255, 170, 170);"
         elif td.string == "−":
@@ -73,8 +74,6 @@ if __name__ == "__main__":
 
     for sup in usr_parser.select("sup"):
         sup.string.wrap(usr_parser.new_tag("a", href="#table_foot"))
-    
-
 
     # Assigns IDs for the table of contents
     sections = []
@@ -135,11 +134,46 @@ if __name__ == "__main__":
 
     header.insert_after(names)
 
+    doc_loc = usr_parser.select("dl")[-1]
+    comp_loc = pathlib.Path("../src/run.py")
+    # comp_loc = pathlib.Path("../src/run.py")
+    comp_flags = [("-l", "Token List"), ("-p", "Parse Tree"), ("-a", "Abstract Syntax Tree"), ("-s", "Symbol Table")]
+    # comp_flags = [("-l", "Token List"), ("-p", "Parse Tree")]
+
+    for program in [x for x in pathlib.Path("../test/programs").iterdir() if x.suffix == '.c' ]:
+        print (program)
+        title = usr_parser.new_tag("dt")
+        title.string = program.stem
+        title.string.wrap(usr_parser.new_tag("h4"))
+
+        data = usr_parser.new_tag("dd")
+        data.append(usr_parser.new_tag("div", attrs={'class' : "example_buttons"}))
+        for name in ["Program"] + [x[1] for x in comp_flags]:
+            a = usr_parser.new_tag("a")
+            a.string = name
+            data.select("div")[-1].append(a)
+        
+        par = usr_parser.new_tag("div", attrs={'class' : "example_representations"})
+        for idx, arg in enumerate([""] + [x[0] for x in comp_flags]):
+            div = usr_parser.new_tag("div")
+            div.append(usr_parser.new_tag("pre", attrs={'style' : "overflow-x: auto;"}))
+            if idx == 0:
+                div.pre.string = program.read_text()
+                div.pre.string.wrap(usr_parser.new_tag("code", attrs={'class' : "C++ hljs"}))
+            else:
+                inp = " ".join(["python", str(comp_loc.resolve()), arg, str(program.resolve())])
+                div.pre.string = os.popen(inp).read()
+            par.append(div)
+        data.append(par)
+        doc_loc.append(title)
+        doc_loc.append(data)
+        # break
+
     # Add inline javascript to allow for management of examples
     for i, (link, rep) in enumerate(zip(usr_parser.select(".example_buttons"), usr_parser.select(".example_representations"))):
         for j, (a, div) in enumerate(zip(link.children, rep.children)):
             if type(a) != type(bs4.NavigableString("")) or type(div) != type(bs4.NavigableString("")):
-                a["onclick"] = f"""[...document.getElementsByClassName("representation_{i}")].forEach(function(elem, index) {{ if (index === {(j-1)/2}) {{ elem.style.display = "block";}} else {{ elem.style.display = "none";}}}})"""
+                a["onclick"] = f"""[...document.getElementsByClassName("representation_{i}")].forEach(function(elem, index) {{ if (index === {(j)}) {{ elem.style.display = "block";}} else {{ elem.style.display = "none";}}}})"""
                 div['class'] = f"representation_{i}" if 'class' not in div else div['class']
                 div['style'] = "display: none;" if 'style' not in div else div['style']
             rep.div['style'] = "display: block;"

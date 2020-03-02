@@ -1,0 +1,10 @@
+`-- program
+    `-- func
+        |-- int
+        |-- main
+        |-- param
+        `-- body
+            `-- while
+                |-- 1
+                `-- body
+                    `-- break

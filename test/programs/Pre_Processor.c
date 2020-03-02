@@ -1,4 +1,4 @@
-#include "headers/test.h"
+#include "../headers/test.h"
 #define FREE 500
 
 int main() {

@@ -4,6 +4,7 @@ sys.path.insert(0, '../src/frontend')
 
 import unittest
 from lexer import Lexer, tokensToString
+from preprocessor import run
 
 path_to_C_files = "./programs/"
 path_to_output_files = "./expected_output/lexer/"
@@ -16,15 +17,19 @@ class LexerTests(unittest.TestCase):
     maxDiff = None
 
     def test_lexer(self):
-        print()
+        print(' ')
 
         for c_filename in os.listdir(path_to_C_files):
             
             if c_filename.endswith('.c') and c_filename not in self.skip_programs:
 
+                status = "FAIL" #Will change if test passes
+
                 fi = open(path_to_C_files + c_filename)
                 text_input = fi.read()
                 fi.close()
+
+                text_input = run(text_input, path_to_C_files + c_filename)
 
                 lexer = Lexer().get_lexer()
                 tokens = lexer.lex(text_input)
@@ -35,9 +40,25 @@ class LexerTests(unittest.TestCase):
                 expected = fi.read()
                 fi.close()
 
-                self.assertEqual(tokensToString(tokens), expected)
-                print(f"Lexer test passed with: {c_filename}")
+                with self.subTest():
+                    self.assertEqual(tokensToString(tokens), expected)
+                    status = "ok"
 
- 
+                print(f"{'Lexer test for '+c_filename:65}", end="")
+                if status == "ok":
+                    print(Colors.green, f"{status}", Colors.reset)
+                else:
+                    print(Colors.red, f"{status}", Colors.reset)
+                
+            elif c_filename.endswith('.c'):
+                print(f"{'Lexer test for '+c_filename:65}", end="")
+                print(Colors.blue, "skipped", Colors.reset)
+
+class Colors: 
+        red='\033[31m'
+        green='\033[32m'
+        blue='\033[34m'
+        reset='\033[00m'
+
 if __name__ == '__main__':
 	unittest.main()

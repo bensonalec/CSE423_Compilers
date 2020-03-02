@@ -1,0 +1,27 @@
+`-- program
+    |-- func
+    |   |-- int
+    |   |-- return_strings
+    |   |-- param
+    |   |   |-- var
+    |   |   |   |-- char
+    |   |   |   `-- string
+    |   |   `-- var
+    |   |       |-- int
+    |   |       `-- i
+    |   `-- body
+    |       `-- return
+    |           `-- 1
+    `-- func
+        |-- int
+        |-- main
+        |-- param
+        `-- body
+            `-- =
+                |-- var
+                |   |-- int
+                |   `-- i
+                `-- call
+                    `-- return_strings
+                        |-- "test"
+                        `-- 1

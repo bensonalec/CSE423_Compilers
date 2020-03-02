@@ -1,0 +1,24 @@
+`-- program
+    |-- func
+    |   |-- int
+    |   |-- function
+    |   |-- param
+    |   |   `-- var
+    |   |       |-- int
+    |   |       `-- arithmetic_input
+    |   `-- body
+    |       `-- return
+    |           `-- var
+    |               `-- arithmetic_input
+    `-- func
+        |-- int
+        |-- main
+        |-- param
+        `-- body
+            `-- =
+                |-- var
+                |   |-- int
+                |   `-- value_1
+                `-- call
+                    `-- function
+                        `-- 1

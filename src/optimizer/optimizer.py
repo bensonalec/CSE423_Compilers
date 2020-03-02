@@ -1,12 +1,31 @@
+"""
+This module serves as the main interface to the optimization process in order to streamline the compiler.
+"""
+
 import argparse
 import importlib
 
 ir1 = importlib.import_module("IR_Lv1_Builder", __name__)
 
 def mainIR(args, fi):
+    """
+    .. todo::
+    This is the function that when given a specific IR will produce linear intermediate representations for teh inputted program.
+    """
     pass
 
 def mainAST(args,astHead,symbolTable):
+    """
+    This is the function that when given an AST and a symbol table will produce linear intermediate representations for teh inputted program.
+
+    Args:
+        args: The commandline arguments that belong to the optimizer.
+        astHead: The root node of the AST.
+        symbolTable: The list of valid entries throughout the program.
+
+    Returns:
+        The lowest level of IR produced.
+    """
     ir = ir1.LevelOneIR(astHead,symbolTable)
     ir.construct()
     pass

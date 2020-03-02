@@ -8,5 +8,5 @@ class LevelOneIR():
 
         while ntv != []:
             cur = ntv[0]
-            print(cur.name)
+            # print(cur.name)
             ntv = [x for x in cur.children] + ntv[1:]

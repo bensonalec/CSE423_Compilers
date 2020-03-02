@@ -1,3 +1,4 @@
+import os
 import re
 
 def remove_comments(text):
@@ -35,7 +36,7 @@ def find_preprocessors(text):
 
 
 
-def get_text(file_name):
+def get_text(file_name, path):
     """
     Opens and retrieves the text from an import file and preprocesses this text.
 
@@ -45,13 +46,12 @@ def get_text(file_name):
     Returns:
         Text of the import file.
     """
-
-    fi = open(file_name, "r")
+    fi = open(path + "/" + file_name, "r")
     text = fi.read()
     fi.close()
 
     # Run preprocessing on imported file
-    text = run(text)
+    text = run(text, path)
 
     return text
 
@@ -78,7 +78,7 @@ def cleanup(text):
 
 
 
-def run(text):
+def run(text, path):
     """
     Performs pre-processing on C code text.
 
@@ -134,8 +134,8 @@ def run(text):
             if file_name:
 
                 # Delete the pre-processor instruction from the C code
-                text = re.sub(rf'\s*#include ["|\']{file_name[0]}["|\']\n', "", text)
-                text = get_text(file_name[0]) + text
+                text = re.sub(rf'\s*#include \"{file_name[0]}\"\n', "", text)
+                text = get_text(file_name[0], os.path.abspath(os.path.dirname(path))) + text
 
             else:
                 raise BaseException("Invalid '#include' statement")

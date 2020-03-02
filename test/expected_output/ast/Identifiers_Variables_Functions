@@ -1,0 +1,30 @@
+`-- program
+    |-- func
+    |   |-- int
+    |   |-- test_function
+    |   |-- param
+    |   |   |-- var
+    |   |   |   |-- int
+    |   |   |   `-- x
+    |   |   `-- var
+    |   |       |-- int
+    |   |       `-- y
+    |   `-- body
+    |       `-- return
+    |           `-- 1
+    `-- func
+        |-- int
+        |-- main
+        |-- param
+        `-- body
+            |-- =
+            |   |-- var
+            |   |   |-- int
+            |   |   `-- x
+            |   `-- call
+            |       `-- test_function
+            |           |-- 1
+            |           `-- 1
+            `-- return
+                `-- var
+                    `-- x

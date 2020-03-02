@@ -5,8 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.4" />
 <title>src.frontend.AST_builder API documentation</title>
-<meta name="description" content="This module takes in the parse tree, and produces an Abstract Syntax Tree.
-This is done using a Depth First Traversal. By taking the Concrete Syntax …" />
+<meta name="description" content="This module takes in the parse tree, and produces an Abstract Syntax Tree.This is done using a Depth First Traversal. By taking the Concrete Syntax …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -21,17 +20,13 @@ This is done using a Depth First Traversal. By taking the Concrete Syntax …" /
 <h1 class="title">Module <code>src.frontend.AST_builder</code></h1>
 </header>
 <section id="section-intro">
-<p>This module takes in the parse tree, and produces an Abstract Syntax Tree.
-This is done using a Depth First Traversal. By taking the Concrete Syntax Tree (Parse Tree)
-and converting it to an Abstract Syntax Tree we can begin to move towards an intermediate form.</p>
+<p>This module takes in the parse tree, and produces an Abstract Syntax Tree.This is done using a Depth First Traversal. By taking the Concrete Syntax Tree (Parse Tree)and converting it to an Abstract Syntax Tree we can begin to move towards an intermediate form.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-This module takes in the parse tree, and produces an Abstract Syntax Tree. 
-This is done using a Depth First Traversal. By taking the Concrete Syntax Tree (Parse Tree) 
-and converting it to an Abstract Syntax Tree we can begin to move towards an intermediate form.
+This module takes in the parse tree, and produces an Abstract Syntax Tree.This is done using a Depth First Traversal. By taking the Concrete Syntax Tree (Parse Tree)and converting it to an Abstract Syntax Tree we can begin to move towards an intermediate form.
 &#34;&#34;&#34;
 def buildAST(parseHead):
     &#34;&#34;&#34;
@@ -40,14 +35,14 @@ def buildAST(parseHead):
     Args:
         parseHead: The head node of the parse tree.
 
-    Returns: 
+    Returns:
         The head of the Abstract Syntax Tree.
     &#34;&#34;&#34;
     head = parseHead
     ASTHead = None
     ASTcurrent = None
     ntv = [(head, ASTcurrent)]
-    
+   
     #DFS by iterating through a stack of nodes to visit
     while ntv != []:
         c = ntv[0]
@@ -58,125 +53,266 @@ def buildAST(parseHead):
 
         #This block checks the type of the ASTNode that is  being visited, and acts as a monstrous switch statement, for each visited node a proper AST segment or node is built
         if typ == &#34;program&#34;:
-            ASTHead = ASTNode(&#34;Program&#34;)
+            ASTHead = ASTNode(&#34;program&#34;, ASTcurrent)
             ASTcurrent = ASTHead
+        
         elif typ == &#34;initialization&#34;:
-            ASTcurrent.children.append(ASTNode(&#34;&#34;, ASTcurrent,[]))
+            ASTcurrent.children.append(ASTNode(&#34;=&#34;, ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
-            if len([x for x in c[0].content if &#39;content&#39; in x.__dict__]) == 0:
-                ASTcurrent.name = &#34;=&#34;
-                ASTcurrent.children.append(ASTNode(f&#34;{c[0].content[0].value} {c[0].content[1].value}&#34;, ASTcurrent, []))
-                ASTcurrent.children.append(ASTNode(&#34;NULL&#34;, ASTcurrent, []))
-            else:
-                ASTcurrent.children.append(ASTNode(f&#34;{c[0].content[0].value} &#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(&#34;var&#34;, ASTcurrent))
+            ASTcurrent.children[-1].children.append(ASTNode(c[0].content[1].value, ASTcurrent))
+
+            # Check if there is a value to initialize the variable to
+            if not [x for x in c[0].content if &#39;value&#39; in x.__dict__ and x.value == &#34;=&#34;]:
+                ASTcurrent.children.append(ASTNode(&#34;NULL&#34;, ASTcurrent.parent))
+            
+            expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#34;var_type&#34;]
+            expansion += [(x, ASTcurrent) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token != &#34;var_type&#34;]
+        
         elif typ == &#34;designation&#34;:
-            # if last node was an initialization
-            if ASTcurrent.name == &#34;&#34;:
-                ASTcurrent.name = c[0].content[1].content[0].value
-                ASTcurrent.children[0].name += c[0].content[0].value
-            else:
-                ASTcurrent.children.append(ASTNode(c[0].content[1].content[0].value, ASTcurrent, []))
-                ASTcurrent = ASTcurrent.children[-1]
-                ASTcurrent.children.append(ASTNode(c[0].content[0].value, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(c[0].content[1].content[0].value, ASTcurrent))
+            ASTcurrent = ASTcurrent.children[-1]
+            ASTcurrent.children.append(ASTNode(&#34;var&#34;, ASTcurrent))
+            ASTcurrent.children[-1].children.append(ASTNode(c[0].content[0].value, ASTcurrent))
 
             # Skip the assignment node
-            expansion = [(x, ASTcurrent) for x in c[0].content[1:] if &#39;content&#39; in x.__dict__]            
+            expansion = [(x, ASTcurrent) for x in c[0].content[1:] if &#39;content&#39; in x.__dict__]           
+        
         elif typ == &#34;value&#34;:
-            ASTcurrent.children.append(ASTNode(f&#34;{c[0].content[0].value}&#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(f&#34;{c[0].content[0].value}&#34;, ASTcurrent))
+        
         elif typ == &#34;function definition&#34;:
-            ASTcurrent.children.append(ASTNode(f&#34;{c[0].content[0].value} {c[0].content[1].value}&#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(&#34;func&#34;, ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
-            ASTcurrent.children.append(ASTNode(&#34;param&#34;, ASTcurrent, []))
-            ASTcurrent.children.append(ASTNode(&#34;body&#34;, ASTcurrent, []))
-
+            ASTcurrent.children.append(ASTNode(c[0].content[1].value, ASTcurrent))
+            ASTcurrent.children.append(ASTNode(&#34;param&#34;, ASTcurrent))
+           
             # split the content of the function definition up
-            expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#39;args&#39;] + [(x, ASTcurrent.children[1]) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#39;block&#39;]
+            expansion = [(x, ASTcurrent) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#39;func_type&#39;]
+            expansion += [(x, ASTcurrent.children[1]) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#39;args&#39;]
+            expansion += [(x, ASTcurrent) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#39;block&#39;]
+        
         elif typ == &#34;functionDeclaration&#34;:
-            ASTcurrent.children.append(ASTNode(f&#34;{c[0].content[0].value} {c[0].content[1].value}&#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(&#34;decl&#34;, ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
-            ASTcurrent.children.append(ASTNode(&#34;param&#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(c[0].content[0].token, ASTcurrent))
+            ASTcurrent.children.append(ASTNode(&#34;param&#34;, ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
+        
         elif typ == &#34;arg_terminal&#34;:
-            ASTcurrent.children.append(ASTNode(&#34; &#34;.join([x.value for x in c[0].content]), ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(&#34;var&#34;, ASTcurrent))
+            ASTcurrent = ASTcurrent.children[-1]
+            ASTcurrent.children.append(ASTNode(c[0].content[1].value, ASTcurrent))
+        
         elif typ == &#34;if&#34;:
             # Check if the node is already within a branch
             if ASTcurrent.name != &#34;branch&#34;:
-                ASTcurrent.children.append(ASTNode(&#34;branch&#34;, ASTcurrent, []))
+                ASTcurrent.children.append(ASTNode(&#34;branch&#34;, ASTcurrent))
                 ASTcurrent = ASTcurrent.children[-1]
-            ASTcurrent.children.append(ASTNode(&#34;case&#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(&#34;case&#34;, ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
-            ASTcurrent.children.append(ASTNode(&#34;&#34;, ASTcurrent, []))
-            ASTcurrent.children.append(ASTNode(&#34;body&#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(&#34;&#34;, ASTcurrent))
 
-            # split the condition from the body
-            expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#39;collation&#39;] + [(x, ASTcurrent.children[1]) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#39;if_body&#39;] + [(x, ASTcurrent.parent) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#34;if_expansion&#34;]
+            # split the condition from the body and further if statements
+            expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#39;collation&#39;]
+            expansion += [(x, ASTcurrent) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#39;if_body&#39;]
+            expansion += [(x, ASTcurrent.parent) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#34;if_expansion&#34;]
+        
         elif typ == &#34;if_expansion&#34;:
             # Check if it&#39;s the last else in the if statement
-            if not (c[0].content[1].content[0].token == &#39;content_terminal&#39; and c[0].content[1].content[0].content[0].token == &#34;if&#34;):
-                ASTcurrent.children.append(ASTNode(&#34;default&#34;, ASTcurrent, []))
+            if c[0].content[1].content[0].token == &#39;content_terminal&#39; and c[0].content[1].content[0].content[0].token == &#34;if&#34;:
+                expansion = [(x, ASTcurrent) for x in c[0].content[1].content[0].content if &#39;content&#39; in x.__dict__ and x.token == &#34;if&#34;]
+            else:
+                ASTcurrent.children.append(ASTNode(&#34;default&#34;, ASTcurrent))
                 ASTcurrent = ASTcurrent.children[-1]
+        
         elif typ == &#34;comparison&#34;:
             ASTcurrent.name = c[0].content[0].value
-            pass
+        
         elif typ == &#34;arithmetic&#34;:
             tmpLen = len([x for x in c[0].content if &#34;content&#34; in x.__dict__])
 
             #for two non-terminals (i.e ARITHMETIC op ARITHMETIC)
-            if(tmpLen == 2): 
-                ASTcurrent.children.append(ASTNode(c[0].content[1].value, ASTcurrent, []))
+            if(tmpLen == 2):
+                ASTcurrent.children.append(ASTNode(c[0].content[1].value, ASTcurrent))
                 ASTcurrent = ASTcurrent.children[-1]
-            
+           
             #for one non-terminals (i.e value)
+            
             elif(tmpLen == 1):
+                # So far all supprted operations with one non-terminal are handled elsewhere
                 pass
             #for no non-terminals (i.e SELF_DEFINED)
             else:
-                ASTcurrent.children.append(ASTNode(c[0].content[0].value,ASTcurrent,[]))
-                pass
-            pass
+                ASTcurrent.children.append(ASTNode(&#34;var&#34;, ASTcurrent))
+                ASTcurrent = ASTcurrent.children[-1]
+                ASTcurrent.children.append(ASTNode(c[0].content[0].value, ASTcurrent))
+        
         elif typ == &#34;return&#34;:
-            ASTcurrent.children.append(ASTNode(&#34;return&#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(&#34;return&#34;, ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
-            pass
+
+        elif typ == &#34;string literal&#34;:
+            ASTcurrent.children.append(ASTNode(c[0].content[0].value, ASTcurrent))
+
         elif typ == &#34;function call&#34;:
-            ASTcurrent.children.append(ASTNode(f&#34;{c[0].content[0].value} ()&#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(&#34;call&#34;, ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
+            ASTcurrent.children.append(ASTNode(c[0].content[0].value, ASTcurrent))
+            ASTcurrent = ASTcurrent.children[-1]
+
             expansion = [(x, ASTcurrent) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#34;parameter&#34;]
+        
         elif typ == &#34;while loop&#34;:
-            ASTcurrent.children.append(ASTNode(&#34;while&#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(&#34;while&#34;, ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
-            ASTcurrent.children.append(ASTNode(&#34;&#34;, ASTcurrent, []))
-            ASTcurrent.children.append(ASTNode(&#34;body&#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(&#34;&#34;, ASTcurrent))
 
-            expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#34;collation&#34;] + [(x, ASTcurrent.children[1]) for x in c[0].content if &#39;content&#39; in x.__dict__ and (x.token == &#34;block&#34; or x.token == &#34;content_terminal&#34;)]
-            pass
+            expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#34;collation&#34;]
+            expansion += [(x, ASTcurrent) for x in c[0].content if &#39;content&#39; in x.__dict__ and (x.token == &#34;block&#34; or x.token == &#34;content_terminal&#34;)]
+        
         elif typ == &#34;break&#34;:
-            ASTcurrent.children.append(ASTNode(&#34;break&#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(&#34;break&#34;, ASTcurrent))
+        
+        elif typ == &#34;continue&#34;:
+            ASTcurrent.children.append(ASTNode(&#34;continue&#34;, ASTcurrent))
+        
         elif typ == &#34;jump&#34;:
-            ASTcurrent.children.append(ASTNode(&#34;goto&#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(&#34;goto&#34;, ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
-            ASTcurrent.children.append(ASTNode(c[0].content[1].value, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(c[0].content[1].value, ASTcurrent))
+        
         elif typ == &#34;goto&#34;:
-            ASTcurrent.children.append(ASTNode(f&#34;{c[0].content[0].value}:&#34;, ASTcurrent, []))
-        elif typ == &#34;do loop&#34;:
-            ASTcurrent.children.append(ASTNode(&#34;do_while&#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(&#34;label&#34;, ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
-            ASTcurrent.children.append(ASTNode(&#34;&#34;, ASTcurrent, []))
-            ASTcurrent.children.append(ASTNode(&#34;body&#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(f&#34;{c[0].content[0].value}:&#34;, ASTcurrent))
+        
+        elif typ == &#34;do loop&#34;:
+            ASTcurrent.children.append(ASTNode(&#34;do_while&#34;, ASTcurrent))
+            ASTcurrent = ASTcurrent.children[-1]
+            ASTcurrent.children.append(ASTNode(&#34;&#34;, ASTcurrent))
 
-            expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#34;collation&#34;] + [(x, ASTcurrent.children[1]) for x in c[0].content if &#39;content&#39; in x.__dict__ and (x.token == &#34;block&#34; or x.token == &#34;content_terminal&#34;)]
+            expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#34;collation&#34;]
+            expansion += [(x, ASTcurrent) for x in c[0].content if &#39;content&#39; in x.__dict__ and (x.token == &#34;block&#34; or x.token == &#34;content_terminal&#34;)]
+        
         elif typ == &#34;unary&#34;:
+            # check if it&#39;s a unary operation with one non-terminal
             if len([x for x in c[0].content if &#39;content&#39; in x.__dict__]):
                 index = [x for x in range(2) if x != [y.token if &#39;content&#39; in y.__dict__ else y.name for y in c[0].content].index(&#34;arithmetic&#34;)][0]
-                ASTcurrent.children.append(ASTNode(c[0].content[index].value, ASTcurrent, []))
+                ASTcurrent.children.append(ASTNode(c[0].content[index].value, ASTcurrent))
                 ASTcurrent = ASTcurrent.children[-1]
             else:
+                # determine the index of the variable
                 op_index = [x for x in range(2) if x != [y.name for y in c[0].content].index(&#34;SELF_DEFINED&#34;)][0]
-                ASTcurrent.children.append(ASTNode(c[0].content[op_index].value, ASTcurrent, []))
+                ASTcurrent.children.append(ASTNode(c[0].content[op_index].value, ASTcurrent))
                 ASTcurrent = ASTcurrent.children[-1]
-                ASTcurrent.children.append(ASTNode(&#34;NULL&#34;, ASTcurrent ,[]))
-                ASTcurrent.children.insert(op_index ^ 1, ASTNode(c[0].content[op_index ^ 1].value, ASTcurrent, []))
-            pass
+                ASTcurrent.children.append(ASTNode(&#34;NULL&#34;, ASTcurrent))
+                ASTcurrent.children.insert(op_index ^ 1, ASTNode(&#34;var&#34;, ASTcurrent))
+                ASTcurrent.children[op_index ^ 1].children.append(ASTNode(c[0].content[op_index ^ 1].value, ASTcurrent.children[op_index ^ 1]))
+        
+        elif typ == &#34;func_type&#34;:
+            idx = [c[0].content.index(x) for x in c[0].content if &#39;value&#39; in x.__dict__][0]
+            ASTcurrent.children.insert(0, ASTNode(c[0].content[idx].value, ASTcurrent))
+            ASTcurrent = ASTcurrent.children[0]
+        
+        elif typ == &#34;func_modif_terminal&#34;:
+            ASTcurrent.children.insert(0, ASTNode(c[0].content[0].value, ASTcurrent))
+        
+        elif typ == &#34;var_type&#34;:
+            idx = [c[0].content.index(x) for x in c[0].content if &#39;value&#39; in x.__dict__][0]
+            ASTcurrent.children.insert(0, ASTNode(c[0].content[idx].value, ASTcurrent))
+            ASTcurrent = ASTcurrent.children[0]
+        
+        elif typ == &#34;var_modif_terminal&#34;:
+            ASTcurrent.children.insert(0, ASTNode(c[0].content[0].value, ASTcurrent))
+        
+        elif typ == &#34;param_terminal&#34;:
+            if [x for x in c[0].content if &#39;content&#39; in x.__dict__] == []:
+                ASTcurrent.children.append(ASTNode(c[0].content[0].value, ASTcurrent))
+        
+        elif typ == &#34;for loop&#34;:
+            ASTcurrent.children.append(ASTNode(&#34;for&#34;, ASTcurrent))
+            ASTcurrent = ASTcurrent.children[-1]
+
+            # Prepare the nodes for the different parts of the for loop
+            ASTcurrent.children.append(ASTNode(&#34;&#34;, ASTcurrent))
+            ASTcurrent.children.append(ASTNode(&#34;&#34;, ASTcurrent))
+            ASTcurrent.children.append(ASTNode(&#34;&#34;, ASTcurrent))
+            ASTcurrent.children.append(ASTNode(&#34;&#34;, ASTcurrent))
+           
+            expansion =  [(x, ASTcurrent.children[0]) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#34;for param 1&#34;]
+            expansion += [(x, ASTcurrent.children[1]) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#34;for param 2&#34;]
+            expansion += [(x, ASTcurrent.children[2]) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#34;for param 3&#34;]
+            expansion += [(x, ASTcurrent.children[3]) for x in c[0].content if &#39;content&#39; in x.__dict__ and (x.token == &#34;content_terminal&#34; or x.token == &#34;block&#34;)]
+        
+        elif typ == &#34;switch&#34;:
+            ASTcurrent.children.append(ASTNode(&#34;branch&#34;, ASTcurrent))
+            ASTcurrent = ASTcurrent.children[-1]
+           
+            cases = []
+            expansion = []
+
+            # Unravel the tree in a DFS manner to retrieve all the cases 
+            v = [x for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#34;switch_body&#34;]
+            while v != []:
+                n = v[0]
+                extra = []
+                if n.token == &#34;case&#34; or n.token == &#34;default&#34;:
+                    cases.append(n)
+                else:
+                    extra = [x for x in n.content if &#39;content&#39; in x.__dict__]
+
+                v = extra + v[1:]
+
+            # Store the last case body for use when there is fallthrough.
+            last_cases = []
+            for case in reversed(cases):
+                ASTcurrent.children.insert(0, ASTNode(case.token, ASTcurrent))
+                if case.token != &#34;default&#34;:
+                    ASTcurrent.children[0].children.append(ASTNode(&#34;==&#34;, ASTcurrent.children[-1]))
+                    ASTcurrent.children[0].children[-1].children.append(ASTNode(&#34;var&#34;, ASTcurrent.children[-1].children[-1]))
+                    ASTcurrent.children[0].children[-1].children[-1].children.append(ASTNode(c[0].content[2].content[0].value, ASTcurrent.children[0].children[-1].children[-1]))
+                    ASTcurrent.children[0].children[-1].children.append(ASTNode(case.content[1].content[0].value, ASTcurrent.children[-1].children[-1]))
+               
+                ASTcurrent.children[0].children.append(ASTNode(&#34;body&#34;, ASTcurrent.children[-1]))
+
+                if [x for x in case.content if &#39;content&#39; in x.__dict__ and x.token == &#39;case_body&#39;] == []:
+                    # Add all the previous case bodies until there is a statement that break the fallthrough
+                    expansion += [(x, ASTcurrent.children[0].children[-1]) for x in last_cases]
+                else:
+                    j = [x.token if &#39;content&#39; in x.__dict__ else x.value for x in case.content].index(&#39;case_body&#39;)
+
+                    # Check if the case will fall through or not
+                    v = [x for x in case.content if &#39;content&#39; in x.__dict__]
+                    b = False
+                    while v != []:
+                        n = v[0]
+                        extra = []
+                        if n.token in [&#34;break&#34;, &#34;return&#34;, &#34;goto&#34;]:
+                            b = True
+                            break;
+                        else:
+                            extra = [x for x in n.content if &#39;content&#39; in x.__dict__]
+                        
+                        v = extra + v[1:]
+                    
+                    if b:
+                        # If there is breaking statement in the case body reset last_cases
+                        last_cases = [case.content[j]]
+                    else:
+                        # else prepend the current case body to it because of reverse traversal of the cases
+                        last_cases = [case.content[j]] + last_cases
+                    
+                    expansion += [(x, ASTcurrent.children[0].children[-1]) for x in last_cases]
+                    
+        elif typ == &#34;block&#34;:
+            ASTcurrent.children.append(ASTNode(&#34;body&#34;, ASTcurrent))
+            ASTcurrent = ASTcurrent.children[-1]
+        
+        elif typ == &#34;content_terminal&#34;:
+            if ASTcurrent.name != &#34;body&#34; and &#39;content&#39; in c[0].content[0].__dict__ and c[0].content[0].token != &#34;block&#34;:
+                ASTcurrent.children.append(ASTNode(&#34;body&#34;, ASTcurrent))
+                ASTcurrent = ASTcurrent.children[-1]
         else:
             pass
 
@@ -185,13 +321,8 @@ def buildAST(parseHead):
 
         ntv = expansion + ntv[1:]
 
-    # goto: lable colon
-    # unary operators: Operator and index of child corresponds to pre or post.
-
-    # to ensure that all nodes dont have an empty parent
-    ntv = [ASTHead]
-
     #Removes the blank parents from some nodes that end up blank as a result of our AST building process
+    ntv = [ASTHead]
     while ntv != []:
         c = ntv[0]
         if c.parent and c.parent.name == &#34;&#34;:
@@ -201,41 +332,39 @@ def buildAST(parseHead):
 
     return ASTHead
 
-def print_AST(node, file=None, _prefix=&#34;&#34;, _last=True):
-    &#34;&#34;&#34;
-    Prints the AST given the head
-
-    Args: 
-        node: The head node of the tree.
-        file: The file to be written to (Defaults to Stdout).
-        _prefix: A string indicating the spacing from the left side of the screen.
-        _last: A boolean that indicates if a node is the last in it&#39;s immediate surroundings.
-    &#34;&#34;&#34;
-    print(_prefix, &#34;`-- &#34; if _last else &#34;|-- &#34;, node.name, sep=&#34;&#34;, file=file)
-    _prefix += &#34;    &#34; if _last else &#34;|   &#34;
-    child_count = len(node.children)
-    for i, child in enumerate(node.children):
-        _last = i == (child_count - 1)
-        print_AST(child, file, _prefix, _last)
-
 
 class ASTNode():
     &#34;&#34;&#34;
-    A class that builds an object representing the node in an AST. 
+    A class that builds an object representing the node in an AST.
     It has it&#39;s children, parent, and name.
     &#34;&#34;&#34;
-    def __init__(self, name = None, parent = None, children = []):
+    def __init__(self, name, parent):
         &#34;&#34;&#34;
         Constructs an ASTNode
 
-        Args: 
+        Args:
             name: The name of the Node (Its contents).
             parent: A node that is the parent of this current node.
-            children: The children of this node (In a list).
         &#34;&#34;&#34;
-        self.children = children
+        self.name = name
         self.parent = parent
-        self.name = name</code></pre>
+        self.children = []
+
+    def print_AST(self, file=None, _prefix=&#34;&#34;, _last=True):
+        &#34;&#34;&#34;
+        Prints the AST given the head
+
+        Args:
+            file: The file to be written to (Defaults to Stdout).
+            _prefix: A string indicating the spacing from the left side of the screen.
+            _last: A boolean that indicates if a node is the last in it&#39;s immediate surroundings.
+        &#34;&#34;&#34;
+        print(f&#34;{_prefix}{&#39;`-- &#39; if _last else &#39;|-- &#39;}{self.name}&#34;, file=file)
+        _prefix += &#34;    &#34; if _last else &#34;|   &#34;
+        for i, child in enumerate(self.children):
+            _last = i == len(self.children)-1
+            child.print_AST(file, _prefix, _last)
+        </code></pre>
 </details>
 </section>
 <section>
@@ -254,9 +383,9 @@ class ASTNode():
 <dl>
 <dt><strong><code>parseHead</code></strong></dt>
 <dd>The head node of the parse tree.</dd>
-<dt><strong><code>Returns</code></strong></dt>
-<dd>The head of the Abstract Syntax Tree.</dd>
-</dl></section>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The head of the Abstract Syntax Tree.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -268,14 +397,14 @@ class ASTNode():
     Args:
         parseHead: The head node of the parse tree.
 
-    Returns: 
+    Returns:
         The head of the Abstract Syntax Tree.
     &#34;&#34;&#34;
     head = parseHead
     ASTHead = None
     ASTcurrent = None
     ntv = [(head, ASTcurrent)]
-    
+   
     #DFS by iterating through a stack of nodes to visit
     while ntv != []:
         c = ntv[0]
@@ -286,125 +415,266 @@ class ASTNode():
 
         #This block checks the type of the ASTNode that is  being visited, and acts as a monstrous switch statement, for each visited node a proper AST segment or node is built
         if typ == &#34;program&#34;:
-            ASTHead = ASTNode(&#34;Program&#34;)
+            ASTHead = ASTNode(&#34;program&#34;, ASTcurrent)
             ASTcurrent = ASTHead
+        
         elif typ == &#34;initialization&#34;:
-            ASTcurrent.children.append(ASTNode(&#34;&#34;, ASTcurrent,[]))
+            ASTcurrent.children.append(ASTNode(&#34;=&#34;, ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
-            if len([x for x in c[0].content if &#39;content&#39; in x.__dict__]) == 0:
-                ASTcurrent.name = &#34;=&#34;
-                ASTcurrent.children.append(ASTNode(f&#34;{c[0].content[0].value} {c[0].content[1].value}&#34;, ASTcurrent, []))
-                ASTcurrent.children.append(ASTNode(&#34;NULL&#34;, ASTcurrent, []))
-            else:
-                ASTcurrent.children.append(ASTNode(f&#34;{c[0].content[0].value} &#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(&#34;var&#34;, ASTcurrent))
+            ASTcurrent.children[-1].children.append(ASTNode(c[0].content[1].value, ASTcurrent))
+
+            # Check if there is a value to initialize the variable to
+            if not [x for x in c[0].content if &#39;value&#39; in x.__dict__ and x.value == &#34;=&#34;]:
+                ASTcurrent.children.append(ASTNode(&#34;NULL&#34;, ASTcurrent.parent))
+            
+            expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#34;var_type&#34;]
+            expansion += [(x, ASTcurrent) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token != &#34;var_type&#34;]
+        
         elif typ == &#34;designation&#34;:
-            # if last node was an initialization
-            if ASTcurrent.name == &#34;&#34;:
-                ASTcurrent.name = c[0].content[1].content[0].value
-                ASTcurrent.children[0].name += c[0].content[0].value
-            else:
-                ASTcurrent.children.append(ASTNode(c[0].content[1].content[0].value, ASTcurrent, []))
-                ASTcurrent = ASTcurrent.children[-1]
-                ASTcurrent.children.append(ASTNode(c[0].content[0].value, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(c[0].content[1].content[0].value, ASTcurrent))
+            ASTcurrent = ASTcurrent.children[-1]
+            ASTcurrent.children.append(ASTNode(&#34;var&#34;, ASTcurrent))
+            ASTcurrent.children[-1].children.append(ASTNode(c[0].content[0].value, ASTcurrent))
 
             # Skip the assignment node
-            expansion = [(x, ASTcurrent) for x in c[0].content[1:] if &#39;content&#39; in x.__dict__]            
+            expansion = [(x, ASTcurrent) for x in c[0].content[1:] if &#39;content&#39; in x.__dict__]           
+        
         elif typ == &#34;value&#34;:
-            ASTcurrent.children.append(ASTNode(f&#34;{c[0].content[0].value}&#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(f&#34;{c[0].content[0].value}&#34;, ASTcurrent))
+        
         elif typ == &#34;function definition&#34;:
-            ASTcurrent.children.append(ASTNode(f&#34;{c[0].content[0].value} {c[0].content[1].value}&#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(&#34;func&#34;, ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
-            ASTcurrent.children.append(ASTNode(&#34;param&#34;, ASTcurrent, []))
-            ASTcurrent.children.append(ASTNode(&#34;body&#34;, ASTcurrent, []))
-
+            ASTcurrent.children.append(ASTNode(c[0].content[1].value, ASTcurrent))
+            ASTcurrent.children.append(ASTNode(&#34;param&#34;, ASTcurrent))
+           
             # split the content of the function definition up
-            expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#39;args&#39;] + [(x, ASTcurrent.children[1]) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#39;block&#39;]
+            expansion = [(x, ASTcurrent) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#39;func_type&#39;]
+            expansion += [(x, ASTcurrent.children[1]) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#39;args&#39;]
+            expansion += [(x, ASTcurrent) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#39;block&#39;]
+        
         elif typ == &#34;functionDeclaration&#34;:
-            ASTcurrent.children.append(ASTNode(f&#34;{c[0].content[0].value} {c[0].content[1].value}&#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(&#34;decl&#34;, ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
-            ASTcurrent.children.append(ASTNode(&#34;param&#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(c[0].content[0].token, ASTcurrent))
+            ASTcurrent.children.append(ASTNode(&#34;param&#34;, ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
+        
         elif typ == &#34;arg_terminal&#34;:
-            ASTcurrent.children.append(ASTNode(&#34; &#34;.join([x.value for x in c[0].content]), ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(&#34;var&#34;, ASTcurrent))
+            ASTcurrent = ASTcurrent.children[-1]
+            ASTcurrent.children.append(ASTNode(c[0].content[1].value, ASTcurrent))
+        
         elif typ == &#34;if&#34;:
             # Check if the node is already within a branch
             if ASTcurrent.name != &#34;branch&#34;:
-                ASTcurrent.children.append(ASTNode(&#34;branch&#34;, ASTcurrent, []))
+                ASTcurrent.children.append(ASTNode(&#34;branch&#34;, ASTcurrent))
                 ASTcurrent = ASTcurrent.children[-1]
-            ASTcurrent.children.append(ASTNode(&#34;case&#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(&#34;case&#34;, ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
-            ASTcurrent.children.append(ASTNode(&#34;&#34;, ASTcurrent, []))
-            ASTcurrent.children.append(ASTNode(&#34;body&#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(&#34;&#34;, ASTcurrent))
 
-            # split the condition from the body
-            expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#39;collation&#39;] + [(x, ASTcurrent.children[1]) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#39;if_body&#39;] + [(x, ASTcurrent.parent) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#34;if_expansion&#34;]
+            # split the condition from the body and further if statements
+            expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#39;collation&#39;]
+            expansion += [(x, ASTcurrent) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#39;if_body&#39;]
+            expansion += [(x, ASTcurrent.parent) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#34;if_expansion&#34;]
+        
         elif typ == &#34;if_expansion&#34;:
             # Check if it&#39;s the last else in the if statement
-            if not (c[0].content[1].content[0].token == &#39;content_terminal&#39; and c[0].content[1].content[0].content[0].token == &#34;if&#34;):
-                ASTcurrent.children.append(ASTNode(&#34;default&#34;, ASTcurrent, []))
+            if c[0].content[1].content[0].token == &#39;content_terminal&#39; and c[0].content[1].content[0].content[0].token == &#34;if&#34;:
+                expansion = [(x, ASTcurrent) for x in c[0].content[1].content[0].content if &#39;content&#39; in x.__dict__ and x.token == &#34;if&#34;]
+            else:
+                ASTcurrent.children.append(ASTNode(&#34;default&#34;, ASTcurrent))
                 ASTcurrent = ASTcurrent.children[-1]
+        
         elif typ == &#34;comparison&#34;:
             ASTcurrent.name = c[0].content[0].value
-            pass
+        
         elif typ == &#34;arithmetic&#34;:
             tmpLen = len([x for x in c[0].content if &#34;content&#34; in x.__dict__])
 
             #for two non-terminals (i.e ARITHMETIC op ARITHMETIC)
-            if(tmpLen == 2): 
-                ASTcurrent.children.append(ASTNode(c[0].content[1].value, ASTcurrent, []))
+            if(tmpLen == 2):
+                ASTcurrent.children.append(ASTNode(c[0].content[1].value, ASTcurrent))
                 ASTcurrent = ASTcurrent.children[-1]
-            
+           
             #for one non-terminals (i.e value)
+            
             elif(tmpLen == 1):
+                # So far all supprted operations with one non-terminal are handled elsewhere
                 pass
             #for no non-terminals (i.e SELF_DEFINED)
             else:
-                ASTcurrent.children.append(ASTNode(c[0].content[0].value,ASTcurrent,[]))
-                pass
-            pass
+                ASTcurrent.children.append(ASTNode(&#34;var&#34;, ASTcurrent))
+                ASTcurrent = ASTcurrent.children[-1]
+                ASTcurrent.children.append(ASTNode(c[0].content[0].value, ASTcurrent))
+        
         elif typ == &#34;return&#34;:
-            ASTcurrent.children.append(ASTNode(&#34;return&#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(&#34;return&#34;, ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
-            pass
+
+        elif typ == &#34;string literal&#34;:
+            ASTcurrent.children.append(ASTNode(c[0].content[0].value, ASTcurrent))
+
         elif typ == &#34;function call&#34;:
-            ASTcurrent.children.append(ASTNode(f&#34;{c[0].content[0].value} ()&#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(&#34;call&#34;, ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
+            ASTcurrent.children.append(ASTNode(c[0].content[0].value, ASTcurrent))
+            ASTcurrent = ASTcurrent.children[-1]
+
             expansion = [(x, ASTcurrent) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#34;parameter&#34;]
+        
         elif typ == &#34;while loop&#34;:
-            ASTcurrent.children.append(ASTNode(&#34;while&#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(&#34;while&#34;, ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
-            ASTcurrent.children.append(ASTNode(&#34;&#34;, ASTcurrent, []))
-            ASTcurrent.children.append(ASTNode(&#34;body&#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(&#34;&#34;, ASTcurrent))
 
-            expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#34;collation&#34;] + [(x, ASTcurrent.children[1]) for x in c[0].content if &#39;content&#39; in x.__dict__ and (x.token == &#34;block&#34; or x.token == &#34;content_terminal&#34;)]
-            pass
+            expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#34;collation&#34;]
+            expansion += [(x, ASTcurrent) for x in c[0].content if &#39;content&#39; in x.__dict__ and (x.token == &#34;block&#34; or x.token == &#34;content_terminal&#34;)]
+        
         elif typ == &#34;break&#34;:
-            ASTcurrent.children.append(ASTNode(&#34;break&#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(&#34;break&#34;, ASTcurrent))
+        
+        elif typ == &#34;continue&#34;:
+            ASTcurrent.children.append(ASTNode(&#34;continue&#34;, ASTcurrent))
+        
         elif typ == &#34;jump&#34;:
-            ASTcurrent.children.append(ASTNode(&#34;goto&#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(&#34;goto&#34;, ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
-            ASTcurrent.children.append(ASTNode(c[0].content[1].value, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(c[0].content[1].value, ASTcurrent))
+        
         elif typ == &#34;goto&#34;:
-            ASTcurrent.children.append(ASTNode(f&#34;{c[0].content[0].value}:&#34;, ASTcurrent, []))
-        elif typ == &#34;do loop&#34;:
-            ASTcurrent.children.append(ASTNode(&#34;do_while&#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(&#34;label&#34;, ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
-            ASTcurrent.children.append(ASTNode(&#34;&#34;, ASTcurrent, []))
-            ASTcurrent.children.append(ASTNode(&#34;body&#34;, ASTcurrent, []))
+            ASTcurrent.children.append(ASTNode(f&#34;{c[0].content[0].value}:&#34;, ASTcurrent))
+        
+        elif typ == &#34;do loop&#34;:
+            ASTcurrent.children.append(ASTNode(&#34;do_while&#34;, ASTcurrent))
+            ASTcurrent = ASTcurrent.children[-1]
+            ASTcurrent.children.append(ASTNode(&#34;&#34;, ASTcurrent))
 
-            expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#34;collation&#34;] + [(x, ASTcurrent.children[1]) for x in c[0].content if &#39;content&#39; in x.__dict__ and (x.token == &#34;block&#34; or x.token == &#34;content_terminal&#34;)]
+            expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#34;collation&#34;]
+            expansion += [(x, ASTcurrent) for x in c[0].content if &#39;content&#39; in x.__dict__ and (x.token == &#34;block&#34; or x.token == &#34;content_terminal&#34;)]
+        
         elif typ == &#34;unary&#34;:
+            # check if it&#39;s a unary operation with one non-terminal
             if len([x for x in c[0].content if &#39;content&#39; in x.__dict__]):
                 index = [x for x in range(2) if x != [y.token if &#39;content&#39; in y.__dict__ else y.name for y in c[0].content].index(&#34;arithmetic&#34;)][0]
-                ASTcurrent.children.append(ASTNode(c[0].content[index].value, ASTcurrent, []))
+                ASTcurrent.children.append(ASTNode(c[0].content[index].value, ASTcurrent))
                 ASTcurrent = ASTcurrent.children[-1]
             else:
+                # determine the index of the variable
                 op_index = [x for x in range(2) if x != [y.name for y in c[0].content].index(&#34;SELF_DEFINED&#34;)][0]
-                ASTcurrent.children.append(ASTNode(c[0].content[op_index].value, ASTcurrent, []))
+                ASTcurrent.children.append(ASTNode(c[0].content[op_index].value, ASTcurrent))
                 ASTcurrent = ASTcurrent.children[-1]
-                ASTcurrent.children.append(ASTNode(&#34;NULL&#34;, ASTcurrent ,[]))
-                ASTcurrent.children.insert(op_index ^ 1, ASTNode(c[0].content[op_index ^ 1].value, ASTcurrent, []))
-            pass
+                ASTcurrent.children.append(ASTNode(&#34;NULL&#34;, ASTcurrent))
+                ASTcurrent.children.insert(op_index ^ 1, ASTNode(&#34;var&#34;, ASTcurrent))
+                ASTcurrent.children[op_index ^ 1].children.append(ASTNode(c[0].content[op_index ^ 1].value, ASTcurrent.children[op_index ^ 1]))
+        
+        elif typ == &#34;func_type&#34;:
+            idx = [c[0].content.index(x) for x in c[0].content if &#39;value&#39; in x.__dict__][0]
+            ASTcurrent.children.insert(0, ASTNode(c[0].content[idx].value, ASTcurrent))
+            ASTcurrent = ASTcurrent.children[0]
+        
+        elif typ == &#34;func_modif_terminal&#34;:
+            ASTcurrent.children.insert(0, ASTNode(c[0].content[0].value, ASTcurrent))
+        
+        elif typ == &#34;var_type&#34;:
+            idx = [c[0].content.index(x) for x in c[0].content if &#39;value&#39; in x.__dict__][0]
+            ASTcurrent.children.insert(0, ASTNode(c[0].content[idx].value, ASTcurrent))
+            ASTcurrent = ASTcurrent.children[0]
+        
+        elif typ == &#34;var_modif_terminal&#34;:
+            ASTcurrent.children.insert(0, ASTNode(c[0].content[0].value, ASTcurrent))
+        
+        elif typ == &#34;param_terminal&#34;:
+            if [x for x in c[0].content if &#39;content&#39; in x.__dict__] == []:
+                ASTcurrent.children.append(ASTNode(c[0].content[0].value, ASTcurrent))
+        
+        elif typ == &#34;for loop&#34;:
+            ASTcurrent.children.append(ASTNode(&#34;for&#34;, ASTcurrent))
+            ASTcurrent = ASTcurrent.children[-1]
+
+            # Prepare the nodes for the different parts of the for loop
+            ASTcurrent.children.append(ASTNode(&#34;&#34;, ASTcurrent))
+            ASTcurrent.children.append(ASTNode(&#34;&#34;, ASTcurrent))
+            ASTcurrent.children.append(ASTNode(&#34;&#34;, ASTcurrent))
+            ASTcurrent.children.append(ASTNode(&#34;&#34;, ASTcurrent))
+           
+            expansion =  [(x, ASTcurrent.children[0]) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#34;for param 1&#34;]
+            expansion += [(x, ASTcurrent.children[1]) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#34;for param 2&#34;]
+            expansion += [(x, ASTcurrent.children[2]) for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#34;for param 3&#34;]
+            expansion += [(x, ASTcurrent.children[3]) for x in c[0].content if &#39;content&#39; in x.__dict__ and (x.token == &#34;content_terminal&#34; or x.token == &#34;block&#34;)]
+        
+        elif typ == &#34;switch&#34;:
+            ASTcurrent.children.append(ASTNode(&#34;branch&#34;, ASTcurrent))
+            ASTcurrent = ASTcurrent.children[-1]
+           
+            cases = []
+            expansion = []
+
+            # Unravel the tree in a DFS manner to retrieve all the cases 
+            v = [x for x in c[0].content if &#39;content&#39; in x.__dict__ and x.token == &#34;switch_body&#34;]
+            while v != []:
+                n = v[0]
+                extra = []
+                if n.token == &#34;case&#34; or n.token == &#34;default&#34;:
+                    cases.append(n)
+                else:
+                    extra = [x for x in n.content if &#39;content&#39; in x.__dict__]
+
+                v = extra + v[1:]
+
+            # Store the last case body for use when there is fallthrough.
+            last_cases = []
+            for case in reversed(cases):
+                ASTcurrent.children.insert(0, ASTNode(case.token, ASTcurrent))
+                if case.token != &#34;default&#34;:
+                    ASTcurrent.children[0].children.append(ASTNode(&#34;==&#34;, ASTcurrent.children[-1]))
+                    ASTcurrent.children[0].children[-1].children.append(ASTNode(&#34;var&#34;, ASTcurrent.children[-1].children[-1]))
+                    ASTcurrent.children[0].children[-1].children[-1].children.append(ASTNode(c[0].content[2].content[0].value, ASTcurrent.children[0].children[-1].children[-1]))
+                    ASTcurrent.children[0].children[-1].children.append(ASTNode(case.content[1].content[0].value, ASTcurrent.children[-1].children[-1]))
+               
+                ASTcurrent.children[0].children.append(ASTNode(&#34;body&#34;, ASTcurrent.children[-1]))
+
+                if [x for x in case.content if &#39;content&#39; in x.__dict__ and x.token == &#39;case_body&#39;] == []:
+                    # Add all the previous case bodies until there is a statement that break the fallthrough
+                    expansion += [(x, ASTcurrent.children[0].children[-1]) for x in last_cases]
+                else:
+                    j = [x.token if &#39;content&#39; in x.__dict__ else x.value for x in case.content].index(&#39;case_body&#39;)
+
+                    # Check if the case will fall through or not
+                    v = [x for x in case.content if &#39;content&#39; in x.__dict__]
+                    b = False
+                    while v != []:
+                        n = v[0]
+                        extra = []
+                        if n.token in [&#34;break&#34;, &#34;return&#34;, &#34;goto&#34;]:
+                            b = True
+                            break;
+                        else:
+                            extra = [x for x in n.content if &#39;content&#39; in x.__dict__]
+                        
+                        v = extra + v[1:]
+                    
+                    if b:
+                        # If there is breaking statement in the case body reset last_cases
+                        last_cases = [case.content[j]]
+                    else:
+                        # else prepend the current case body to it because of reverse traversal of the cases
+                        last_cases = [case.content[j]] + last_cases
+                    
+                    expansion += [(x, ASTcurrent.children[0].children[-1]) for x in last_cases]
+                    
+        elif typ == &#34;block&#34;:
+            ASTcurrent.children.append(ASTNode(&#34;body&#34;, ASTcurrent))
+            ASTcurrent = ASTcurrent.children[-1]
+        
+        elif typ == &#34;content_terminal&#34;:
+            if ASTcurrent.name != &#34;body&#34; and &#39;content&#39; in c[0].content[0].__dict__ and c[0].content[0].token != &#34;block&#34;:
+                ASTcurrent.children.append(ASTNode(&#34;body&#34;, ASTcurrent))
+                ASTcurrent = ASTcurrent.children[-1]
         else:
             pass
 
@@ -413,13 +683,8 @@ class ASTNode():
 
         ntv = expansion + ntv[1:]
 
-    # goto: lable colon
-    # unary operators: Operator and index of child corresponds to pre or post.
-
-    # to ensure that all nodes dont have an empty parent
-    ntv = [ASTHead]
-
     #Removes the blank parents from some nodes that end up blank as a result of our AST building process
+    ntv = [ASTHead]
     while ntv != []:
         c = ntv[0]
         if c.parent and c.parent.name == &#34;&#34;:
@@ -430,38 +695,6 @@ class ASTNode():
     return ASTHead</code></pre>
 </details>
 </dd>
-<dt id="src.frontend.AST_builder.print_AST"><code class="name flex">
-<span>def <span class="ident">print_AST</span></span>(<span>node, file=None)</span>
-</code></dt>
-<dd>
-<section class="desc"><p>Prints the AST given the head</p>
-<p>Args:
-node: The head node of the tree.
-file: The file to be written to (Defaults to Stdout).
-_prefix: A string indicating the spacing from the left side of the screen.
-_last: A boolean that indicates if a node is the last in it's immediate surroundings.</p></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def print_AST(node, file=None, _prefix=&#34;&#34;, _last=True):
-    &#34;&#34;&#34;
-    Prints the AST given the head
-
-    Args: 
-        node: The head node of the tree.
-        file: The file to be written to (Defaults to Stdout).
-        _prefix: A string indicating the spacing from the left side of the screen.
-        _last: A boolean that indicates if a node is the last in it&#39;s immediate surroundings.
-    &#34;&#34;&#34;
-    print(_prefix, &#34;`-- &#34; if _last else &#34;|-- &#34;, node.name, sep=&#34;&#34;, file=file)
-    _prefix += &#34;    &#34; if _last else &#34;|   &#34;
-    child_count = len(node.children)
-    for i, child in enumerate(node.children):
-        _last = i == (child_count - 1)
-        print_AST(child, file, _prefix, _last)</code></pre>
-</details>
-</dd>
 </dl>
 </section>
 <section>
@@ -469,38 +702,92 @@ _last: A boolean that indicates if a node is the last in it's immediate surround
 <dl>
 <dt id="src.frontend.AST_builder.ASTNode"><code class="flex name class">
 <span>class <span class="ident">ASTNode</span></span>
-<span>(</span><span>name=None, parent=None, children=[])</span>
+<span>(</span><span>name, parent)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>A class that builds an object representing the node in an AST.
 It has it's children, parent, and name.</p>
 <p>Constructs an ASTNode</p>
-<p>Args:
-name: The name of the Node (Its contents).
-parent: A node that is the parent of this current node.
-children: The children of this node (In a list).</p></section>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>The name of the Node (Its contents).</dd>
+<dt><strong><code>parent</code></strong></dt>
+<dd>A node that is the parent of this current node.</dd>
+</dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class ASTNode():
     &#34;&#34;&#34;
-    A class that builds an object representing the node in an AST. 
+    A class that builds an object representing the node in an AST.
     It has it&#39;s children, parent, and name.
     &#34;&#34;&#34;
-    def __init__(self, name = None, parent = None, children = []):
+    def __init__(self, name, parent):
         &#34;&#34;&#34;
         Constructs an ASTNode
 
-        Args: 
+        Args:
             name: The name of the Node (Its contents).
             parent: A node that is the parent of this current node.
-            children: The children of this node (In a list).
         &#34;&#34;&#34;
-        self.children = children
+        self.name = name
         self.parent = parent
-        self.name = name</code></pre>
+        self.children = []
+
+    def print_AST(self, file=None, _prefix=&#34;&#34;, _last=True):
+        &#34;&#34;&#34;
+        Prints the AST given the head
+
+        Args:
+            file: The file to be written to (Defaults to Stdout).
+            _prefix: A string indicating the spacing from the left side of the screen.
+            _last: A boolean that indicates if a node is the last in it&#39;s immediate surroundings.
+        &#34;&#34;&#34;
+        print(f&#34;{_prefix}{&#39;`-- &#39; if _last else &#39;|-- &#39;}{self.name}&#34;, file=file)
+        _prefix += &#34;    &#34; if _last else &#34;|   &#34;
+        for i, child in enumerate(self.children):
+            _last = i == len(self.children)-1
+            child.print_AST(file, _prefix, _last)</code></pre>
 </details>
+<h3>Methods</h3>
+<dl>
+<dt id="src.frontend.AST_builder.ASTNode.print_AST"><code class="name flex">
+<span>def <span class="ident">print_AST</span></span>(<span>self, file=None)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Prints the AST given the head</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>file</code></strong></dt>
+<dd>The file to be written to (Defaults to Stdout).</dd>
+<dt><strong><code>_prefix</code></strong></dt>
+<dd>A string indicating the spacing from the left side of the screen.</dd>
+<dt><strong><code>_last</code></strong></dt>
+<dd>A boolean that indicates if a node is the last in it's immediate surroundings.</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def print_AST(self, file=None, _prefix=&#34;&#34;, _last=True):
+    &#34;&#34;&#34;
+    Prints the AST given the head
+
+    Args:
+        file: The file to be written to (Defaults to Stdout).
+        _prefix: A string indicating the spacing from the left side of the screen.
+        _last: A boolean that indicates if a node is the last in it&#39;s immediate surroundings.
+    &#34;&#34;&#34;
+    print(f&#34;{_prefix}{&#39;`-- &#39; if _last else &#39;|-- &#39;}{self.name}&#34;, file=file)
+    _prefix += &#34;    &#34; if _last else &#34;|   &#34;
+    for i, child in enumerate(self.children):
+        _last = i == len(self.children)-1
+        child.print_AST(file, _prefix, _last)</code></pre>
+</details>
+</dd>
+</dl>
 </dd>
 </dl>
 </section>
@@ -519,13 +806,15 @@ children: The children of this node (In a list).</p></section>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="src.frontend.AST_builder.buildAST" href="#src.frontend.AST_builder.buildAST">buildAST</a></code></li>
-<li><code><a title="src.frontend.AST_builder.print_AST" href="#src.frontend.AST_builder.print_AST">print_AST</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
 <h4><code><a title="src.frontend.AST_builder.ASTNode" href="#src.frontend.AST_builder.ASTNode">ASTNode</a></code></h4>
+<ul class="">
+<li><code><a title="src.frontend.AST_builder.ASTNode.print_AST" href="#src.frontend.AST_builder.ASTNode.print_AST">print_AST</a></code></li>
+</ul>
 </li>
 </ul>
 </li>
