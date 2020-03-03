@@ -356,8 +356,8 @@ class ASTNode():
             _prefix: A string indicating the spacing from the left side of the screen.
             _last: A boolean that indicates if a node is the last in it's immediate surroundings.
         """
-        print(f"{_prefix}{'`-- ' if _last else '|-- '}{self.name}", file=file)
-        _prefix += "    " if _last else "|   "
+        print(f"{_prefix}{'└── ' if _last else '├── '}{self.name}", file=file)
+        _prefix += "    " if _last else "│   "
         for i, child in enumerate(self.children):
             _last = i == len(self.children)-1
             child.print_AST(file, _prefix, _last)

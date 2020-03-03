@@ -128,14 +128,14 @@ class ParseTree():
             _prefix: A string indicating the spacing from the left side of the screen.
             _last: A boolean that indicates if a self is the last in it's immediate surroundings.
         \"\"\"
-        print(f"{_prefix}{'`-- ' if _last else '|-- '}{self.token}", file=file)
-        _prefix += "    " if _last else "|   "
+        print(f"{_prefix}{'└── ' if _last else '├── '}{self.token}", file=file)
+        _prefix += "    " if _last else "│   "
         for i, child in enumerate(self.content):
             _last = i == len(self.content)-1
             if 'content' in child.__dict__:
                 child.print_ParseTree(file, _prefix, _last)
             else:
-                print(f"{_prefix}{'`-- ' if _last else '|-- '}{child}", file=file)
+                print(f"{_prefix}{'└── ' if _last else '├── '}{child}", file=file)
 
     def getListView(self, level):
         \"\"\"
