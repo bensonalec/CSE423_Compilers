@@ -772,42 +772,6 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production('collation : collation_and ')
-        def collation___collation_and_(p):
-            newNode = ParseTree("collation",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('collation : collation_bor ')
-        def collation___collation_bor_(p):
-            newNode = ParseTree("collation",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('collation : collation_xor ')
-        def collation___collation_xor_(p):
-            newNode = ParseTree("collation",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('collation : collation_band ')
-        def collation___collation_band_(p):
-            newNode = ParseTree("collation",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('collation : collation_eq ')
-        def collation___collation_eq_(p):
-            newNode = ParseTree("collation",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('collation : collation_rel ')
-        def collation___collation_rel_(p):
-            newNode = ParseTree("collation",p)
-            self.Head = newNode
-            return newNode
-
         @self.pg.production('collation_or : collation_and ')
         def collation_or___collation_and_(p):
             newNode = ParseTree("collation_or",p)
@@ -924,36 +888,6 @@ class Parser():
 
         @self.pg.production('arithmetic : OPEN_PAREN arithmetic CLOSE_PAREN ')
         def arithmetic___OPEN_PAREN_arithmetic_CLOSE_PAREN_(p):
-            newNode = ParseTree("arithmetic",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('arithmetic : arithmetic_pm ')
-        def arithmetic___arithmetic_pm_(p):
-            newNode = ParseTree("arithmetic",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('arithmetic : arithmetic_mul ')
-        def arithmetic___arithmetic_mul_(p):
-            newNode = ParseTree("arithmetic",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('arithmetic : arithmetic_cast ')
-        def arithmetic___arithmetic_cast_(p):
-            newNode = ParseTree("arithmetic",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('arithmetic : arithmetic_unary ')
-        def arithmetic___arithmetic_unary_(p):
-            newNode = ParseTree("arithmetic",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('arithmetic : arithmetic_post ')
-        def arithmetic___arithmetic_post_(p):
             newNode = ParseTree("arithmetic",p)
             self.Head = newNode
             return newNode
