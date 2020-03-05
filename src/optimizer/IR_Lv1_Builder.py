@@ -1,4 +1,5 @@
 import re
+import sys
 
 class LevelOneIR():
     def __init__(self,astHead,symTable):
@@ -77,47 +78,136 @@ def returnLines(node,returnDigit):
                     #does not handle complex booleans.
 
                     #first node is the opperator
-                    opp = node.children[0].name
+                    opp = node.name
 
                     #next find first arguement
-                    if node.children[0].children[0].name == "var" or node.children[0].children[0].name == "call":
-                        first_arg = node.children[0].children[0].children[0].name
-                    else:
+                    if node.children[0].name == "var" or node.children[0].name == "call":
                         first_arg = node.children[0].children[0].name
+                    else:
+                        first_arg = node.children[0].name
 
                     #next find second arguement
-                    if node.children[0].children[1].name == "var" or node.children[0].children[1].name == "call":
-                        second_arg = node.children[0].children[1].children[0].name
+                    if node.children[1].name == "var" or node.children[1].name == "call":
+                        second_arg = node.children[1].name
                     else:
-                        second_arg = node.children[0].children[1].name
+                        second_arg = node.children[1].name
 
                     return f'{first_arg} {opp} {second_arg}'
 
 
                 end_if = []
 
-                for case in element.children:
 
-                    if case.name == "default":
-                       lines.append(returnLines(case.children[0],returnDigit))
-                       continue
 
-                    temp_label1 = f'<D.{returnDigit}>'
-                    returnDigit += 1
-                    temp_label2 = f'<D.{returnDigit}>'
-                    returnDigit += 1
-                    end_if.append(f'<D.{returnDigit}>')
-                    returnDigit += 1                    
-                    #create if gimple statement with gotos
-                    lines.append(f'if ({build_case(case)}) goto {temp_label1}; else goto {temp_label2}')
-                    #label 1:
-                    lines.append(f'{temp_label1}:')
-                    #Body
-                    lines.append(returnLines(case.children[1],returnDigit))
-                    #add goto here to skip over other statements
-                    lines.append(f'goto {end_if[-1]};')
-                    #label 2:
-                    lines.append(f'{temp_label2}:')
+                for i in element.children:
+
+                    if i.name == "default":
+                        lines.append(returnLines(i.children[0],returnDigit))
+                        continue
+
+                    cases = []
+                    syms = []
+                    temp = i
+                    while(temp.children[0].name == "&&" or temp.children[0].name == "||"):
+                        syms.append(temp.children[0])
+                        cases.append(temp.children[1])
+                        temp = temp.children[0]
+                    for k in temp.children:
+                        cases.append(k)
+
+                    tmp_lab = []
+                    for ind, case in enumerate(cases[::-1]):
+
+                        if case.name == "body":
+                            continue
+
+                        if ind == 0:
+                            cur_opp = syms.pop()
+                            next_opp = cur_opp
+                        else:
+                            cur_opp = next_opp
+                            if syms != []:
+                                next_opp = syms.pop()
+                            else:
+                                next_opp = None
+
+                        print(f'Case = {case.name}')
+                        print(f'Cur_op = {cur_opp.name}')
+                        if next_opp:
+                            print(f'Next_op = {next_opp.name}')
+                        else: 
+                            print(f'Next_op = None')
+
+
+                        temp_label1 = f'<D.{returnDigit}>'
+                        returnDigit += 1
+                        temp_label2 = f'<D.{returnDigit}>'
+                        returnDigit += 1
+
+                        print('asdfasd')
+                        print(case.children[1].name)
+
+
+                        if cur_opp.name == "&&" and not next_opp == None:
+                            if next_opp.name == "||":
+                                lines.append(f'if ({build_case(case)}) goto {temp_label2}; else goto {temp_label1}')
+                                lines.append(f'{temp_label1}:')
+                                tmp_lab.append(temp_label2)
+                            else:
+                                lines.append(f'if ({build_case(case)}) goto {temp_label1}; else goto {temp_label2}')
+                                lines.append(f'{temp_label1}:')
+                                tmp_lab.append(temp_label2)
+                        elif cur_opp.name == "||" and not next_opp == None:
+                            if next_opp.name == "&&":
+                                lines.append(f'if ({build_case(case)}) goto {temp_label1}; else goto {temp_label2}')
+                                lines.append(f'{temp_label1}:')
+                                tmp_lab.append(temp_label2)                           
+                            else:
+                                lines.append(f'if ({build_case(case)}) goto {temp_label1}; else goto {temp_label2}')
+                                lines.append(f'{temp_label2}:')
+                                tmp_lab.append(temp_label1)
+                        else:
+                            #this is the last operation
+                            if cur_opp.name == "&&":
+                                    lines.append(f'if ({build_case(case)}) goto success; else goto false')  
+                            elif cur_opp.name == "||":
+                                    lines.append(f'if ({build_case(case)}) goto success; else goto fail')                                                          
+
+                        if next_opp == None or next_opp.name != cur_opp.name:
+                            save = []
+                            if next_opp == None and tmp_lab != []: 
+
+                                
+                                for i in lines:
+                                    for j in tmp_lab:
+                                        if j in i:
+                                            if cur_opp.name == "||":
+                                                lines[lines.index(i)] = i.replace(j, "success")
+                                            else:
+                                                lines[lines.index(i)] = i.replace(j, "false") 
+
+                            else:
+                                if tmp_lab != []: 
+                                    save.append(tmp_lab.pop())
+                                for i in tmp_lab:
+                                    lines.append(f'{i}:')
+
+                                tmp_lab = save
+
+                        # end_if.append(f'<D.{returnDigit}>')
+                        # returnDigit += 1                    
+                        # #create if gimple statement with gotos
+                        # lines.append(f'if ({build_case(case)}) goto {temp_label1}; else goto {temp_label2}')
+                        # #label 1:
+                        # lines.append(f'{temp_label1}:')
+
+                        #work on body later
+                        #Body
+                        # lines.append(returnLines(case.children[1],returnDigit))
+                        # #add goto here to skip over other statements
+                        # lines.append(f'goto {end_if[-1]};')
+                        # #label 2:
+                        # lines.append(f'{temp_label2}:')
                 for i in end_if:
                     lines.append(f'{i}:')
 
@@ -137,7 +227,7 @@ def returnLines(node,returnDigit):
 
             elif ind == 5:
                 #Function Call
-                func_call = element.children[0]
+                func_call = element.children[0].name
 
                 # function call has parameters
                 if func_call.children != []:
@@ -163,7 +253,8 @@ def returnLines(node,returnDigit):
                 print("Unsupported at this time")
 
         except Exception as err:
-            print("Exception: ", err)
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            print(exc_type, exc_tb.tb_lineno)
             pass
     
     return lines
