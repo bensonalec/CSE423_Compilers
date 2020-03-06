@@ -21,10 +21,12 @@ class LevelOneIR():
                 bodyList.append((x.children[1].name,x.children[3]))
 
         returnDigit = 1234
+        labelDigit = returnDigit + 1
         for i in bodyList:
-            for x in returnLines(i[1], returnDigit):
+            lines , labelDigit = returnLines(i[1], returnDigit, labelDigit)
+            for x in lines:
                 print(x)
-            returnDigit += 1
+            returnDigit = labelDigit + 1
 
 def buildBoilerPlate(symTable):
     namesandparams = []
@@ -45,7 +47,7 @@ def buildBoilerPlate(symTable):
             namesandparams.append((x[0],paramsLi,x[1]))
     return namesandparams
 
-def returnLines(node,returnDigit):
+def returnLines(node,returnDigit,labelDigit):
     lines = []
     for element in node.children:
         try:
@@ -71,48 +73,46 @@ def returnLines(node,returnDigit):
             elif ind == 2:
                 print("Body")
             elif ind == 3:
+                # If/Else statement(s)
 
+                # list of goto labels to be appended at end of if blocks
                 end_if = []
 
-
-
+                #for each case in a branch
                 for case in element.children:
-                    #for each case in a branch
-
-                    #default only have 1 child and its a body tag.
+                    
+                    #default is an 'else'. Only has one child, body
                     if case.name == "default":
-                        #the result of return lines is reversed.
-                        lines.extend([x for x in returnLines(case.children[0],returnDigit)[::-1]])
+                        #Get lines for the body and assign new labeldigit
+                        tmp, labelDigit = returnLines(case.children[0],returnDigit, labelDigit)
+                        lines.extend(tmp)
                         continue
 
                     #create label for body if true and label to skip to correct place if false.
-                    success_label = f'<D.{returnDigit}>'
-                    returnDigit += 1
-                    failure_label = f'<D.{returnDigit}>'
-                    returnDigit += 1
+                    success_label = f'<D.{labelDigit}>'
+                    labelDigit += 1
+                    failure_label = f'<D.{labelDigit}>'
+                    labelDigit += 1
 
                     #break down argument for if statement into smaller if statements
-                    temp_lines, returnDigit = breakdownBoolean(case, returnDigit, success_label, failure_label)
-
-
+                    temp_lines, labelDigit = breakdownBoolean(case, labelDigit, success_label, failure_label)
+                    
                     #adds broken down if statement
                     lines.extend(temp_lines)
                     
                     #Add goto for body statement
                     lines.append(success_label)
 
-                    #if body
-                    #the result of return lines is reversed.
-                    lines.extend([x for x in returnLines(case.children[1],returnDigit)[::-1]])
+                    #Get lines for the if body and assign new labeldigit
+                    tmp, labelDigit = returnLines(case.children[1],returnDigit, labelDigit)
+                    lines.extend(tmp)
 
                     #append goto for end of if body
-                    lines.append(f'goto <D.{returnDigit}>')
-                    end_if.append(f'<D.{returnDigit}>')
-                    returnDigit += 1
+                    lines.append(f'goto <D.{labelDigit}>;')
+                    end_if.append(f'<D.{labelDigit}>')
+                    labelDigit += 1
 
                     lines.append(f"{failure_label}:")
-
-
 
                 for i in end_if:
                     lines.append(f'{i}:')
@@ -125,7 +125,7 @@ def returnLines(node,returnDigit):
                 # If returns some type of arithmetic expression, breaks it down.
                 if len(element.children) > 0:
                     lines += breakdownArithmetic(element.children[0], f"D.{returnDigit}")
-                    lines.append(f"return D.{returnDigit};") 
+                    lines.append(f"return D.{returnDigit};")
                 
                 # Returns nothing
                 else:
@@ -137,9 +137,9 @@ def returnLines(node,returnDigit):
 
                 # function call has parameters
                 if func_call.children != []:
-                    lines += breakdownArithmetic(func_call.children[0], f"D.{returnDigit}")
-                    lines.append(f"{func_call.name}(D.{returnDigit});")
-                    returnDigit += 1
+                    lines += breakdownArithmetic(func_call.children[0], f"D.{labelDigit}")
+                    lines.append(f"{func_call.name}(D.{labelDigit});")
+                    returnDigit += labelDigit
                 
                 # no parameters
                 else:
@@ -158,12 +158,12 @@ def returnLines(node,returnDigit):
             else:
                 print("Unsupported at this time")
 
-        except Exception as err:
+        except Exception:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             print(exc_type, exc_tb.tb_lineno)
             pass
     
-    return lines
+    return lines, labelDigit
 
 def build_case(node):
     #builds argement to go in gimple string
@@ -186,7 +186,7 @@ def build_case(node):
     return f'{first_arg} {opp} {second_arg}'
 
 
-def breakdownBoolean(root, returnDigit, success_label, failure_label):
+def breakdownBoolean(root, labelDigit, success_label, failure_label):
 
     #NOTE root needs to be the parent of the first "&&" or "||"
 
@@ -204,10 +204,9 @@ def breakdownBoolean(root, returnDigit, success_label, failure_label):
         conds.append(k)
 
     #conds = conds[1:]
-
     tmp_lab = []
-    for ind, case in enumerate(conds[::-1]):
 
+    for ind, case in enumerate(conds[::-1]):
         if case.name == "body":
             continue
 
@@ -221,15 +220,14 @@ def breakdownBoolean(root, returnDigit, success_label, failure_label):
             else:
                 next_opp = None
 
-
-        temp_label1 = f'<D.{returnDigit}>'
-        returnDigit += 1
-        temp_label2 = f'<D.{returnDigit}>'
-        returnDigit += 1
+        temp_label1 = f'<D.{labelDigit}>'
+        labelDigit += 1
+        temp_label2 = f'<D.{labelDigit}>'
+        labelDigit += 1
 
         if len(case.children) != 1:
 
-            declare, returnDigit = breakdownExpression(case.children[1], returnDigit, "foo", "bar")
+            declare, labelDigit = breakdownExpression(case.children[1], labelDigit, "foo", "bar")
             #declare is a list of returned arithmetic lines.
 
             if declare != []:
@@ -299,7 +297,7 @@ def breakdownBoolean(root, returnDigit, success_label, failure_label):
 
                 tmp_lab = save
 
-    return lines, returnDigit
+    return lines, labelDigit
 
 
 
@@ -385,7 +383,7 @@ def breakdownArithmetic(root, varName):
 
 
 
-def breakdownExpression(root, returnDigit, successLabel, failureLabel):
+def breakdownExpression(root, labelDigit, successLabel, failureLabel):
     lines = []
     ns = []
 
@@ -418,22 +416,22 @@ def breakdownExpression(root, returnDigit, successLabel, failureLabel):
 
             # Case 1: ops is empty
             if ops == [] and len(node.children) > 1:
-                lines.append(f"D.{returnDigit} = {node.children[0].name} {node.name} {node.children[1].name}")
+                lines.append(f"D.{labelDigit} = {node.children[0].name} {node.name} {node.children[1].name}")
             # Case 2: two elem in ops
             elif len(ops) == 2:
-                lines.append(f"D.{returnDigit} = {ops[0]} {node.name} {ops[1]}")
+                lines.append(f"D.{labelDigit} = {ops[0]} {node.name} {ops[1]}")
             else:
                 pos = [node.children.index(x) for x in node.children if len(x.children) != 0 and len(node.children) > 1]
 
                 # Case 3: one elem in ops but its the left element in the operation
                 if pos == [0]:
-                    lines.append(f"D.{returnDigit} = {ops[0]} {node.name} {node.children[1].name}")
+                    lines.append(f"D.{labelDigit} = {ops[0]} {node.name} {node.children[1].name}")
                 # Case 4: one elem in ops but its the right element in the operation
                 elif pos == [1]:
-                    lines.append(f"D.{returnDigit} = {node.children[0].name} {node.name} {ops[0]}")
+                    lines.append(f"D.{labelDigit} = {node.children[0].name} {node.name} {ops[0]}")
                 # Case 5: Its a unary operator
                 elif pos == []:
-                    lines.append(f"D.{returnDigit} = {node.name}{ops[0] if ops != [] else node.children[0].name}")
+                    lines.append(f"D.{labelDigit} = {node.name}{ops[0] if ops != [] else node.children[0].name}")
             
-            tvs.append(f"D.{returnDigit}")
-    return lines, returnDigit
+            tvs.append(f"D.{labelDigit}")
+    return lines, labelDigit
