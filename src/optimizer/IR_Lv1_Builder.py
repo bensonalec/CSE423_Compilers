@@ -71,134 +71,41 @@ def returnLines(node,returnDigit):
         elif ind == 2:
             print("Body")
         elif ind == 3:
-            print("If")
-
-            #move this eventually
-
-
 
             end_if = []
 
 
 
-            for i in element.children:
+            for case in element.children:
+                #for each case in a branch
 
-                if i.name == "default":
-                    lines.append(returnLines(i.children[0],returnDigit))
+                if case.name == "default":
+                    lines.extend([x for x in returnLines(case.children[0],returnDigit)])
                     continue
 
-                lines, returnDigit = breakdownBoolean(i, returnDigit, "SUCCESS", "FAILURE")
+                success_label = f'<D.{returnDigit}>'
+                returnDigit += 1
+                failure_label = f'<D.{returnDigit}>'
+                returnDigit += 1
 
-                # cases = []
-                # syms = []
-                # temp = i
-                # while(temp.children[0].name == "&&" or temp.children[0].name == "||"):
-                #     syms.append(temp.children[0])
-                #     cases.append(temp.children[1])
-                #     temp = temp.children[0]
-                # for k in temp.children:
-                #     cases.append(k)
-
-                # tmp_lab = []
-                # for ind, case in enumerate(cases[::-1]):
-
-                #     if case.name == "body":
-                #         continue
-
-                #     if ind == 0:
-                #         cur_opp = syms.pop()
-                #         next_opp = cur_opp
-                #     else:
-                #         cur_opp = next_opp
-                #         if syms != []:
-                #             next_opp = syms.pop()
-                #         else:
-                #             next_opp = None
-
-                #     print(f'Case = {case.name}')
-                #     print(f'Cur_op = {cur_opp.name}')
-                #     if next_opp:
-                #         print(f'Next_op = {next_opp.name}')
-                #     else: 
-                #         print(f'Next_op = None')
+                temp_lines, returnDigit = breakdownBoolean(case, returnDigit, success_label, failure_label)
 
 
-                #     temp_label1 = f'<D.{returnDigit}>'
-                #     returnDigit += 1
-                #     temp_label2 = f'<D.{returnDigit}>'
-                #     returnDigit += 1
+                #adds broken down if statement
+                lines.extend(temp_lines)
 
-                #     print('asdfasd')
-                #     print(case.children[1].name)
+                lines.append(success_label)
 
-                #     asdf, returnDigit = breakdownExpression(case.children[1], returnDigit, "foo", "bar")
+                #if body
+                lines.extend([x for x in returnLines(case.children[1],returnDigit)])
 
-                #     # print("STAR")
-                #     # for i in asdf:
-                #     #     print(i)
-                #     # print("SDF")
+                #append goto for end of if body
+                lines.append(f'goto <D.{returnDigit}>')
+                end_if.append(f'<D.{returnDigit}>')
+                returnDigit += 1
 
 
-                #     if cur_opp.name == "&&" and not next_opp == None:
-                #         if next_opp.name == "||":
-                #             lines.append(f'if ({build_case(case)}) goto {temp_label2}; else goto {temp_label1}')
-                #             lines.append(f'{temp_label1}:')
-                #             tmp_lab.append(temp_label2)
-                #         else:
-                #             lines.append(f'if ({build_case(case)}) goto {temp_label1}; else goto {temp_label2}')
-                #             lines.append(f'{temp_label1}:')
-                #             tmp_lab.append(temp_label2)
-                #     elif cur_opp.name == "||" and not next_opp == None:
-                #         if next_opp.name == "&&":
-                #             lines.append(f'if ({build_case(case)}) goto {temp_label1}; else goto {temp_label2}')
-                #             lines.append(f'{temp_label1}:')
-                #             tmp_lab.append(temp_label2)                           
-                #         else:
-                #             lines.append(f'if ({build_case(case)}) goto {temp_label1}; else goto {temp_label2}')
-                #             lines.append(f'{temp_label2}:')
-                #             tmp_lab.append(temp_label1)
-                #     else:
-                #         #this is the last operation
-                #         if cur_opp.name == "&&":
-                #                 lines.append(f'if ({build_case(case)}) goto success; else goto false')  
-                #         elif cur_opp.name == "||":
-                #                 lines.append(f'if ({build_case(case)}) goto success; else goto fail')                                                          
 
-                #     if next_opp == None or next_opp.name != cur_opp.name:
-                #         save = []
-                #         if next_opp == None and tmp_lab != []: 
-
-                            
-                #             for i in lines:
-                #                 for j in tmp_lab:
-                #                     if j in i:
-                #                         if cur_opp.name == "||":
-                #                             lines[lines.index(i)] = i.replace(j, "success")
-                #                         else:
-                #                             lines[lines.index(i)] = i.replace(j, "false") 
-
-                #         else:
-                #             if tmp_lab != []: 
-                #                 save.append(tmp_lab.pop())
-                #             for i in tmp_lab:
-                #                 lines.append(f'{i}:')
-
-                #             tmp_lab = save
-
-                    # end_if.append(f'<D.{returnDigit}>')
-                    # returnDigit += 1                    
-                    # #create if gimple statement with gotos
-                    # lines.append(f'if ({build_case(case)}) goto {temp_label1}; else goto {temp_label2}')
-                    # #label 1:
-                    # lines.append(f'{temp_label1}:')
-
-                    #work on body later
-                    #Body
-                    # lines.append(returnLines(case.children[1],returnDigit))
-                    # #add goto here to skip over other statements
-                    # lines.append(f'goto {end_if[-1]};')
-                    # #label 2:
-                    # lines.append(f'{temp_label2}:')
             for i in end_if:
                 lines.append(f'{i}:')
 
@@ -307,41 +214,47 @@ def breakdownBoolean(root, returnDigit, success_label, failure_label):
         temp_label2 = f'<D.{returnDigit}>'
         returnDigit += 1
 
-        # print('asdfasd')
-        # print(case.children[1].name)
 
-        # asdf, returnDigit = breakdownExpression(case.children[1], returnDigit, "foo", "bar")
+        declare, returnDigit = breakdownExpression(case.children[1], returnDigit, "foo", "bar")
+        #declare is a list of returned arithmetic lines.
 
-        # print("STAR")
-        # for i in asdf:
-        #     print(i)
-        # print("SDF")
+        if declare != []:
+
+            for p in declare:
+                lines.append(p)
+
+            #replace operator with created variable name
+            arg = build_case(case)
+            arg = arg.replace(case.children[1].name, declare[-1].split(" ")[0])
+
+        else:
+            arg = build_case(case) 
 
 
         if cur_opp.name == "&&" and not next_opp == None:
             if next_opp.name == "||":
-                lines.append(f'if ({build_case(case)}) goto {temp_label2}; else goto {temp_label1}')
+                lines.append(f'if ({arg}) goto {temp_label2}; else goto {temp_label1}')
                 lines.append(f'{temp_label1}:')
                 tmp_lab.append(temp_label2)
             else:
-                lines.append(f'if ({build_case(case)}) goto {temp_label1}; else goto {temp_label2}')
+                lines.append(f'if ({arg}) goto {temp_label1}; else goto {temp_label2}')
                 lines.append(f'{temp_label1}:')
                 tmp_lab.append(temp_label2)
         elif cur_opp.name == "||" and not next_opp == None:
             if next_opp.name == "&&":
-                lines.append(f'if ({build_case(case)}) goto {temp_label1}; else goto {temp_label2}')
+                lines.append(f'if ({arg}) goto {temp_label1}; else goto {temp_label2}')
                 lines.append(f'{temp_label1}:')
                 tmp_lab.append(temp_label2)                           
             else:
-                lines.append(f'if ({build_case(case)}) goto {temp_label1}; else goto {temp_label2}')
+                lines.append(f'if ({arg}) goto {temp_label1}; else goto {temp_label2}')
                 lines.append(f'{temp_label2}:')
                 tmp_lab.append(temp_label1)
         else:
             #this is the last operation
             if cur_opp.name == "&&":
-                    lines.append(f'if ({build_case(case)}) goto {success_label}; else goto {failure_label}')  
+                    lines.append(f'if ({arg}) goto {success_label}; else goto {failure_label}')  
             elif cur_opp.name == "||":
-                    lines.append(f'if ({build_case(case)}) goto {success_label}; else goto {failure_label}')                                                          
+                    lines.append(f'if ({arg}) goto {success_label}; else goto {failure_label}')                                                          
 
         if next_opp == None or next_opp.name != cur_opp.name:
             save = []
@@ -365,6 +278,9 @@ def breakdownBoolean(root, returnDigit, success_label, failure_label):
                 tmp_lab = save
 
     return lines, returnDigit
+
+
+
 def breakdownArithmetic(root, varName):
     ntv = [root]
 
@@ -447,152 +363,55 @@ def breakdownArithmetic(root, varName):
 
 
 
-    def breakdownExpression(root, lastLabelIndex, successLabel, failureLabel):
-        lines = []
-        ns = []
+def breakdownExpression(root, returnDigit, successLabel, failureLabel):
+    lines = []
+    ns = []
 
-        log_ops = ['||', '&&']
-        comp_ops = ["<=", "<", ">=", ">", "==", "!="]
-        arth_ops = ["+", "-", "*", "/", "%", "<<", ">>", "!", "~"]
-        spec_ops = ["++", "--"]
-        ass_ops = ["="]
-        id_ops = ["var", "call"]
-        ntv = [root]
+    log_ops = ['||', '&&']
+    comp_ops = ["<=", "<", ">=", ">", "==", "!="]
+    arth_ops = ["+", "-", "*", "/", "%", "<<", ">>", "!", "~"]
+    spec_ops = ["++", "--"]
+    ass_ops = ["="]
+    id_ops = ["var", "call"]
+    ntv = [root]
 
-        successStack = [successLabel]
-        failureStack = [failureLabel]
+    successStack = [successLabel]
+    failureStack = [failureLabel]
 
-        tvs = []
+    tvs = []
 
-        while ntv != []:
-            cur = ntv[-1]
-            ns.insert(0, cur)
-            ntv = ntv[:-1] + cur.children
+    while ntv != []:
+        cur = ntv[-1]
+        ns.insert(0, cur)
+        ntv = ntv[:-1] + cur.children
 
-        ns = [x for x in ns if x.name in log_ops or x.name in comp_ops or x.name in arth_ops or x.name in spec_ops or x.name in ass_ops or x.name in id_ops]
-
-        print ([x.name for x in ns])
-
-        for node in ns:
-            if node.name in log_ops:
-
-                #ifs = [(x, idx) for idx, x in enumerate(lines) if x.startswith("if") and "__SUCCESS__" in x][-2:]
-
-                index = log_ops.index(node.name)
-                # print(ifs)
-                if index == 0:
-                    lastLabelIndex += 1
-                    # print("LAST::::",lastLabelIndex)
-
-                    failureStack.append(lastLabelIndex)
-
-                    # for line in ifs:
-                        # # tmp = line[0].replace("__SUCCESS__", f"goto <D.{successStack.pop() if len(successStack) > 1 else successStack[0]}>;")
-                        # # lines[line[1]] = tmp.replace("__FAILURE__", f"else goto <D.{failureStack.pop() if len(failureStack) > 1 else failureStack[0]}>;")
-    # 
-                    # lines.insert(ifs[-1][1]-1, "__FAILURE__")
-
-                if index == 1:
-                    lastLabelIndex += 1
-                    # print("LAST::::",lastLabelIndex)
-                    successStack.append(lastLabelIndex)
-
-                    # for line in ifs:
-                        # # tmp = line[0].replace("__SUCCESS__", f"goto <D.{successStack.pop() if len(successStack) > 1 else successStack[0]}>;")
-                        # # lines[line[1]] = tmp.replace("__FAILURE__", f"else goto <D.{failureStack.pop() if len(failureStack) > 1 else failureStack[0]}>;")
-    # 
-                    # ifs[-1][1]
-                    # starting at the above, iterate backwards
-                    # for back in range(ifs[-1][1]-1,0,-1):
-                        # if line starts with if, break
-                        # if(lines[back].startswith("if")):
-                            # lines.insert(back+1,"__SUCCESS__")
-                            # break
-    #                lines.insert(ifs[-1][1], f"<D.{lastLabelIndex}>:")
+    ns = [x for x in ns if x.name in log_ops or x.name in comp_ops or x.name in arth_ops or x.name in spec_ops or x.name in ass_ops or x.name in id_ops]
 
 
-                # for line in ifs:
-                #     tmp = line[0].replace("__SUCCESS__", "THIS IS A TEST")
-                #     lines[line[1]] = tmp.replace("__FAILURE__", "THIS IS A TEST FAIL")
-                # print (ifs)
-            elif node.name in comp_ops:
-                ops = [tvs.pop() for x in node.children if len(x.children) != 0]
-                if ops == [] and len(node.children) > 1:
-                    lines.append(f"if ({node.children[0].name} {node.name} {node.children[1].name}) __SUCCESS__ __FAILURE__")
-                elif len(ops) == 2:
-                    lines.append(f"if ({ops[1]} {node.name} {ops[0]}) __SUCCESS__ __FAILURE__")
-                else:
-                    pos = [node.children.index(x) for x in node.children if len(x.children) != 0 and len(node.children) > 1]
+    for node in ns:
+        if node.name in comp_ops:
+            ops = [tvs.pop() for x in node.children if len(x.children) != 0]
+        elif node.name in arth_ops:
+            ops = [tvs.pop() for x in node.children if len(x.children) != 0]
 
-                    if pos == [0]:
-                        lines.append(f"if ({ops[0]} {node.name} {node.children[1].name}) __SUCCESS__ __FAILURE__")
-                    elif pos == [1]:
-                        lines.append(f"if ({node.children[0].name} {node.name} {ops[0]}) __SUCCESS__ __FAILURE__")
-            elif node.name in arth_ops:
-                ops = [tvs.pop() for x in node.children if len(x.children) != 0]
+            # Case 1: ops is empty
+            if ops == [] and len(node.children) > 1:
+                lines.append(f"D.{returnDigit} = {node.children[0].name} {node.name} {node.children[1].name}")
+            # Case 2: two elem in ops
+            elif len(ops) == 2:
+                lines.append(f"D.{returnDigit} = {ops[0]} {node.name} {ops[1]}")
+            else:
+                pos = [node.children.index(x) for x in node.children if len(x.children) != 0 and len(node.children) > 1]
 
-                # Case 1: ops is empty
-                if ops == [] and len(node.children) > 1:
-                    lines.append(f"_{len(tvs)} = {node.children[0].name} {node.name} {node.children[1].name}")
-                # Case 2: two elem in ops
-                elif len(ops) == 2:
-                    lines.append(f"_{len(tvs)} = {ops[0]} {node.name} {ops[1]}")
-                else:
-                    pos = [node.children.index(x) for x in node.children if len(x.children) != 0 and len(node.children) > 1]
-
-                    # Case 3: one elem in ops but its the left element in the operation
-                    if pos == [0]:
-                        lines.append(f"_{len(tvs)} = {ops[0]} {node.name} {node.children[1].name}")
-                    # Case 4: one elem in ops but its the right element in the operation
-                    elif pos == [1]:
-                        lines.append(f"_{len(tvs)} = {node.children[0].name} {node.name} {ops[0]}")
-                    # Case 5: Its a unary operator
-                    elif pos == []:
-                        lines.append(f"_{len(tvs)} = {node.name}{ops[0] if ops != [] else node.children[0].name}")
-                
-                tvs.append(f"_{len(tvs)}")
-            elif node.name in spec_ops:
-                pass
-                # TODO: fix it so it works 
-                # order = 1 ^ (Stack[ind + 1 : ind + 2].index("NULL"))
-
-                # lastVarName += 1
-                # lines.append(f"_{lastVarName} = {Stack[ind+1:ind+2][order]}")
-                # lines.insert(-1 - order, f"{Stack[ind+1:ind+2][order]} = {Stack[ind+1:ind+2][order]} {i[0]} 1")
-            elif node.name in ass_ops:
-                pass
-            elif node.name in id_ops:
-                tvs.append(node.children[0].name)
-
-        while tvs != []:
-            lines.append(f"if ({tvs.pop()} != 0) __SUCCESS__ __FAILURE__")
-
-        print(successStack)
-        for x in lines: print(type(x))
-        op_list = [x for x in ns if x.name in log_ops]
-        for node in op_list[::-1]:
-            ifs = [(x, idx) for idx, x in enumerate(lines) if x.startswith("if") and "__SUCCESS__" in x][0]
-            print(ifs[0])
-            index = log_ops.index(node.name)
-
-            if index == 0:
-                del op_list[-1]
-                tmp = ifs[0].replace("__SUCCESS__", f" goto <D.{successLabel if len(op_list) == 0 else successStack.pop(0) }>;")
-                tmp_index = failureLabel if len(op_list) == 0 else failureStack.pop()
-                tmp = tmp.replace("__FAILURE__", f"goto <D.{tmp_index}>;")
-                lines[ifs[1]] = tmp
-                lines.insert(ifs[1]+1, f"<D.{tmp_index}>:")
-                
-            if index == 1:
-                del op_list[-1]
-                tmp_index = successLabel if len(op_list) != 0 else  successStack.pop()
-                tmp = ifs[0].replace("__SUCCESS__", f" goto <D.{tmp_index}>;")
-                lines.insert(ifs[1]+1,f"<D.{tmp_index}>;")
-                tmp = tmp.replace("__FAILURE__", f"goto <D.{failureLabel if len(op_list) == 0 else failureStack.pop() }>;")
-                lines[ifs[1]] = tmp
-                
-        ifs = [(x, idx) for idx, x in enumerate(lines) if x.startswith("if") and "__SUCCESS__" in x][0]
-        tmp = ifs[0].replace("__SUCCESS__", f" goto <D.{successLabel}>;")
-        tmp = tmp.replace("__FAILURE__", f"goto <D.{failureLabel}>;")
-        lines[ifs[1]] = tmp
-        return lines, lastLabelIndex
+                # Case 3: one elem in ops but its the left element in the operation
+                if pos == [0]:
+                    lines.append(f"D.{returnDigit} = {ops[0]} {node.name} {node.children[1].name}")
+                # Case 4: one elem in ops but its the right element in the operation
+                elif pos == [1]:
+                    lines.append(f"D.{returnDigit} = {node.children[0].name} {node.name} {ops[0]}")
+                # Case 5: Its a unary operator
+                elif pos == []:
+                    lines.append(f"D.{returnDigit} = {node.name}{ops[0] if ops != [] else node.children[0].name}")
+            
+            tvs.append(f"D.{returnDigit}")
+    return lines, returnDigit
