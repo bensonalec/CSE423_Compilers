@@ -48,117 +48,125 @@ def buildBoilerPlate(symTable):
 def returnLines(node,returnDigit):
     lines = []
     for element in node.children:
-        #try:
-        splits = [["=","+="],["for"],["body"],["branch"],["return"],["call"],["while","do_while"],["break"],["continue"],["goto"],["label"]]
-        ind = [splits.index(x) for x in splits if element.name in x]
-        ind = ind[0]
-        if ind == 0:
-            #Assignment
+        try:
+            splits = [["=","+="],["for"],["body"],["branch"],["return"],["call"],["while","do_while"],["break"],["continue"],["goto"],["label"]]
+            ind = [splits.index(x) for x in splits if element.name in x]
+            ind = ind[0]
+            if ind == 0:
+                #Assignment
 
-            varName = element.children[0].children[0].name #temporary
-            
-            # Initialize variable (if needed)
-            if len(element.children[0].children) > 1:
-                varType = element.children[0].children[0].name
-                varName = element.children[0].children[1].name
-                lines.append(f"{varType} {varName};")
-
-            # Breakdown arithmetic nodes
-            lines += breakdownArithmetic(element.children[1], varName)
-
-        elif ind == 1:
-            print("For loop")
-        elif ind == 2:
-            print("Body")
-        elif ind == 3:
-
-            end_if = []
-
-
-
-            for case in element.children:
-                #for each case in a branch
-
-                if case.name == "default":
-                    lines.extend([x for x in returnLines(case.children[0],returnDigit)])
-                    continue
-
-                success_label = f'<D.{returnDigit}>'
-                returnDigit += 1
-                failure_label = f'<D.{returnDigit}>'
-                returnDigit += 1
-
-                temp_lines, returnDigit = breakdownBoolean(case, returnDigit, success_label, failure_label)
-
-
-                #adds broken down if statement
-                lines.extend(temp_lines)
-
-                lines.append(success_label)
-
-                #if body
-                lines.extend([x for x in returnLines(case.children[1],returnDigit)])
-
-                #append goto for end of if body
-                lines.append(f'goto <D.{returnDigit}>')
-                end_if.append(f'<D.{returnDigit}>')
-                returnDigit += 1
-
-
-
-            for i in end_if:
-                lines.append(f'{i}:')
-
+                varName = element.children[0].children[0].name #temporary
                 
+                # Initialize variable (if needed)
+                if len(element.children[0].children) > 1:
+                    varType = element.children[0].children[0].name
+                    varName = element.children[0].children[1].name
+                    lines.append(f"{varType} {varName};")
 
-        elif ind == 4: 
-            #Return
+                # Breakdown arithmetic nodes
+                lines += breakdownArithmetic(element.children[1], varName)
 
-            # If returns some type of arithmetic expression, breaks it down.
-            if len(element.children) > 0:
-                lines += breakdownArithmetic(element.children[0], f"D.{returnDigit}")
-                lines.append(f"return D.{returnDigit};") 
-            
-            # Returns nothing
+            elif ind == 1:
+                print("For loop")
+            elif ind == 2:
+                print("Body")
+            elif ind == 3:
+
+                end_if = []
+
+
+
+                for case in element.children:
+                    #for each case in a branch
+
+                    #default only have 1 child and its a body tag.
+                    if case.name == "default":
+                        #the result of return lines is reversed.
+                        lines.extend([x for x in returnLines(case.children[0],returnDigit)[::-1]])
+                        continue
+
+                    #create label for body if true and label to skip to correct place if false.
+                    success_label = f'<D.{returnDigit}>'
+                    returnDigit += 1
+                    failure_label = f'<D.{returnDigit}>'
+                    returnDigit += 1
+
+                    #break down argument for if statement into smaller if statements
+                    temp_lines, returnDigit = breakdownBoolean(case, returnDigit, success_label, failure_label)
+
+
+                    #adds broken down if statement
+                    lines.extend(temp_lines)
+                    
+                    #Add goto for body statement
+                    lines.append(success_label)
+
+                    #if body
+                    #the result of return lines is reversed.
+                    lines.extend([x for x in returnLines(case.children[1],returnDigit)[::-1]])
+
+                    #append goto for end of if body
+                    lines.append(f'goto <D.{returnDigit}>')
+                    end_if.append(f'<D.{returnDigit}>')
+                    returnDigit += 1
+
+                    lines.append(f"{failure_label}:")
+
+
+
+                for i in end_if:
+                    lines.append(f'{i}:')
+
+                    
+
+            elif ind == 4: 
+                #Return
+
+                # If returns some type of arithmetic expression, breaks it down.
+                if len(element.children) > 0:
+                    lines += breakdownArithmetic(element.children[0], f"D.{returnDigit}")
+                    lines.append(f"return D.{returnDigit};") 
+                
+                # Returns nothing
+                else:
+                    lines.append(f"return;") 
+
+            elif ind == 5:
+                #Function Call
+                func_call = element.children[0].name
+
+                # function call has parameters
+                if func_call.children != []:
+                    lines += breakdownArithmetic(func_call.children[0], f"D.{returnDigit}")
+                    lines.append(f"{func_call.name}(D.{returnDigit});")
+                    returnDigit += 1
+                
+                # no parameters
+                else:
+                    lines.append(f"{func_call.name}();")
+
+            elif ind == 6:
+                print("While and do while")
+            elif ind == 7:
+                print("Break")
+            elif ind == 8:
+                print("Continue")
+            elif ind == 9:
+                print("Goto")
+            elif ind == 10:
+                print("Label")
             else:
-                lines.append(f"return;") 
+                print("Unsupported at this time")
 
-        elif ind == 5:
-            #Function Call
-            func_call = element.children[0].name
-
-            # function call has parameters
-            if func_call.children != []:
-                lines += breakdownArithmetic(func_call.children[0], f"D.{returnDigit}")
-                lines.append(f"{func_call.name}(D.{returnDigit});")
-                returnDigit += 1
-            
-            # no parameters
-            else:
-                lines.append(f"{func_call.name}();")
-
-        elif ind == 6:
-            print("While and do while")
-        elif ind == 7:
-            print("Break")
-        elif ind == 8:
-            print("Continue")
-        elif ind == 9:
-            print("Goto")
-        elif ind == 10:
-            print("Label")
-        else:
-            print("Unsupported at this time")
-
-        # except Exception as err:
-        #     exc_type, exc_obj, exc_tb = sys.exc_info()
-        #     print(exc_type, exc_tb.tb_lineno)
-        #     pass
+        except Exception as err:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            print(exc_type, exc_tb.tb_lineno)
+            pass
     
     return lines
 
 def build_case(node):
-    #does not handle complex booleans.
+    #builds argement to go in gimple string
 
     #first node is the opperator
     opp = node.name
@@ -182,18 +190,23 @@ def breakdownBoolean(root, returnDigit, success_label, failure_label):
 
     #NOTE root needs to be the parent of the first "&&" or "||"
 
-    cases = []
+    #list of individual conditionals
+    conds = []
+
+    #an array of symbols
     syms = []
     lines = []
     while(root.children[0].name == "&&" or root.children[0].name == "||"):
         syms.append(root.children[0])
-        cases.append(root.children[1])
+        conds.append(root.children[1])
         root = root.children[0]
     for k in root.children:
-        cases.append(k)
+        conds.append(k)
+
+    #conds = conds[1:]
 
     tmp_lab = []
-    for ind, case in enumerate(cases[::-1]):
+    for ind, case in enumerate(conds[::-1]):
 
         if case.name == "body":
             continue
@@ -214,23 +227,29 @@ def breakdownBoolean(root, returnDigit, success_label, failure_label):
         temp_label2 = f'<D.{returnDigit}>'
         returnDigit += 1
 
+        if len(case.children) != 1:
 
-        declare, returnDigit = breakdownExpression(case.children[1], returnDigit, "foo", "bar")
-        #declare is a list of returned arithmetic lines.
+            declare, returnDigit = breakdownExpression(case.children[1], returnDigit, "foo", "bar")
+            #declare is a list of returned arithmetic lines.
 
-        if declare != []:
+            if declare != []:
 
-            for p in declare:
-                lines.append(p)
+                #add declarations before
+                lines.extend(declare)
 
-            #replace operator with created variable name
-            arg = build_case(case)
-            arg = arg.replace(case.children[1].name, declare[-1].split(" ")[0])
+                #replace operator with created variable name
+                arg = build_case(case)
+                arg = arg.replace(case.children[1].name, declare[-1].split(" ")[0])
 
+            else:
+                #None complex arithmatic
+                arg = build_case(case) 
+        
         else:
-            arg = build_case(case) 
+            #if only variable name
+            arg = case.children[0].name
 
-
+        #appends if statement and labels based on current and next opperator. This also does short circuiting
         if cur_opp.name == "&&" and not next_opp == None:
             if next_opp.name == "||":
                 lines.append(f'if ({arg}) goto {temp_label2}; else goto {temp_label1}')
@@ -256,11 +275,12 @@ def breakdownBoolean(root, returnDigit, success_label, failure_label):
             elif cur_opp.name == "||":
                     lines.append(f'if ({arg}) goto {success_label}; else goto {failure_label}')                                                          
 
+        #if next conditional statement is different
         if next_opp == None or next_opp.name != cur_opp.name:
             save = []
             if next_opp == None and tmp_lab != []: 
 
-                
+                #replace with success label in lines
                 for i in lines:
                     for j in tmp_lab:
                         if j in i:
@@ -271,8 +291,10 @@ def breakdownBoolean(root, returnDigit, success_label, failure_label):
 
             else:
                 if tmp_lab != []: 
+                    #append goto for to be used in next statement
                     save.append(tmp_lab.pop())
                 for i in tmp_lab:
+                    #add label
                     lines.append(f'{i}:')
 
                 tmp_lab = save
