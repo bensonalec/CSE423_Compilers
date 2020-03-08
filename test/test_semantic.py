@@ -17,7 +17,7 @@ path_to_output_files = "./expected_output/semantic/"
 class SemanticAnalysisTest(unittest.TestCase):
 
     # Add program into list if for some reason, we shouldn't test it.
-    skip_programs = ["Pre_Processor.c","Initialization_Strings.c","Functions_Strings.c"]
+    skip_programs = ["Initialization_Strings.c","Functions_Strings.c"]
 
     maxDiff = None
 
@@ -27,7 +27,6 @@ class SemanticAnalysisTest(unittest.TestCase):
         for c_filename in os.listdir(path_to_C_files):
             
             if c_filename.endswith('.c') and c_filename not in self.skip_programs:
-                print(c_filename)
                 fi = open(path_to_C_files + c_filename)
                 text_input = fi.read()
                 fi.close()
@@ -37,6 +36,8 @@ class SemanticAnalysisTest(unittest.TestCase):
                 fi = open(path_to_output_files + expected_filename)
                 expected = fi.read()
                 fi.close()
+
+                text_input = run(text_input, path_to_C_files + c_filename)
 
                 lexer = Lexer().get_lexer()
                 tokens = lexer.lex(text_input)
@@ -53,9 +54,25 @@ class SemanticAnalysisTest(unittest.TestCase):
 
                 sym.analyze()
                 
-                self.assertEqual(sym.lineSemanticErrors(), expected)
+                with self.subTest():
+                    self.assertEqual(sym.lineSemanticErrors(), expected)
+                    status = "ok"
                 
-                print(f"Semantic Analysis test passed with: {c_filename}")
+                print(f"{'Semantic Analysis for '+c_filename:65}", end="")
+                if status == "ok":
+                    print(Colors.green, f"{status}", Colors.reset)
+                else:
+                    print(Colors.red, f"{status}", Colors.reset)
+                
+            elif c_filename.endswith('.c'):
+                print(f"{'Semantic Analysis for '+c_filename:65}", end="")
+                print(Colors.blue, "skipped", Colors.reset)
+
+class Colors: 
+        red='\033[31m'
+        green='\033[32m'
+        blue='\033[34m'
+        reset='\033[00m'
 
 if __name__ == '__main__':
     unittest.main()
