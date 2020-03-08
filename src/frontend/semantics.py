@@ -278,8 +278,9 @@ class symbol_table():
                 elif index == 3:
                     label = cur.Node.children[0]
                     labelName = label.name
+                    
                     #look for labelName: in the symbol table
-                    toLook = labelName + ":"
+                    toLook = labelName
                     found = ([x.name for x in self.symbols if x.is_goto and x.name == toLook])
                     if(found == []):
                         self.errors.append("Label " +  labelName + " not found")
@@ -342,5 +343,5 @@ class symbol_table():
         output = ""
         for i in self.errors:
             output += (i+"\n")
-        print(output)
+        
         return output
