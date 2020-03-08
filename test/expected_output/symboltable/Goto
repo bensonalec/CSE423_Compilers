@@ -1,7 +1,7 @@
    Name    | Function? | Type |  Scope   | Param? | Label? 
 -----------+-----------+------+----------+--------+-------
       main |      True |  int | /        |  False | False
-    label: |     False | None | /main/0/ |  False |  True
+     label |     False | None | /main/0/ |  False |  True
 random_var |     False |  int | /main/0/ |  False | False
 
 No undefined symbols available
