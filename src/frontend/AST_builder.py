@@ -192,7 +192,7 @@ def buildAST(parseHead):
         elif typ == "goto":
             ASTcurrent.children.append(ASTNode("label", ASTcurrent))
             ASTcurrent = ASTcurrent.children[-1]
-            ASTcurrent.children.append(ASTNode(f"{c[0].content[0].value}:", ASTcurrent))
+            ASTcurrent.children.append(ASTNode(f"{c[0].content[0].value}", ASTcurrent))
         
         elif typ == "do loop":
             ASTcurrent.children.append(ASTNode("do_while", ASTcurrent))
@@ -263,7 +263,7 @@ def buildAST(parseHead):
                 if case.token != "default":
                     ASTcurrent.children[0].children.append(ASTNode("==", ASTcurrent.children[-1]))
                     ASTcurrent.children[0].children[-1].children.append(ASTNode("var", ASTcurrent.children[-1].children[-1]))
-                    ASTcurrent.children[0].children[-1].children[-1].children.append(ASTNode(c[0].content[2].content[0].content[0].content[0].value, ASTcurrent.children[0].children[-1].children[-1]))
+                    ASTcurrent.children[0].children[-1].children[-1].children.append(ASTNode(c[0].content[2].content[0].content[0].content[0].content[0].content[0].content[0].content[0].content[0].value, ASTcurrent.children[0].children[-1].children[-1]))
                     ASTcurrent.children[0].children[-1].children.append(ASTNode(case.content[1].content[0].value, ASTcurrent.children[-1].children[-1]))
                
                 ASTcurrent.children[0].children.append(ASTNode("body", ASTcurrent.children[-1]))
