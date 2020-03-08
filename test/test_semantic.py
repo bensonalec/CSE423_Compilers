@@ -50,6 +50,7 @@ class SemanticAnalysisTest(unittest.TestCase):
                 astree = buildAST(head)
 
                 sym = symbol_table(astree)
+
                 sym.analyze()
                 
                 self.assertEqual(sym.lineSemanticErrors(), expected)
