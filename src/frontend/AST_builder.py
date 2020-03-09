@@ -70,6 +70,7 @@ def buildAST(parseHead):
             ASTcurrent = ASTcurrent.children[-1]
             ASTcurrent.children.append(ASTNode(c[0].content[1].value, ASTcurrent))
             ASTcurrent.children.append(ASTNode("param", ASTcurrent))
+
             expansion = [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__ and x.token == 'func_type']
             expansion += [(x, ASTcurrent.children[1]) for x in c[0].content if 'content' in x.__dict__ and x.token == 'args']
         

@@ -1,5 +1,9 @@
 import re
 import sys
+import importlib
+
+simp = importlib.import_module("simplify", __name__)
+
 
 class LevelOneIR():
     def __init__(self,astHead,symTable):
@@ -66,7 +70,7 @@ def returnLines(node,returnDigit,labelDigit):
                     lines.append(f"{varType} {varName};")
 
                 # Breakdown arithmetic nodes
-                tmp, labelDigit = breakdownArithmetic(element.children[1], labelDigit)
+                tmp, labelDigit = simp.breakdownArithmetic(element.children[1], labelDigit)
                 lines.extend(tmp)
                 lines.append(f"{varName} = D.{labelDigit-1}")
 
@@ -86,24 +90,24 @@ def returnLines(node,returnDigit,labelDigit):
                     #default is an 'else'. Only has one child, body
                     if case.name == "default":
                         #Get lines for the body and assign new labeldigit
-                        tmp, labelDigit = returnLines(case.children[0],returnDigit, labelDigit)
+                        tmp, labelDigit = returnLines(case.children[0], returnDigit, labelDigit)
                         lines.extend(tmp)
                         continue
 
                     #create label for body if true and label to skip to correct place if false.
-                    success_label = f'<D.{labelDigit}>'
+                    success_label = f"{labelDigit}"
                     labelDigit += 1
-                    failure_label = f'<D.{labelDigit}>'
+                    failure_label = f"{labelDigit}"
                     labelDigit += 1
 
                     #break down argument for if statement into smaller if statements
-                    temp_lines, labelDigit = breakdownBoolean(case, labelDigit, success_label, failure_label)
+                    temp_lines, labelDigit = simp.breakdownBoolean(case, labelDigit, success_label, failure_label)
                     
                     #adds broken down if statement
                     lines.extend(temp_lines)
                     
                     #Add goto for body statement
-                    lines.append(success_label)
+                    lines.append(f"<D.{success_label}>:")
 
                     #Get lines for the if body and assign new labeldigit
                     tmp, labelDigit = returnLines(case.children[1],returnDigit, labelDigit)
@@ -111,22 +115,20 @@ def returnLines(node,returnDigit,labelDigit):
 
                     #append goto for end of if body
                     lines.append(f'goto <D.{labelDigit}>;')
-                    end_if.append(f'<D.{labelDigit}>')
+                    end_if.append(labelDigit)
                     labelDigit += 1
 
-                    lines.append(f"{failure_label}:")
+                    lines.append(f"<D.{failure_label}>:")
 
                 for i in end_if:
-                    lines.append(f'{i}:')
-
-                    
+                    lines.append(f'<D.{i}>:')
 
             elif ind == 4: 
                 #Return
 
                 # If returns some type of arithmetic expression, breaks it down.
                 if len(element.children) > 0:
-                    tmp, tmpDigit = breakdownArithmetic(element.children[0], returnDigit)
+                    tmp, tmpDigit = simp.breakdownArithmetic(element.children[0], returnDigit)
                     lines.extend(tmp)
                     lines.append(f"D.{returnDigit} = D.{tmpDigit-1}")
                     lines.append(f"return D.{returnDigit};")
@@ -141,7 +143,7 @@ def returnLines(node,returnDigit,labelDigit):
 
                 # function call has parameters
                 if func_call.children != []:
-                    tmp, labelDigit = breakdownArithmetic(func_call.children[0], labelDigit)
+                    tmp, labelDigit = simp.breakdownArithmetic(func_call.children[0], labelDigit)
                     lines.extend(tmp)
                     lines.append(f"{func_call.name}(D.{labelDigit});")
                     returnDigit += labelDigit
@@ -151,7 +153,37 @@ def returnLines(node,returnDigit,labelDigit):
                     lines.append(f"{func_call.name}();")
 
             elif ind == 6:
-                print("While and do while")
+                #While and Do While
+
+                # Jump straight to conditionals for only 'While' statements
+                if element.name == "while":
+                    lines.append(f"goto <D.{labelDigit}>;")
+                
+                # Keep track of label for conditional block
+                conditionLabel = labelDigit
+                labelDigit += 1
+            
+                # Add the label that belongs to the start of the loop
+                lines.append(f"<D.{labelDigit}>:")
+                
+                # Assign labels for start/end of loop
+                loopStart = labelDigit 
+                loopEnd = labelDigit + 1
+                labelDigit += 2
+
+                # recursivly deal with the body of the loop
+                tmp, labelDigit = returnLines(element.children[1], returnDigit, labelDigit)
+                lines.extend(tmp)
+
+                # Start of conditionals for the loop
+                lines.append(f"<D.{conditionLabel}>:")
+                tmp, labelDigit = simp.breakdownBoolean(element, labelDigit, loopStart, loopEnd)
+                lines.extend(tmp)
+                lines.append(f"<D.{loopEnd}>:")
+
+                # increment twice for new index (twce, in case it was a do while)
+                labelDigit += 2
+
             elif ind == 7:
                 print("Break")
             elif ind == 8:
@@ -169,286 +201,3 @@ def returnLines(node,returnDigit,labelDigit):
             pass
     
     return lines, labelDigit
-
-def build_case(node):
-    #builds argement to go in gimple string
-
-    #first node is the opperator
-    opp = node.name
-
-    #next find first arguement
-    if node.children[0].name == "var" or node.children[0].name == "call":
-        first_arg = node.children[0].children[0].name
-    else:
-        first_arg = node.children[0].name
-
-    #next find second arguement
-    if node.children[1].name == "var" or node.children[1].name == "call":
-        second_arg = node.children[1].name
-    else:
-        second_arg = node.children[1].name
-
-    return f'{first_arg} {opp} {second_arg}'
-
-
-def breakdownBoolean(root, labelDigit, success_label, failure_label):
-
-    #NOTE root needs to be the parent of the first "&&" or "||"
-
-    #list of individual conditionals
-    conds = []
-
-    #an array of symbols
-    syms = []
-    lines = []
-    while(root.children[0].name == "&&" or root.children[0].name == "||"):
-        syms.append(root.children[0])
-        conds.append(root.children[1])
-        root = root.children[0]
-    for k in root.children:
-        conds.append(k)
-
-    next_opp = None
-    #conds = conds[1:]
-    tmp_lab = []
-    for ind, case in enumerate(conds[::-1]):
-        if case.name == "body":
-            continue
-
-        if ind == 0:
-            cur_opp = syms.pop()
-            next_opp = cur_opp
-        else:
-            # if len(conds) == 1:
-            #     next_opp = None
-
-            cur_opp = next_opp
-            if syms != []:
-                next_opp = syms.pop()
-            else:
-                next_opp = None
-
-        temp_label1 = f'<D.{labelDigit}>'
-        labelDigit += 1
-        temp_label2 = f'<D.{labelDigit}>'
-        labelDigit += 1
-
-        if len(case.children) != 1:
-            declare, labelDigit = breakdownArithmetic(case.children[1], labelDigit)
-            #declare is a list of returned arithmetic lines.
-
-            if declare != []:
-
-                #add declarations before
-                lines.extend(declare)
-
-                #replace operator with created variable name
-                arg = build_case(case)
-                arg = arg.replace(case.children[1].name, declare[-1].split(" ")[0])
-
-            else:
-                #None complex arithmatic
-                arg = build_case(case) 
-        
-        else:
-            #if only variable name
-            arg = case.children[0].name
-
-        #appends if statement and labels based on current and next opperator. This also does short circuiting
-        if cur_opp == None:
-
-            lines.append(f'if ({arg}) goto {success_label}; else goto {failure_label}')
-
-        elif cur_opp.name == "&&" and not next_opp == None:
-            if next_opp.name == "||":
-                lines.append(f'if ({arg}) goto {temp_label2}; else goto {temp_label1}')
-                lines.append(f'{temp_label1}:')
-                tmp_lab.append(temp_label2)
-            else:
-                lines.append(f'if ({arg}) goto {temp_label1}; else goto {temp_label2}')
-                lines.append(f'{temp_label1}:')
-                tmp_lab.append(temp_label2)
-        elif cur_opp.name == "||" and not next_opp == None:
-            if next_opp.name == "&&":
-                lines.append(f'if ({arg}) goto {temp_label1}; else goto {temp_label2}')
-                lines.append(f'{temp_label1}:')
-                tmp_lab.append(temp_label2)                           
-            else:
-                lines.append(f'if ({arg}) goto {temp_label1}; else goto {temp_label2}')
-                lines.append(f'{temp_label2}:')
-                tmp_lab.append(temp_label1)
-        else:
-            #this is the last operation
-            if cur_opp.name == "&&":
-                    lines.append(f'if ({arg}) goto {success_label}; else goto {failure_label}')  
-            elif cur_opp.name == "||":
-                    lines.append(f'if ({arg}) goto {success_label}; else goto {failure_label}')                                                          
-
-        #if next conditional statement is different
-        if next_opp == None or next_opp.name != cur_opp.name:
-            save = []
-            if next_opp == None and tmp_lab != []: 
-
-                #replace with success label in lines
-                for i in lines:
-                    for j in tmp_lab:
-                        if j in i:
-                            if cur_opp.name == "||":
-                                lines[lines.index(i)] = i.replace(j, f'{success_label}:')
-                            else:
-                                lines[lines.index(i)] = i.replace(j, f'{failure_label}:') 
-
-            else:
-                if tmp_lab != []: 
-                    #append goto for to be used in next statement
-                    save.append(tmp_lab.pop())
-                for i in tmp_lab:
-                    #add label
-                    lines.append(f'{i}:')
-
-                tmp_lab = save
-
-    return lines, labelDigit
-
-
-
-def breakdownArithmetic(root, labelDigit):
-    ntv = [root]
-
-    isOp = r'^(\+|\-|\/|\*|\%)$'
-    opCheck = re.compile(isOp)
-    Stack = []
-
-    lines = []
-    lastVarName = 0
-    
-    # fill up stack with all operands / operations 
-    while ntv != []:
-        cur = ntv[0]
-        Stack.append(cur.name)
-
-        # Beginning of function call parameters
-        if cur.parent.name == 'call':
-            
-            param_string = ""
-            for param in cur.children:
-                tmp, labelDigit = breakdownArithmetic(param, labelDigit)
-                lines.extend(tmp)
-                param_string += f"D.{labelDigit-1},"
-
-            #remove params so they dont get added to Stack
-            ntv[0].children = []
-
-            Stack.append(f"({param_string[:-1]})") #tmp variable
-            
-
-        ntv = [x for x in cur.children] + ntv[1:]
-
-    last = len(Stack)
-    for i in Stack[::-1]:
-        ind = last- 1
-        
-        if(opCheck.match(i)):
-
-            # two operands
-            v1 = Stack[ind+1]
-            v2 = Stack[ind+2]
-
-            # append the operation
-            lines.append(f"D.{labelDigit} = {v1} {i} {v2};")
-
-            # modify the stack to get rid of operands but keep new tmp variable
-            Stack = Stack[:ind] + [f"D.{labelDigit}"] + Stack[ind+3:]
-
-            # increment tmp variable for IR
-            labelDigit += 1
-
-        elif(i == "var"):
-
-            # modify stack to get rid of 'var'
-            Stack = Stack[:ind] + Stack[ind+1:]
-
-        elif(i == "call"):
-
-            # modify function name to include parameter tmp variable
-            Stack[ind+1] = Stack[ind+1] + f"{Stack[ind+2]}"
-
-            # modify stack to get rid of 'call'
-            Stack = Stack[:ind] + Stack[ind+1:]
-
-            # modify stack to get rid of parameter tmp variable
-            Stack = Stack[:ind+1] + Stack[ind+2:]
-
-        else:
-            pass
-
-        last -= 1
-
-    # final assignment to the passed in variable if something still on stack (i.e. literal integer)
-    if len(Stack) > 0:
-        lines.append(f"D.{labelDigit} = {Stack[0]};")
-        labelDigit += 1
-
-    return lines, labelDigit
-
-
-
-# def breakdownExpression(root, labelDigit, successLabel, failureLabel):
-#     lines = []
-#     ns = []
-
-#     log_ops = ['||', '&&']
-#     comp_ops = ["<=", "<", ">=", ">", "==", "!="]
-#     arth_ops = ["+", "-", "*", "/", "%", "<<", ">>", "!", "~"]
-#     spec_ops = ["++", "--"]
-#     ass_ops = ["="]
-#     id_ops = ["var", "call"]
-#     ntv = [root]
-
-#     successStack = [successLabel]
-#     failureStack = [failureLabel]
-
-#     tvs = []
-
-#     while ntv != []:
-#         cur = ntv[-1]
-#         ns.insert(0, cur)
-#         ntv = ntv[:-1] + cur.children
-
-#     ns = [x for x in ns if x.name in log_ops or x.name in comp_ops or x.name in arth_ops or x.name in spec_ops or x.name in ass_ops or x.name in id_ops]
-
-
-#     for node in ns:
-#         if node.name in comp_ops:
-#             ops = [tvs.pop() for x in node.children if len(x.children) != 0]
-#         elif node.name in arth_ops:
-#             ops = [tvs.pop() for x in node.children if len(x.children) != 0]
-
-#             # Case 1: ops is empty
-#             if ops == [] and len(node.children) > 1:
-#                 lines.append(f"{node.children[0].name} = {node.children[0].name} {node.name} {node.children[1].name}")
-#                 tvs.append(f"{node.children[0].name}")
-#             # Case 2: two elem in ops
-#             elif len(ops) == 2:
-#                 lines.append(f"{ops[0]} = {ops[0]} {node.name} {ops[1]}")
-#                 tvs.append(f"{ops[0]}")
-#             else:
-#                 pos = [node.children.index(x) for x in node.children if len(x.children) != 0 and len(node.children) > 1]
-
-#                 # Case 3: one elem in ops but its the left element in the operation
-#                 if pos == [0]:
-#                     lines.append(f"{ops[0]} = {ops[0]} {node.name} {node.children[1].name}")
-#                     tvs.append(f"{ops[0]}")
-#                 # Case 4: one elem in ops but its the right element in the operation
-#                 elif pos == [1]:
-#                     lines.append(f"{node.children[0].name} = {node.children[0].name} {node.name} {ops[0]}")
-#                     tvs.append(f"{node.children[0].name}")
-#                 # Case 5: Its a unary operator
-#                 elif pos == []:
-#                     lines.append(f"{node.name} = {node.name}{ops[0] if ops != [] else node.children[0].name}")
-#                     tvs.append(f"{node.name}")
-            
-
-#         elif node.name in id_ops:
-#             tvs.append(node.children[0].name)
-#     return lines, labelDigit
