@@ -3,6 +3,7 @@ import sys
 import importlib
 
 simp = importlib.import_module("simplify", __name__)
+ast = importlib.import_module("AST_builder", __name__)
 
 
 class LevelOneIR():
@@ -72,10 +73,58 @@ def returnLines(node,returnDigit,labelDigit):
                 # Breakdown arithmetic nodes
                 tmp, labelDigit = simp.breakdownArithmetic(element.children[1], labelDigit)
                 lines.extend(tmp)
-                lines.append(f"{varName} = D.{labelDigit-1}")
+                lines.append(f"{varName} = D.{labelDigit-1};")
 
             elif ind == 1:
-                print("For loop")
+                # For Loop
+
+                # Initialize variable
+                if element.children[0].children != []:
+                    initNode = ast.ASTNode("body", None)
+                    initNode.children.append(element.children[0])
+                    tmp, labelDigit = returnLines(initNode, returnDigit, labelDigit)
+                    lines.extend(tmp)               
+                
+                # Keep track of label for conditional block (if conditional exist)
+                conditionLabel = None
+                if element.children[1].children != []:
+                    lines.append(f"goto <D.{labelDigit}>;")
+                    conditionLabel = labelDigit
+                    labelDigit += 1
+
+                # Add the label that belongs to the start of the loop
+                lines.append(f"<D.{labelDigit}>:")
+                
+                # Assign labels for start/end of loop
+                loopStart = labelDigit 
+                loopEnd = labelDigit + 1
+                labelDigit += 2
+
+                # recursivly deal with the body of the loop
+                tmp, labelDigit = returnLines(element.children[3], returnDigit, labelDigit)
+                lines.extend(tmp)
+
+                # Add the "end-of-loop" assignment/arithmetic
+                if element.children[2].children != []:
+                    initNode = ast.ASTNode("body", None)
+                    initNode.children.append(element.children[2])
+                    tmp, labelDigit = returnLines(initNode, returnDigit, labelDigit)
+                    lines.extend(tmp) 
+
+                # Start of conditionals for the loop
+                if conditionLabel != None:
+                    lines.append(f"<D.{conditionLabel}>:")
+                    tmp, labelDigit = simp.breakdownBoolean(element, labelDigit, loopStart, loopEnd)
+                    lines.extend(tmp)
+                    lines.append(f"<D.{loopEnd}>:")
+                else:
+                    # No conditional (jump to start of body...always True)
+                    lines.append(f"goto <D.{loopStart}>;")
+
+                # increment twice for new index
+                labelDigit += 2
+
+                pass
             elif ind == 2:
                 print("Body")
             elif ind == 3:
