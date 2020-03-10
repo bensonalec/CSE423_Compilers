@@ -314,7 +314,7 @@ def breakdownExpression(root, labelDigit):
                         param_string += complex_params.pop() + ","
 
                 lines.append(f"D.{labelDigit} = {node.children[0].name}({param_string[:-1]});")
-                tvs.append(f"{labelDigit}")        
+                tvs.append(f"D.{labelDigit}")        
                 labelDigit += 1       
 
 
