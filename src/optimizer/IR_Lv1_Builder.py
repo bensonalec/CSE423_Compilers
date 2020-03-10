@@ -1,4 +1,10 @@
 import re
+import sys
+import importlib
+
+simp = importlib.import_module("simplify", __name__)
+ast = importlib.import_module("AST_builder", __name__)
+
 
 class LevelOneIR():
     def __init__(self,astHead,symTable):
@@ -20,10 +26,12 @@ class LevelOneIR():
                 bodyList.append((x.children[1].name,x.children[3]))
 
         returnDigit = 1234
+        labelDigit = returnDigit + 1
         for i in bodyList:
-            for x in returnLines(i[1], returnDigit):
+            lines , labelDigit = returnLines(i[1], returnDigit, labelDigit)
+            for x in lines:
                 print(x)
-            returnDigit += 1
+            returnDigit = labelDigit + 1
 
 def buildBoilerPlate(symTable):
     namesandparams = []
@@ -44,7 +52,7 @@ def buildBoilerPlate(symTable):
             namesandparams.append((x[0],paramsLi,x[1]))
     return namesandparams
 
-def returnLines(node,returnDigit):
+def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None):
     lines = []
     for element in node.children:
         try:
@@ -63,21 +71,116 @@ def returnLines(node,returnDigit):
                     lines.append(f"{varType} {varName};")
 
                 # Breakdown arithmetic nodes
-                lines += breakdownArithmetic(element.children[1], varName)
+                tmp, labelDigit = simp.breakdownArithmetic(element.children[1], labelDigit)
+                lines.extend(tmp)
+                lines.append(f"{varName} = D.{labelDigit-1};")
 
             elif ind == 1:
-                print("For loop")
+                # For Loop
+
+                # Initialize variable
+                if element.children[0].children != []:
+                    initNode = ast.ASTNode("body", None)
+                    initNode.children.append(element.children[0])
+                    tmp, labelDigit = returnLines(initNode, returnDigit, labelDigit)
+                    lines.extend(tmp)               
+                
+                # Keep track of label for conditional block (if conditional exist)
+                conditionLabel = None
+                if element.children[1].children != []:
+                    lines.append(f"goto <D.{labelDigit}>;")
+                    conditionLabel = labelDigit
+                    labelDigit += 1
+
+                # Add the label that belongs to the start of the loop
+                lines.append(f"<D.{labelDigit}>:")
+                
+                # Assign labels for start/end of loop
+                loopStart = labelDigit 
+                loopEnd = labelDigit + 1
+                labelDigit += 2
+
+                # recursivly deal with the body of the loop
+                tmp, labelDigit = returnLines(element.children[3], returnDigit, labelDigit, loopEnd, loopStart)
+                lines.extend(tmp)
+
+                # Add the "end-of-loop" assignment/arithmetic
+                if element.children[2].children != []:
+                    initNode = ast.ASTNode("body", None)
+                    initNode.children.append(element.children[2])
+                    tmp, labelDigit = returnLines(initNode, returnDigit, labelDigit)
+                    lines.extend(tmp) 
+
+                # Start of conditionals for the loop
+                if conditionLabel != None:
+                    lines.append(f"<D.{conditionLabel}>:")
+                    tmp, labelDigit = simp.breakdownBoolean(element, labelDigit, loopStart, loopEnd)
+                    lines.extend(tmp)
+                    lines.append(f"<D.{loopEnd}>:")
+                else:
+                    # No conditional (jump to start of body...always True)
+                    lines.append(f"goto <D.{loopStart}>;")
+
+                # increment twice for new index
+                labelDigit += 2
+
+                pass
             elif ind == 2:
                 print("Body")
             elif ind == 3:
-                print("If")
+                # If/Else statement(s)
+
+                # list of goto labels to be appended at end of if blocks
+                end_if = []
+
+                #for each case in a branch
+                for case in element.children:
+
+                    #create label for body if true and label to skip to correct place if false.
+                    success_label = f"{labelDigit}"
+                    labelDigit += 1
+                    failure_label = f"{labelDigit}"
+                    labelDigit += 1
+
+                    #default is an 'else'. Only has one child, body
+                    if case.name == "default":
+                        #Get lines for the body and assign new labeldigit
+                        tmp, labelDigit = returnLines(case.children[0], returnDigit, labelDigit, int(success_label), int(failure_label))
+                        lines.extend(tmp)
+                        continue
+
+                    #break down argument for if statement into smaller if statements
+                    temp_lines, labelDigit = simp.breakdownBoolean(case, labelDigit, success_label, failure_label)
+                    
+                    #adds broken down if statement
+                    lines.extend(temp_lines)
+                    
+                    #Add goto for body statement
+                    lines.append(f"<D.{success_label}>:")
+
+                    #Get lines for the if body and assign new labeldigit
+                    tmp, labelDigit = returnLines(case.children[1],returnDigit, labelDigit, int(success_label), int(failure_label))
+                    lines.extend(tmp)
+
+                    #append goto for end of if body
+                    lines.append(f'goto <D.{labelDigit}>;')
+                    end_if.append(labelDigit)
+                    labelDigit += 1
+
+                    lines.append(f"<D.{failure_label}>:")
+
+                for i in end_if:
+                    lines.append(f'<D.{i}>:')
+
             elif ind == 4: 
                 #Return
 
                 # If returns some type of arithmetic expression, breaks it down.
                 if len(element.children) > 0:
-                    lines += breakdownArithmetic(element.children[0], f"D.{returnDigit}")
-                    lines.append(f"return D.{returnDigit};") 
+                    tmp, tmpDigit = simp.breakdownArithmetic(element.children[0], returnDigit)
+                    lines.extend(tmp)
+                    lines.append(f"D.{returnDigit} = D.{tmpDigit-1}")
+                    lines.append(f"return D.{returnDigit};")
                 
                 # Returns nothing
                 else:
@@ -85,24 +188,59 @@ def returnLines(node,returnDigit):
 
             elif ind == 5:
                 #Function Call
-                func_call = element.children[0]
+                func_call = element.children[0].name
 
                 # function call has parameters
                 if func_call.children != []:
-                    lines += breakdownArithmetic(func_call.children[0], f"D.{returnDigit}")
-                    lines.append(f"{func_call.name}(D.{returnDigit});")
-                    returnDigit += 1
+                    tmp, labelDigit = simp.breakdownArithmetic(func_call.children[0], labelDigit)
+                    lines.extend(tmp)
+                    lines.append(f"{func_call.name}(D.{labelDigit});")
+                    returnDigit += labelDigit
                 
                 # no parameters
                 else:
                     lines.append(f"{func_call.name}();")
 
             elif ind == 6:
-                print("While and do while")
+                #While and Do While
+
+                # Jump straight to conditionals for only 'While' statements
+                if element.name == "while":
+                    lines.append(f"goto <D.{labelDigit}>;")
+                
+                # Keep track of label for conditional block
+                conditionLabel = labelDigit
+                labelDigit += 1
+            
+                # Add the label that belongs to the start of the loop
+                lines.append(f"<D.{labelDigit}>:")
+                
+                # Assign labels for start/end of loop
+                loopStart = labelDigit 
+                loopEnd = labelDigit + 1
+                labelDigit += 2
+
+                # recursivly deal with the body of the loop
+                tmp, labelDigit = returnLines(element.children[1], returnDigit, labelDigit, loopStart, loopEnd)
+                lines.extend(tmp)
+
+                # Start of conditionals for the loop
+                lines.append(f"<D.{conditionLabel}>:")
+                tmp, labelDigit = simp.breakdownBoolean(element, labelDigit, loopStart, loopEnd)
+                lines.extend(tmp)
+                lines.append(f"<D.{loopEnd}>:")
+
+                # increment twice for new index (twce, in case it was a do while)
+                labelDigit += 2
+
             elif ind == 7:
-                print("Break")
+                # Break
+                lines.append(f"goto <D.{failureDigit}>;")
+
             elif ind == 8:
-                print("Continue")
+                # Continue
+                lines.append(f"goto <D.{successDigit}>;")
+
             elif ind == 9:
                 print("Goto")
             elif ind == 10:
@@ -110,88 +248,9 @@ def returnLines(node,returnDigit):
             else:
                 print("Unsupported at this time")
 
-        except Exception as err:
-            print("Exception: ", err)
+        except Warning:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            print(exc_type, exc_tb.tb_lineno)
             pass
     
-    return lines
-
-def breakdownArithmetic(root, varName):
-    ntv = [root]
-
-    isOp = r'^(\+|\-|\/|\*|\%)$'
-    opCheck = re.compile(isOp)
-    Stack = []
-
-    lines = []
-    lastVarName = 0
-    
-    # fill up stack with all operands / operations 
-    while ntv != []:
-        cur = ntv[0]
-        Stack.append(cur.name)
-
-        # Beginning of function call parameters
-        if cur.parent.name == 'call':
-            
-            # params exist
-            if cur.children != []:
-                lines += breakdownArithmetic(cur.children[0], varName)
-
-                #remove params so they dont get added to Stack
-                ntv[0].children = []
-
-                Stack.append(varName) #tmp variable (should be some 'D.xxxx' variable eventually?)
-            
-            # params don't exist
-            else:
-                Stack.append('')
-
-        ntv = [x for x in cur.children] + ntv[1:]
-
-    last = len(Stack)
-    for i in Stack[::-1]:
-        ind = last- 1
-        
-        if(opCheck.match(i)):
-
-            # two operands
-            v1 = Stack[ind+1]
-            v2 = Stack[ind+2]
-
-            # append the operation
-            #lines.append(f"_{lastVarName} = {v1} {i} {v2};")
-            lines.append(f"{varName} = {v1} {i} {v2};")
-
-            # modify the stack to get rid of operands but keep new tmp variable
-            #Stack = Stack[:ind] + [f"_{lastVarName}"] + Stack[ind+3:]
-            Stack = Stack[:ind] + [f"{varName}"] + Stack[ind+3:]
-
-            # increment tmp variable for IR
-            lastVarName += 1
-
-        elif(i == "var"):
-
-            # modify stack to get rid of 'var'
-            Stack = Stack[:ind] + Stack[ind+1:]
-
-        elif(i == "call"):
-
-            # modify function name to include parameter tmp variable
-            Stack[ind+1] = Stack[ind+1] + f" ({Stack[ind+2]})"
-
-            # modify stack to get rid of 'call'
-            Stack = Stack[:ind] + Stack[ind+1:]
-
-            # modify stack to get rid of parameter tmp variable
-            Stack = Stack[:ind+1] + Stack[ind+2:]
-
-        else:
-            pass
-
-        last -= 1
-
-    # final assignment to the passed in variable
-    lines.append(f"{varName} = {Stack[0]};")
-
-    return lines
+    return lines, labelDigit
