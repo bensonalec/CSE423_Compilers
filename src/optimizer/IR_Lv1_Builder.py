@@ -3,6 +3,7 @@ import sys
 import importlib
 
 simp = importlib.import_module("simplify", __name__)
+ast = importlib.import_module("AST_builder", __name__)
 
 
 class LevelOneIR():
@@ -51,7 +52,7 @@ def buildBoilerPlate(symTable):
             namesandparams.append((x[0],paramsLi,x[1]))
     return namesandparams
 
-def returnLines(node,returnDigit,labelDigit):
+def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None):
     lines = []
     for element in node.children:
         try:
@@ -72,10 +73,58 @@ def returnLines(node,returnDigit,labelDigit):
                 # Breakdown arithmetic nodes
                 tmp, labelDigit = simp.breakdownArithmetic(element.children[1], labelDigit)
                 lines.extend(tmp)
-                lines.append(f"{varName} = D.{labelDigit-1}")
+                lines.append(f"{varName} = D.{labelDigit-1};")
 
             elif ind == 1:
-                print("For loop")
+                # For Loop
+
+                # Initialize variable
+                if element.children[0].children != []:
+                    initNode = ast.ASTNode("body", None)
+                    initNode.children.append(element.children[0])
+                    tmp, labelDigit = returnLines(initNode, returnDigit, labelDigit)
+                    lines.extend(tmp)               
+                
+                # Keep track of label for conditional block (if conditional exist)
+                conditionLabel = None
+                if element.children[1].children != []:
+                    lines.append(f"goto <D.{labelDigit}>;")
+                    conditionLabel = labelDigit
+                    labelDigit += 1
+
+                # Add the label that belongs to the start of the loop
+                lines.append(f"<D.{labelDigit}>:")
+                
+                # Assign labels for start/end of loop
+                loopStart = labelDigit 
+                loopEnd = labelDigit + 1
+                labelDigit += 2
+
+                # recursivly deal with the body of the loop
+                tmp, labelDigit = returnLines(element.children[3], returnDigit, labelDigit, loopEnd, loopStart)
+                lines.extend(tmp)
+
+                # Add the "end-of-loop" assignment/arithmetic
+                if element.children[2].children != []:
+                    initNode = ast.ASTNode("body", None)
+                    initNode.children.append(element.children[2])
+                    tmp, labelDigit = returnLines(initNode, returnDigit, labelDigit)
+                    lines.extend(tmp) 
+
+                # Start of conditionals for the loop
+                if conditionLabel != None:
+                    lines.append(f"<D.{conditionLabel}>:")
+                    tmp, labelDigit = simp.breakdownBoolean(element, labelDigit, loopStart, loopEnd)
+                    lines.extend(tmp)
+                    lines.append(f"<D.{loopEnd}>:")
+                else:
+                    # No conditional (jump to start of body...always True)
+                    lines.append(f"goto <D.{loopStart}>;")
+
+                # increment twice for new index
+                labelDigit += 2
+
+                pass
             elif ind == 2:
                 print("Body")
             elif ind == 3:
@@ -86,19 +135,19 @@ def returnLines(node,returnDigit,labelDigit):
 
                 #for each case in a branch
                 for case in element.children:
-                    
-                    #default is an 'else'. Only has one child, body
-                    if case.name == "default":
-                        #Get lines for the body and assign new labeldigit
-                        tmp, labelDigit = returnLines(case.children[0], returnDigit, labelDigit)
-                        lines.extend(tmp)
-                        continue
 
                     #create label for body if true and label to skip to correct place if false.
                     success_label = f"{labelDigit}"
                     labelDigit += 1
                     failure_label = f"{labelDigit}"
                     labelDigit += 1
+
+                    #default is an 'else'. Only has one child, body
+                    if case.name == "default":
+                        #Get lines for the body and assign new labeldigit
+                        tmp, labelDigit = returnLines(case.children[0], returnDigit, labelDigit, int(success_label), int(failure_label))
+                        lines.extend(tmp)
+                        continue
 
                     #break down argument for if statement into smaller if statements
                     temp_lines, labelDigit = simp.breakdownBoolean(case, labelDigit, success_label, failure_label)
@@ -110,7 +159,7 @@ def returnLines(node,returnDigit,labelDigit):
                     lines.append(f"<D.{success_label}>:")
 
                     #Get lines for the if body and assign new labeldigit
-                    tmp, labelDigit = returnLines(case.children[1],returnDigit, labelDigit)
+                    tmp, labelDigit = returnLines(case.children[1],returnDigit, labelDigit, int(success_label), int(failure_label))
                     lines.extend(tmp)
 
                     #append goto for end of if body
@@ -172,7 +221,7 @@ def returnLines(node,returnDigit,labelDigit):
                 labelDigit += 2
 
                 # recursivly deal with the body of the loop
-                tmp, labelDigit = returnLines(element.children[1], returnDigit, labelDigit)
+                tmp, labelDigit = returnLines(element.children[1], returnDigit, labelDigit, loopStart, loopEnd)
                 lines.extend(tmp)
 
                 # Start of conditionals for the loop
@@ -185,9 +234,13 @@ def returnLines(node,returnDigit,labelDigit):
                 labelDigit += 2
 
             elif ind == 7:
-                print("Break")
+                # Break
+                lines.append(f"goto <D.{failureDigit}>;")
+
             elif ind == 8:
-                print("Continue")
+                # Continue
+                lines.append(f"goto <D.{successDigit}>;")
+
             elif ind == 9:
                 print("Goto")
             elif ind == 10:

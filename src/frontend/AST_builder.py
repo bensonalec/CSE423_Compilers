@@ -156,7 +156,6 @@ def buildAST(parseHead):
                     else:
                         ASTcurrent.children.append(ASTNode(c[0].content[1].value, ASTcurrent))
                         ASTcurrent = ASTcurrent.children[-1]
-                
                     expansion = [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__]
 
         elif typ == "return":
