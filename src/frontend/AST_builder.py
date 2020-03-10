@@ -150,9 +150,12 @@ def buildAST(parseHead):
             if len(c[0].content) == 3:
                 # To ensure that there are no false positives since arithmetic is directly linked to collation
                 if 'value' in c[0].content[1].__dict__:
-                    ASTcurrent.children.append(ASTNode(c[0].content[1].value, ASTcurrent))
-                    ASTcurrent = ASTcurrent.children[-1]
-                
+                    if c[0].content[1].value == "&&" or c[0].content[1].value == "||":
+                        ASTcurrent.children.insert(0,  ASTNode(c[0].content[1].value, ASTcurrent))
+                        ASTcurrent = ASTcurrent.children[0]
+                    else:
+                        ASTcurrent.children.append(ASTNode(c[0].content[1].value, ASTcurrent))
+                        ASTcurrent = ASTcurrent.children[-1]
                     expansion = [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__]
 
         elif typ == "return":

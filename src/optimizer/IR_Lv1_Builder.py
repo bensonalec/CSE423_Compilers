@@ -52,7 +52,7 @@ def buildBoilerPlate(symTable):
             namesandparams.append((x[0],paramsLi,x[1]))
     return namesandparams
 
-def returnLines(node,returnDigit,labelDigit):
+def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None):
     lines = []
     for element in node.children:
         try:
@@ -101,7 +101,7 @@ def returnLines(node,returnDigit,labelDigit):
                 labelDigit += 2
 
                 # recursivly deal with the body of the loop
-                tmp, labelDigit = returnLines(element.children[3], returnDigit, labelDigit)
+                tmp, labelDigit = returnLines(element.children[3], returnDigit, labelDigit, loopEnd, loopStart)
                 lines.extend(tmp)
 
                 # Add the "end-of-loop" assignment/arithmetic
@@ -135,19 +135,19 @@ def returnLines(node,returnDigit,labelDigit):
 
                 #for each case in a branch
                 for case in element.children:
-                    
-                    #default is an 'else'. Only has one child, body
-                    if case.name == "default":
-                        #Get lines for the body and assign new labeldigit
-                        tmp, labelDigit = returnLines(case.children[0], returnDigit, labelDigit)
-                        lines.extend(tmp)
-                        continue
 
                     #create label for body if true and label to skip to correct place if false.
                     success_label = f"{labelDigit}"
                     labelDigit += 1
                     failure_label = f"{labelDigit}"
                     labelDigit += 1
+
+                    #default is an 'else'. Only has one child, body
+                    if case.name == "default":
+                        #Get lines for the body and assign new labeldigit
+                        tmp, labelDigit = returnLines(case.children[0], returnDigit, labelDigit, int(success_label), int(failure_label))
+                        lines.extend(tmp)
+                        continue
 
                     #break down argument for if statement into smaller if statements
                     temp_lines, labelDigit = simp.breakdownBoolean(case, labelDigit, success_label, failure_label)
@@ -159,7 +159,7 @@ def returnLines(node,returnDigit,labelDigit):
                     lines.append(f"<D.{success_label}>:")
 
                     #Get lines for the if body and assign new labeldigit
-                    tmp, labelDigit = returnLines(case.children[1],returnDigit, labelDigit)
+                    tmp, labelDigit = returnLines(case.children[1],returnDigit, labelDigit, int(success_label), int(failure_label))
                     lines.extend(tmp)
 
                     #append goto for end of if body
@@ -221,7 +221,7 @@ def returnLines(node,returnDigit,labelDigit):
                 labelDigit += 2
 
                 # recursivly deal with the body of the loop
-                tmp, labelDigit = returnLines(element.children[1], returnDigit, labelDigit)
+                tmp, labelDigit = returnLines(element.children[1], returnDigit, labelDigit, loopStart, loopEnd)
                 lines.extend(tmp)
 
                 # Start of conditionals for the loop
@@ -234,9 +234,13 @@ def returnLines(node,returnDigit,labelDigit):
                 labelDigit += 2
 
             elif ind == 7:
-                print("Break")
+                # Break
+                lines.append(f"goto <D.{failureDigit}>;")
+
             elif ind == 8:
-                print("Continue")
+                # Continue
+                lines.append(f"goto <D.{successDigit}>;")
+
             elif ind == 9:
                 print("Goto")
             elif ind == 10:

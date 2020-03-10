@@ -1,25 +1,32 @@
 import re
 import sys
 
-def build_case(node):
-    #builds argement to go in gimple string
+def build_case(node, list_one, list_two):
 
-    #first node is the opperator
-    opp = node.name
+    if list_two == [] and list_one == []:
+        if node.children != []:
+            arg = f"{node.children[0].name} > 0"
+            return arg
+        else:
+            arg = f"{node.name} > 0"
+            return arg
 
-    #next find first arguement
-    if node.children[0].name == "var" or node.children[0].name == "call":
-        first_arg = node.children[0].children[0].name
+    elif list_two == []:
+        arg = f"{list_one[-1].split(' ')[0]} > 0"
+        return arg
+
     else:
-        first_arg = node.children[0].name
 
-    #next find second arguement
-    if node.children[1].name == "var" or node.children[1].name == "call":
-        second_arg = node.children[1].name
-    else:
-        second_arg = node.children[1].name
+        #first node is the opperator
+        opp = node.name
 
-    return f'{first_arg} {opp} {second_arg}'
+        #next find second arguement
+        second_arg = list_two[-1].split(' ')[0]
+
+        #next find first arguement
+        first_arg = list_one[-1].split(' ')[0]
+
+        return f'{first_arg} {opp} {second_arg}'
 
 
 def breakdownBoolean(root, labelDigit, success_label, failure_label):
@@ -38,10 +45,7 @@ def breakdownBoolean(root, labelDigit, success_label, failure_label):
         conds.append(root.children[1])
         root = root.children[0]
     for k in root.children:
-        if k.name in ["<=", "<", ">=", ">", "==", "!="]:
-            conds.append(k)
-    if root.name in ["<=", "<", ">=", ">", "==", "!="]:
-        conds.append(root)
+        conds.append(k)
 
     next_opp = None
     tmp_lab = []
@@ -69,26 +73,22 @@ def breakdownBoolean(root, labelDigit, success_label, failure_label):
         temp_label2 = f"{labelDigit}"
         labelDigit += 1
 
-        if len(case.children) > 1:
-            declare, labelDigit = breakdownArithmetic(case.children[1], labelDigit)
-            #declare is a list of returned arithmetic lines.
+        # case is a conditional with two children
+        if len(case.children) > 1 and case.name in ["<=", "<", ">=", ">", "==", "!="]:
+            declare_one, labelDigit = breakdownExpression(case.children[0], labelDigit)
+            declare_two, labelDigit = breakdownExpression(case.children[1], labelDigit)
+           
+            lines.extend(declare_one)
+            lines.extend(declare_two)
 
-            if declare != []:
+            arg = build_case(case, declare_one, declare_two)
 
-                #add declarations before
-                lines.extend(declare)
-
-                #replace operator with created variable name
-                arg = build_case(case)
-                arg = arg.replace(case.children[1].name, declare[-1].split(" ")[0])
-
-            else:
-                #None complex arithmatic
-                arg = build_case(case) 
-        
+        # case is without conditional
         else:
-            #if only variable name
-            arg = case.children[0].name
+            declare_one, labelDigit = breakdownExpression(case, labelDigit)
+            lines.extend(declare_one)
+            arg = build_case(case, declare_one, []) 
+        
 
         #appends if statement and labels based on current and next opperator. This also does short circuiting
         if cur_opp == None:
@@ -139,7 +139,7 @@ def breakdownBoolean(root, labelDigit, success_label, failure_label):
                     save.append(tmp_lab.pop())
                 for i in tmp_lab:
                     #add label
-                    lines.append(f'{i}:')
+                    lines.append(f'<D.{i}>:')
 
                 tmp_lab = save
 
@@ -148,6 +148,17 @@ def breakdownBoolean(root, labelDigit, success_label, failure_label):
 
 
 def breakdownArithmetic(root, labelDigit):
+
+    # log_ops = ['||', '&&']
+    # comp_ops = ["<=", "<", ">=", ">", "==", "!="]
+    arth_ops = ["+", "-", "*", "/", "%", "<<", ">>", "!", "~"]
+    spec_ops = ["++", "--"]
+    ass_ops = ["="]
+    id_ops = ["var", "call"]
+
+
+
+
     ntv = [root]
 
     isOp = r'^(\+|\-|\/|\*|\%)$'
@@ -222,5 +233,78 @@ def breakdownArithmetic(root, labelDigit):
     if len(Stack) > 0:
         lines.append(f"D.{labelDigit} = {Stack[0]};")
         labelDigit += 1
+
+    return lines, labelDigit
+
+def breakdownExpression(root, labelDigit):
+    lines = []
+    ns = []
+    # log_ops = ['||', '&&']
+    comp_ops = ["<=", "<", ">=", ">", "==", "!="]
+    arth_ops = ["+", "-", "*", "/", "%", "<<", ">>", "!", "~"]
+    spec_ops = ["++", "--"]
+    ass_ops = ["="]
+    id_ops = ["var", "call"]
+    ntv = [root]
+
+    tvs = []
+
+    while ntv != []:
+        cur = ntv[-1]
+        ns.insert(0, cur)
+        ntv = ntv[:-1] + cur.children
+
+    ns = [x for x in ns if x.name in arth_ops or x.name in spec_ops or x.name in ass_ops or x.name in id_ops]
+
+    for node in ns:
+
+        if node.name in comp_ops:
+            pass
+        elif node.name in arth_ops:
+            ops = [tvs.pop() for x in node.children if len(x.children) != 0]
+
+            if node.parent.parent.name == "call":
+                continue
+            
+            # Case 1: ops is empty
+            if ops == [] and len(node.children) > 1:
+                lines.append(f"D.{labelDigit} = {node.children[0].name} {node.name} {node.children[1].name}")
+            # Case 2: two elem in ops
+            elif len(ops) == 2:
+                lines.append(f"D.{labelDigit} = {ops[0]} {node.name} {ops[1]}")
+            else:
+                pos = [node.children.index(x) for x in node.children if len(x.children) != 0 and len(node.children) > 1]
+
+                # Case 3: one elem in ops but its the left element in the operation
+                if pos == [0]:
+                    lines.append(f"D.{labelDigit} = {ops[0]} {node.name} {node.children[1].name}")
+                # Case 4: one elem in ops but its the right element in the operation
+                elif pos == [1]:
+                    lines.append(f"D.{labelDigit} = {node.children[0].name} {node.name} {ops[0]}")
+                # Case 5: Its a unary operator
+                elif pos == []:
+                    lines.append(f"D.{labelDigit} = {node.name}{ops[0] if ops != [] else node.children[0].name}")
+            
+            tvs.append(f"D.{labelDigit}")
+            labelDigit += 1
+
+        elif node.name in spec_ops:
+            pass
+            # TODO: fix it so it works 
+            # order = 1 ^ (Stack[ind + 1 : ind + 2].index("NULL"))
+
+            # lastVarName += 1
+            # lines.append(f"_{lastVarName} = {Stack[ind+1:ind+2][order]}")
+            # lines.insert(-1 - order, f"{Stack[ind+1:ind+2][order]} = {Stack[ind+1:ind+2][order]} {i[0]} 1")
+        
+        elif node.name in ass_ops:
+            pass
+        elif node.name in id_ops:
+            if node.name == "var": 
+                tvs.append(node.children[0].name)
+            elif node.name == "call":
+                    tmp, labelDigit = breakdownArithmetic(node, labelDigit)
+                    lines.extend(tmp)
+                    
 
     return lines, labelDigit
