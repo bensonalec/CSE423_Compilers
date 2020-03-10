@@ -301,7 +301,9 @@ def breakdownExpression(root, labelDigit):
             pass
         elif node.name in id_ops:
             if node.name == "var": 
-                tvs.append(node.children[0].name)
+                lines.append(f"D.{labelDigit} = {node.children[0].name};")
+                tvs.append(f"D.{labelDigit}")
+                labelDigit += 1
             elif node.name == "call":
                 param_string = ""
                 complex_params = [tvs.pop() for x in node.children[0].children if len(x.children) != 0]
