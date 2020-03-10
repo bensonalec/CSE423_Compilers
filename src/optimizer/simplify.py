@@ -304,7 +304,6 @@ def breakdownExpression(root, labelDigit):
                 tvs.append(node.children[0].name)
             elif node.name == "call":
                 param_string = ""
-                node.print_AST()
                 complex_params = [tvs.pop() for x in node.children[0].children if len(x.children) != 0]
                 for i in node.children[0].children:
                     if i.children == []:
