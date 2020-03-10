@@ -263,8 +263,8 @@ def breakdownExpression(root, labelDigit):
         elif node.name in arth_ops:
             ops = [tvs.pop() for x in node.children if len(x.children) != 0]
 
-            if node.parent.parent.name == "call":
-                continue
+            # if node.parent.parent.name == "call":
+            #     continue
             
             # Case 1: ops is empty
             if ops == [] and len(node.children) > 1:
@@ -303,8 +303,19 @@ def breakdownExpression(root, labelDigit):
             if node.name == "var": 
                 tvs.append(node.children[0].name)
             elif node.name == "call":
-                    tmp, labelDigit = breakdownArithmetic(node, labelDigit)
-                    lines.extend(tmp)
-                    
+                param_string = ""
+                node.print_AST()
+                complex_params = [tvs.pop() for x in node.children[0].children if len(x.children) != 0]
+                for i in node.children[0].children:
+                    if i.children == []:
+                        param_string += i.name + ","
+                        pass
+                    else:
+                        param_string += complex_params.pop() + ","
+
+                lines.append(f"D.{labelDigit} = {node.children[0].name}({param_string[:-1]});")
+                tvs.append(f"{labelDigit}")        
+                labelDigit += 1       
+
 
     return lines, labelDigit

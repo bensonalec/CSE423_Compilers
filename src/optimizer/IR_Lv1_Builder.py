@@ -191,15 +191,15 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                 func_call = element.children[0].name
 
                 # function call has parameters
-                if func_call.children != []:
-                    tmp, labelDigit = simp.breakdownArithmetic(func_call.children[0], labelDigit)
+                if element.children[0] != []:
+                    tmp, labelDigit = simp.breakdownExpression(element, labelDigit)
+                    tmp[-1] = tmp[-1].split(' = ')[1]
                     lines.extend(tmp)
-                    lines.append(f"{func_call.name}(D.{labelDigit});")
-                    returnDigit += labelDigit
+                    labelDigit += 1
                 
                 # no parameters
                 else:
-                    lines.append(f"{func_call.name}();")
+                    lines.append(f"{func_call}();")
 
             elif ind == 6:
                 #While and Do While
