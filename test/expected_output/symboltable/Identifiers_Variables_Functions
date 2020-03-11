@@ -1,0 +1,9 @@
+    Name      | Function? | Type |      Scope      | Param? | Label? 
+--------------+-----------+------+-----------------+--------+-------
+test_function |      True |  int | /               |  False | False
+         main |      True |  int | /               |  False | False
+            x |     False |  int | /main/1/        |  False | False
+            x |     False |  int | /test_function/ |   True | False
+            y |     False |  int | /test_function/ |   True | False
+
+No undefined symbols available

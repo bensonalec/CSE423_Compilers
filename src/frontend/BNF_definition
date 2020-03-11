@@ -154,12 +154,6 @@ assignment : SET #assignment
 
 collation : collation_or #collation
 collation : OPEN_PAREN collation CLOSE_PAREN #collation
-collation : collation_and #collation
-collation : collation_bor #collation
-collation : collation_xor #collation
-collation : collation_band #collation
-collation : collation_eq #collation
-collation : collation_rel #collation
 
 collation_or : collation_and #collation_or
 collation_or : collation_or OR collation_and #collation_or
@@ -188,11 +182,6 @@ collation_rel : collation_rel GEQ arithmetic #collation_rel
 
 arithmetic : arithmetic_sh #arithmetic
 arithmetic : OPEN_PAREN arithmetic CLOSE_PAREN #arithmetic
-arithmetic : arithmetic_pm #arithmetic
-arithmetic : arithmetic_mul #arithmetic
-arithmetic : arithmetic_cast #arithmetic
-arithmetic : arithmetic_unary #arithmetic
-arithmetic : arithmetic_post #arithmetic
 
 arithmetic_sh : arithmetic_pm #arithmetic_sh
 arithmetic_sh : arithmetic_sh LSH arithmetic_pm #arithmetic_sh
