@@ -5,7 +5,6 @@ import importlib
 simp = importlib.import_module("simplify", __name__)
 ast = importlib.import_module("AST_builder", __name__)
 
-
 class LevelOneIR():
     def __init__(self,astHead,symTable):
         self.astHead = astHead
@@ -56,7 +55,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
     lines = []
     for element in node.children:
         try:
-            splits = [["=","+="],["for"],["body"],["branch"],["return"],["call"],["while","do_while"],["break"],["continue"],["goto"],["label"]]
+            splits = [["=","+="],["for"],["body"],["branch"],["return"],["call"],["while","do_while"],["break"],["continue"],["goto"],["label"], ["++", "--"]]
             ind = [splits.index(x) for x in splits if element.name in x]
             ind = ind[0]
             if ind == 0:
@@ -71,9 +70,12 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                     lines.append(f"{varType} {varName};")
 
                 # Breakdown arithmetic nodes
-                tmp, labelDigit = simp.breakdownArithmetic(element.children[1], labelDigit)
+                tmp, tvs, labelList = simp.breakdownExpression(element, [], labelList=[labelDigit])
                 lines.extend(tmp)
-                lines.append(f"{varName} = D.{labelDigit-1};")
+                # print (labelDigit)
+                if labelList != []:
+                    labelDigit = labelList[-1]
+                # print (labelDigit)
 
             elif ind == 1:
                 # For Loop
@@ -114,9 +116,17 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                 # Start of conditionals for the loop
                 if conditionLabel != None:
                     lines.append(f"<D.{conditionLabel}>:")
-                    tmp, labelDigit = simp.breakdownBoolean(element, labelDigit, loopStart, loopEnd)
+                    # TODO: Create tempoary AST if its a unary logical comparison
+                    tmpNode = element.children[1]
+                    if tmpNode.name not in ['||', '&&', "<=", "<", ">=", ">", "==", "!="]:
+                        tmpNode = ast.ASTNode("!=", None)
+                        tmpNode.children.append(element.children[1])
+                        tmpNode.children.append(ast.ASTNode("0", tmpNode))
+                    tmp, tvs, labelList = simp.breakdownExpression(tmpNode, [], loopStart, loopEnd)
                     lines.extend(tmp)
                     lines.append(f"<D.{loopEnd}>:")
+                    if labelList != []:
+                        labelDigit = labelList[-1]
                 else:
                     # No conditional (jump to start of body...always True)
                     lines.append(f"goto <D.{loopStart}>;")
@@ -135,23 +145,32 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 
                 #for each case in a branch
                 for case in element.children:
-
                     #create label for body if true and label to skip to correct place if false.
-                    success_label = f"{labelDigit}"
+                    success_label = labelDigit
                     labelDigit += 1
-                    failure_label = f"{labelDigit}"
+                    failure_label = labelDigit
                     labelDigit += 1
 
                     #default is an 'else'. Only has one child, body
                     if case.name == "default":
                         #Get lines for the body and assign new labeldigit
-                        tmp, labelDigit = returnLines(case.children[0], returnDigit, labelDigit, int(success_label), int(failure_label))
+                        tmp, labelDigit = returnLines(case.children[0], returnDigit, labelDigit, success_label, failure_label)
                         lines.extend(tmp)
                         continue
 
+                    # TODO: Create tempoary AST if its a unary logical comparison
+                    tmpNode = case.children[0]
+                    if tmpNode.name not in ['||', '&&', "<=", "<", ">=", ">", "==", "!="]:
+                        tmpNode = ast.ASTNode("!=", None)
+                        tmpNode.children.append(case.children[0])
+                        tmpNode.children.append(ast.ASTNode("0", tmpNode))
+
                     #break down argument for if statement into smaller if statements
-                    temp_lines, labelDigit = simp.breakdownBoolean(case, labelDigit, success_label, failure_label)
-                    
+                    temp_lines, tvs, labelList = simp.breakdownExpression(tmpNode, [], success_label, failure_label)
+                    # print (labelList)
+                    if labelList != []:
+                        labelDigit = labelList[-1] + 1
+                    # print (labelDigit)
                     #adds broken down if statement
                     lines.extend(temp_lines)
                     
@@ -159,7 +178,8 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                     lines.append(f"<D.{success_label}>:")
 
                     #Get lines for the if body and assign new labeldigit
-                    tmp, labelDigit = returnLines(case.children[1],returnDigit, labelDigit, int(success_label), int(failure_label))
+                    tmp, labelDigit = returnLines(case.children[1],returnDigit, labelDigit, success_label, failure_label)
+                    # print (labelDigit)
                     lines.extend(tmp)
 
                     #append goto for end of if body
@@ -174,14 +194,20 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 
             elif ind == 4: 
                 #Return
+                
 
                 # If returns some type of arithmetic expression, breaks it down.
-                if len(element.children) > 0:
-                    tmp, tmpDigit = simp.breakdownArithmetic(element.children[0], returnDigit)
+                if len(element.children) > 0 and element.children[0].children != []:
+                    tmp, tvs, labelList = simp.breakdownExpression(element.children[0], [])
                     lines.extend(tmp)
-                    lines.append(f"D.{returnDigit} = D.{tmpDigit-1}")
+                    lines.append(f"D.{returnDigit} = {tvs[-1]};")
                     lines.append(f"return D.{returnDigit};")
-                
+                    if labelList != []:
+                        labelDigit = labelList[-1]
+
+                elif element.children[0].children == []:
+                    lines.append(f"return {element.children[0].name};")
+
                 # Returns nothing
                 else:
                     lines.append(f"return;") 
@@ -192,10 +218,11 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 
                 # function call has parameters
                 if element.children[0] != []:
-                    tmp, labelDigit = simp.breakdownExpression(element, labelDigit)
+                    tmp, tvs, labelList = simp.breakdownExpression(element, tvs=[], labelList=[labelDigit])
                     tmp[-1] = tmp[-1].split(' = ')[1]
                     lines.extend(tmp)
-                    labelDigit += 1
+                    if labelList != []:
+                        labelDigit = labelList[-1] + 1
                 
                 # no parameters
                 else:
@@ -226,10 +253,18 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 
                 # Start of conditionals for the loop
                 lines.append(f"<D.{conditionLabel}>:")
-                tmp, labelDigit = simp.breakdownBoolean(element, labelDigit, loopStart, loopEnd)
+                # TODO: Create tempoary AST if its a unary logical comparison
+                tmpNode = element.children[0]
+                if tmpNode.name not in ['||', '&&', "<=", "<", ">=", ">", "==", "!="]:
+                        tmpNode = ast.ASTNode("!=", None)
+                        tmpNode.children.append(element.children[0])
+                        tmpNode.children.append(ast.ASTNode("0", tmpNode))
+                tmp, tvs, labelList = simp.breakdownExpression(tmpNode, labelDigit, loopStart, loopEnd)
                 lines.extend(tmp)
                 lines.append(f"<D.{loopEnd}>:")
 
+                if labelList != []:
+                    labelDigit = labelList[-1]
                 # increment twice for new index (twce, in case it was a do while)
                 labelDigit += 2
 
@@ -245,6 +280,9 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                 print("Goto")
             elif ind == 10:
                 print("Label")
+            elif ind == 11:
+                tmp, tvs, labelList_ = simp.breakdownExpression(element, [])
+                lines.extend(tmp)
             else:
                 print("Unsupported at this time")
 
