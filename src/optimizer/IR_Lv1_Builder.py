@@ -9,6 +9,7 @@ class LevelOneIR():
     def __init__(self,astHead,symTable):
         self.astHead = astHead
         self.symTable = symTable
+        self.IR = []
 
     def construct(self):
 
@@ -28,9 +29,11 @@ class LevelOneIR():
         labelDigit = returnDigit + 1
         for i in bodyList:
             lines , labelDigit = returnLines(i[1], returnDigit, labelDigit)
-            for x in lines:
-                print(x)
             returnDigit = labelDigit + 1
+
+        self.IR = lines
+
+        return lines
 
 def buildBoilerPlate(symTable):
     namesandparams = []
@@ -205,7 +208,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                     if labelList != []:
                         labelDigit = labelList[-1]
 
-                elif element.children[0].children == []:
+                elif len(element.children) > 0 and element.children[0].children == []:
                     lines.append(f"return {element.children[0].name};")
 
                 # Returns nothing

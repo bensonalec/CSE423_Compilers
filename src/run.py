@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
     cmd_options.add_argument('-O1',help='Optimize the symbol table and AST')
 
-    cmd_options.add_argument('-IR1',help='Output the first level of IR in the optimizer phase')
+    cmd_options.add_argument('-IR1',help='Output the first level of IR in the optimizer phase', action="store_true")
 
     #generate arguements
     args = cmd_options.parse_args()
