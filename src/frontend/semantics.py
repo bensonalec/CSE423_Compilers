@@ -26,6 +26,7 @@ class symbol_table():
 
         self.symbols = []
         self.undefined = []
+        self.errors = []
     
     def analyze(self):
 
@@ -50,13 +51,14 @@ class symbol_table():
                 
                 # Function Declaration
                 if index == 0:
-                    if [x for x in self.symbols if x.name == "main"] != [] and [x for x in self.symbols if cur.Node.children[1].name == x.name] == []:
+                    if [x for x in self.symbols if x.name == "main" and x.is_function] != [] and [x for x in self.symbols if cur.Node.children[1].name == x.name] == []:
                         print(f'Function Not Properly Declared {cur.Node.children[0].name}')
                         self.undefined.append(Entry(True,False, False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope))
-                    else:
+                    elif [x for x in self.symbols if x.name == "main" and x.is_function] == []:
                         self.symbols.append(Entry(True,False, False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
                         cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + "/")
-
+                    else:
+                        cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + "/")
                 #Function Prototype Declaration
                 elif index == 1:
                     self.symbols.append(Entry(True,False, False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
@@ -76,7 +78,7 @@ class symbol_table():
                     #declaration of variable
                     if len(cur.Node.children) > 1:
                         #add to symbol table this should also handle function param being that they are still within the same scope as there parent function
-                        if([x for x in self.symbols if x.name == cur.Node.children[1].name and cur.Scope in x.scope] == []):
+                        if([x for x in self.symbols if x.name == cur.Node.children[1].name and x.scope in cur.Scope] == []):
                             if cur.Node.parent.parent.name == "func" or cur.Node.parent.parent.name == "decl":
                                 if cur.Node.parent.name == "param":
                                     self.symbols.append(Entry(False,True,  False,cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
@@ -94,7 +96,7 @@ class symbol_table():
                         pass
                     #usage of varible
                     else:
-                        if ([x for x in self.symbols if x.name == cur.Node.children[0].name and cur.Scope in x.scope] == []):
+                        if ([x for x in self.symbols if x.name == cur.Node.children[0].name and x.scope in cur.Scope] == []):
                             print(f'Variable Undeclared {cur.Node.children[0].name}')
                             self.undefined.append(Entry(False,False, False,  cur.Node.children[0].name, "None", cur.Scope)) 
                             
@@ -104,8 +106,7 @@ class symbol_table():
                     scopenum += 1
 
                     #gets all labels declared in body of a function
-                    labels = [x for x in cur.Node.children if x.name.endswith(":")]
-                    
+                    labels = [x.children[0] for x in cur.Node.children if x.name == "label"]
                     if labels != []:
 
                         #for each label in the body
@@ -181,7 +182,7 @@ class symbol_table():
                                     expectedType = tblEntry[0].type
                             else:
                                 if(expectedType != tblEntry[0].type):
-                                    print("Type mismatch for variable",var.name)
+                                    self.errors.append("Type mismatch for variable" + " " + var.name)
                         #check function calls
                         elif(x.name == "call"):
                             chil = [z for z in x.children]
@@ -190,21 +191,21 @@ class symbol_table():
                             if(len(tblEntry) == 1):
                                 funcType = tblEntry[0].type
                                 if(funcType != expectedType):
-                                    print("Type mismatch for",topVar)
+                                    self.errors.append("Type mismatch for " + topVar)
                         #one of the children is a precision
                         elif(precCheck.match(x.name)):
                             if(expectedType != "float" and expectedType != "double"):
-                                print("Type mismatch for",topVar,", unexpected precision",x.name)
+                                self.errors.append("Type mismatch for " + topVar + ", unexpected precision " + x.name)
                         #one of the chidlren is an integer
                         elif(digCheck.match(x.name)):
                             if(expectedType != "int"):
-                                print("Type mismatch for",topVar,", unexpected integer",x.name)
+                                self.errors.append("Type mismatch for " + topVar + ", unexpected integer " + x.name)
                         elif(charCheck.match(x.name)):
                             if(expectedType != "char"):
-                                print("Type mismatch for",topVar,", unexpected character",x.name)
+                                self.errors.append("Type mismatch for " + topVar + ", unexpected character " + x.name)
                         elif(stringCheck.match(x.name)):
                             if(expectedType != "string"):
-                                print("Type mismatch for",topVar,", unexpected string",x.name)
+                                self.errors.append("Type mismatch for " + topVar + ", unexpected string " + x.name)
                         #case that operators are in use
                         elif(opCheck.match(x.name)):
                             #need to desced through all possible branches of this, and ensure everything is use is an integer
@@ -220,11 +221,11 @@ class symbol_table():
                                     elif([x for x in self.symbols if x.name == curTemp.Node.name and curTemp.Scope in x.scope] != []):
                                         var = [x for x in self.symbols if x.name == curTemp.Node.name and curTemp.Scope in x.scope][0]
                                         if(var.type != "int"):
-                                            print("Type mismatch for",topVar)
+                                            self.errors.append("Type mismatch for " + topVar)
                                     elif((precCheck.match(curTemp.Node.name))):
-                                        print("Type mismatch for",topVar)
+                                        self.errors.append("Type mismatch for " + topVar)
                                     elif(not (digCheck.match(curTemp.Node.name) or opCheck.match(curTemp.Node.name))):
-                                        print("Type mismatch for",topVar)
+                                        self.errors.append("Type mismatch for " + topVar)
                                 ntvTemp = [Node(z, curTemp.Scope) for z in curTemp.Node.children if 'children' in z.__dict__] + ntvTemp[1:]
 
                             pass
@@ -238,7 +239,7 @@ class symbol_table():
                     params = [x for x in self.symbols if functionName in x.scope and x.is_param]
                     types = [x.type for x in params]
                     if(len(params) != len(functionChildren)):
-                        print("Improper amount of arguments in call to function",functionName,functionChildren)
+                        self.errors.append("Improper amount of arguments in call to function " + functionName)
                     else:
                         for it,par in enumerate(functionChildren):
                             #get type of par
@@ -246,17 +247,17 @@ class symbol_table():
                             #one of the children is a precision
                             if(precCheck.match(par)):
                                 if(expec != "float" and expec != "double"):
-                                    print("Type mismatch for",functionName,", unexpected precision",par)
+                                    self.errors.append("Type mismatch for " + functionName + ", unexpected precision " + par)
                             #one of the chidlren is an integer
                             elif(digCheck.match(par)):
                                 if(expec != "int"):
-                                    print("Type mismatch for",functionName,", unexpected integer",par)
+                                    self.errors.append("Type mismatch for " + functionName + ", unexpected integer " + par)
                             elif(charCheck.match(par)):
                                 if(expec != "char"):
-                                    print("Type mismatch for",functionName,", unexpected character",par)
+                                    self.errors.append("Type mismatch for " + functionName + ", unexpected character " + par)
                             elif(stringCheck.match(par)):
                                 if(expec != "string"):
-                                    print("Type mismatch for",functionName,", unexpected string",par)
+                                    self.errors.append("Type mismatch for " + functionName + ", unexpected string " + par)
 
                             #check if type of par and types[it] are the same
                             
@@ -274,17 +275,18 @@ class symbol_table():
                     
                     expected = ([(x.type) for x in self.symbols if x.is_param and f"/{funcname}/" == x.scope])
                     if expected != params:
-                        print("Parameters in function prototype do not match function definition in ",funcname)
+                        self.errors.append("Parameters in function prototype do not match function definition in " + funcname)
                 elif index == 3:
                     label = cur.Node.children[0]
                     labelName = label.name
+                    
                     #look for labelName: in the symbol table
-                    toLook = labelName + ":"
+                    toLook = labelName
                     found = ([x.name for x in self.symbols if x.is_goto and x.name == toLook])
                     if(found == []):
-                        print("Label", labelName,"not found")
+                        self.errors.append("Label " +  labelName + " not found")
                     elif(len(found) > 1):
-                        print("Multiple labels with name",  labelName,"found")
+                        self.errors.append("Multiple labels with name " +   labelName + " found")
 
             except ValueError:
                 # This means that the token is not in that list
@@ -311,7 +313,7 @@ class symbol_table():
             
         ]
 
-        self.symbols.sort(key=lambda x: x.scope)
+        # self.symbols.sort(key=lambda x: x.scope)
 
         print (f"{'Name':^{col_lengths[0]}} | {'Function?':^{col_lengths[1]}} | {'Type':^{col_lengths[2]}} | {'Scope':^{col_lengths[3]}} | {'Param?':^{col_lengths[4]}} | {'Label?':^{col_lengths[5]}} ")
         print (f"{'-'*col_lengths[0]}-+-{'-'*col_lengths[1]}-+-{'-'*col_lengths[2]}-+-{'-'*col_lengths[3]}-+-{'-'*col_lengths[4]}-+-{'-'*col_lengths[5]}-")
@@ -333,3 +335,14 @@ class symbol_table():
         print (f"{'Name':^{col_lengths[0]}} | {'Function?':^{col_lengths[1]}} | {'Type':^{col_lengths[2]}}")
         print (f"{'-'*col_lengths[0]}-+-{'-'*col_lengths[1]}-+-{'-'*col_lengths[2]}-")
         for x in self.undefined: print(f"{x.name:>{col_lengths[0]}} | {str(x.is_function) :>{col_lengths[1]}} | {x.type :>{col_lengths[2]}}")
+
+    def printSemanticErrors(self):
+        for i in self.errors:
+            print(i)
+    
+    def lineSemanticErrors(self):
+        output = ""
+        for i in self.errors:
+            output += (i+"\n")
+        
+        return output

@@ -92,22 +92,7 @@ class Parser():
         """
 
         self.pg = ParserGenerator(
-            ['COMMENT','SELF_DEFINED','OPEN_PAREN','CLOSE_PAREN','SEMICOLON','TYPE','FUNC_MODIF','BOTH_MODIF','VAR_MODIF','COMMA','OPEN_BRACK','CLOSE_BRACK','OPEN_BRACE','CLOSE_BRACE','STRING','WHILE_LOOP','FOR_LOOP','DO_LOOP','IF_BRANCH','ELSE_BRANCH','SWITCH_BRANCH','CASE','COLON','DEFAULT','RETURN','GOTO','BREAK','CONTINUE','SET','INTEGER','MUL','AEQ','SEQ','MEQ','DEQ','MODEQ','LSEQ','RSEQ','BOEQ','BAEQ','XEQ','EQ','LEQ','GEQ','NEQ','LT','GT','OR','AND','BOR','XOR','BAND','LSH','RSH','ADD','SUB','DIV','MOD','NOT','COMP','INC','DEC','PRECISION','CHAR','HEX','OCT','BIN','NULL'] , 
-            precedence=[
-                ('right', ['SET', 'AEQ', 'SEQ', 'MEQ', 'DEQ', 'MODEQ', 'LSEQ', 'RSEQ', 'BAEQ', 'XEQ', 'BOEQ']),
-                ('left',  ['OR']),
-                ('left',  ['AND']),
-                ('left',  ['BOR']),
-                ('left',  ['XOR']),
-                ('left',  ['BAND']),
-                ('left',  ['EQ', 'NEQ']),
-                ('left',  ['GE', 'GEQ']),
-                ('left',  ['LE', 'LEQ']),
-                ('left',  ['LSH', 'RSH']),
-                ('left',  ['ADD', 'SUB']),
-                ('left',  ['MUL', 'DIV', 'MOD']),
-                ('right', ['INC', 'DEC', 'NOT', 'COMP']),
-            ]
+            ['COMMENT','SELF_DEFINED','OPEN_PAREN','CLOSE_PAREN','SEMICOLON','TYPE','FUNC_MODIF','BOTH_MODIF','VAR_MODIF','COMMA','OPEN_BRACK','CLOSE_BRACK','OPEN_BRACE','CLOSE_BRACE','STRING','WHILE_LOOP','FOR_LOOP','DO_LOOP','IF_BRANCH','ELSE_BRANCH','SWITCH_BRANCH','CASE','COLON','DEFAULT','RETURN','GOTO','BREAK','CONTINUE','SET','INTEGER','MUL','AEQ','SEQ','MEQ','DEQ','MODEQ','LSEQ','RSEQ','BOEQ','BAEQ','XEQ','OR','AND','BOR','XOR','BAND','EQ','NEQ','LT','GT','LEQ','GEQ','LSH','RSH','ADD','SUB','DIV','MOD','INC','DEC','SIZEOF','COMP','NOT','PRECISION','CHAR','HEX','OCT','BIN','NULL'] , 
         )
         #initialzie head and current node
         self.Head = None
@@ -619,14 +604,8 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production('initialization_terminal : arithmetic ')
-        def initialization_terminal___arithmetic_(p):
-            newNode = ParseTree("initialization_terminal",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('initialization_terminal : function_call ')
-        def initialization_terminal___function_call_(p):
+        @self.pg.production('initialization_terminal : collation ')
+        def initialization_terminal___collation_(p):
             newNode = ParseTree("initialization_terminal",p)
             self.Head = newNode
             return newNode
@@ -697,32 +676,20 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production('designation : SELF_DEFINED assignment arithmetic ')
-        def designation___SELF_DEFINED_assignment_arithmetic_(p):
+        @self.pg.production('designation : var_access assignment arithmetic ')
+        def designation___var_access_assignment_arithmetic_(p):
             newNode = ParseTree("designation",p)
             self.Head = newNode
             return newNode
 
-        @self.pg.production('designation : SELF_DEFINED assignment function_call ')
-        def designation___SELF_DEFINED_assignment_function_call_(p):
-            newNode = ParseTree("designation",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('designation : SELF_DEFINED array_access assignment arithmetic ')
-        def designation___SELF_DEFINED_array_access_assignment_arithmetic_(p):
-            newNode = ParseTree("designation",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('arr_list : value ')
-        def arr_list___value_(p):
+        @self.pg.production('arr_list : collation ')
+        def arr_list___collation_(p):
             newNode = ParseTree("arr_list",p)
             self.Head = newNode
             return newNode
 
-        @self.pg.production('arr_list : value COMMA arr_list ')
-        def arr_list___value_COMMA_arr_list_(p):
+        @self.pg.production('arr_list : collation COMMA arr_list ')
+        def arr_list___collation_COMMA_arr_list_(p):
             newNode = ParseTree("arr_list",p)
             self.Head = newNode
             return newNode
@@ -793,195 +760,129 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production('collation : collation comparison collation ')
-        def collation___collation_comparison_collation_(p):
+        @self.pg.production('collation : collation_or ')
+        def collation___collation_or_(p):
             newNode = ParseTree("collation",p)
             self.Head = newNode
             return newNode
 
-        @self.pg.production('collation : arithmetic ')
-        def collation___arithmetic_(p):
+        @self.pg.production('collation : OPEN_PAREN collation CLOSE_PAREN ')
+        def collation___OPEN_PAREN_collation_CLOSE_PAREN_(p):
             newNode = ParseTree("collation",p)
             self.Head = newNode
             return newNode
 
-        @self.pg.production('collation : OPEN_PAREN initialization CLOSE_PAREN ')
-        def collation___OPEN_PAREN_initialization_CLOSE_PAREN_(p):
-            newNode = ParseTree("collation",p)
+        @self.pg.production('collation_or : collation_and ')
+        def collation_or___collation_and_(p):
+            newNode = ParseTree("collation_or",p)
             self.Head = newNode
             return newNode
 
-        @self.pg.production('collation : OPEN_PAREN designation CLOSE_PAREN ')
-        def collation___OPEN_PAREN_designation_CLOSE_PAREN_(p):
-            newNode = ParseTree("collation",p)
+        @self.pg.production('collation_or : collation_or OR collation_and ')
+        def collation_or___collation_or_OR_collation_and_(p):
+            newNode = ParseTree("collation_or",p)
             self.Head = newNode
             return newNode
 
-        @self.pg.production('comparison : EQ ')
-        def comparison___EQ_(p):
-            newNode = ParseTree("comparison",p)
+        @self.pg.production('collation_and : collation_bor ')
+        def collation_and___collation_bor_(p):
+            newNode = ParseTree("collation_and",p)
             self.Head = newNode
             return newNode
 
-        @self.pg.production('comparison : LEQ ')
-        def comparison___LEQ_(p):
-            newNode = ParseTree("comparison",p)
+        @self.pg.production('collation_and : collation_and AND collation_bor ')
+        def collation_and___collation_and_AND_collation_bor_(p):
+            newNode = ParseTree("collation_and",p)
             self.Head = newNode
             return newNode
 
-        @self.pg.production('comparison : GEQ ')
-        def comparison___GEQ_(p):
-            newNode = ParseTree("comparison",p)
+        @self.pg.production('collation_bor : collation_xor ')
+        def collation_bor___collation_xor_(p):
+            newNode = ParseTree("collation_bor",p)
             self.Head = newNode
             return newNode
 
-        @self.pg.production('comparison : NEQ ')
-        def comparison___NEQ_(p):
-            newNode = ParseTree("comparison",p)
+        @self.pg.production('collation_bor : collation_bor BOR collation_xor ')
+        def collation_bor___collation_bor_BOR_collation_xor_(p):
+            newNode = ParseTree("collation_bor",p)
             self.Head = newNode
             return newNode
 
-        @self.pg.production('comparison : LT ')
-        def comparison___LT_(p):
-            newNode = ParseTree("comparison",p)
+        @self.pg.production('collation_xor : collation_band ')
+        def collation_xor___collation_band_(p):
+            newNode = ParseTree("collation_xor",p)
             self.Head = newNode
             return newNode
 
-        @self.pg.production('comparison : GT ')
-        def comparison___GT_(p):
-            newNode = ParseTree("comparison",p)
+        @self.pg.production('collation_xor : collation_xor XOR collation_band ')
+        def collation_xor___collation_xor_XOR_collation_band_(p):
+            newNode = ParseTree("collation_xor",p)
             self.Head = newNode
             return newNode
 
-        @self.pg.production('arithmetic : arithmetic OR arithmetic ')
-        def arithmetic___arithmetic_OR_arithmetic_(p):
+        @self.pg.production('collation_band : collation_eq ')
+        def collation_band___collation_eq_(p):
+            newNode = ParseTree("collation_band",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('collation_band : collation_band BAND collation_eq ')
+        def collation_band___collation_band_BAND_collation_eq_(p):
+            newNode = ParseTree("collation_band",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('collation_eq : collation_rel ')
+        def collation_eq___collation_rel_(p):
+            newNode = ParseTree("collation_eq",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('collation_eq : collation_eq EQ collation_rel ')
+        def collation_eq___collation_eq_EQ_collation_rel_(p):
+            newNode = ParseTree("collation_eq",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('collation_eq : collation_eq NEQ collation_rel ')
+        def collation_eq___collation_eq_NEQ_collation_rel_(p):
+            newNode = ParseTree("collation_eq",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('collation_rel : arithmetic ')
+        def collation_rel___arithmetic_(p):
+            newNode = ParseTree("collation_rel",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('collation_rel : collation_rel LT arithmetic ')
+        def collation_rel___collation_rel_LT_arithmetic_(p):
+            newNode = ParseTree("collation_rel",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('collation_rel : collation_rel GT arithmetic ')
+        def collation_rel___collation_rel_GT_arithmetic_(p):
+            newNode = ParseTree("collation_rel",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('collation_rel : collation_rel LEQ arithmetic ')
+        def collation_rel___collation_rel_LEQ_arithmetic_(p):
+            newNode = ParseTree("collation_rel",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('collation_rel : collation_rel GEQ arithmetic ')
+        def collation_rel___collation_rel_GEQ_arithmetic_(p):
+            newNode = ParseTree("collation_rel",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('arithmetic : arithmetic_sh ')
+        def arithmetic___arithmetic_sh_(p):
             newNode = ParseTree("arithmetic",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('arithmetic : arithmetic AND arithmetic ')
-        def arithmetic___arithmetic_AND_arithmetic_(p):
-            newNode = ParseTree("arithmetic",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('arithmetic : arithmetic BOR arithmetic ')
-        def arithmetic___arithmetic_BOR_arithmetic_(p):
-            newNode = ParseTree("arithmetic",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('arithmetic : arithmetic XOR arithmetic ')
-        def arithmetic___arithmetic_XOR_arithmetic_(p):
-            newNode = ParseTree("arithmetic",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('arithmetic : arithmetic BAND arithmetic ')
-        def arithmetic___arithmetic_BAND_arithmetic_(p):
-            newNode = ParseTree("arithmetic",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('arithmetic : arithmetic LSH arithmetic ')
-        def arithmetic___arithmetic_LSH_arithmetic_(p):
-            newNode = ParseTree("arithmetic",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('arithmetic : arithmetic RSH arithmetic ')
-        def arithmetic___arithmetic_RSH_arithmetic_(p):
-            newNode = ParseTree("arithmetic",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('arithmetic : arithmetic ADD arithmetic ')
-        def arithmetic___arithmetic_ADD_arithmetic_(p):
-            newNode = ParseTree("arithmetic",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('arithmetic : arithmetic SUB arithmetic ')
-        def arithmetic___arithmetic_SUB_arithmetic_(p):
-            newNode = ParseTree("arithmetic",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('arithmetic : arithmetic MUL arithmetic ')
-        def arithmetic___arithmetic_MUL_arithmetic_(p):
-            newNode = ParseTree("arithmetic",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('arithmetic : arithmetic DIV arithmetic ')
-        def arithmetic___arithmetic_DIV_arithmetic_(p):
-            newNode = ParseTree("arithmetic",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('arithmetic : arithmetic MOD arithmetic ')
-        def arithmetic___arithmetic_MOD_arithmetic_(p):
-            newNode = ParseTree("arithmetic",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('arithmetic : ADD arithmetic ')
-        def arithmetic___ADD_arithmetic_(p):
-            newNode = ParseTree("unary",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('arithmetic : SUB arithmetic ')
-        def arithmetic___SUB_arithmetic_(p):
-            newNode = ParseTree("unary",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('arithmetic : NOT arithmetic ')
-        def arithmetic___NOT_arithmetic_(p):
-            newNode = ParseTree("unary",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('arithmetic : COMP arithmetic ')
-        def arithmetic___COMP_arithmetic_(p):
-            newNode = ParseTree("unary",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('arithmetic : BAND arithmetic ')
-        def arithmetic___BAND_arithmetic_(p):
-            newNode = ParseTree("unary",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('arithmetic : OPEN_PAREN var_modif TYPE CLOSE_PAREN arithmetic ')
-        def arithmetic___OPEN_PAREN_var_modif_TYPE_CLOSE_PAREN_arithmetic_(p):
-            newNode = ParseTree("unary",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('arithmetic : INC SELF_DEFINED ')
-        def arithmetic___INC_SELF_DEFINED_(p):
-            newNode = ParseTree("unary",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('arithmetic : DEC SELF_DEFINED ')
-        def arithmetic___DEC_SELF_DEFINED_(p):
-            newNode = ParseTree("unary",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('arithmetic : SELF_DEFINED INC ')
-        def arithmetic___SELF_DEFINED_INC_(p):
-            newNode = ParseTree("unary",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('arithmetic : SELF_DEFINED DEC ')
-        def arithmetic___SELF_DEFINED_DEC_(p):
-            newNode = ParseTree("unary",p)
             self.Head = newNode
             return newNode
 
@@ -991,45 +892,195 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production('arithmetic : value ')
-        def arithmetic___value_(p):
-            newNode = ParseTree("arithmetic",p)
+        @self.pg.production('arithmetic_sh : arithmetic_pm ')
+        def arithmetic_sh___arithmetic_pm_(p):
+            newNode = ParseTree("arithmetic_sh",p)
             self.Head = newNode
             return newNode
 
-        @self.pg.production('arithmetic : SELF_DEFINED ')
-        def arithmetic___SELF_DEFINED_(p):
-            newNode = ParseTree("arithmetic",p)
+        @self.pg.production('arithmetic_sh : arithmetic_sh LSH arithmetic_pm ')
+        def arithmetic_sh___arithmetic_sh_LSH_arithmetic_pm_(p):
+            newNode = ParseTree("arithmetic_sh",p)
             self.Head = newNode
             return newNode
 
-        @self.pg.production('arithmetic : SELF_DEFINED array_access ')
-        def arithmetic___SELF_DEFINED_array_access_(p):
-            newNode = ParseTree("arithmetic",p)
+        @self.pg.production('arithmetic_sh : arithmetic_sh RSH arithmetic_pm ')
+        def arithmetic_sh___arithmetic_sh_RSH_arithmetic_pm_(p):
+            newNode = ParseTree("arithmetic_sh",p)
             self.Head = newNode
             return newNode
 
-        @self.pg.production('arithmetic : function_call ')
-        def arithmetic___function_call_(p):
-            newNode = ParseTree("arithmetic",p)
+        @self.pg.production('arithmetic_pm : arithmetic_mul ')
+        def arithmetic_pm___arithmetic_mul_(p):
+            newNode = ParseTree("arithmetic_pm",p)
             self.Head = newNode
             return newNode
 
-        @self.pg.production('array_access : OPEN_BRACK INTEGER CLOSE_BRACK ')
-        def array_access___OPEN_BRACK_INTEGER_CLOSE_BRACK_(p):
-            newNode = ParseTree("array_access",p)
+        @self.pg.production('arithmetic_pm : arithmetic_pm ADD arithmetic_mul ')
+        def arithmetic_pm___arithmetic_pm_ADD_arithmetic_mul_(p):
+            newNode = ParseTree("arithmetic_pm",p)
             self.Head = newNode
             return newNode
 
-        @self.pg.production('array_access : OPEN_BRACK SELF_DEFINED CLOSE_BRACK ')
-        def array_access___OPEN_BRACK_SELF_DEFINED_CLOSE_BRACK_(p):
-            newNode = ParseTree("array_access",p)
+        @self.pg.production('arithmetic_pm : arithmetic_pm SUB arithmetic_mul ')
+        def arithmetic_pm___arithmetic_pm_SUB_arithmetic_mul_(p):
+            newNode = ParseTree("arithmetic_pm",p)
             self.Head = newNode
             return newNode
 
-        @self.pg.production('array_access : OPEN_BRACK function_call CLOSE_BRACK ')
-        def array_access___OPEN_BRACK_function_call_CLOSE_BRACK_(p):
-            newNode = ParseTree("array_access",p)
+        @self.pg.production('arithmetic_mul : arithmetic_cast ')
+        def arithmetic_mul___arithmetic_cast_(p):
+            newNode = ParseTree("arithmetic_mul",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('arithmetic_mul : arithmetic_mul MUL arithmetic_cast ')
+        def arithmetic_mul___arithmetic_mul_MUL_arithmetic_cast_(p):
+            newNode = ParseTree("arithmetic_mul",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('arithmetic_mul : arithmetic_mul DIV arithmetic_cast ')
+        def arithmetic_mul___arithmetic_mul_DIV_arithmetic_cast_(p):
+            newNode = ParseTree("arithmetic_mul",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('arithmetic_mul : arithmetic_mul MOD arithmetic_cast ')
+        def arithmetic_mul___arithmetic_mul_MOD_arithmetic_cast_(p):
+            newNode = ParseTree("arithmetic_mul",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('arithmetic_cast : arithmetic_unary ')
+        def arithmetic_cast___arithmetic_unary_(p):
+            newNode = ParseTree("arithmetic_cast",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('arithmetic_cast : OPEN_PAREN var_type CLOSE_PAREN arithmetic_unary ')
+        def arithmetic_cast___OPEN_PAREN_var_type_CLOSE_PAREN_arithmetic_unary_(p):
+            newNode = ParseTree("arithmetic_cast",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('arithmetic_unary : arithmetic_post ')
+        def arithmetic_unary___arithmetic_post_(p):
+            newNode = ParseTree("arithmetic_unary",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('arithmetic_unary : INC var_access ')
+        def arithmetic_unary___INC_var_access_(p):
+            newNode = ParseTree("arithmetic_unary",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('arithmetic_unary : DEC var_access ')
+        def arithmetic_unary___DEC_var_access_(p):
+            newNode = ParseTree("arithmetic_unary",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('arithmetic_unary : unary_op arithmetic_cast ')
+        def arithmetic_unary___unary_op_arithmetic_cast_(p):
+            newNode = ParseTree("arithmetic_unary",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('arithmetic_unary : SIZEOF arithmetic_unary ')
+        def arithmetic_unary___SIZEOF_arithmetic_unary_(p):
+            newNode = ParseTree("arithmetic_unary",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('arithmetic_unary : SIZEOF var_type ')
+        def arithmetic_unary___SIZEOF_var_type_(p):
+            newNode = ParseTree("arithmetic_unary",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('arithmetic_post : value ')
+        def arithmetic_post___value_(p):
+            newNode = ParseTree("arithmetic_post",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('arithmetic_post : function_call ')
+        def arithmetic_post___function_call_(p):
+            newNode = ParseTree("arithmetic_post",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('arithmetic_post : var_access ')
+        def arithmetic_post___var_access_(p):
+            newNode = ParseTree("arithmetic_post",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('arithmetic_post : var_access INC ')
+        def arithmetic_post___var_access_INC_(p):
+            newNode = ParseTree("arithmetic_post",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('arithmetic_post : var_access DEC ')
+        def arithmetic_post___var_access_DEC_(p):
+            newNode = ParseTree("arithmetic_post",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('arithmetic_post : OPEN_PAREN collation CLOSE_PAREN ')
+        def arithmetic_post___OPEN_PAREN_collation_CLOSE_PAREN_(p):
+            newNode = ParseTree("arithmetic_post",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('unary_op : BAND ')
+        def unary_op___BAND_(p):
+            newNode = ParseTree("unary_op",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('unary_op : MUL ')
+        def unary_op___MUL_(p):
+            newNode = ParseTree("unary_op",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('unary_op : ADD ')
+        def unary_op___ADD_(p):
+            newNode = ParseTree("unary_op",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('unary_op : SUB ')
+        def unary_op___SUB_(p):
+            newNode = ParseTree("unary_op",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('unary_op : COMP ')
+        def unary_op___COMP_(p):
+            newNode = ParseTree("unary_op",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('unary_op : NOT ')
+        def unary_op___NOT_(p):
+            newNode = ParseTree("unary_op",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('var_access : SELF_DEFINED ')
+        def var_access___SELF_DEFINED_(p):
+            newNode = ParseTree("var_access",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('var_access : SELF_DEFINED OPEN_BRACK collation CLOSE_BRACK ')
+        def var_access___SELF_DEFINED_OPEN_BRACK_collation_CLOSE_BRACK_(p):
+            newNode = ParseTree("var_access",p)
             self.Head = newNode
             return newNode
 

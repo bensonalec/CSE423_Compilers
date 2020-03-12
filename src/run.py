@@ -47,13 +47,15 @@ if __name__ == "__main__":
 
     cmd_options.add_argument('-s','--symbol_table', help='Prints out the known and unknown symbols encountered during semantic analysis.', action="store_true")
 
+    cmd_options.add_argument('-e', '--errors',help='Prints out the errors in the semantic analysis',action="store_true")
+
     cmd_options.add_argument('-b', '--bnf', nargs='?', const=os.path.abspath(os.path.dirname(__file__)) + "/frontend/BNF_definition", type=str, help='Rebuilds the parser using the current BNF grammar')
 
     cmd_options.add_argument('-O0',help='Does no optimization')
 
     cmd_options.add_argument('-O1',help='Optimize the symbol table and AST')
 
-    cmd_options.add_argument('-IR1',help='Output the first level of IR in the optimizer phase')
+    cmd_options.add_argument('-IR1',help='Output the first level of IR in the optimizer phase', action="store_true")
 
     #generate arguements
     args = cmd_options.parse_args()

@@ -1,5 +1,12 @@
 int main() {
 
+    int i = 1;
+    int j = 2;
+
+    if (i > 0 && j < i){
+        
+    }
+
     if (1) {
 
     } else if (0) {
