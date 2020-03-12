@@ -136,7 +136,7 @@ if __name__ == "__main__":
 
     doc_loc = usr_parser.select("dl")[-1]
     comp_loc = pathlib.Path("../src/run.py")
-    comp_flags = [("-l", "Token List"), ("-p", "Parse Tree"), ("-a", "Abstract Syntax Tree"), ("-s", "Symbol Table")]
+    comp_flags = [("-l", "Token List"), ("-p", "Parse Tree"), ("-a", "Abstract Syntax Tree"), ("-s", "Symbol Table"), ('-IR1', "Linear IR1 (-O0)")]
 
     for program in [x for x in pathlib.Path("../test/programs").iterdir() if x.suffix == '.c' ]:
         print (program)

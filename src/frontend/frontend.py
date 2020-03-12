@@ -4,19 +4,19 @@ for command line arguments that can be used to determine which portion is run.
 """
 import os
 import argparse
-import importlib
+from importlib.machinery import SourceFileLoader
 import traceback
 import sys
 
 from rply.errors import LexingError
 from copy import deepcopy
 
-lex = importlib.import_module("lexer", __name__)
-par = importlib.import_module("parser", __name__)
-btp = importlib.import_module("bnfToParser", __name__)
-ast = importlib.import_module("AST_builder", __name__)
-sem = importlib.import_module("semantics", __name__)
-pre = importlib.import_module("preprocessor", __name__)
+lex = SourceFileLoader("lexer", f"{os.path.dirname(__file__)}/lexer.py").load_module()
+par = SourceFileLoader("parser", f"{os.path.dirname(__file__)}/parser.py").load_module()
+btp = SourceFileLoader("bnfToParser", f"{os.path.dirname(__file__)}/bnfToParser.py").load_module()
+ast = SourceFileLoader("AST_builder", f"{os.path.dirname(__file__)}/AST_builder.py").load_module()
+sem = SourceFileLoader("semantics", f"{os.path.dirname(__file__)}/semantics.py").load_module()
+pre = SourceFileLoader("preprocessor", f"{os.path.dirname(__file__)}/preprocessor.py").load_module()
 
 
 def getTree(head,level):

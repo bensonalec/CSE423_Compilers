@@ -1,8 +1,13 @@
-import importlib,re
+"""
+The module serves to create the symbol table and perform semantic analysis on the AST in order to verify the typing of the program.
+"""
+import os
+import re
+from importlib.machinery import SourceFileLoader
 from collections import namedtuple
 
-lex = importlib.import_module("lexer", __name__)
-ast = importlib.import_module("AST_builder", __name__)
+lex = SourceFileLoader("lexer", f"{os.path.dirname(__file__)}/lexer.py").load_module()
+ast = SourceFileLoader("AST_builder", f"{os.path.dirname(__file__)}/AST_builder.py").load_module()
 
 class Entry():
     def __init__(self, is_func,is_param, is_goto, nam, typ, scop):

@@ -1,8 +1,13 @@
+""" 
+This module only serves to simplify boolean and arithmetical expressions making sure that operations are taken care of correctly.
+"""
+
+import os
 import re
 import sys
-import importlib
+from importlib.machinery import SourceFileLoader
 
-ast = importlib.import_module("AST_builder", __name__)
+ast = SourceFileLoader("AST_builder", f"{os.path.dirname(__file__)}/../frontend/AST_builder.py").load_module()
 
 def build_case(node, list_one, list_two):
 

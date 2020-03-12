@@ -1,9 +1,13 @@
+""" 
+This module serves to construct the first linear intermediate representation in the compiler.
+"""
+import os
 import re
 import sys
-import importlib
+from importlib.machinery import SourceFileLoader
 
-simp = importlib.import_module("simplify", __name__)
-ast = importlib.import_module("AST_builder", __name__)
+simp = SourceFileLoader("simplify", f"{os.path.dirname(__file__)}/simplify.py").load_module()
+ast = SourceFileLoader("AST_builder", f"{os.path.dirname(__file__)}/../frontend/AST_builder.py").load_module()
 
 class LevelOneIR():
     def __init__(self,astHead,symTable):

@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.7.4" />
+<meta name="generator" content="pdoc 0.7.5" />
 <title>src.optimizer.IR_Lv1_Builder API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="This module serves to construct the first linear intermediate representation in the compiler." />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,22 +20,312 @@
 <h1 class="title">Module <code>src.optimizer.IR_Lv1_Builder</code></h1>
 </header>
 <section id="section-intro">
+<p>This module serves to construct the first linear intermediate representation in the compiler.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class LevelOneIR():
+<pre><code class="python">&#34;&#34;&#34; 
+This module serves to construct the first linear intermediate representation in the compiler.
+&#34;&#34;&#34;
+import os
+import re
+import sys
+from importlib.machinery import SourceFileLoader
+
+simp = SourceFileLoader(&#34;simplify&#34;, f&#34;{os.path.dirname(__file__)}/simplify.py&#34;).load_module()
+ast = SourceFileLoader(&#34;AST_builder&#34;, f&#34;{os.path.dirname(__file__)}/../frontend/AST_builder.py&#34;).load_module()
+
+class LevelOneIR():
     def __init__(self,astHead,symTable):
         self.astHead = astHead
         self.symTable = symTable
+        self.IR = []
 
     def construct(self):
-        ntv = [self.astHead]
 
-        while ntv != []:
-            cur = ntv[0]
-            # print(cur.name)
-            ntv = [x for x in cur.children] + ntv[1:]</code></pre>
+        sym = self.symTable
+        ntv = self.astHead
+
+        varIndex = 0
+        lastVarName = &#34;_&#34; + str(varIndex)
+        bodyList = []
+
+        # list of all bodies within functions in our C program
+        for x in self.astHead.children:
+            if x.name == &#34;func&#34;:
+                bodyList.append((x.children[1].name,x.children[3]))
+
+        returnDigit = 1234
+        labelDigit = returnDigit + 1
+        for i in bodyList:
+            lines , labelDigit = returnLines(i[1], returnDigit, labelDigit)
+            returnDigit = labelDigit + 1
+
+        self.IR = lines
+
+        return lines
+
+def buildBoilerPlate(symTable):
+    namesandparams = []
+    functionNames = [(x.name,x.type) for x in symTable.symbols if x.is_function]
+    params = [(x.name,x.scope,x.type) for x in symTable.symbols if x.is_param]
+
+    for x in functionNames:
+        track = 0
+        paramsLi = []
+        for i in params:
+            if x[0] == i[1].split(&#34;/&#34;)[1]:
+                track+=1
+
+                paramsLi.append((i[2],i[0]))
+        if track == 0:
+            namesandparams.append((x[0],paramsLi,x[1]))
+        else:
+            namesandparams.append((x[0],paramsLi,x[1]))
+    return namesandparams
+
+def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None):
+    lines = []
+    for element in node.children:
+        try:
+            splits = [[&#34;=&#34;,&#34;+=&#34;],[&#34;for&#34;],[&#34;body&#34;],[&#34;branch&#34;],[&#34;return&#34;],[&#34;call&#34;],[&#34;while&#34;,&#34;do_while&#34;],[&#34;break&#34;],[&#34;continue&#34;],[&#34;goto&#34;],[&#34;label&#34;], [&#34;++&#34;, &#34;--&#34;]]
+            ind = [splits.index(x) for x in splits if element.name in x]
+            ind = ind[0]
+            if ind == 0:
+                #Assignment
+
+                varName = element.children[0].children[0].name #temporary
+                
+                # Initialize variable (if needed)
+                if len(element.children[0].children) &gt; 1:
+                    varType = element.children[0].children[0].name
+                    varName = element.children[0].children[1].name
+                    lines.append(f&#34;{varType} {varName};&#34;)
+
+                # Breakdown arithmetic nodes
+                tmp, tvs, labelList = simp.breakdownExpression(element, [], labelList=[labelDigit])
+                lines.extend(tmp)
+                # print (labelDigit)
+                if labelList != []:
+                    labelDigit = labelList[-1]
+                # print (labelDigit)
+
+            elif ind == 1:
+                # For Loop
+
+                # Initialize variable
+                if element.children[0].children != []:
+                    initNode = ast.ASTNode(&#34;body&#34;, None)
+                    initNode.children.append(element.children[0])
+                    tmp, labelDigit = returnLines(initNode, returnDigit, labelDigit)
+                    lines.extend(tmp)               
+                
+                # Keep track of label for conditional block (if conditional exist)
+                conditionLabel = None
+                if element.children[1].children != []:
+                    lines.append(f&#34;goto &lt;D.{labelDigit}&gt;;&#34;)
+                    conditionLabel = labelDigit
+                    labelDigit += 1
+
+                # Add the label that belongs to the start of the loop
+                lines.append(f&#34;&lt;D.{labelDigit}&gt;:&#34;)
+                
+                # Assign labels for start/end of loop
+                loopStart = labelDigit 
+                loopEnd = labelDigit + 1
+                labelDigit += 2
+
+                # recursivly deal with the body of the loop
+                tmp, labelDigit = returnLines(element.children[3], returnDigit, labelDigit, loopEnd, loopStart)
+                lines.extend(tmp)
+
+                # Add the &#34;end-of-loop&#34; assignment/arithmetic
+                if element.children[2].children != []:
+                    initNode = ast.ASTNode(&#34;body&#34;, None)
+                    initNode.children.append(element.children[2])
+                    tmp, labelDigit = returnLines(initNode, returnDigit, labelDigit)
+                    lines.extend(tmp) 
+
+                # Start of conditionals for the loop
+                if conditionLabel != None:
+                    lines.append(f&#34;&lt;D.{conditionLabel}&gt;:&#34;)
+                    # TODO: Create tempoary AST if its a unary logical comparison
+                    tmpNode = element.children[1]
+                    if tmpNode.name not in [&#39;||&#39;, &#39;&amp;&amp;&#39;, &#34;&lt;=&#34;, &#34;&lt;&#34;, &#34;&gt;=&#34;, &#34;&gt;&#34;, &#34;==&#34;, &#34;!=&#34;]:
+                        tmpNode = ast.ASTNode(&#34;!=&#34;, None)
+                        tmpNode.children.append(element.children[1])
+                        tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
+                    tmp, tvs, labelList = simp.breakdownExpression(tmpNode, [], loopStart, loopEnd)
+                    lines.extend(tmp)
+                    lines.append(f&#34;&lt;D.{loopEnd}&gt;:&#34;)
+                    if labelList != []:
+                        labelDigit = labelList[-1]
+                else:
+                    # No conditional (jump to start of body...always True)
+                    lines.append(f&#34;goto &lt;D.{loopStart}&gt;;&#34;)
+
+                # increment twice for new index
+                labelDigit += 2
+
+                pass
+            elif ind == 2:
+                print(&#34;Body&#34;)
+            elif ind == 3:
+                # If/Else statement(s)
+
+                # list of goto labels to be appended at end of if blocks
+                end_if = []
+
+                #for each case in a branch
+                for case in element.children:
+                    #create label for body if true and label to skip to correct place if false.
+                    success_label = labelDigit
+                    labelDigit += 1
+                    failure_label = labelDigit
+                    labelDigit += 1
+
+                    #default is an &#39;else&#39;. Only has one child, body
+                    if case.name == &#34;default&#34;:
+                        #Get lines for the body and assign new labeldigit
+                        tmp, labelDigit = returnLines(case.children[0], returnDigit, labelDigit, success_label, failure_label)
+                        lines.extend(tmp)
+                        continue
+
+                    # TODO: Create tempoary AST if its a unary logical comparison
+                    tmpNode = case.children[0]
+                    if tmpNode.name not in [&#39;||&#39;, &#39;&amp;&amp;&#39;, &#34;&lt;=&#34;, &#34;&lt;&#34;, &#34;&gt;=&#34;, &#34;&gt;&#34;, &#34;==&#34;, &#34;!=&#34;]:
+                        tmpNode = ast.ASTNode(&#34;!=&#34;, None)
+                        tmpNode.children.append(case.children[0])
+                        tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
+
+                    #break down argument for if statement into smaller if statements
+                    temp_lines, tvs, labelList = simp.breakdownExpression(tmpNode, [], success_label, failure_label)
+                    # print (labelList)
+                    if labelList != []:
+                        labelDigit = labelList[-1] + 1
+                    # print (labelDigit)
+                    #adds broken down if statement
+                    lines.extend(temp_lines)
+                    
+                    #Add goto for body statement
+                    lines.append(f&#34;&lt;D.{success_label}&gt;:&#34;)
+
+                    #Get lines for the if body and assign new labeldigit
+                    tmp, labelDigit = returnLines(case.children[1],returnDigit, labelDigit, success_label, failure_label)
+                    # print (labelDigit)
+                    lines.extend(tmp)
+
+                    #append goto for end of if body
+                    lines.append(f&#39;goto &lt;D.{labelDigit}&gt;;&#39;)
+                    end_if.append(labelDigit)
+                    labelDigit += 1
+
+                    lines.append(f&#34;&lt;D.{failure_label}&gt;:&#34;)
+
+                for i in end_if:
+                    lines.append(f&#39;&lt;D.{i}&gt;:&#39;)
+
+            elif ind == 4: 
+                #Return
+                
+
+                # If returns some type of arithmetic expression, breaks it down.
+                if len(element.children) &gt; 0 and element.children[0].children != []:
+                    tmp, tvs, labelList = simp.breakdownExpression(element.children[0], [])
+                    lines.extend(tmp)
+                    lines.append(f&#34;D.{returnDigit} = {tvs[-1]};&#34;)
+                    lines.append(f&#34;return D.{returnDigit};&#34;)
+                    if labelList != []:
+                        labelDigit = labelList[-1]
+
+                elif len(element.children) &gt; 0 and element.children[0].children == []:
+                    lines.append(f&#34;return {element.children[0].name};&#34;)
+
+                # Returns nothing
+                else:
+                    lines.append(f&#34;return;&#34;) 
+
+            elif ind == 5:
+                #Function Call
+                func_call = element.children[0].name
+
+                # function call has parameters
+                if element.children[0] != []:
+                    tmp, tvs, labelList = simp.breakdownExpression(element, tvs=[], labelList=[labelDigit])
+                    tmp[-1] = tmp[-1].split(&#39; = &#39;)[1]
+                    lines.extend(tmp)
+                    if labelList != []:
+                        labelDigit = labelList[-1] + 1
+                
+                # no parameters
+                else:
+                    lines.append(f&#34;{func_call}();&#34;)
+
+            elif ind == 6:
+                #While and Do While
+
+                # Jump straight to conditionals for only &#39;While&#39; statements
+                if element.name == &#34;while&#34;:
+                    lines.append(f&#34;goto &lt;D.{labelDigit}&gt;;&#34;)
+                
+                # Keep track of label for conditional block
+                conditionLabel = labelDigit
+                labelDigit += 1
+            
+                # Add the label that belongs to the start of the loop
+                lines.append(f&#34;&lt;D.{labelDigit}&gt;:&#34;)
+                
+                # Assign labels for start/end of loop
+                loopStart = labelDigit 
+                loopEnd = labelDigit + 1
+                labelDigit += 2
+
+                # recursivly deal with the body of the loop
+                tmp, labelDigit = returnLines(element.children[1], returnDigit, labelDigit, loopStart, loopEnd)
+                lines.extend(tmp)
+
+                # Start of conditionals for the loop
+                lines.append(f&#34;&lt;D.{conditionLabel}&gt;:&#34;)
+                # TODO: Create tempoary AST if its a unary logical comparison
+                tmpNode = element.children[0]
+                if tmpNode.name not in [&#39;||&#39;, &#39;&amp;&amp;&#39;, &#34;&lt;=&#34;, &#34;&lt;&#34;, &#34;&gt;=&#34;, &#34;&gt;&#34;, &#34;==&#34;, &#34;!=&#34;]:
+                        tmpNode = ast.ASTNode(&#34;!=&#34;, None)
+                        tmpNode.children.append(element.children[0])
+                        tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
+                tmp, tvs, labelList = simp.breakdownExpression(tmpNode, labelDigit, loopStart, loopEnd)
+                lines.extend(tmp)
+                lines.append(f&#34;&lt;D.{loopEnd}&gt;:&#34;)
+
+                if labelList != []:
+                    labelDigit = labelList[-1]
+                # increment twice for new index (twce, in case it was a do while)
+                labelDigit += 2
+
+            elif ind == 7:
+                # Break
+                lines.append(f&#34;goto &lt;D.{failureDigit}&gt;;&#34;)
+
+            elif ind == 8:
+                # Continue
+                lines.append(f&#34;goto &lt;D.{successDigit}&gt;;&#34;)
+
+            elif ind == 9:
+                print(&#34;Goto&#34;)
+            elif ind == 10:
+                print(&#34;Label&#34;)
+            elif ind == 11:
+                tmp, tvs, labelList_ = simp.breakdownExpression(element, [])
+                lines.extend(tmp)
+            else:
+                print(&#34;Unsupported at this time&#34;)
+
+        except Warning:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            print(exc_type, exc_tb.tb_lineno)
+            pass
+    
+    return lines, labelDigit</code></pre>
 </details>
 </section>
 <section>
@@ -43,6 +333,290 @@
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="src.optimizer.IR_Lv1_Builder.buildBoilerPlate"><code class="name flex">
+<span>def <span class="ident">buildBoilerPlate</span></span>(<span>symTable)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def buildBoilerPlate(symTable):
+    namesandparams = []
+    functionNames = [(x.name,x.type) for x in symTable.symbols if x.is_function]
+    params = [(x.name,x.scope,x.type) for x in symTable.symbols if x.is_param]
+
+    for x in functionNames:
+        track = 0
+        paramsLi = []
+        for i in params:
+            if x[0] == i[1].split(&#34;/&#34;)[1]:
+                track+=1
+
+                paramsLi.append((i[2],i[0]))
+        if track == 0:
+            namesandparams.append((x[0],paramsLi,x[1]))
+        else:
+            namesandparams.append((x[0],paramsLi,x[1]))
+    return namesandparams</code></pre>
+</details>
+</dd>
+<dt id="src.optimizer.IR_Lv1_Builder.returnLines"><code class="name flex">
+<span>def <span class="ident">returnLines</span></span>(<span>node, returnDigit, labelDigit, successDigit=None, failureDigit=None)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None):
+    lines = []
+    for element in node.children:
+        try:
+            splits = [[&#34;=&#34;,&#34;+=&#34;],[&#34;for&#34;],[&#34;body&#34;],[&#34;branch&#34;],[&#34;return&#34;],[&#34;call&#34;],[&#34;while&#34;,&#34;do_while&#34;],[&#34;break&#34;],[&#34;continue&#34;],[&#34;goto&#34;],[&#34;label&#34;], [&#34;++&#34;, &#34;--&#34;]]
+            ind = [splits.index(x) for x in splits if element.name in x]
+            ind = ind[0]
+            if ind == 0:
+                #Assignment
+
+                varName = element.children[0].children[0].name #temporary
+                
+                # Initialize variable (if needed)
+                if len(element.children[0].children) &gt; 1:
+                    varType = element.children[0].children[0].name
+                    varName = element.children[0].children[1].name
+                    lines.append(f&#34;{varType} {varName};&#34;)
+
+                # Breakdown arithmetic nodes
+                tmp, tvs, labelList = simp.breakdownExpression(element, [], labelList=[labelDigit])
+                lines.extend(tmp)
+                # print (labelDigit)
+                if labelList != []:
+                    labelDigit = labelList[-1]
+                # print (labelDigit)
+
+            elif ind == 1:
+                # For Loop
+
+                # Initialize variable
+                if element.children[0].children != []:
+                    initNode = ast.ASTNode(&#34;body&#34;, None)
+                    initNode.children.append(element.children[0])
+                    tmp, labelDigit = returnLines(initNode, returnDigit, labelDigit)
+                    lines.extend(tmp)               
+                
+                # Keep track of label for conditional block (if conditional exist)
+                conditionLabel = None
+                if element.children[1].children != []:
+                    lines.append(f&#34;goto &lt;D.{labelDigit}&gt;;&#34;)
+                    conditionLabel = labelDigit
+                    labelDigit += 1
+
+                # Add the label that belongs to the start of the loop
+                lines.append(f&#34;&lt;D.{labelDigit}&gt;:&#34;)
+                
+                # Assign labels for start/end of loop
+                loopStart = labelDigit 
+                loopEnd = labelDigit + 1
+                labelDigit += 2
+
+                # recursivly deal with the body of the loop
+                tmp, labelDigit = returnLines(element.children[3], returnDigit, labelDigit, loopEnd, loopStart)
+                lines.extend(tmp)
+
+                # Add the &#34;end-of-loop&#34; assignment/arithmetic
+                if element.children[2].children != []:
+                    initNode = ast.ASTNode(&#34;body&#34;, None)
+                    initNode.children.append(element.children[2])
+                    tmp, labelDigit = returnLines(initNode, returnDigit, labelDigit)
+                    lines.extend(tmp) 
+
+                # Start of conditionals for the loop
+                if conditionLabel != None:
+                    lines.append(f&#34;&lt;D.{conditionLabel}&gt;:&#34;)
+                    # TODO: Create tempoary AST if its a unary logical comparison
+                    tmpNode = element.children[1]
+                    if tmpNode.name not in [&#39;||&#39;, &#39;&amp;&amp;&#39;, &#34;&lt;=&#34;, &#34;&lt;&#34;, &#34;&gt;=&#34;, &#34;&gt;&#34;, &#34;==&#34;, &#34;!=&#34;]:
+                        tmpNode = ast.ASTNode(&#34;!=&#34;, None)
+                        tmpNode.children.append(element.children[1])
+                        tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
+                    tmp, tvs, labelList = simp.breakdownExpression(tmpNode, [], loopStart, loopEnd)
+                    lines.extend(tmp)
+                    lines.append(f&#34;&lt;D.{loopEnd}&gt;:&#34;)
+                    if labelList != []:
+                        labelDigit = labelList[-1]
+                else:
+                    # No conditional (jump to start of body...always True)
+                    lines.append(f&#34;goto &lt;D.{loopStart}&gt;;&#34;)
+
+                # increment twice for new index
+                labelDigit += 2
+
+                pass
+            elif ind == 2:
+                print(&#34;Body&#34;)
+            elif ind == 3:
+                # If/Else statement(s)
+
+                # list of goto labels to be appended at end of if blocks
+                end_if = []
+
+                #for each case in a branch
+                for case in element.children:
+                    #create label for body if true and label to skip to correct place if false.
+                    success_label = labelDigit
+                    labelDigit += 1
+                    failure_label = labelDigit
+                    labelDigit += 1
+
+                    #default is an &#39;else&#39;. Only has one child, body
+                    if case.name == &#34;default&#34;:
+                        #Get lines for the body and assign new labeldigit
+                        tmp, labelDigit = returnLines(case.children[0], returnDigit, labelDigit, success_label, failure_label)
+                        lines.extend(tmp)
+                        continue
+
+                    # TODO: Create tempoary AST if its a unary logical comparison
+                    tmpNode = case.children[0]
+                    if tmpNode.name not in [&#39;||&#39;, &#39;&amp;&amp;&#39;, &#34;&lt;=&#34;, &#34;&lt;&#34;, &#34;&gt;=&#34;, &#34;&gt;&#34;, &#34;==&#34;, &#34;!=&#34;]:
+                        tmpNode = ast.ASTNode(&#34;!=&#34;, None)
+                        tmpNode.children.append(case.children[0])
+                        tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
+
+                    #break down argument for if statement into smaller if statements
+                    temp_lines, tvs, labelList = simp.breakdownExpression(tmpNode, [], success_label, failure_label)
+                    # print (labelList)
+                    if labelList != []:
+                        labelDigit = labelList[-1] + 1
+                    # print (labelDigit)
+                    #adds broken down if statement
+                    lines.extend(temp_lines)
+                    
+                    #Add goto for body statement
+                    lines.append(f&#34;&lt;D.{success_label}&gt;:&#34;)
+
+                    #Get lines for the if body and assign new labeldigit
+                    tmp, labelDigit = returnLines(case.children[1],returnDigit, labelDigit, success_label, failure_label)
+                    # print (labelDigit)
+                    lines.extend(tmp)
+
+                    #append goto for end of if body
+                    lines.append(f&#39;goto &lt;D.{labelDigit}&gt;;&#39;)
+                    end_if.append(labelDigit)
+                    labelDigit += 1
+
+                    lines.append(f&#34;&lt;D.{failure_label}&gt;:&#34;)
+
+                for i in end_if:
+                    lines.append(f&#39;&lt;D.{i}&gt;:&#39;)
+
+            elif ind == 4: 
+                #Return
+                
+
+                # If returns some type of arithmetic expression, breaks it down.
+                if len(element.children) &gt; 0 and element.children[0].children != []:
+                    tmp, tvs, labelList = simp.breakdownExpression(element.children[0], [])
+                    lines.extend(tmp)
+                    lines.append(f&#34;D.{returnDigit} = {tvs[-1]};&#34;)
+                    lines.append(f&#34;return D.{returnDigit};&#34;)
+                    if labelList != []:
+                        labelDigit = labelList[-1]
+
+                elif len(element.children) &gt; 0 and element.children[0].children == []:
+                    lines.append(f&#34;return {element.children[0].name};&#34;)
+
+                # Returns nothing
+                else:
+                    lines.append(f&#34;return;&#34;) 
+
+            elif ind == 5:
+                #Function Call
+                func_call = element.children[0].name
+
+                # function call has parameters
+                if element.children[0] != []:
+                    tmp, tvs, labelList = simp.breakdownExpression(element, tvs=[], labelList=[labelDigit])
+                    tmp[-1] = tmp[-1].split(&#39; = &#39;)[1]
+                    lines.extend(tmp)
+                    if labelList != []:
+                        labelDigit = labelList[-1] + 1
+                
+                # no parameters
+                else:
+                    lines.append(f&#34;{func_call}();&#34;)
+
+            elif ind == 6:
+                #While and Do While
+
+                # Jump straight to conditionals for only &#39;While&#39; statements
+                if element.name == &#34;while&#34;:
+                    lines.append(f&#34;goto &lt;D.{labelDigit}&gt;;&#34;)
+                
+                # Keep track of label for conditional block
+                conditionLabel = labelDigit
+                labelDigit += 1
+            
+                # Add the label that belongs to the start of the loop
+                lines.append(f&#34;&lt;D.{labelDigit}&gt;:&#34;)
+                
+                # Assign labels for start/end of loop
+                loopStart = labelDigit 
+                loopEnd = labelDigit + 1
+                labelDigit += 2
+
+                # recursivly deal with the body of the loop
+                tmp, labelDigit = returnLines(element.children[1], returnDigit, labelDigit, loopStart, loopEnd)
+                lines.extend(tmp)
+
+                # Start of conditionals for the loop
+                lines.append(f&#34;&lt;D.{conditionLabel}&gt;:&#34;)
+                # TODO: Create tempoary AST if its a unary logical comparison
+                tmpNode = element.children[0]
+                if tmpNode.name not in [&#39;||&#39;, &#39;&amp;&amp;&#39;, &#34;&lt;=&#34;, &#34;&lt;&#34;, &#34;&gt;=&#34;, &#34;&gt;&#34;, &#34;==&#34;, &#34;!=&#34;]:
+                        tmpNode = ast.ASTNode(&#34;!=&#34;, None)
+                        tmpNode.children.append(element.children[0])
+                        tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
+                tmp, tvs, labelList = simp.breakdownExpression(tmpNode, labelDigit, loopStart, loopEnd)
+                lines.extend(tmp)
+                lines.append(f&#34;&lt;D.{loopEnd}&gt;:&#34;)
+
+                if labelList != []:
+                    labelDigit = labelList[-1]
+                # increment twice for new index (twce, in case it was a do while)
+                labelDigit += 2
+
+            elif ind == 7:
+                # Break
+                lines.append(f&#34;goto &lt;D.{failureDigit}&gt;;&#34;)
+
+            elif ind == 8:
+                # Continue
+                lines.append(f&#34;goto &lt;D.{successDigit}&gt;;&#34;)
+
+            elif ind == 9:
+                print(&#34;Goto&#34;)
+            elif ind == 10:
+                print(&#34;Label&#34;)
+            elif ind == 11:
+                tmp, tvs, labelList_ = simp.breakdownExpression(element, [])
+                lines.extend(tmp)
+            else:
+                print(&#34;Unsupported at this time&#34;)
+
+        except Warning:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            print(exc_type, exc_tb.tb_lineno)
+            pass
+    
+    return lines, labelDigit</code></pre>
+</details>
+</dd>
+</dl>
 </section>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
@@ -61,14 +635,31 @@
     def __init__(self,astHead,symTable):
         self.astHead = astHead
         self.symTable = symTable
+        self.IR = []
 
     def construct(self):
-        ntv = [self.astHead]
 
-        while ntv != []:
-            cur = ntv[0]
-            # print(cur.name)
-            ntv = [x for x in cur.children] + ntv[1:]</code></pre>
+        sym = self.symTable
+        ntv = self.astHead
+
+        varIndex = 0
+        lastVarName = &#34;_&#34; + str(varIndex)
+        bodyList = []
+
+        # list of all bodies within functions in our C program
+        for x in self.astHead.children:
+            if x.name == &#34;func&#34;:
+                bodyList.append((x.children[1].name,x.children[3]))
+
+        returnDigit = 1234
+        labelDigit = returnDigit + 1
+        for i in bodyList:
+            lines , labelDigit = returnLines(i[1], returnDigit, labelDigit)
+            returnDigit = labelDigit + 1
+
+        self.IR = lines
+
+        return lines</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -82,12 +673,28 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def construct(self):
-    ntv = [self.astHead]
 
-    while ntv != []:
-        cur = ntv[0]
-        # print(cur.name)
-        ntv = [x for x in cur.children] + ntv[1:]</code></pre>
+    sym = self.symTable
+    ntv = self.astHead
+
+    varIndex = 0
+    lastVarName = &#34;_&#34; + str(varIndex)
+    bodyList = []
+
+    # list of all bodies within functions in our C program
+    for x in self.astHead.children:
+        if x.name == &#34;func&#34;:
+            bodyList.append((x.children[1].name,x.children[3]))
+
+    returnDigit = 1234
+    labelDigit = returnDigit + 1
+    for i in bodyList:
+        lines , labelDigit = returnLines(i[1], returnDigit, labelDigit)
+        returnDigit = labelDigit + 1
+
+    self.IR = lines
+
+    return lines</code></pre>
 </details>
 </dd>
 </dl>
@@ -106,6 +713,12 @@
 <li><code><a title="src.optimizer" href="index.html">src.optimizer</a></code></li>
 </ul>
 </li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="src.optimizer.IR_Lv1_Builder.buildBoilerPlate" href="#src.optimizer.IR_Lv1_Builder.buildBoilerPlate">buildBoilerPlate</a></code></li>
+<li><code><a title="src.optimizer.IR_Lv1_Builder.returnLines" href="#src.optimizer.IR_Lv1_Builder.returnLines">returnLines</a></code></li>
+</ul>
+</li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
@@ -120,7 +733,7 @@
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.4</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.5</a>.</p>
 </footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad()</script>
