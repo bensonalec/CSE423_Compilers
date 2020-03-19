@@ -283,8 +283,9 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                 print("Goto")
             elif ind == 10:
                 lines.append(f"{element.children[0].name}:")
-                temp_lines, labelDigit = returnLines(element.children[1], returnDigit, labelDigit)
-                lines.extend(temp_lines)
+                if (len(element.children) > 1):
+                    temp_lines, labelDigit = returnLines(element.children[1], returnDigit, labelDigit)
+                    lines.extend(temp_lines)
 
             elif ind == 11:
                 tmp, tvs, labelList_ = simp.breakdownExpression(element, [])
