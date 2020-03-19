@@ -27,7 +27,10 @@ def mainAST(args,astHead,symbolTable):
         The lowest level of IR produced.
     """
     ir = ir1.LevelOneIR(astHead,symbolTable)
-    ir.construct()
+    l1ir = ir.construct()
+
+    if args.IR1 or args.all:
+        for x in l1ir: print (x)
     pass
 
 if __name__ == "__main__":
