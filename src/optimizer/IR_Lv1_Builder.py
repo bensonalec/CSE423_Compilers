@@ -23,13 +23,27 @@ class LevelOneIR():
         # list of all bodies within functions in our C program
         for x in self.astHead.children:
             if x.name == "func":
-                bodyList.append((x.children[1].name,x.children[3]))
+                # Each entry is the '(func_node, body_node)'
+                bodyList.append((x,x.children[3]))
 
         returnDigit = 1234
         labelDigit = returnDigit + 1
+        lines = []
+
         for i in bodyList:
-            lines , labelDigit = returnLines(i[1], returnDigit, labelDigit)
-            returnDigit = labelDigit + 1
+
+            # Beginning of fuction wrapper
+            lines.extend(beginWrapper(i, returnDigit))
+
+            # Body of function
+            tmp_lines , labelDigit = returnLines(i[1], returnDigit, labelDigit)
+            lines.extend(tmp_lines)
+
+            # End of function wrapper
+            lines.append("}")
+
+            # NOTE: 'labelDigit' should be the newest and unused digit
+            returnDigit = labelDigit
 
         self.IR = lines
 
@@ -53,6 +67,23 @@ def buildBoilerPlate(symTable):
         else:
             namesandparams.append((x[0],paramsLi,x[1]))
     return namesandparams
+
+def beginWrapper(function_tuple, returnDigit):
+    lines = []
+    params = ""
+    func_type = function_tuple[0].children[0].name
+    func_name = function_tuple[0].children[1].name
+
+    for var in function_tuple[0].children[2].children:
+        if var.name == "var":
+            params += f"{var.children[0].name} {var.children[1].name},"
+
+    lines.append(f"{func_name} ({params[:-1]})")
+    lines.append("{")
+    if func_type != "void":
+        lines.append(f"{func_type} D.{returnDigit};")
+    
+    return lines
 
 def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None):
     lines = []
@@ -197,7 +228,6 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 
             elif ind == 4: 
                 #Return
-                
 
                 # If returns some type of arithmetic expression, breaks it down.
                 if len(element.children) > 0 and element.children[0].children != []:
@@ -209,7 +239,8 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                         labelDigit = labelList[-1]
 
                 elif len(element.children) > 0 and element.children[0].children == []:
-                    lines.append(f"return {element.children[0].name};")
+                    lines.append(f"D.{returnDigit} = {element.children[0].name};")
+                    lines.append(f"return D.{returnDigit};")
 
                 # Returns nothing
                 else:
