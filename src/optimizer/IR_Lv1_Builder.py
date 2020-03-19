@@ -280,7 +280,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                 lines.append(f"goto <D.{successDigit}>;")
 
             elif ind == 9:
-                print("Goto")
+                lines.append(f"goto {element.children[0].name}")
             elif ind == 10:
                 lines.append(f"{element.children[0].name}:")
                 if (len(element.children) > 1):
