@@ -15,16 +15,22 @@ class import_ir():
 
         #checks for undefined variables.
         for i in self.lines:
-            if i.startswith("int"): #make this more robust.
-                vars.append(i.split(" ")[1][:-1])
-            elif "=" in i and not i.startswith("_") and not i.startswith("D."):
-                if [x for x in vars if i.split("=")[0].strip() == x.strip()] == []:
+            temp_line = i.strip()
+            if temp_line.startswith("int"): #make this more robust.
+                vars.append(temp_line.split(" ")[1][:-1])
+            
+            #skip if statement for loop for while for now
+            elif(temp_line.startswith("if") or temp_line.startswith("for") or temp_line.startswith("while")):
+                continue
+
+            elif "=" in temp_line and not temp_line.startswith("_") and not temp_line.startswith("D."):
+                if [x for x in vars if temp_line.split("=")[0].strip() == x.strip()] == []:
                     print("ERROR UNDEFINED VARIABLE")
-                    print(i)
-            elif i.endswith(":"):
-                labels.append(i[:-1])
-            elif i.startswith("goto"):
-                gotos.append(i.split(" ")[1][:-1])
+                    print(temp_line)
+            elif temp_line.endswith(":"):
+                labels.append(temp_line[:-1])
+            elif temp_line.startswith("goto"):
+                gotos.append(temp_line.split(" ")[1][:-1])
 
         #check labels
         for i in gotos:
