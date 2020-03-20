@@ -57,6 +57,8 @@ if __name__ == "__main__":
 
     cmd_options.add_argument('-IR1',help='Output the first level of IR in the optimizer phase', action="store_true")
 
+    cmd_options.add_argument('-i', action='store', dest="input", type=str, help="Used to input IR from file")
+
     #generate arguements
     args = cmd_options.parse_args()
 
