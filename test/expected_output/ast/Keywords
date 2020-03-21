@@ -1,36 +1,56 @@
 `-- program
+    |-- func
+    |   |-- int
+    |   |-- main
+    |   |-- param
+    |   `-- body
+    |       |-- =
+    |       |   |-- var
+    |       |   |   |-- int
+    |       |   |   |   `-- register
+    |       |   |   `-- x
+    |       |   `-- NULL
+    |       |-- =
+    |       |   |-- var
+    |       |   |   |-- short
+    |       |   |   |   `-- signed
+    |       |   |   `-- t
+    |       |   `-- NULL
+    |       |-- =
+    |       |   |-- var
+    |       |   |   |-- long
+    |       |   |   |   `-- const
+    |       |   |   `-- rrr
+    |       |   `-- NULL
+    |       |-- =
+    |       |   |-- var
+    |       |   |   |-- float
+    |       |   |   |   `-- volatile
+    |       |   |   `-- qqq
+    |       |   `-- NULL
+    |       |-- =
+    |       |   |-- var
+    |       |   |   |-- double
+    |       |   |   |   `-- static
+    |       |   |   `-- aaa
+    |       |   `-- NULL
+    |       |-- =
+    |       |   |-- var
+    |       |   |   |-- int
+    |       |   |   |   `-- unsigned
+    |       |   |   `-- y
+    |       |   `-- NULL
+    |       `-- =
+    |           |-- var
+    |           |   |-- int
+    |           |   |   `-- extern
+    |           |   `-- q
+    |           `-- NULL
     `-- func
         |-- int
-        |-- main
+        |   `-- inline
+        |-- test
         |-- param
         `-- body
-            |-- =
-            |   |-- var
-            |   |   |-- int
-            |   |   `-- x
-            |   `-- NULL
-            |-- =
-            |   |-- var
-            |   |   |-- short
-            |   |   `-- t
-            |   `-- NULL
-            |-- =
-            |   |-- var
-            |   |   |-- long
-            |   |   `-- rrr
-            |   `-- NULL
-            |-- =
-            |   |-- var
-            |   |   |-- float
-            |   |   `-- qqq
-            |   `-- NULL
-            |-- =
-            |   |-- var
-            |   |   |-- double
-            |   |   `-- aaa
-            |   `-- NULL
-            `-- =
-                |-- var
-                |   |-- int
-                |   `-- y
-                `-- NULL
+            `-- return
+                `-- 10
