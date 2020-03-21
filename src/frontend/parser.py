@@ -352,8 +352,8 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production('single_line : arithmetic SEMICOLON ')
-        def single_line___arithmetic_SEMICOLON_(p):
+        @self.pg.production('single_line : collation SEMICOLON ')
+        def single_line___collation_SEMICOLON_(p):
             newNode = ParseTree("single_line",p)
             self.Head = newNode
             return newNode
@@ -526,8 +526,8 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production('response : RETURN arithmetic ')
-        def response___RETURN_arithmetic_(p):
+        @self.pg.production('response : RETURN collation ')
+        def response___RETURN_collation_(p):
             newNode = ParseTree("return",p)
             self.Head = newNode
             return newNode
@@ -676,8 +676,8 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production('designation : var_access assignment arithmetic ')
-        def designation___var_access_assignment_arithmetic_(p):
+        @self.pg.production('designation : var_access assignment collation ')
+        def designation___var_access_assignment_collation_(p):
             newNode = ParseTree("designation",p)
             self.Head = newNode
             return newNode
@@ -762,12 +762,6 @@ class Parser():
 
         @self.pg.production('collation : collation_or ')
         def collation___collation_or_(p):
-            newNode = ParseTree("collation",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('collation : OPEN_PAREN collation CLOSE_PAREN ')
-        def collation___OPEN_PAREN_collation_CLOSE_PAREN_(p):
             newNode = ParseTree("collation",p)
             self.Head = newNode
             return newNode
@@ -882,12 +876,6 @@ class Parser():
 
         @self.pg.production('arithmetic : arithmetic_sh ')
         def arithmetic___arithmetic_sh_(p):
-            newNode = ParseTree("arithmetic",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('arithmetic : OPEN_PAREN arithmetic CLOSE_PAREN ')
-        def arithmetic___OPEN_PAREN_arithmetic_CLOSE_PAREN_(p):
             newNode = ParseTree("arithmetic",p)
             self.Head = newNode
             return newNode
