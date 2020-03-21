@@ -264,7 +264,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                         labelDigit = labelList[-1]
 
                 elif len(element.children) > 0 and element.children[0].children == []:
-                    lines.append(f"D.{returnDigit} = {element.children[0].name};")
+                    lines.append(f"{prefix}D.{returnDigit} = {element.children[0].name};")
                     lines.append(f"{prefix}return D.{returnDigit};")
 
                 # Returns nothing
