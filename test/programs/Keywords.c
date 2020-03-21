@@ -1,8 +1,13 @@
 int main() {
-    int x;
-    short t;
-    long rrr;
-    float qqq;
-    double aaa;
-    int y = NULL;
+    register int x;
+    signed short t;
+    const long rrr;
+    volatile float qqq;
+    static double aaa;
+    unsigned int y = NULL;
+    extern int q;
+}
+
+inline int test() {
+    return 10;
 }
