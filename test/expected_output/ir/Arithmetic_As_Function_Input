@@ -1,0 +1,16 @@
+function (int arithmetic_input)
+{
+int D.1234;
+D.1234 = arithmetic_input;
+return D.1234;
+
+}
+main ()
+{
+int D.1235;
+  int value_1;
+
+  _2 = function(1);
+  value_1 = _2;
+
+}
