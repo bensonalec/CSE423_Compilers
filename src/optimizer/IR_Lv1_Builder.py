@@ -45,7 +45,7 @@ class LevelOneIR():
             # NOTE: 'labelDigit' should be the newest and unused digit
             returnDigit = labelDigit
 
-            self.IR.extend(lines)
+            self.IR = lines
 
         return self.IR
 
