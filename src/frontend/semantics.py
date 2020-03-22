@@ -161,7 +161,7 @@ class symbol_table():
                     topVar = ""
                     #regexes to do type checks on the fly
                     isDigit = r"\-?([1-9]\d*|\d)"
-                    isOp = r'\+|\-|\/|\*'
+                    isOp = r'\+|\-|\/|\*|\||\&|\^|\~'
                     isPrec = r"\-?(\d\.\d+|[1-9]\d*\.\d+)"
                     isChar = r"(\'[\w\;\\ \%\"\']\')"
                     isString = r"(\"[\w+\;\\ \%\"\']*\")"
