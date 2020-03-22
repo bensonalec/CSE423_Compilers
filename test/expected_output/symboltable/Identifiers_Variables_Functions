@@ -1,9 +1,12 @@
-    Name      | Function? | Type |      Scope      | Param? | Label? 
---------------+-----------+------+-----------------+--------+-------
-test_function |      True |  int | /               |  False | False
-            x |     False |  int | /test_function/ |   True | False
-            y |     False |  int | /test_function/ |   True | False
-         main |      True |  int | /               |  False | False
-            x |     False |  int | /main/1/        |  False | False
+Known Symbols
+     Name      | Entry Type | Type |      Scope      | Modifiers 
+---------------+------------+------+-----------------+-----------
+ test_function |   Function |  int | /               |          
+             x |  Parameter |  int | /test_function/ |          
+             y |  Parameter |  int | /test_function/ |          
+          main |   Function |  int | /               |          
+             x |   Variable |  int | /main/1/        |          
 
-No undefined symbols available
+Unknown Symbols
+ Name | Entry Type | Type 
+------+------------+-------

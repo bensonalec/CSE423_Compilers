@@ -1,11 +1,16 @@
-Name | Function? |  Type  |  Scope   | Param? | Label? 
------+-----------+--------+----------+--------+-------
-main |      True |    int | /        |  False | False
-   x |     False |    int | /main/0/ |  False | False
-   t |     False |  short | /main/0/ |  False | False
- rrr |     False |   long | /main/0/ |  False | False
- qqq |     False |  float | /main/0/ |  False | False
- aaa |     False | double | /main/0/ |  False | False
-   y |     False |    int | /main/0/ |  False | False
+Known Symbols
+ Name | Entry Type |  Type  |  Scope   |   Modifiers   
+------+------------+--------+----------+---------------
+ test |   Function |    int | /        | const, inline
+ main |   Function |    int | /        |              
+    x |   Variable |    int | /main/1/ |      register
+    t |   Variable |  short | /main/1/ |        signed
+  rrr |   Variable |   long | /main/1/ |         const
+  qqq |   Variable |  float | /main/1/ |      volatile
+  aaa |   Variable | double | /main/1/ |        static
+    y |   Variable |    int | /main/1/ |      unsigned
+    q |   Variable |    int | /main/1/ |        extern
 
-No undefined symbols available
+Unknown Symbols
+ Name | Entry Type | Type 
+------+------------+-------

@@ -1,9 +1,12 @@
-     Name       | Function? | Type |       Scope       | Param? | Label? 
-----------------+-----------+------+-------------------+--------+-------
-header_function |      True |  int | /                 |  False | False
-              a |     False |  int | /header_function/ |   True | False
-              b |     False |  int | /header_function/ |   True | False
-              c |     False |  int | /header_function/ |   True | False
-           main |      True |  int | /                 |  False | False
+Known Symbols
+      Name       | Entry Type | Type |       Scope       | Modifiers 
+-----------------+------------+------+-------------------+-----------
+ header_function |   Function |  int | /                 |          
+               a |  Parameter |  int | /header_function/ |          
+               b |  Parameter |  int | /header_function/ |          
+               c |  Parameter |  int | /header_function/ |          
+            main |   Function |  int | /                 |          
 
-No undefined symbols available
+Unknown Symbols
+ Name | Entry Type | Type 
+------+------------+-------
