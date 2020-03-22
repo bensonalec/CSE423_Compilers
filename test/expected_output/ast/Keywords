@@ -1,56 +1,57 @@
 `-- program
     |-- func
     |   |-- int
-    |   |-- main
+    |   |   |-- const
+    |   |   `-- inline
+    |   |-- test
     |   |-- param
     |   `-- body
-    |       |-- =
-    |       |   |-- var
-    |       |   |   |-- int
-    |       |   |   |   `-- register
-    |       |   |   `-- x
-    |       |   `-- NULL
-    |       |-- =
-    |       |   |-- var
-    |       |   |   |-- short
-    |       |   |   |   `-- signed
-    |       |   |   `-- t
-    |       |   `-- NULL
-    |       |-- =
-    |       |   |-- var
-    |       |   |   |-- long
-    |       |   |   |   `-- const
-    |       |   |   `-- rrr
-    |       |   `-- NULL
-    |       |-- =
-    |       |   |-- var
-    |       |   |   |-- float
-    |       |   |   |   `-- volatile
-    |       |   |   `-- qqq
-    |       |   `-- NULL
-    |       |-- =
-    |       |   |-- var
-    |       |   |   |-- double
-    |       |   |   |   `-- static
-    |       |   |   `-- aaa
-    |       |   `-- NULL
-    |       |-- =
-    |       |   |-- var
-    |       |   |   |-- int
-    |       |   |   |   `-- unsigned
-    |       |   |   `-- y
-    |       |   `-- NULL
-    |       `-- =
-    |           |-- var
-    |           |   |-- int
-    |           |   |   `-- extern
-    |           |   `-- q
-    |           `-- NULL
+    |       `-- return
+    |           `-- 10
     `-- func
         |-- int
-        |   `-- inline
-        |-- test
+        |-- main
         |-- param
         `-- body
-            `-- return
-                `-- 10
+            |-- =
+            |   |-- var
+            |   |   |-- int
+            |   |   |   `-- register
+            |   |   `-- x
+            |   `-- NULL
+            |-- =
+            |   |-- var
+            |   |   |-- short
+            |   |   |   `-- signed
+            |   |   `-- t
+            |   `-- NULL
+            |-- =
+            |   |-- var
+            |   |   |-- long
+            |   |   |   `-- const
+            |   |   `-- rrr
+            |   `-- NULL
+            |-- =
+            |   |-- var
+            |   |   |-- float
+            |   |   |   `-- volatile
+            |   |   `-- qqq
+            |   `-- NULL
+            |-- =
+            |   |-- var
+            |   |   |-- double
+            |   |   |   `-- static
+            |   |   `-- aaa
+            |   `-- NULL
+            |-- =
+            |   |-- var
+            |   |   |-- int
+            |   |   |   `-- unsigned
+            |   |   `-- y
+            |   `-- NULL
+            `-- =
+                |-- var
+                |   |-- int
+                |   |   `-- extern
+                |   `-- q
+                `-- NULL
