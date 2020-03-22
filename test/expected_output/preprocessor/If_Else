@@ -4,7 +4,7 @@ int main() {
     int j = 2;
 
     if (i > 0 && j < i){
-        
+
     }
 
     if (1) {
