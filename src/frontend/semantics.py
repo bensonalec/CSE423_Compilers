@@ -332,6 +332,9 @@ class symbol_table():
 
         return "\n".join(li) + "\n"
 
+    def __repr__(self):
+        return "\n".join(self.errors)
+
     def print_symbol_table(self):
         # if len(self.symbols) == 0:
         #     print ("No defined symbols available")

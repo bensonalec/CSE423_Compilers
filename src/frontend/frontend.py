@@ -108,13 +108,14 @@ def main(args):
         if args.tree or args.all:
             # Represent parse tree as a list with levels
             # print(head.getListView(0))
-            print(head)
+            print(head.__repr__)
             # print(str(head) == head.getListView(0))
 
         if args.pretty or args.all:
             # Pretty print parse tree
             # pprint_tree(head)
-            head.print_ParseTree()
+            # head.print_ParseTree()
+            print(head)
 
         # Build Abstract Syntax Tree
         astree = ast.buildAST(head)

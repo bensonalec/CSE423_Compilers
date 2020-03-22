@@ -139,6 +139,21 @@ class ParseTree():
 
     def __str__(self):
         \"\"\"
+        Produces a string representation of the Parse Tree
+        \"\"\"
+        li = []
+
+        ntv = [("", self, True)]
+
+        while ntv:
+            li.append(ntv[0])
+
+            ntv = [(f"{ntv[0][0]}{'    ' if ntv[0][2] else '|   '}", x, i == len(ntv[0][1].content)-1 ) for i, x in enumerate(ntv[0][1].content)] + ntv[1:] if 'content' in ntv[0][1].__dict__ else ntv[1:]
+
+        return "\n".join([f"{x[0]}{'`-- ' if x[2] else '|-- '}{x[1].token if 'token' in x[1].__dict__ else x[1]}" for x in li]) + "\n"
+
+    def __repr__(self):
+        \"\"\"
         Constructs a list based string representation of the parse tree
         \"\"\"
 
