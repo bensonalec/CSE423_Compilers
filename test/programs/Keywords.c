@@ -1,3 +1,7 @@
+inline const int test() {
+    return 10;
+}
+
 int main() {
     register int x;
     signed short t;
@@ -6,8 +10,4 @@ int main() {
     static double aaa;
     unsigned int y = NULL;
     extern int q;
-}
-
-inline int test() {
-    return 10;
 }
