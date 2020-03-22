@@ -27,10 +27,10 @@ class SymbolTableTests(unittest.TestCase):
     def test_symbolTable(self):
         print(' ')
 
-        for c_filename in os.listdir(path_to_C_files):
-            
+        for c_filename in sorted(os.listdir(path_to_C_files)):
+
             if c_filename.endswith('.c') and c_filename not in self.skip_programs:
-                
+
                 status = "FAIL" #Will change if test passes
 
                 fi = open(path_to_C_files + c_filename)
@@ -52,7 +52,7 @@ class SymbolTableTests(unittest.TestCase):
 
                 sym = symbol_table(astree)
                 sym.analyze()
-                
+
                 # Naming scheme for expected output is same as C-file, but no extension
                 expected_filename = os.path.splitext(c_filename)[0]
                 fi = open(path_to_output_files + expected_filename)
@@ -60,30 +60,33 @@ class SymbolTableTests(unittest.TestCase):
                 fi.close()
 
                 with self.subTest():
-                    # Redirect std-out to test that AST print output is correct
-                    with patch('sys.stdout', new = StringIO()) as fake_stdout:
-                        sym.print_symbol_table()
-                        print ("")
-                        sym.print_unknown_symbols()
-                        self.assertEqual(fake_stdout.getvalue(), expected)
-                    
+                    self.assertEqual(str(sym), expected)
                     status = "ok"
-                
+
+                # with self.subTest():
+                #     # Redirect std-out to test that AST print output is correct
+                #     with patch('sys.stdout', new = StringIO()) as fake_stdout:
+                #         sym.print_symbol_table()
+                #         sym.print_unknown_symbols()
+                #         self.assertEqual(fake_stdout.getvalue(), expected)
+
+                #     status = "ok"
+
                 print(f"{'Symbol Table test for '+c_filename:65}", end="")
                 if status == "ok":
                     print(Colors.green, f"{status}", Colors.reset)
                 else:
                     print(Colors.red, f"{status}", Colors.reset)
-                
+
             elif c_filename.endswith('.c'):
                 print(f"{'Symbol Table test for '+c_filename:65}", end="")
                 print(Colors.blue, "skipped", Colors.reset)
 
-class Colors: 
+class Colors:
         red='\033[31m'
         green='\033[32m'
         blue='\033[34m'
         reset='\033[00m'
-        
+
 if __name__ == '__main__':
 	unittest.main()

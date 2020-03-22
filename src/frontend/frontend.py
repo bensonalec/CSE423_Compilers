@@ -26,7 +26,7 @@ def getTree(head,level):
     Args:
         head: The head node of the tree.
         level: The current level of the tree.
-    
+
     Returns:
         A string of the nodes in the tree.
     """
@@ -40,7 +40,7 @@ def getTree(head,level):
             li.append(node)
         else:
             li.append(node.token)
-    
+
     out = (level,li)
 
 
@@ -65,7 +65,7 @@ def print_tokens(tokens):
 def main(args):
     """
     The main function of the frontend, takes in command line input via an object from argparse, and the name of the file.
-    
+
     Args:
         args: The object that contains the command line arguements.
         fi: The file object that is open.
@@ -74,7 +74,7 @@ def main(args):
     if args.bnf:
         btp.main(args.bnf)
         importlib.reload(par)
-    
+
 
     try:
 
@@ -91,9 +91,9 @@ def main(args):
         lexer = lex.Lexer().get_lexer()
         tokens = lexer.lex(text_input)
         lex.validateTokens(tokens)
-        
+
         if args.lex or args.all:
-            # Print the tokens from the lexer 
+            # Print the tokens from the lexer
             print_tokens(tokens)
 
         #set up parser and parse the given tokens
@@ -107,7 +107,9 @@ def main(args):
 
         if args.tree or args.all:
             # Represent parse tree as a list with levels
-            print(head.getListView(0))
+            # print(head.getListView(0))
+            print(head)
+            # print(str(head) == head.getListView(0))
 
         if args.pretty or args.all:
             # Pretty print parse tree
@@ -119,16 +121,18 @@ def main(args):
 
         if args.ast or args.all:
             # Pretty print AST
-            astree.print_AST()
+            # astree.print_AST()
+            print(astree)
 
         # Initialize symbol table and begin semantic analysis
         sym = sem.symbol_table(astree)
         sym.analyze()
 
         if args.symbol_table or args.all:
-            sym.print_symbol_table()
-            print ("")
-            sym.print_unknown_symbols()
+            # sym.print_symbol_table()
+            # sym.print_unknown_symbols()
+
+            print (sym)
 
         if args.errors or args.all:
             sym.printSemanticErrors()
@@ -154,12 +158,12 @@ if __name__ == "__main__":
 
     #decription of the comiler
     cmd_options = argparse.ArgumentParser(description='Frontend of the compiler. Can produce tokens and syntax tree')
-    
+
     cmd_options.add_argument('--all',help='Prints out all intermediate representations as they are encountered in the compilation process', action="store_true")
 
     #input file option
     cmd_options.add_argument('input_file', metavar='<filename.c>', type=str, help='Input c file.')
-    
+
     #Arguement to print tokens from lexer
     cmd_options.add_argument('-l','--lex', help='Prints out tokens from lexer', action='store_true')
 
@@ -190,5 +194,5 @@ if __name__ == "__main__":
             print("Error file must end with .c")
         cmd_options.print_help()
         exit()
-    
+
 

@@ -43,6 +43,22 @@ class ParseTree():
             else:
                 print(f"{_prefix}{'`-- ' if _last else '|-- '}{child}", file=file)
 
+    def __str__(self):
+        """
+        Constructs a list based string representation of the parse tree
+        """
+
+        li = []
+
+        ntv = [(1, self)]
+
+        while ntv:
+            li.append((ntv[0][0], ntv[0][1].content))
+
+            ntv = [(ntv[0][0]+1, x) for x in ntv[0][1].content if 'content' in x.__dict__] + ntv[1:]
+
+        return "\n".join([f"{x[0]} : {[y.token if 'content' in y.__dict__ else y for y in x[1]]}" for x in li])
+
     def getListView(self, level):
         """
         Prints a simple list version of the tree for output. Calls itself recursively
@@ -50,41 +66,24 @@ class ParseTree():
         Args:
             level: The current level of the tree.
         """
-        string = ""
-        level += 1
-        token = self.token
-        content = self.content
+
         li = []
-        out = ""
-        for node in content:
-            if(type(node) != type(ParseTree("sample","sample"))):
-                li.append(node)
-            else:
-                li.append(node.token)
-        
-        string += f"{level} : {li}\n"
+        li.append(f"{level+1} : {[x if 'content' not in x.__dict__ else x.token for x in self.content]}")
 
-        #iterate through the components of the BNF
-        for node in content:
-            if(type(node) == type(ParseTree("sample","sample"))):
-                string += node.getListView(level)
+        for x in self.content:
+            if "content" in x.__dict__:
+                li.extend(x.getListView(level+1))
 
-        return string
-
-
-
-        #iterate through the components of the BNF
-        for node in content:
-            if(type(node) == type(ParseTree("sample","sample"))):
-                out += getTree(node,level)
-        return out
+        if level == 0:
+            return "\n".join(li)
+        return li
 
 #setup parser class
 class Parser():
     """
     Definition for the Parser object, works off of rply. Contains rules for parsing.
     """
-    
+
     def __init__(self):
         """
         Initializes the parser and tells it the allowed tokens
@@ -92,7 +91,7 @@ class Parser():
         """
 
         self.pg = ParserGenerator(
-            ['COMMENT','SELF_DEFINED','OPEN_PAREN','CLOSE_PAREN','SEMICOLON','TYPE','FUNC_MODIF','BOTH_MODIF','VAR_MODIF','COMMA','OPEN_BRACK','CLOSE_BRACK','OPEN_BRACE','CLOSE_BRACE','STRING','WHILE_LOOP','FOR_LOOP','DO_LOOP','IF_BRANCH','ELSE_BRANCH','SWITCH_BRANCH','CASE','COLON','DEFAULT','RETURN','GOTO','BREAK','CONTINUE','SET','INTEGER','MUL','AEQ','SEQ','MEQ','DEQ','MODEQ','LSEQ','RSEQ','BOEQ','BAEQ','XEQ','OR','AND','BOR','XOR','BAND','EQ','NEQ','LT','GT','LEQ','GEQ','LSH','RSH','ADD','SUB','DIV','MOD','INC','DEC','SIZEOF','COMP','NOT','PRECISION','CHAR','HEX','OCT','BIN','NULL'] , 
+            ['COMMENT','SELF_DEFINED','OPEN_PAREN','CLOSE_PAREN','SEMICOLON','TYPE','FUNC_MODIF','BOTH_MODIF','VAR_MODIF','COMMA','OPEN_BRACK','CLOSE_BRACK','OPEN_BRACE','CLOSE_BRACE','STRING','WHILE_LOOP','FOR_LOOP','DO_LOOP','IF_BRANCH','ELSE_BRANCH','SWITCH_BRANCH','CASE','COLON','DEFAULT','RETURN','GOTO','BREAK','CONTINUE','SET','INTEGER','MUL','AEQ','SEQ','MEQ','DEQ','MODEQ','LSEQ','RSEQ','BOEQ','BAEQ','XEQ','OR','AND','BOR','XOR','BAND','EQ','NEQ','LT','GT','LEQ','GEQ','LSH','RSH','ADD','SUB','DIV','MOD','INC','DEC','SIZEOF','COMP','NOT','PRECISION','CHAR','HEX','OCT','BIN','NULL'] ,
         )
         #initialzie head and current node
         self.Head = None
@@ -102,12 +101,12 @@ class Parser():
         """
         The list of BNF functions and their behavior
         """
-        
+
         @self.pg.production('program : definitionList ')
         def program(p):
             """
             Tells the parser which BNF will be the head of the tree
-            
+
             Args:
                 p: The matching set of tokens.
 
@@ -1114,12 +1113,12 @@ class Parser():
             self.Head = newNode
             return newNode
 
-    
+
         @self.pg.error
         def error_handle(token):
             """
             Boilerplate error handling function
-            
+
             Args:
                 token: The token that caused an error.
             """
@@ -1151,7 +1150,7 @@ class Parser():
         Prints parser error message. This function ultimately iterates through the ParseTree that was returned after the parser found an error. ParseTree's consist of tokens as well as other ParseTree's so we need to iterate to find the first token and then print its source position.
         """
         # TODO: add some more in-depth error processing to print
-        # out a more detailed description of what went wrong, and possibly some suggestions 
+        # out a more detailed description of what went wrong, and possibly some suggestions
         # at to why there was a parse/syntax error. (i.e. suggest a missing semicolon)
 
         head = self.getTree()
@@ -1168,12 +1167,12 @@ class Parser():
                     token = i
                     break
 
-            # Check again (to break out of while loop and not iterate again)		
+            # Check again (to break out of while loop and not iterate again)
             if (type(token) == type(Token("sample", "sample"))):
                 break
             else:
                 # Set head to last element.
-                # If this code executes then I can assume that the 
+                # If this code executes then I can assume that the
                 # last element is an ParseTree.
                 head = head.content[len(head.content)-1]
 
@@ -1186,4 +1185,3 @@ class Parser():
 
 
 
-    

@@ -24,8 +24,8 @@ class SemanticAnalysisTest(unittest.TestCase):
     def test_semantic(self):
         print()
 
-        for c_filename in os.listdir(path_to_C_files):
-            
+        for c_filename in sorted(os.listdir(path_to_C_files)):
+
             if c_filename.endswith('.c') and c_filename not in self.skip_programs:
                 fi = open(path_to_C_files + c_filename)
                 text_input = fi.read()
@@ -53,22 +53,22 @@ class SemanticAnalysisTest(unittest.TestCase):
                 sym = symbol_table(astree)
 
                 sym.analyze()
-                
+
                 with self.subTest():
                     self.assertEqual(sym.lineSemanticErrors(), expected)
                     status = "ok"
-                
+
                 print(f"{'Semantic Analysis for '+c_filename:65}", end="")
                 if status == "ok":
                     print(Colors.green, f"{status}", Colors.reset)
                 else:
                     print(Colors.red, f"{status}", Colors.reset)
-                
+
             elif c_filename.endswith('.c'):
                 print(f"{'Semantic Analysis for '+c_filename:65}", end="")
                 print(Colors.blue, "skipped", Colors.reset)
 
-class Colors: 
+class Colors:
         red='\033[31m'
         green='\033[32m'
         blue='\033[34m'
