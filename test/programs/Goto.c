@@ -4,5 +4,5 @@ int main() {
 
     int random_var = 0;
 
-    label: 
+    label:
 }
