@@ -103,7 +103,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
             ind = [splits.index(x) for x in splits if element.name in x]
             ind = ind[0]
             if ind == 0:
-                tmp, tvs, labelList = simp.breakdownExpression(element, labelList=[labelDigit])
+                tmp, tvs, labelList = simp.breakdownExpression(element, tvs=[], labelList=[labelDigit])
                 for x in tmp: lines.append(f"{prefix}{x}")
                 if labelList != []:
                     labelDigit = labelList[-1]
@@ -158,7 +158,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                         tmpNode = ast.ASTNode("!=", None)
                         tmpNode.children.append(element.children[1])
                         tmpNode.children.append(ast.ASTNode("0", tmpNode))
-                    tmp, tvs, labelList = simp.breakdownExpression(tmpNode, success=loopStart, failure=loopEnd)
+                    tmp, tvs, labelList = simp.breakdownExpression(tmpNode, tvs=[], success=loopStart, failure=loopEnd, labelList=[labelDigit])
                     for x in tmp: lines.append(f"{prefix}{x}")
                     lines.append(f"{prefix}<D.{loopEnd}>:")
                     if labelList != []:
@@ -218,11 +218,11 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                         tmpNode.children.append(ast.ASTNode("0", tmpNode))
 
                     #break down argument for if statement into smaller if statements
-                    temp_lines, tvs, labelList = simp.breakdownExpression(tmpNode, success=success_label, failure=failure_label)
-                    # print (labelList)
+                    temp_lines, tvs, labelList = simp.breakdownExpression(tmpNode, tvs=[], success=success_label, failure=failure_label, labelList=[labelDigit])
+
                     if labelList != []:
                         labelDigit = labelList[-1] + 1
-                    # print (labelDigit)
+
                     #adds broken down if statement
                     for x in temp_lines: lines.append(f"{prefix}{x}")
                     
@@ -234,7 +234,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                         ns = True
                     #Get lines for the if body and assign new labeldigit
                     tmp, labelDigit = returnLines(case.children[1], returnDigit,  labelDigit, success_label, failure_label)
-                    # print (labelDigit)
+
                     for x in tmp: lines.append(f"{prefix}{x}")
 
                     if ns:
@@ -256,7 +256,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
 
                 # If returns some type of arithmetic expression, breaks it down.
                 if len(element.children) > 0 and element.children[0].children != []:
-                    tmp, tvs, labelList = simp.breakdownExpression(element.children[0])
+                    tmp, tvs, labelList = simp.breakdownExpression(element.children[0], tvs=[], labelList=[labelDigit])
                     for x in tmp: lines.append(f"{prefix}{x}")
                     lines.append(f"{prefix}D.{returnDigit} = {tvs[-1]};")
                     lines.append(f"{prefix}return D.{returnDigit};")
@@ -277,7 +277,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
 
                 # function call has parameters
                 if element.children[0] != []:
-                    tmp, tvs, labelList = simp.breakdownExpression(element, labelList=[labelDigit])
+                    tmp, tvs, labelList = simp.breakdownExpression(element, tvs=[], labelList=[labelDigit])
                     tmp[-1] = tmp[-1].split(' = ')[1]
                     for x in tmp: lines.append(f"{prefix}{x}")
                     if labelList != []:
@@ -329,7 +329,8 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                         tmpNode = ast.ASTNode("!=", None)
                         tmpNode.children.append(element.children[0])
                         tmpNode.children.append(ast.ASTNode("0", tmpNode))
-                tmp, tvs, labelList = simp.breakdownExpression(tmpNode, success=loopStart, failure=loopEnd, labelList=[labelDigit])
+                tmp, tvs, labelList = simp.breakdownExpression(tmpNode, tvs=[], success=loopStart, failure=loopEnd, labelList=[labelDigit])
+
                 for x in tmp: lines.append(f"{prefix}{x}")
                 lines.append(f"{prefix}<D.{loopEnd}>:")
 
@@ -355,7 +356,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                     lines.extend(temp_lines)
 
             elif ind == 11:
-                tmp, tvs, labelList_ = simp.breakdownExpression(element)
+                tmp, tvs, labelList_ = simp.breakdownExpression(element, tvs=[])
                 for x in tmp: lines.append(f"{prefix}{x}")
             else:
                 print("Unsupported at this time")

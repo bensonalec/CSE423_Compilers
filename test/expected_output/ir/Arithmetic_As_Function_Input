@@ -10,7 +10,7 @@ main ()
 int D.1235;
   int value_1;
 
-  _2 = function(1);
-  value_1 = _2;
+  _1 = function(1);
+  value_1 = _1;
 
 }

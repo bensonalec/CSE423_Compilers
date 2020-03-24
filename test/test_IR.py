@@ -22,8 +22,7 @@ path_to_output_files = "./expected_output/ir/"
 class IRTest(unittest.TestCase):
 
     # Add program into list if for some reason, we shouldn't test it.
-    skip_programs = ["Initialization_Strings.c","Functions_Strings.c","Assignment.c","Unary.c","Arithmetic.c","While.c","Arithmetic_As_Function_Input.c","Keywords.c","Break.c","Pre_Processor.c","Goto.c","For_Loops.c","Boolean.c","Switch.c","Identifiers_Variables_Functions.c","Return.c","If_Else.c"]
-
+    skip_programs = []
     maxDiff = None
 
     def test_ir(self):
@@ -32,6 +31,9 @@ class IRTest(unittest.TestCase):
         for c_filename in os.listdir(path_to_C_files):
             
             if c_filename.endswith('.c') and c_filename not in self.skip_programs:
+
+                status = "FAIL" #Will change if test passes
+
                 fi = open(path_to_C_files + c_filename)
                 text_input = fi.read()
                 fi.close()
@@ -62,15 +64,13 @@ class IRTest(unittest.TestCase):
                 result = ""
                 for x in l1ir:
                     result += x + "\n"
-                # result = "\n".join(l1ir) + "\n"
-                status = "ok"
                 
                 with self.subTest():
-                    status = self.assertEqual(result, expected)
+                    self.assertEqual(result, expected)
+                    status = "ok"
 
-                print(f"{'IR for '+c_filename:65}", end="")
-                if status != None:
-                    
+                print(f"{'IR test for '+c_filename:65}", end="")
+                if status == "ok":
                     print(Colors.green, f"{status}", Colors.reset)
                 else:
                     print(Colors.red, f"{status}", Colors.reset)
