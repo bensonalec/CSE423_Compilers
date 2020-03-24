@@ -8,13 +8,6 @@ import importlib
 ir1 = importlib.import_module("IR_Lv1_Builder", __name__)
 import_ir = importlib.import_module("import_ir", __name__)
 
-def mainIR(args, fi):
-    """
-    .. todo::
-    This is the function that when given a specific IR will produce linear intermediate representations for teh inputted program.
-    """
-    pass
-
 def mainAST(args,astHead,symbolTable):
     """
     This is the function that when given an AST and a symbol table will produce linear intermediate representations for teh inputted program.
