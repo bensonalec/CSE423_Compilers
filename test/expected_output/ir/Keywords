@@ -1,0 +1,18 @@
+main ()
+{
+int D.1234;
+  int x;
+  short t;
+  long rrr;
+  float qqq;
+  double aaa;
+  int y;
+
+  x = NULL;
+  t = NULL;
+  rrr = NULL;
+  qqq = NULL;
+  aaa = NULL;
+  y = NULL;
+
+}

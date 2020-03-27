@@ -10,7 +10,11 @@ def main(args):
 
     # Execution of the Frontend.
     # This returns the Abstract Syntax Tree and Symbol Table
-    ast, sym = frontend.main(args)
+    if not args.input:
+        ast, sym = frontend.main(args)
+    else:
+        ast = None
+        sym = None
 
 
 
@@ -57,11 +61,16 @@ if __name__ == "__main__":
 
     cmd_options.add_argument('-IR1',help='Output the first level of IR in the optimizer phase', action="store_true")
 
+    cmd_options.add_argument('-i', '--input', action='store_true', help="Used to input IR from file")
+
     #generate arguements
     args = cmd_options.parse_args()
 
     #open file and pass into main.
     if args.input_file and args.input_file.endswith(".c"):
+        main(args)
+    elif args.input: #if we need to take input file in redirect input file
+        args.input = args.input_file
         main(args)
     else:
         #if not c file.
