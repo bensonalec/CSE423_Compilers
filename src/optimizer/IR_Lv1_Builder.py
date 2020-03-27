@@ -49,6 +49,9 @@ class LevelOneIR():
 
         return self.IR
 
+    def __str__(self):
+        return "\n".join(self.IR) + "\n"
+
 def buildBoilerPlate(symTable):
     namesandparams = []
     functionNames = [(x.name,x.type) for x in symTable.symbols if x.is_function]
