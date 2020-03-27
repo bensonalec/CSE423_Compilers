@@ -48,7 +48,7 @@ class ParserTests(unittest.TestCase):
                 fi.close()
 
                 with self.subTest():
-                    self.assertEqual(str(head), expected)
+                    self.assertEqual(head.__repr__(), expected)
                     status = "ok"
 
                 print(f"{'Parser test for '+c_filename:65}", end="")
