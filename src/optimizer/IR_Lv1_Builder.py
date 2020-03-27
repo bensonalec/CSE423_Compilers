@@ -82,7 +82,7 @@ def beginWrapper(function_tuple, returnDigit):
     lines.append("{")
     if func_type != "void":
         lines.append(f"{func_type} D.{returnDigit};")
-    
+
     return lines
 
 def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None, prefix=""):
@@ -99,7 +99,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
 
     for element in node.children:
         try:
-            splits = [["==", "+=", "-=", "*=", "/=", "%=", "<<=", ">>=", "<<", ">>", "|=", "&=", "^=", "<=", ">=", "!=", "<", ">", "="],["for"],["body"],["branch"],["return"],["call"],["while", "do_while"],["break"],["continue"],["goto"],["label"], ["++", "--"]]
+            splits = [["+=", "-=", "*=", "/=", "%=", "<<=", ">>=", "|=", "&=", "^=", "<=", ">=", "="],["for"],["body"],["branch"],["return"],["call"],["while", "do_while"],["break"],["continue"],["goto"],["label"], ["++", "--"]]
             ind = [splits.index(x) for x in splits if element.name in x]
             ind = ind[0]
             if ind == 0:
@@ -119,7 +119,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                         ns = True
                     tmp, labelDigit = returnLines(initNode, returnDigit, labelDigit, prefix=prefix[:-2])
                     for x in tmp: lines.append(f"{prefix}{x}")
-                
+
                 if ns:
                     prefix += "  "
 
@@ -132,9 +132,9 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
 
                 # Add the label that belongs to the start of the loop
                 lines.append(f"{prefix}<D.{labelDigit}>:")
-                
+
                 # Assign labels for start/end of loop
-                loopStart = labelDigit 
+                loopStart = labelDigit
                 loopEnd = labelDigit + 1
                 labelDigit += 2
 
@@ -147,7 +147,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                     initNode = ast.ASTNode("tmp", None)
                     initNode.children.append(element.children[2])
                     tmp, labelDigit = returnLines(initNode, returnDigit, labelDigit)
-                    for x in tmp: lines.append(f"{prefix}{x}") 
+                    for x in tmp: lines.append(f"{prefix}{x}")
 
                 # Start of conditionals for the loop
                 if conditionLabel != None:
@@ -225,7 +225,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
 
                     #adds broken down if statement
                     for x in temp_lines: lines.append(f"{prefix}{x}")
-                    
+
                     #Add goto for body statement
                     lines.append(f"{prefix}<D.{success_label}>:")
                     if [x.children[0] for x in case.children[1].children if x.name == "=" and x.children[0].children[0].name in ["auto", "long double", "double", "float", "long long", "long long int", "long", "int", "short", "char"]]:
@@ -240,7 +240,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                     if ns:
                         prefix = prefix[:-2]
                         lines.append(f"{prefix}}}")
-                    
+
                     #append goto for end of if body
                     lines.append(f'{prefix}goto <D.{labelDigit}>;')
                     end_if.append(labelDigit)
@@ -251,7 +251,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                 for i in end_if:
                     lines.append(f'{prefix}<D.{i}>:')
 
-            elif ind == 4: 
+            elif ind == 4:
                 #Return
 
                 # If returns some type of arithmetic expression, breaks it down.
@@ -269,7 +269,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
 
                 # Returns nothing
                 else:
-                    lines.append(f"{prefix}return;") 
+                    lines.append(f"{prefix}return;")
 
             elif ind == 5:
                 #Function Call
@@ -282,7 +282,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                     for x in tmp: lines.append(f"{prefix}{x}")
                     if labelList != []:
                         labelDigit = labelList[-1] + 1
-                
+
                 # no parameters
                 else:
                     lines.append(f"{prefix}{func_call}();")
@@ -295,21 +295,21 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                 # Jump straight to conditionals for only 'While' statements
                 if element.name == "while":
                     lines.append(f"{prefix}goto <D.{labelDigit}>;")
-                
+
                 # Keep track of label for conditional block
                 conditionLabel = labelDigit
                 labelDigit += 1
-            
+
                 # Add the label that belongs to the start of the loop
                 lines.append(f"{prefix}<D.{labelDigit}>:")
-                
+
                 if [x.children[0] for x in element.children[1].children if x.name == "=" and x.children[0].children[0].name in ["auto", "long double", "double", "float", "long long", "long long int", "long", "int", "short", "char"]]:
                         lines.append(f"{prefix}{{")
                         prefix += "  "
                         ns = True
 
                 # Assign labels for start/end of loop
-                loopStart = labelDigit 
+                loopStart = labelDigit
                 loopEnd = labelDigit + 1
                 labelDigit += 2
 
@@ -366,8 +366,5 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
             print(exc_type, exc_tb.tb_lineno)
             pass
 
-    # prefix = prefix[:-2]
-    # if node.name == "body" and [x.children[0] for x in node.children if x.name == "=" and x.children[0].children[0].name in ["auto", "long double", "double", "float", "long long", "long long int", "long", "int", "short", "char"]]:
-        # lines.append(f"{prefix}}}")
     lines.append("")
     return lines, labelDigit
