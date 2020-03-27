@@ -23,15 +23,29 @@ class LevelOneIR():
         # list of all bodies within functions in our C program
         for x in self.astHead.children:
             if x.name == "func":
-                bodyList.append((x.children[1].name,x.children[3]))
+                # Each entry is the '(func_node, body_node)'
+                bodyList.append((x,x.children[3]))
 
         returnDigit = 1234
         labelDigit = returnDigit + 1
-        for i in bodyList:
-            lines, labelDigit = returnLines(i[1], returnDigit, labelDigit)
-            returnDigit = labelDigit + 1
+        lines = []
 
-            self.IR.extend(lines)
+        for i in bodyList:
+
+            # Beginning of fuction wrapper
+            lines.extend(beginWrapper(i, returnDigit))
+
+            # Body of function
+            tmp_lines , labelDigit = returnLines(i[1], returnDigit, labelDigit)
+            lines.extend(tmp_lines)
+
+            # End of function wrapper
+            lines.append("}")
+
+            # NOTE: 'labelDigit' should be the newest and unused digit
+            returnDigit = labelDigit
+
+            self.IR = lines
 
         return self.IR
 
@@ -54,7 +68,24 @@ def buildBoilerPlate(symTable):
             namesandparams.append((x[0],paramsLi,x[1]))
     return namesandparams
 
-def returnLines(node, returnDigit, labelDigit, successDigit=None, failureDigit=None, prefix=""):
+def beginWrapper(function_tuple, returnDigit):
+    lines = []
+    params = ""
+    func_type = function_tuple[0].children[0].name
+    func_name = function_tuple[0].children[1].name
+
+    for var in function_tuple[0].children[2].children:
+        if var.name == "var":
+            params += f"{var.children[0].name} {var.children[1].name},"
+
+    lines.append(f"{func_name} ({params[:-1]})")
+    lines.append("{")
+    if func_type != "void":
+        lines.append(f"{func_type} D.{returnDigit};")
+    
+    return lines
+
+def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None, prefix=""):
     lines = []
     if node.name == "body":
         il = [x.children[0] for x in node.children if x.name == "=" and x.children[0].children[0].name in ["auto", "long double", "double", "float", "long long", "long long int", "long", "int", "short", "char"]]
@@ -72,7 +103,7 @@ def returnLines(node, returnDigit, labelDigit, successDigit=None, failureDigit=N
             ind = [splits.index(x) for x in splits if element.name in x]
             ind = ind[0]
             if ind == 0:
-                tmp, tvs, labelList = simp.breakdownExpression(element, labelList=[labelDigit])
+                tmp, tvs, labelList = simp.breakdownExpression(element, tvs=[], labelList=[labelDigit])
                 for x in tmp: lines.append(f"{prefix}{x}")
                 if labelList != []:
                     labelDigit = labelList[-1]
@@ -127,7 +158,7 @@ def returnLines(node, returnDigit, labelDigit, successDigit=None, failureDigit=N
                         tmpNode = ast.ASTNode("!=", None)
                         tmpNode.children.append(element.children[1])
                         tmpNode.children.append(ast.ASTNode("0", tmpNode))
-                    tmp, tvs, labelList = simp.breakdownExpression(tmpNode, success=loopStart, failure=loopEnd)
+                    tmp, tvs, labelList = simp.breakdownExpression(tmpNode, tvs=[], success=loopStart, failure=loopEnd, labelList=[labelDigit])
                     for x in tmp: lines.append(f"{prefix}{x}")
                     lines.append(f"{prefix}<D.{loopEnd}>:")
                     if labelList != []:
@@ -187,11 +218,11 @@ def returnLines(node, returnDigit, labelDigit, successDigit=None, failureDigit=N
                         tmpNode.children.append(ast.ASTNode("0", tmpNode))
 
                     #break down argument for if statement into smaller if statements
-                    temp_lines, tvs, labelList = simp.breakdownExpression(tmpNode, success=success_label, failure=failure_label)
-                    # print (labelList)
+                    temp_lines, tvs, labelList = simp.breakdownExpression(tmpNode, tvs=[], success=success_label, failure=failure_label, labelList=[labelDigit])
+
                     if labelList != []:
                         labelDigit = labelList[-1] + 1
-                    # print (labelDigit)
+
                     #adds broken down if statement
                     for x in temp_lines: lines.append(f"{prefix}{x}")
                     
@@ -203,7 +234,7 @@ def returnLines(node, returnDigit, labelDigit, successDigit=None, failureDigit=N
                         ns = True
                     #Get lines for the if body and assign new labeldigit
                     tmp, labelDigit = returnLines(case.children[1], returnDigit,  labelDigit, success_label, failure_label)
-                    # print (labelDigit)
+
                     for x in tmp: lines.append(f"{prefix}{x}")
 
                     if ns:
@@ -222,11 +253,10 @@ def returnLines(node, returnDigit, labelDigit, successDigit=None, failureDigit=N
 
             elif ind == 4: 
                 #Return
-                
 
                 # If returns some type of arithmetic expression, breaks it down.
                 if len(element.children) > 0 and element.children[0].children != []:
-                    tmp, tvs, labelList = simp.breakdownExpression(element.children[0])
+                    tmp, tvs, labelList = simp.breakdownExpression(element.children[0], tvs=[], labelList=[labelDigit])
                     for x in tmp: lines.append(f"{prefix}{x}")
                     lines.append(f"{prefix}D.{returnDigit} = {tvs[-1]};")
                     lines.append(f"{prefix}return D.{returnDigit};")
@@ -234,7 +264,8 @@ def returnLines(node, returnDigit, labelDigit, successDigit=None, failureDigit=N
                         labelDigit = labelList[-1]
 
                 elif len(element.children) > 0 and element.children[0].children == []:
-                    lines.append(f"{prefix}return {element.children[0].name};")
+                    lines.append(f"{prefix}D.{returnDigit} = {element.children[0].name};")
+                    lines.append(f"{prefix}return D.{returnDigit};")
 
                 # Returns nothing
                 else:
@@ -246,7 +277,7 @@ def returnLines(node, returnDigit, labelDigit, successDigit=None, failureDigit=N
 
                 # function call has parameters
                 if element.children[0] != []:
-                    tmp, tvs, labelList = simp.breakdownExpression(element, labelList=[labelDigit])
+                    tmp, tvs, labelList = simp.breakdownExpression(element, tvs=[], labelList=[labelDigit])
                     tmp[-1] = tmp[-1].split(' = ')[1]
                     for x in tmp: lines.append(f"{prefix}{x}")
                     if labelList != []:
@@ -298,7 +329,8 @@ def returnLines(node, returnDigit, labelDigit, successDigit=None, failureDigit=N
                         tmpNode = ast.ASTNode("!=", None)
                         tmpNode.children.append(element.children[0])
                         tmpNode.children.append(ast.ASTNode("0", tmpNode))
-                tmp, tvs, labelList = simp.breakdownExpression(tmpNode, success=loopStart, failure=loopEnd, labelList=[labelDigit])
+                tmp, tvs, labelList = simp.breakdownExpression(tmpNode, tvs=[], success=loopStart, failure=loopEnd, labelList=[labelDigit])
+
                 for x in tmp: lines.append(f"{prefix}{x}")
                 lines.append(f"{prefix}<D.{loopEnd}>:")
 
@@ -324,7 +356,7 @@ def returnLines(node, returnDigit, labelDigit, successDigit=None, failureDigit=N
                     lines.extend(temp_lines)
 
             elif ind == 11:
-                tmp, tvs, labelList_ = simp.breakdownExpression(element)
+                tmp, tvs, labelList_ = simp.breakdownExpression(element, tvs=[])
                 for x in tmp: lines.append(f"{prefix}{x}")
             else:
                 print("Unsupported at this time")
