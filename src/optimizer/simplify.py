@@ -24,47 +24,44 @@ def breakdownExpression(root, tvs = [], success = None, failure = None, labelLis
         index = log_ops.index(root.name)
         if index == 0:
             # OR
-            tmp_label = max(labelList)+1
-            labelList.append(tmp_label)
+            tmp_label = max(labelList)
+            labelList.append(tmp_label+1)
             tmpNode = root.children[0]
             if tmpNode.name not in comp_ops and tmpNode.name not in log_ops:
                 tmpNode = ast.ASTNode("!=", None)
                 tmpNode.children.append(root.children[0])
                 tmpNode.children.append(ast.ASTNode("0", tmpNode))
-            print (tvs)
+
             lhs, tvs, labelList = breakdownExpression(tmpNode, tvs, success, tmp_label, labelList)
-            print (tvs)
+
             tmpNode = root.children[1]
             if tmpNode.name not in comp_ops and tmpNode.name not in log_ops:
                 tmpNode = ast.ASTNode("!=", None)
                 tmpNode.children.append(root.children[1])
                 tmpNode.children.append(ast.ASTNode("0", tmpNode))
-            print (tvs)
+
             rhs, tvs, labelList = breakdownExpression(tmpNode, tvs, success, failure, labelList)
-            print (tvs)
             lines.extend(lhs)
             lines.append(f"<D.{tmp_label}>:")
             lines.extend(rhs)
         elif index == 1:
             # AND
-            tmp_label = max(labelList)+1
-            labelList.append(tmp_label)
+            tmp_label = max(labelList)
+            labelList.append(tmp_label+1)
             tmpNode = root.children[0]
             if tmpNode.name not in comp_ops and tmpNode.name not in log_ops:
                 tmpNode = ast.ASTNode("!=", None)
                 tmpNode.children.append(root.children[0])
                 tmpNode.children.append(ast.ASTNode("0", tmpNode))
-            print (tvs)
+
             lhs, tvs, labelList = breakdownExpression(tmpNode, tvs, tmp_label, failure, labelList)
-            print (tvs)
+
             tmpNode = root.children[1]
             if tmpNode.name not in comp_ops and tmpNode.name not in log_ops:
                 tmpNode = ast.ASTNode("!=", None)
                 tmpNode.children.append(root.children[1])
                 tmpNode.children.append(ast.ASTNode("0", tmpNode))
-            print (tvs)
             rhs, tvs, labelList = breakdownExpression(tmpNode, tvs, success, failure, labelList)
-            print (tvs)
             lines.extend(lhs)
             lines.append(f"<D.{tmp_label}>:")
             lines.extend(rhs)

@@ -1,0 +1,12 @@
+main ()
+{
+int D.1234;
+  char string;
+  char string_two;
+  char string_special;
+
+  string = "test string";
+  string_two = 'test string';
+  string_special = "\n\t\\\'\"\%\$%&*$%&%*$&@@   __  +=-";
+
+}
