@@ -1,12 +1,20 @@
-main ()
+test ()
 {
 int D.1234;
+D.1234 = 10;
+return D.1234;
+
+}
+main ()
+{
+int D.1235;
   int x;
   short t;
   long rrr;
   float qqq;
   double aaa;
   int y;
+  int q;
 
   x = NULL;
   t = NULL;
@@ -14,5 +22,6 @@ int D.1234;
   qqq = NULL;
   aaa = NULL;
   y = NULL;
+  q = NULL;
 
 }
