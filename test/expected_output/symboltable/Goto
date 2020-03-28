@@ -1,7 +1,10 @@
-   Name    | Function? | Type |  Scope   | Param? | Label? 
------------+-----------+------+----------+--------+-------
-      main |      True |  int | /        |  False | False
-     label |     False | None | /main/0/ |  False |  True
-random_var |     False |  int | /main/0/ |  False | False
+Known Symbols
+    Name    | Entry Type | Type |  Scope   | Modifiers 
+------------+------------+------+----------+-----------
+       main |   Function |  int | /        |          
+      label |      Label | None | /main/0/ |     label
+ random_var |   Variable |  int | /main/0/ |          
 
-No undefined symbols available
+Unknown Symbols
+ Name | Entry Type | Type 
+------+------------+-------

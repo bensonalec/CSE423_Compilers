@@ -1,5 +1,8 @@
-Name | Function? | Type | Scope | Param? | Label? 
------+-----------+------+-------+--------+-------
-main |      True |  int | /     |  False | False
+Known Symbols
+ Name | Entry Type | Type | Scope | Modifiers 
+------+------------+------+-------+-----------
+ main |   Function |  int | /     |          
 
-No undefined symbols available
+Unknown Symbols
+ Name | Entry Type | Type 
+------+------------+-------

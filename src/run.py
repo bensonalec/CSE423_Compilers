@@ -8,7 +8,7 @@ optimizer = importlib.import_module("optimizer.optimizer", __name__)
 
 def main(args):
 
-    # Execution of the Frontend. 
+    # Execution of the Frontend.
     # This returns the Abstract Syntax Tree and Symbol Table
     if not args.input:
         ast, sym = frontend.main(args)
@@ -32,12 +32,12 @@ if __name__ == "__main__":
 
     #decription of the compiler
     cmd_options = argparse.ArgumentParser(description='Main execution of C compiler. Can produce different representations of inputed C code. (i.e. tokens, parse tree, abstract syntax tree, etc.)')
-    
+
     cmd_options.add_argument('--all',help='Prints out all intermediate representations as they are encountered in the compilation process', action="store_true")
 
     #input file option
     cmd_options.add_argument('input_file', metavar='<filename.c>', type=str, help='Input c file.')
-    
+
     #Arguement to print tokens from lexer
     cmd_options.add_argument('-l','--lex', help='Prints out tokens from lexer', action='store_true')
 

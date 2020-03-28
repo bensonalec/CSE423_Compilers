@@ -1,9 +1,12 @@
-Name | Function? | Type |   Scope    | Param? | Label? 
------+-----------+------+------------+--------+-------
-main |      True |  int | /          |  False | False
-   i |     False |  int | /main/0/   |  False | False
-   j |     False |  int | /main/0/   |  False | False
-   a |     False |  int | /main/0/2/ |  False | False
-   c |     False |  int | /main/0/3/ |  False | False
+Known Symbols
+ Name | Entry Type | Type |   Scope    | Modifiers 
+------+------------+------+------------+-----------
+ main |   Function |  int | /          |          
+    i |   Variable |  int | /main/0/   |          
+    j |   Variable |  int | /main/0/   |          
+    a |   Variable |  int | /main/0/2/ |          
+    c |   Variable |  int | /main/0/3/ |          
 
-No undefined symbols available
+Unknown Symbols
+ Name | Entry Type | Type 
+------+------------+-------
