@@ -44,7 +44,18 @@ en_map = {
 }
 
 class Entry():
+    &#34;&#34;&#34;
+    A class that represents a singular entry in the symbol table
+    &#34;&#34;&#34;
     def __init__(self, en_typ, nam, typ, scop, modif):
+        &#34;&#34;&#34;
+        Args:
+            en_typ: Whether the entry is a variable, function, parameter, or label.
+            nam: Name of the entry.
+            typ: The associated type of the entry such as `int`, `float` ect. For functions this represents the return type.
+            scop: The scope where the entry exists.
+            modif: The modifiers associated with the entry such as `unsigned`, `const`, `static` ect.
+        &#34;&#34;&#34;
         self.entry_type = en_typ
         self.name = nam
         self.type = typ
@@ -58,7 +69,14 @@ Node.__doc__ = &#34;&#34;&#34;
 A simple namedtuple to allow for better readability when performing the depth first search required for the semantic analysis.
 &#34;&#34;&#34;
 class symbol_table():
+    &#34;&#34;&#34;
+    A class that stores all the known and unknown symbols, as well as the semantic errors that may be discovered.
+    &#34;&#34;&#34;
     def __init__(self,AST):
+        &#34;&#34;&#34;
+        Args:
+            AST: The head node of the abstract syntax tree.
+        &#34;&#34;&#34;
         self.AST = AST
 
         self.symbols = []
@@ -66,7 +84,9 @@ class symbol_table():
         self.errors = []
 
     def analyze(self):
-
+        &#34;&#34;&#34;
+        Analyses the abstract syntax tree to determine whether there are any undeclared references, and semantic errors.
+        &#34;&#34;&#34;
         ntv = [Node(self.AST, &#34;/&#34;)]
         scopenum = 0
         typ = None
@@ -368,6 +388,9 @@ class symbol_table():
         return &#34;\n&#34;.join(self.errors)
 
     def print_symbol_table(self):
+        &#34;&#34;&#34;
+        Prints the known symbols in the symbol table to stdout
+        &#34;&#34;&#34;
         # if len(self.symbols) == 0:
         #     print (&#34;No defined symbols available&#34;)
         #     return
@@ -389,6 +412,9 @@ class symbol_table():
         # print(&#34;&#34;)
 
     def print_unknown_symbols(self):
+        &#34;&#34;&#34;
+        Prints the unknown symbols in the symbol table to stdout
+        &#34;&#34;&#34;
         # if len(self.undefined) == 0:
         #     print (&#34;No undefined symbols available&#34;)
         #     return
@@ -407,10 +433,19 @@ class symbol_table():
         # print(&#34;&#34;)
 
     def printSemanticErrors(self):
+        &#34;&#34;&#34;
+        Prints the semantic errors to stdout
+        &#34;&#34;&#34;
         for i in self.errors:
             print(i)
 
     def lineSemanticErrors(self):
+        &#34;&#34;&#34;
+        Retrieves the semantic errors
+
+        Returns:
+            output: All the semantic errors as a string separated by new lines
+        &#34;&#34;&#34;
         output = &#34;&#34;
         for i in self.errors:
             output += (i+&#34;\n&#34;)
@@ -432,13 +467,37 @@ class symbol_table():
 <span>(</span><span>en_typ, nam, typ, scop, modif)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>A class that represents a singular entry in the symbol table</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>en_typ</code></strong></dt>
+<dd>Whether the entry is a variable, function, parameter, or label.</dd>
+<dt><strong><code>nam</code></strong></dt>
+<dd>Name of the entry.</dd>
+<dt><strong><code>typ</code></strong></dt>
+<dd>The associated type of the entry such as <code>int</code>, <code>float</code> ect. For functions this represents the return type.</dd>
+<dt><strong><code>scop</code></strong></dt>
+<dd>The scope where the entry exists.</dd>
+<dt><strong><code>modif</code></strong></dt>
+<dd>The modifiers associated with the entry such as <code>unsigned</code>, <code>const</code>, <code>static</code> ect.</dd>
+</dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Entry():
+    &#34;&#34;&#34;
+    A class that represents a singular entry in the symbol table
+    &#34;&#34;&#34;
     def __init__(self, en_typ, nam, typ, scop, modif):
+        &#34;&#34;&#34;
+        Args:
+            en_typ: Whether the entry is a variable, function, parameter, or label.
+            nam: Name of the entry.
+            typ: The associated type of the entry such as `int`, `float` ect. For functions this represents the return type.
+            scop: The scope where the entry exists.
+            modif: The modifiers associated with the entry such as `unsigned`, `const`, `static` ect.
+        &#34;&#34;&#34;
         self.entry_type = en_typ
         self.name = nam
         self.type = typ
@@ -474,13 +533,25 @@ class symbol_table():
 <span>(</span><span>AST)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>A class that stores all the known and unknown symbols, as well as the semantic errors that may be discovered.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>AST</code></strong></dt>
+<dd>The head node of the abstract syntax tree.</dd>
+</dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class symbol_table():
+    &#34;&#34;&#34;
+    A class that stores all the known and unknown symbols, as well as the semantic errors that may be discovered.
+    &#34;&#34;&#34;
     def __init__(self,AST):
+        &#34;&#34;&#34;
+        Args:
+            AST: The head node of the abstract syntax tree.
+        &#34;&#34;&#34;
         self.AST = AST
 
         self.symbols = []
@@ -488,7 +559,9 @@ class symbol_table():
         self.errors = []
 
     def analyze(self):
-
+        &#34;&#34;&#34;
+        Analyses the abstract syntax tree to determine whether there are any undeclared references, and semantic errors.
+        &#34;&#34;&#34;
         ntv = [Node(self.AST, &#34;/&#34;)]
         scopenum = 0
         typ = None
@@ -790,6 +863,9 @@ class symbol_table():
         return &#34;\n&#34;.join(self.errors)
 
     def print_symbol_table(self):
+        &#34;&#34;&#34;
+        Prints the known symbols in the symbol table to stdout
+        &#34;&#34;&#34;
         # if len(self.symbols) == 0:
         #     print (&#34;No defined symbols available&#34;)
         #     return
@@ -811,6 +887,9 @@ class symbol_table():
         # print(&#34;&#34;)
 
     def print_unknown_symbols(self):
+        &#34;&#34;&#34;
+        Prints the unknown symbols in the symbol table to stdout
+        &#34;&#34;&#34;
         # if len(self.undefined) == 0:
         #     print (&#34;No undefined symbols available&#34;)
         #     return
@@ -829,10 +908,19 @@ class symbol_table():
         # print(&#34;&#34;)
 
     def printSemanticErrors(self):
+        &#34;&#34;&#34;
+        Prints the semantic errors to stdout
+        &#34;&#34;&#34;
         for i in self.errors:
             print(i)
 
     def lineSemanticErrors(self):
+        &#34;&#34;&#34;
+        Retrieves the semantic errors
+
+        Returns:
+            output: All the semantic errors as a string separated by new lines
+        &#34;&#34;&#34;
         output = &#34;&#34;
         for i in self.errors:
             output += (i+&#34;\n&#34;)
@@ -845,13 +933,15 @@ class symbol_table():
 <span>def <span class="ident">analyze</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Analyses the abstract syntax tree to determine whether there are any undeclared references, and semantic errors.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def analyze(self):
-
+    &#34;&#34;&#34;
+    Analyses the abstract syntax tree to determine whether there are any undeclared references, and semantic errors.
+    &#34;&#34;&#34;
     ntv = [Node(self.AST, &#34;/&#34;)]
     scopenum = 0
     typ = None
@@ -1124,12 +1214,23 @@ class symbol_table():
 <span>def <span class="ident">lineSemanticErrors</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Retrieves the semantic errors</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>output</code></strong></dt>
+<dd>All the semantic errors as a string separated by new lines</dd>
+</dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def lineSemanticErrors(self):
+    &#34;&#34;&#34;
+    Retrieves the semantic errors
+
+    Returns:
+        output: All the semantic errors as a string separated by new lines
+    &#34;&#34;&#34;
     output = &#34;&#34;
     for i in self.errors:
         output += (i+&#34;\n&#34;)
@@ -1141,12 +1242,15 @@ class symbol_table():
 <span>def <span class="ident">printSemanticErrors</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Prints the semantic errors to stdout</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def printSemanticErrors(self):
+    &#34;&#34;&#34;
+    Prints the semantic errors to stdout
+    &#34;&#34;&#34;
     for i in self.errors:
         print(i)</code></pre>
 </details>
@@ -1155,12 +1259,15 @@ class symbol_table():
 <span>def <span class="ident">print_symbol_table</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Prints the known symbols in the symbol table to stdout</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def print_symbol_table(self):
+    &#34;&#34;&#34;
+    Prints the known symbols in the symbol table to stdout
+    &#34;&#34;&#34;
     # if len(self.symbols) == 0:
     #     print (&#34;No defined symbols available&#34;)
     #     return
@@ -1185,12 +1292,15 @@ class symbol_table():
 <span>def <span class="ident">print_unknown_symbols</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Prints the unknown symbols in the symbol table to stdout</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def print_unknown_symbols(self):
+    &#34;&#34;&#34;
+    Prints the unknown symbols in the symbol table to stdout
+    &#34;&#34;&#34;
     # if len(self.undefined) == 0:
     #     print (&#34;No undefined symbols available&#34;)
     #     return

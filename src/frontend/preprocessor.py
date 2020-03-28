@@ -146,6 +146,9 @@ def run(text, path):
 
 
 def main():
+    """
+    A function used when running the preprocessor as a standalone script
+    """
     fi = open("./test_files/test.c", "r")
     text = fi.read()
     fi.close()
