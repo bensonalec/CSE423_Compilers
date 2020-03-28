@@ -1,4 +1,4 @@
-inline const int test() {
+inline const unsigned int test() {
     return 10;
 }
 

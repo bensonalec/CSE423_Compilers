@@ -1,6 +1,7 @@
 `-- program
     |-- func
     |   |-- int
+    |   |   |-- unsigned
     |   |   |-- const
     |   |   `-- inline
     |   |-- test

@@ -1,5 +1,6 @@
 Token('FUNC_MODIF', 'inline')
 Token('BOTH_MODIF', 'const')
+Token('BOTH_MODIF', 'unsigned')
 Token('TYPE', 'int')
 Token('SELF_DEFINED', 'test')
 Token('OPEN_PAREN', '(')

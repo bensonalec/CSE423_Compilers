@@ -84,7 +84,7 @@ def beginWrapper(function_tuple, returnDigit):
     lines.append(f"{func_name} ({params[:-1]})")
     lines.append("{")
     if func_type != "void":
-        lines.append(f"{func_type} D.{returnDigit};")
+        lines.append(f"{''.join([x.name for x in function_tuple[0].children[0].children if x.name in ['signed', 'unsigned']])}{' ' if [x.name for x in function_tuple[0].children[0].children if x.name in ['signed', 'unsigned']] else ''}{func_type} D.{returnDigit};")
 
     return lines
 
@@ -97,7 +97,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
         if il:
             # lines.append(f"{prefix}{{")
             prefix += "  "
-            for x in il: lines.append(f"{prefix}{x.children[0].name} {x.children[1].name};")
+            for x in il: lines.append(f"{prefix}{' '.join([y.name for y in x.children[0].children])}{' ' if [y.name for y in x.children[0].children] else ''}{x.children[0].name} {x.children[1].name};")
             lines.append("")
 
     for element in node.children:

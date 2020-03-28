@@ -1,6 +1,6 @@
 test ()
 {
-int D.1234;
+unsigned int D.1234;
 D.1234 = 10;
 return D.1234;
 
@@ -8,13 +8,13 @@ return D.1234;
 main ()
 {
 int D.1235;
-  int x;
-  short t;
-  long rrr;
-  float qqq;
-  double aaa;
-  int y;
-  int q;
+  register int x;
+  signed short t;
+  const long rrr;
+  volatile float qqq;
+  static double aaa;
+  unsigned int y;
+  extern int q;
 
   x = NULL;
   t = NULL;

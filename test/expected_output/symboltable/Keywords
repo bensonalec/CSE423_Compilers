@@ -1,15 +1,15 @@
 Known Symbols
- Name | Entry Type |  Type  |  Scope   |   Modifiers   
-------+------------+--------+----------+---------------
- test |   Function |    int | /        | const, inline
- main |   Function |    int | /        |              
-    x |   Variable |    int | /main/1/ |      register
-    t |   Variable |  short | /main/1/ |        signed
-  rrr |   Variable |   long | /main/1/ |         const
-  qqq |   Variable |  float | /main/1/ |      volatile
-  aaa |   Variable | double | /main/1/ |        static
-    y |   Variable |    int | /main/1/ |      unsigned
-    q |   Variable |    int | /main/1/ |        extern
+ Name | Entry Type |  Type  |  Scope   |        Modifiers        
+------+------------+--------+----------+-------------------------
+ test |   Function |    int | /        | const, inline, unsigned
+ main |   Function |    int | /        |                        
+    x |   Variable |    int | /main/1/ |                register
+    t |   Variable |  short | /main/1/ |                  signed
+  rrr |   Variable |   long | /main/1/ |                   const
+  qqq |   Variable |  float | /main/1/ |                volatile
+  aaa |   Variable | double | /main/1/ |                  static
+    y |   Variable |    int | /main/1/ |                unsigned
+    q |   Variable |    int | /main/1/ |                  extern
 
 Unknown Symbols
  Name | Entry Type | Type 
