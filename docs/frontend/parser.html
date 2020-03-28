@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.7.5" />
+<meta name="generator" content="pdoc 0.7.4" />
 <title>src.frontend.parser API documentation</title>
 <meta name="description" content="This module contains definitions for the ParseTree and Parser classes, as well as some ansillary functions to assist." />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
@@ -69,6 +69,37 @@ class ParseTree():
             else:
                 print(f&#34;{_prefix}{&#39;`-- &#39; if _last else &#39;|-- &#39;}{child}&#34;, file=file)
 
+    def __str__(self):
+        &#34;&#34;&#34;
+        Produces a string representation of the Parse Tree
+        &#34;&#34;&#34;
+        li = []
+
+        ntv = [(&#34;&#34;, self, True)]
+
+        while ntv:
+            li.append(ntv[0])
+
+            ntv = [(f&#34;{ntv[0][0]}{&#39;    &#39; if ntv[0][2] else &#39;|   &#39;}&#34;, x, i == len(ntv[0][1].content)-1 ) for i, x in enumerate(ntv[0][1].content)] + ntv[1:] if &#39;content&#39; in ntv[0][1].__dict__ else ntv[1:]
+
+        return &#34;\n&#34;.join([f&#34;{x[0]}{&#39;`-- &#39; if x[2] else &#39;|-- &#39;}{x[1].token if &#39;token&#39; in x[1].__dict__ else x[1]}&#34; for x in li]) + &#34;\n&#34;
+
+    def __repr__(self):
+        &#34;&#34;&#34;
+        Constructs a list based string representation of the parse tree
+        &#34;&#34;&#34;
+
+        li = []
+
+        ntv = [(1, self)]
+
+        while ntv:
+            li.append((ntv[0][0], ntv[0][1].content))
+
+            ntv = [(ntv[0][0]+1, x) for x in ntv[0][1].content if &#39;content&#39; in x.__dict__] + ntv[1:]
+
+        return &#34;\n&#34;.join([f&#34;{x[0]} : {[y.token if &#39;content&#39; in y.__dict__ else y for y in x[1]]}&#34; for x in li])
+
     def getListView(self, level):
         &#34;&#34;&#34;
         Prints a simple list version of the tree for output. Calls itself recursively
@@ -76,41 +107,24 @@ class ParseTree():
         Args:
             level: The current level of the tree.
         &#34;&#34;&#34;
-        string = &#34;&#34;
-        level += 1
-        token = self.token
-        content = self.content
+
         li = []
-        out = &#34;&#34;
-        for node in content:
-            if(type(node) != type(ParseTree(&#34;sample&#34;,&#34;sample&#34;))):
-                li.append(node)
-            else:
-                li.append(node.token)
-        
-        string += f&#34;{level} : {li}\n&#34;
+        li.append(f&#34;{level+1} : {[x if &#39;content&#39; not in x.__dict__ else x.token for x in self.content]}&#34;)
 
-        #iterate through the components of the BNF
-        for node in content:
-            if(type(node) == type(ParseTree(&#34;sample&#34;,&#34;sample&#34;))):
-                string += node.getListView(level)
+        for x in self.content:
+            if &#34;content&#34; in x.__dict__:
+                li.extend(x.getListView(level+1))
 
-        return string
-
-
-
-        #iterate through the components of the BNF
-        for node in content:
-            if(type(node) == type(ParseTree(&#34;sample&#34;,&#34;sample&#34;))):
-                out += getTree(node,level)
-        return out
+        if level == 0:
+            return &#34;\n&#34;.join(li)
+        return li
 
 #setup parser class
 class Parser():
     &#34;&#34;&#34;
     Definition for the Parser object, works off of rply. Contains rules for parsing.
     &#34;&#34;&#34;
-    
+
     def __init__(self):
         &#34;&#34;&#34;
         Initializes the parser and tells it the allowed tokens
@@ -118,7 +132,7 @@ class Parser():
         &#34;&#34;&#34;
 
         self.pg = ParserGenerator(
-            [&#39;COMMENT&#39;,&#39;SELF_DEFINED&#39;,&#39;OPEN_PAREN&#39;,&#39;CLOSE_PAREN&#39;,&#39;SEMICOLON&#39;,&#39;TYPE&#39;,&#39;FUNC_MODIF&#39;,&#39;BOTH_MODIF&#39;,&#39;VAR_MODIF&#39;,&#39;COMMA&#39;,&#39;OPEN_BRACK&#39;,&#39;CLOSE_BRACK&#39;,&#39;OPEN_BRACE&#39;,&#39;CLOSE_BRACE&#39;,&#39;STRING&#39;,&#39;WHILE_LOOP&#39;,&#39;FOR_LOOP&#39;,&#39;DO_LOOP&#39;,&#39;IF_BRANCH&#39;,&#39;ELSE_BRANCH&#39;,&#39;SWITCH_BRANCH&#39;,&#39;CASE&#39;,&#39;COLON&#39;,&#39;DEFAULT&#39;,&#39;RETURN&#39;,&#39;GOTO&#39;,&#39;BREAK&#39;,&#39;CONTINUE&#39;,&#39;SET&#39;,&#39;INTEGER&#39;,&#39;MUL&#39;,&#39;AEQ&#39;,&#39;SEQ&#39;,&#39;MEQ&#39;,&#39;DEQ&#39;,&#39;MODEQ&#39;,&#39;LSEQ&#39;,&#39;RSEQ&#39;,&#39;BOEQ&#39;,&#39;BAEQ&#39;,&#39;XEQ&#39;,&#39;OR&#39;,&#39;AND&#39;,&#39;BOR&#39;,&#39;XOR&#39;,&#39;BAND&#39;,&#39;EQ&#39;,&#39;NEQ&#39;,&#39;LT&#39;,&#39;GT&#39;,&#39;LEQ&#39;,&#39;GEQ&#39;,&#39;LSH&#39;,&#39;RSH&#39;,&#39;ADD&#39;,&#39;SUB&#39;,&#39;DIV&#39;,&#39;MOD&#39;,&#39;INC&#39;,&#39;DEC&#39;,&#39;SIZEOF&#39;,&#39;COMP&#39;,&#39;NOT&#39;,&#39;PRECISION&#39;,&#39;CHAR&#39;,&#39;HEX&#39;,&#39;OCT&#39;,&#39;BIN&#39;,&#39;NULL&#39;] , 
+            [&#39;COMMENT&#39;,&#39;SELF_DEFINED&#39;,&#39;OPEN_PAREN&#39;,&#39;CLOSE_PAREN&#39;,&#39;SEMICOLON&#39;,&#39;TYPE&#39;,&#39;FUNC_MODIF&#39;,&#39;BOTH_MODIF&#39;,&#39;VAR_MODIF&#39;,&#39;COMMA&#39;,&#39;OPEN_BRACK&#39;,&#39;CLOSE_BRACK&#39;,&#39;OPEN_BRACE&#39;,&#39;CLOSE_BRACE&#39;,&#39;STRING&#39;,&#39;WHILE_LOOP&#39;,&#39;FOR_LOOP&#39;,&#39;DO_LOOP&#39;,&#39;IF_BRANCH&#39;,&#39;ELSE_BRANCH&#39;,&#39;SWITCH_BRANCH&#39;,&#39;CASE&#39;,&#39;COLON&#39;,&#39;DEFAULT&#39;,&#39;RETURN&#39;,&#39;GOTO&#39;,&#39;BREAK&#39;,&#39;CONTINUE&#39;,&#39;SET&#39;,&#39;INTEGER&#39;,&#39;MUL&#39;,&#39;AEQ&#39;,&#39;SEQ&#39;,&#39;MEQ&#39;,&#39;DEQ&#39;,&#39;MODEQ&#39;,&#39;LSEQ&#39;,&#39;RSEQ&#39;,&#39;BOEQ&#39;,&#39;BAEQ&#39;,&#39;XEQ&#39;,&#39;OR&#39;,&#39;AND&#39;,&#39;BOR&#39;,&#39;XOR&#39;,&#39;BAND&#39;,&#39;EQ&#39;,&#39;NEQ&#39;,&#39;LT&#39;,&#39;GT&#39;,&#39;LEQ&#39;,&#39;GEQ&#39;,&#39;LSH&#39;,&#39;RSH&#39;,&#39;ADD&#39;,&#39;SUB&#39;,&#39;DIV&#39;,&#39;MOD&#39;,&#39;INC&#39;,&#39;DEC&#39;,&#39;SIZEOF&#39;,&#39;COMP&#39;,&#39;NOT&#39;,&#39;PRECISION&#39;,&#39;CHAR&#39;,&#39;HEX&#39;,&#39;OCT&#39;,&#39;BIN&#39;,&#39;NULL&#39;] ,
         )
         #initialzie head and current node
         self.Head = None
@@ -128,12 +142,12 @@ class Parser():
         &#34;&#34;&#34;
         The list of BNF functions and their behavior
         &#34;&#34;&#34;
-        
+
         @self.pg.production(&#39;program : definitionList &#39;)
         def program(p):
             &#34;&#34;&#34;
             Tells the parser which BNF will be the head of the tree
-            
+
             Args:
                 p: The matching set of tokens.
 
@@ -378,8 +392,8 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production(&#39;single_line : arithmetic SEMICOLON &#39;)
-        def single_line___arithmetic_SEMICOLON_(p):
+        @self.pg.production(&#39;single_line : collation SEMICOLON &#39;)
+        def single_line___collation_SEMICOLON_(p):
             newNode = ParseTree(&#34;single_line&#34;,p)
             self.Head = newNode
             return newNode
@@ -552,8 +566,8 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production(&#39;response : RETURN arithmetic &#39;)
-        def response___RETURN_arithmetic_(p):
+        @self.pg.production(&#39;response : RETURN collation &#39;)
+        def response___RETURN_collation_(p):
             newNode = ParseTree(&#34;return&#34;,p)
             self.Head = newNode
             return newNode
@@ -702,8 +716,8 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production(&#39;designation : var_access assignment arithmetic &#39;)
-        def designation___var_access_assignment_arithmetic_(p):
+        @self.pg.production(&#39;designation : var_access assignment collation &#39;)
+        def designation___var_access_assignment_collation_(p):
             newNode = ParseTree(&#34;designation&#34;,p)
             self.Head = newNode
             return newNode
@@ -788,12 +802,6 @@ class Parser():
 
         @self.pg.production(&#39;collation : collation_or &#39;)
         def collation___collation_or_(p):
-            newNode = ParseTree(&#34;collation&#34;,p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production(&#39;collation : OPEN_PAREN collation CLOSE_PAREN &#39;)
-        def collation___OPEN_PAREN_collation_CLOSE_PAREN_(p):
             newNode = ParseTree(&#34;collation&#34;,p)
             self.Head = newNode
             return newNode
@@ -908,12 +916,6 @@ class Parser():
 
         @self.pg.production(&#39;arithmetic : arithmetic_sh &#39;)
         def arithmetic___arithmetic_sh_(p):
-            newNode = ParseTree(&#34;arithmetic&#34;,p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production(&#39;arithmetic : OPEN_PAREN arithmetic CLOSE_PAREN &#39;)
-        def arithmetic___OPEN_PAREN_arithmetic_CLOSE_PAREN_(p):
             newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
@@ -1152,12 +1154,12 @@ class Parser():
             self.Head = newNode
             return newNode
 
-    
+
         @self.pg.error
         def error_handle(token):
             &#34;&#34;&#34;
             Boilerplate error handling function
-            
+
             Args:
                 token: The token that caused an error.
             &#34;&#34;&#34;
@@ -1189,7 +1191,7 @@ class Parser():
         Prints parser error message. This function ultimately iterates through the ParseTree that was returned after the parser found an error. ParseTree&#39;s consist of tokens as well as other ParseTree&#39;s so we need to iterate to find the first token and then print its source position.
         &#34;&#34;&#34;
         # TODO: add some more in-depth error processing to print
-        # out a more detailed description of what went wrong, and possibly some suggestions 
+        # out a more detailed description of what went wrong, and possibly some suggestions
         # at to why there was a parse/syntax error. (i.e. suggest a missing semicolon)
 
         head = self.getTree()
@@ -1206,12 +1208,12 @@ class Parser():
                     token = i
                     break
 
-            # Check again (to break out of while loop and not iterate again)            
+            # Check again (to break out of while loop and not iterate again)
             if (type(token) == type(Token(&#34;sample&#34;, &#34;sample&#34;))):
                 break
             else:
                 # Set head to last element.
-                # If this code executes then I can assume that the 
+                # If this code executes then I can assume that the
                 # last element is an ParseTree.
                 head = head.content[len(head.content)-1]
 
@@ -1220,11 +1222,7 @@ class Parser():
         else:
             # Never found a token to report, need to exit
             print(&#34;ParsingError: No ParseTree obtained\n&#34;)
-            exit()
-
-
-
-    </code></pre>
+            exit()</code></pre>
 </details>
 </section>
 <section>
@@ -1287,6 +1285,37 @@ class Parser():
             else:
                 print(f&#34;{_prefix}{&#39;`-- &#39; if _last else &#39;|-- &#39;}{child}&#34;, file=file)
 
+    def __str__(self):
+        &#34;&#34;&#34;
+        Produces a string representation of the Parse Tree
+        &#34;&#34;&#34;
+        li = []
+
+        ntv = [(&#34;&#34;, self, True)]
+
+        while ntv:
+            li.append(ntv[0])
+
+            ntv = [(f&#34;{ntv[0][0]}{&#39;    &#39; if ntv[0][2] else &#39;|   &#39;}&#34;, x, i == len(ntv[0][1].content)-1 ) for i, x in enumerate(ntv[0][1].content)] + ntv[1:] if &#39;content&#39; in ntv[0][1].__dict__ else ntv[1:]
+
+        return &#34;\n&#34;.join([f&#34;{x[0]}{&#39;`-- &#39; if x[2] else &#39;|-- &#39;}{x[1].token if &#39;token&#39; in x[1].__dict__ else x[1]}&#34; for x in li]) + &#34;\n&#34;
+
+    def __repr__(self):
+        &#34;&#34;&#34;
+        Constructs a list based string representation of the parse tree
+        &#34;&#34;&#34;
+
+        li = []
+
+        ntv = [(1, self)]
+
+        while ntv:
+            li.append((ntv[0][0], ntv[0][1].content))
+
+            ntv = [(ntv[0][0]+1, x) for x in ntv[0][1].content if &#39;content&#39; in x.__dict__] + ntv[1:]
+
+        return &#34;\n&#34;.join([f&#34;{x[0]} : {[y.token if &#39;content&#39; in y.__dict__ else y for y in x[1]]}&#34; for x in li])
+
     def getListView(self, level):
         &#34;&#34;&#34;
         Prints a simple list version of the tree for output. Calls itself recursively
@@ -1294,34 +1323,17 @@ class Parser():
         Args:
             level: The current level of the tree.
         &#34;&#34;&#34;
-        string = &#34;&#34;
-        level += 1
-        token = self.token
-        content = self.content
+
         li = []
-        out = &#34;&#34;
-        for node in content:
-            if(type(node) != type(ParseTree(&#34;sample&#34;,&#34;sample&#34;))):
-                li.append(node)
-            else:
-                li.append(node.token)
-        
-        string += f&#34;{level} : {li}\n&#34;
+        li.append(f&#34;{level+1} : {[x if &#39;content&#39; not in x.__dict__ else x.token for x in self.content]}&#34;)
 
-        #iterate through the components of the BNF
-        for node in content:
-            if(type(node) == type(ParseTree(&#34;sample&#34;,&#34;sample&#34;))):
-                string += node.getListView(level)
+        for x in self.content:
+            if &#34;content&#34; in x.__dict__:
+                li.extend(x.getListView(level+1))
 
-        return string
-
-
-
-        #iterate through the components of the BNF
-        for node in content:
-            if(type(node) == type(ParseTree(&#34;sample&#34;,&#34;sample&#34;))):
-                out += getTree(node,level)
-        return out</code></pre>
+        if level == 0:
+            return &#34;\n&#34;.join(li)
+        return li</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -1346,34 +1358,17 @@ class Parser():
     Args:
         level: The current level of the tree.
     &#34;&#34;&#34;
-    string = &#34;&#34;
-    level += 1
-    token = self.token
-    content = self.content
+
     li = []
-    out = &#34;&#34;
-    for node in content:
-        if(type(node) != type(ParseTree(&#34;sample&#34;,&#34;sample&#34;))):
-            li.append(node)
-        else:
-            li.append(node.token)
-    
-    string += f&#34;{level} : {li}\n&#34;
+    li.append(f&#34;{level+1} : {[x if &#39;content&#39; not in x.__dict__ else x.token for x in self.content]}&#34;)
 
-    #iterate through the components of the BNF
-    for node in content:
-        if(type(node) == type(ParseTree(&#34;sample&#34;,&#34;sample&#34;))):
-            string += node.getListView(level)
+    for x in self.content:
+        if &#34;content&#34; in x.__dict__:
+            li.extend(x.getListView(level+1))
 
-    return string
-
-
-
-    #iterate through the components of the BNF
-    for node in content:
-        if(type(node) == type(ParseTree(&#34;sample&#34;,&#34;sample&#34;))):
-            out += getTree(node,level)
-    return out</code></pre>
+    if level == 0:
+        return &#34;\n&#34;.join(li)
+    return li</code></pre>
 </details>
 </dd>
 <dt id="src.frontend.parser.ParseTree.print_ParseTree"><code class="name flex">
@@ -1429,7 +1424,7 @@ class Parser():
     &#34;&#34;&#34;
     Definition for the Parser object, works off of rply. Contains rules for parsing.
     &#34;&#34;&#34;
-    
+
     def __init__(self):
         &#34;&#34;&#34;
         Initializes the parser and tells it the allowed tokens
@@ -1437,7 +1432,7 @@ class Parser():
         &#34;&#34;&#34;
 
         self.pg = ParserGenerator(
-            [&#39;COMMENT&#39;,&#39;SELF_DEFINED&#39;,&#39;OPEN_PAREN&#39;,&#39;CLOSE_PAREN&#39;,&#39;SEMICOLON&#39;,&#39;TYPE&#39;,&#39;FUNC_MODIF&#39;,&#39;BOTH_MODIF&#39;,&#39;VAR_MODIF&#39;,&#39;COMMA&#39;,&#39;OPEN_BRACK&#39;,&#39;CLOSE_BRACK&#39;,&#39;OPEN_BRACE&#39;,&#39;CLOSE_BRACE&#39;,&#39;STRING&#39;,&#39;WHILE_LOOP&#39;,&#39;FOR_LOOP&#39;,&#39;DO_LOOP&#39;,&#39;IF_BRANCH&#39;,&#39;ELSE_BRANCH&#39;,&#39;SWITCH_BRANCH&#39;,&#39;CASE&#39;,&#39;COLON&#39;,&#39;DEFAULT&#39;,&#39;RETURN&#39;,&#39;GOTO&#39;,&#39;BREAK&#39;,&#39;CONTINUE&#39;,&#39;SET&#39;,&#39;INTEGER&#39;,&#39;MUL&#39;,&#39;AEQ&#39;,&#39;SEQ&#39;,&#39;MEQ&#39;,&#39;DEQ&#39;,&#39;MODEQ&#39;,&#39;LSEQ&#39;,&#39;RSEQ&#39;,&#39;BOEQ&#39;,&#39;BAEQ&#39;,&#39;XEQ&#39;,&#39;OR&#39;,&#39;AND&#39;,&#39;BOR&#39;,&#39;XOR&#39;,&#39;BAND&#39;,&#39;EQ&#39;,&#39;NEQ&#39;,&#39;LT&#39;,&#39;GT&#39;,&#39;LEQ&#39;,&#39;GEQ&#39;,&#39;LSH&#39;,&#39;RSH&#39;,&#39;ADD&#39;,&#39;SUB&#39;,&#39;DIV&#39;,&#39;MOD&#39;,&#39;INC&#39;,&#39;DEC&#39;,&#39;SIZEOF&#39;,&#39;COMP&#39;,&#39;NOT&#39;,&#39;PRECISION&#39;,&#39;CHAR&#39;,&#39;HEX&#39;,&#39;OCT&#39;,&#39;BIN&#39;,&#39;NULL&#39;] , 
+            [&#39;COMMENT&#39;,&#39;SELF_DEFINED&#39;,&#39;OPEN_PAREN&#39;,&#39;CLOSE_PAREN&#39;,&#39;SEMICOLON&#39;,&#39;TYPE&#39;,&#39;FUNC_MODIF&#39;,&#39;BOTH_MODIF&#39;,&#39;VAR_MODIF&#39;,&#39;COMMA&#39;,&#39;OPEN_BRACK&#39;,&#39;CLOSE_BRACK&#39;,&#39;OPEN_BRACE&#39;,&#39;CLOSE_BRACE&#39;,&#39;STRING&#39;,&#39;WHILE_LOOP&#39;,&#39;FOR_LOOP&#39;,&#39;DO_LOOP&#39;,&#39;IF_BRANCH&#39;,&#39;ELSE_BRANCH&#39;,&#39;SWITCH_BRANCH&#39;,&#39;CASE&#39;,&#39;COLON&#39;,&#39;DEFAULT&#39;,&#39;RETURN&#39;,&#39;GOTO&#39;,&#39;BREAK&#39;,&#39;CONTINUE&#39;,&#39;SET&#39;,&#39;INTEGER&#39;,&#39;MUL&#39;,&#39;AEQ&#39;,&#39;SEQ&#39;,&#39;MEQ&#39;,&#39;DEQ&#39;,&#39;MODEQ&#39;,&#39;LSEQ&#39;,&#39;RSEQ&#39;,&#39;BOEQ&#39;,&#39;BAEQ&#39;,&#39;XEQ&#39;,&#39;OR&#39;,&#39;AND&#39;,&#39;BOR&#39;,&#39;XOR&#39;,&#39;BAND&#39;,&#39;EQ&#39;,&#39;NEQ&#39;,&#39;LT&#39;,&#39;GT&#39;,&#39;LEQ&#39;,&#39;GEQ&#39;,&#39;LSH&#39;,&#39;RSH&#39;,&#39;ADD&#39;,&#39;SUB&#39;,&#39;DIV&#39;,&#39;MOD&#39;,&#39;INC&#39;,&#39;DEC&#39;,&#39;SIZEOF&#39;,&#39;COMP&#39;,&#39;NOT&#39;,&#39;PRECISION&#39;,&#39;CHAR&#39;,&#39;HEX&#39;,&#39;OCT&#39;,&#39;BIN&#39;,&#39;NULL&#39;] ,
         )
         #initialzie head and current node
         self.Head = None
@@ -1447,12 +1442,12 @@ class Parser():
         &#34;&#34;&#34;
         The list of BNF functions and their behavior
         &#34;&#34;&#34;
-        
+
         @self.pg.production(&#39;program : definitionList &#39;)
         def program(p):
             &#34;&#34;&#34;
             Tells the parser which BNF will be the head of the tree
-            
+
             Args:
                 p: The matching set of tokens.
 
@@ -1697,8 +1692,8 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production(&#39;single_line : arithmetic SEMICOLON &#39;)
-        def single_line___arithmetic_SEMICOLON_(p):
+        @self.pg.production(&#39;single_line : collation SEMICOLON &#39;)
+        def single_line___collation_SEMICOLON_(p):
             newNode = ParseTree(&#34;single_line&#34;,p)
             self.Head = newNode
             return newNode
@@ -1871,8 +1866,8 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production(&#39;response : RETURN arithmetic &#39;)
-        def response___RETURN_arithmetic_(p):
+        @self.pg.production(&#39;response : RETURN collation &#39;)
+        def response___RETURN_collation_(p):
             newNode = ParseTree(&#34;return&#34;,p)
             self.Head = newNode
             return newNode
@@ -2021,8 +2016,8 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production(&#39;designation : var_access assignment arithmetic &#39;)
-        def designation___var_access_assignment_arithmetic_(p):
+        @self.pg.production(&#39;designation : var_access assignment collation &#39;)
+        def designation___var_access_assignment_collation_(p):
             newNode = ParseTree(&#34;designation&#34;,p)
             self.Head = newNode
             return newNode
@@ -2107,12 +2102,6 @@ class Parser():
 
         @self.pg.production(&#39;collation : collation_or &#39;)
         def collation___collation_or_(p):
-            newNode = ParseTree(&#34;collation&#34;,p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production(&#39;collation : OPEN_PAREN collation CLOSE_PAREN &#39;)
-        def collation___OPEN_PAREN_collation_CLOSE_PAREN_(p):
             newNode = ParseTree(&#34;collation&#34;,p)
             self.Head = newNode
             return newNode
@@ -2227,12 +2216,6 @@ class Parser():
 
         @self.pg.production(&#39;arithmetic : arithmetic_sh &#39;)
         def arithmetic___arithmetic_sh_(p):
-            newNode = ParseTree(&#34;arithmetic&#34;,p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production(&#39;arithmetic : OPEN_PAREN arithmetic CLOSE_PAREN &#39;)
-        def arithmetic___OPEN_PAREN_arithmetic_CLOSE_PAREN_(p):
             newNode = ParseTree(&#34;arithmetic&#34;,p)
             self.Head = newNode
             return newNode
@@ -2471,12 +2454,12 @@ class Parser():
             self.Head = newNode
             return newNode
 
-    
+
         @self.pg.error
         def error_handle(token):
             &#34;&#34;&#34;
             Boilerplate error handling function
-            
+
             Args:
                 token: The token that caused an error.
             &#34;&#34;&#34;
@@ -2508,7 +2491,7 @@ class Parser():
         Prints parser error message. This function ultimately iterates through the ParseTree that was returned after the parser found an error. ParseTree&#39;s consist of tokens as well as other ParseTree&#39;s so we need to iterate to find the first token and then print its source position.
         &#34;&#34;&#34;
         # TODO: add some more in-depth error processing to print
-        # out a more detailed description of what went wrong, and possibly some suggestions 
+        # out a more detailed description of what went wrong, and possibly some suggestions
         # at to why there was a parse/syntax error. (i.e. suggest a missing semicolon)
 
         head = self.getTree()
@@ -2525,12 +2508,12 @@ class Parser():
                     token = i
                     break
 
-            # Check again (to break out of while loop and not iterate again)            
+            # Check again (to break out of while loop and not iterate again)
             if (type(token) == type(Token(&#34;sample&#34;, &#34;sample&#34;))):
                 break
             else:
                 # Set head to last element.
-                # If this code executes then I can assume that the 
+                # If this code executes then I can assume that the
                 # last element is an ParseTree.
                 head = head.content[len(head.content)-1]
 
@@ -2599,12 +2582,12 @@ class Parser():
     &#34;&#34;&#34;
     The list of BNF functions and their behavior
     &#34;&#34;&#34;
-    
+
     @self.pg.production(&#39;program : definitionList &#39;)
     def program(p):
         &#34;&#34;&#34;
         Tells the parser which BNF will be the head of the tree
-        
+
         Args:
             p: The matching set of tokens.
 
@@ -2849,8 +2832,8 @@ class Parser():
         self.Head = newNode
         return newNode
 
-    @self.pg.production(&#39;single_line : arithmetic SEMICOLON &#39;)
-    def single_line___arithmetic_SEMICOLON_(p):
+    @self.pg.production(&#39;single_line : collation SEMICOLON &#39;)
+    def single_line___collation_SEMICOLON_(p):
         newNode = ParseTree(&#34;single_line&#34;,p)
         self.Head = newNode
         return newNode
@@ -3023,8 +3006,8 @@ class Parser():
         self.Head = newNode
         return newNode
 
-    @self.pg.production(&#39;response : RETURN arithmetic &#39;)
-    def response___RETURN_arithmetic_(p):
+    @self.pg.production(&#39;response : RETURN collation &#39;)
+    def response___RETURN_collation_(p):
         newNode = ParseTree(&#34;return&#34;,p)
         self.Head = newNode
         return newNode
@@ -3173,8 +3156,8 @@ class Parser():
         self.Head = newNode
         return newNode
 
-    @self.pg.production(&#39;designation : var_access assignment arithmetic &#39;)
-    def designation___var_access_assignment_arithmetic_(p):
+    @self.pg.production(&#39;designation : var_access assignment collation &#39;)
+    def designation___var_access_assignment_collation_(p):
         newNode = ParseTree(&#34;designation&#34;,p)
         self.Head = newNode
         return newNode
@@ -3259,12 +3242,6 @@ class Parser():
 
     @self.pg.production(&#39;collation : collation_or &#39;)
     def collation___collation_or_(p):
-        newNode = ParseTree(&#34;collation&#34;,p)
-        self.Head = newNode
-        return newNode
-
-    @self.pg.production(&#39;collation : OPEN_PAREN collation CLOSE_PAREN &#39;)
-    def collation___OPEN_PAREN_collation_CLOSE_PAREN_(p):
         newNode = ParseTree(&#34;collation&#34;,p)
         self.Head = newNode
         return newNode
@@ -3379,12 +3356,6 @@ class Parser():
 
     @self.pg.production(&#39;arithmetic : arithmetic_sh &#39;)
     def arithmetic___arithmetic_sh_(p):
-        newNode = ParseTree(&#34;arithmetic&#34;,p)
-        self.Head = newNode
-        return newNode
-
-    @self.pg.production(&#39;arithmetic : OPEN_PAREN arithmetic CLOSE_PAREN &#39;)
-    def arithmetic___OPEN_PAREN_arithmetic_CLOSE_PAREN_(p):
         newNode = ParseTree(&#34;arithmetic&#34;,p)
         self.Head = newNode
         return newNode
@@ -3628,7 +3599,7 @@ class Parser():
     def error_handle(token):
         &#34;&#34;&#34;
         Boilerplate error handling function
-        
+
         Args:
             token: The token that caused an error.
         &#34;&#34;&#34;
@@ -3649,7 +3620,7 @@ class Parser():
     Prints parser error message. This function ultimately iterates through the ParseTree that was returned after the parser found an error. ParseTree&#39;s consist of tokens as well as other ParseTree&#39;s so we need to iterate to find the first token and then print its source position.
     &#34;&#34;&#34;
     # TODO: add some more in-depth error processing to print
-    # out a more detailed description of what went wrong, and possibly some suggestions 
+    # out a more detailed description of what went wrong, and possibly some suggestions
     # at to why there was a parse/syntax error. (i.e. suggest a missing semicolon)
 
     head = self.getTree()
@@ -3666,12 +3637,12 @@ class Parser():
                 token = i
                 break
 
-        # Check again (to break out of while loop and not iterate again)            
+        # Check again (to break out of while loop and not iterate again)
         if (type(token) == type(Token(&#34;sample&#34;, &#34;sample&#34;))):
             break
         else:
             # Set head to last element.
-            # If this code executes then I can assume that the 
+            # If this code executes then I can assume that the
             # last element is an ParseTree.
             head = head.content[len(head.content)-1]
 
@@ -3723,7 +3694,7 @@ class Parser():
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.5</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.4</a>.</p>
 </footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad()</script>

@@ -7,13 +7,7 @@ import argparse
 from importlib.machinery import SourceFileLoader
 
 ir1 = SourceFileLoader("IR_Lv1_Builder", f"{os.path.dirname(__file__)}/IR_Lv1_Builder.py").load_module()
-
-def mainIR(args, fi):
-    """
-    .. todo::
-    This is the function that when given a specific IR will produce linear intermediate representations for teh inputted program.
-    """
-    pass
+import_ir = SourceFileLoader("import_ir", f"{os.path.dirname(__file__)}/import_ir.py").load_module()
 
 def mainAST(args,astHead,symbolTable):
     """
@@ -27,12 +21,19 @@ def mainAST(args,astHead,symbolTable):
     Returns:
         The lowest level of IR produced.
     """
-    ir = ir1.LevelOneIR(astHead,symbolTable)
-    l1ir = ir.construct()
+    if args.input:
+
+        inp = import_ir.import_ir(args.input)
+        l1ir = inp.verify()
+
+    else:
+        ir = ir1.LevelOneIR(astHead,symbolTable)
+        l1ir = ir.construct()
 
     if args.IR1 or args.all:
         for x in l1ir: print (x)
     pass
+
 
 if __name__ == "__main__":
     cmd_options = argparse.ArgumentParser(description='Optimizer of the compiler. Can take in an AST and Symbol Table or a File with an IR')
@@ -40,6 +41,9 @@ if __name__ == "__main__":
     cmd_options.add_argument('--all',help='Prints out all intermediate representations as they are encountered in the compilation process', action="store_true")
     cmd_options.add_argument('-O0',help='Does no optimization')
     cmd_options.add_argument('-O1',help='Optimize the symbol table and AST')
+    cmd_options.add_argument('-i', action='store', dest="input", type=str, help="Used to input IR from file")
     args = cmd_options.parse_args()
+
+    print(args.input)
 
     mainAST(args,astHead,symbolTable)

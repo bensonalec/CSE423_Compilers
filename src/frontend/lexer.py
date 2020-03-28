@@ -16,7 +16,7 @@ class Lexer():
         Constructs the Lexer object.
         """
         self.lexer = LexerGenerator()
-    
+
     def _add_tokens(self):
         """
         Adds tokens to the rply lexer object
@@ -109,7 +109,7 @@ class Lexer():
         """
         self._add_tokens()
         return self.lexer.build()
-    
+
 def tokensToString(tokens):
     """
     Iterates through the tokens and generates a string of all of them
@@ -117,10 +117,7 @@ def tokensToString(tokens):
     Args:
         tokens: The token object that is returned from the lexer.
     """
-    out = ""
-    for tok in tokens:
-        out+= str(tok) + "\n"
-    return out
+    return "\n".join([str(x) for x in tokens])
 
 def validateTokens(tokens):
     """
@@ -128,12 +125,12 @@ def validateTokens(tokens):
 
     Args:
         tokens: The token object that is returned from the lexer.
-    
+
     Returns:
         The same token object if there were no invalid tokens.
 
     Raises:
-        LexingError: If there is at least one invalid token this is raised. 
+        LexingError: If there is at least one invalid token this is raised.
     """
     cpy = copy.deepcopy(tokens)
     status = "PASS"
@@ -145,7 +142,7 @@ def validateTokens(tokens):
             print_error(i)
             status = "FAIL" # status is changed
 
-    
+
     if (status == "FAIL"):
         raise LexingError("invalid token", i.source_pos)
     else:
@@ -160,4 +157,3 @@ def print_error(token):
         token: The token object that is returned from the lexer.
     """
     print(f"LexingError: Invalid Token \'{token.value}\' at, {token.source_pos}\n")
-        

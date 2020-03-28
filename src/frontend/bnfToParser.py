@@ -5,7 +5,7 @@ This module reads in a BNF and produces a parser for use with rply.The BNF expec
 import re
 import os
 
-    
+
 funcTemp = """
         @self.pg.production('BNFSPOT')
         def FUNCNAMESPOT(p):
@@ -18,7 +18,7 @@ headTemp = """
         def program(p):
             \"\"\"
             Tells the parser which BNF will be the head of the tree
-            
+
             Args:
                 p: The matching set of tokens.
 
@@ -38,7 +38,7 @@ initTemp = """
         \"\"\"
 
         self.pg = ParserGenerator(
-            TOKENSPOT , 
+            TOKENSPOT ,
         )
         #initialzie head and current node
         self.Head = None
@@ -75,12 +75,12 @@ def main(path):
 
     for line in cont:
         if(line != "\n"):
-            
+
             spl = line.split("#")
             bnf = spl[0]
             funcname = bnf.replace(" ","_")
             funcname = funcname.replace(":","_")
-            
+
             name = spl[1].strip()
             if(name == "program"):
                 newFunc = headTemp
@@ -89,7 +89,7 @@ def main(path):
             newFunc = newFunc.replace("BNFSPOT",bnf)
             newFunc = newFunc.replace("FUNCNAMESPOT",funcname)
             newFunc = newFunc.replace("NAMESPOT",name)
-            
+
             functionList += newFunc
 
     totalOutput = """
@@ -137,6 +137,37 @@ class ParseTree():
             else:
                 print(f"{_prefix}{'`-- ' if _last else '|-- '}{child}", file=file)
 
+    def __str__(self):
+        \"\"\"
+        Produces a string representation of the Parse Tree
+        \"\"\"
+        li = []
+
+        ntv = [("", self, True)]
+
+        while ntv:
+            li.append(ntv[0])
+
+            ntv = [(f"{ntv[0][0]}{'    ' if ntv[0][2] else '|   '}", x, i == len(ntv[0][1].content)-1 ) for i, x in enumerate(ntv[0][1].content)] + ntv[1:] if 'content' in ntv[0][1].__dict__ else ntv[1:]
+
+        return "\n".join([f"{x[0]}{'`-- ' if x[2] else '|-- '}{x[1].token if 'token' in x[1].__dict__ else x[1]}" for x in li]) + "\n"
+
+    def __repr__(self):
+        \"\"\"
+        Constructs a list based string representation of the parse tree
+        \"\"\"
+
+        li = []
+
+        ntv = [(1, self)]
+
+        while ntv:
+            li.append((ntv[0][0], ntv[0][1].content))
+
+            ntv = [(ntv[0][0]+1, x) for x in ntv[0][1].content if 'content' in x.__dict__] + ntv[1:]
+
+        return "\n".join([f"{x[0]} : {[y.token if 'content' in y.__dict__ else y for y in x[1]]}" for x in li])
+
     def getListView(self, level):
         \"\"\"
         Prints a simple list version of the tree for output. Calls itself recursively
@@ -144,34 +175,17 @@ class ParseTree():
         Args:
             level: The current level of the tree.
         \"\"\"
-        string = ""
-        level += 1
-        token = self.token
-        content = self.content
+
         li = []
-        out = ""
-        for node in content:
-            if(type(node) != type(ParseTree("sample","sample"))):
-                li.append(node)
-            else:
-                li.append(node.token)
-        
-        string += f"{level} : {li}\\n"
+        li.append(f"{level+1} : {[x if 'content' not in x.__dict__ else x.token for x in self.content]}")
 
-        #iterate through the components of the BNF
-        for node in content:
-            if(type(node) == type(ParseTree("sample","sample"))):
-                string += node.getListView(level)
+        for x in self.content:
+            if "content" in x.__dict__:
+                li.extend(x.getListView(level+1))
 
-        return string
-
-
-
-        #iterate through the components of the BNF
-        for node in content:
-            if(type(node) == type(ParseTree("sample","sample"))):
-                out += getTree(node,level)
-        return out
+        if level == 0:
+            return "\n".join(li)
+        return li
 
 #setup parser class
 class Parser():
@@ -185,12 +199,12 @@ class Parser():
         The list of BNF functions and their behavior
         \"\"\"
         FUNCLISTSPOT
-    
+
         @self.pg.error
         def error_handle(token):
             \"\"\"
             Boilerplate error handling function
-            
+
             Args:
                 token: The token that caused an error.
             \"\"\"
@@ -222,7 +236,7 @@ class Parser():
         Prints parser error message. This function ultimately iterates through the ParseTree that was returned after the parser found an error. ParseTree's consist of tokens as well as other ParseTree's so we need to iterate to find the first token and then print its source position.
         \"\"\"
         # TODO: add some more in-depth error processing to print
-        # out a more detailed description of what went wrong, and possibly some suggestions 
+        # out a more detailed description of what went wrong, and possibly some suggestions
         # at to why there was a parse/syntax error. (i.e. suggest a missing semicolon)
 
         head = self.getTree()
@@ -239,12 +253,12 @@ class Parser():
                     token = i
                     break
 
-            # Check again (to break out of while loop and not iterate again)		
+            # Check again (to break out of while loop and not iterate again)
             if (type(token) == type(Token("sample", "sample"))):
                 break
             else:
                 # Set head to last element.
-                # If this code executes then I can assume that the 
+                # If this code executes then I can assume that the
                 # last element is an ParseTree.
                 head = head.content[len(head.content)-1]
 

@@ -1,0 +1,27 @@
+function ()
+{
+int D.1234;
+return;
+
+}
+main ()
+{
+int D.1235;
+  int a;
+
+  a = NULL;
+  D.1235 = 1;
+  return D.1235;
+  _0 = function();
+  D.1235 = _0;
+  return D.1235;
+  _0 = 1 + 1;
+  D.1235 = _0;
+  return D.1235;
+  _0 = 1 + 2;
+  D.1235 = _0;
+  return D.1235;
+  D.1235 = a;
+  return D.1235;
+
+}

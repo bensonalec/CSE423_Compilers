@@ -1,0 +1,10 @@
+main ()
+{
+int D.1234;
+  int random_var;
+
+goto label
+  random_var = 0;
+label:
+
+}

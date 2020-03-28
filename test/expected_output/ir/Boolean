@@ -1,0 +1,50 @@
+main ()
+{
+int D.1234;
+  int one;
+
+  one = 1;
+  if (one != 0) goto <D.1235>; else goto <D.1236>;
+  <D.1235>:
+  
+  goto <D.1237>;
+  <D.1236>:
+  <D.1237>:
+  if (one > one) goto <D.1238>; else goto <D.1239>;
+  <D.1238>:
+  
+  goto <D.1240>;
+  <D.1239>:
+  <D.1240>:
+  if (one < one) goto <D.1241>; else goto <D.1242>;
+  <D.1241>:
+  
+  goto <D.1243>;
+  <D.1242>:
+  <D.1243>:
+  if (one == one) goto <D.1244>; else goto <D.1245>;
+  <D.1244>:
+  
+  goto <D.1246>;
+  <D.1245>:
+  <D.1246>:
+  if (one != one) goto <D.1247>; else goto <D.1248>;
+  <D.1247>:
+  
+  goto <D.1249>;
+  <D.1248>:
+  <D.1249>:
+  if (one >= one) goto <D.1250>; else goto <D.1251>;
+  <D.1250>:
+  
+  goto <D.1252>;
+  <D.1251>:
+  <D.1252>:
+  if (one <= one) goto <D.1253>; else goto <D.1254>;
+  <D.1253>:
+  
+  goto <D.1255>;
+  <D.1254>:
+  <D.1255>:
+
+}

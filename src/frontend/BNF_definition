@@ -53,7 +53,7 @@ single_line : initialization SEMICOLON #single_line
 single_line : function_call SEMICOLON #single_line
 single_line : designation SEMICOLON #single_line
 single_line : response SEMICOLON #single_line
-single_line : arithmetic SEMICOLON #single_line
+single_line : collation SEMICOLON #single_line
 single_line : SEMICOLON #single_line
 
 function_call : SELF_DEFINED OPEN_PAREN param CLOSE_PAREN #function call
@@ -100,7 +100,7 @@ case_body : content #case_body
 goto : SELF_DEFINED COLON content_terminal #goto
 goto : SELF_DEFINED COLON #goto
 
-response : RETURN arithmetic #return
+response : RETURN collation #return
 response : RETURN #return
 
 response : GOTO SELF_DEFINED #jump
@@ -135,7 +135,7 @@ for_part_3 : designation #for param 3
 for_part_3 : arithmetic #for param 3
 for_part_3 : #for param 3
 
-designation : var_access assignment arithmetic #designation
+designation : var_access assignment collation #designation
 
 arr_list : collation #arr_list
 arr_list : collation COMMA arr_list #arr_list
@@ -153,7 +153,6 @@ assignment : XEQ #assignment
 assignment : SET #assignment
 
 collation : collation_or #collation
-collation : OPEN_PAREN collation CLOSE_PAREN #collation
 
 collation_or : collation_and #collation_or
 collation_or : collation_or OR collation_and #collation_or
@@ -181,7 +180,6 @@ collation_rel : collation_rel LEQ arithmetic #collation_rel
 collation_rel : collation_rel GEQ arithmetic #collation_rel
 
 arithmetic : arithmetic_sh #arithmetic
-arithmetic : OPEN_PAREN arithmetic CLOSE_PAREN #arithmetic
 
 arithmetic_sh : arithmetic_pm #arithmetic_sh
 arithmetic_sh : arithmetic_sh LSH arithmetic_pm #arithmetic_sh

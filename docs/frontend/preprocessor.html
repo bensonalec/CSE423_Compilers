@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.7.5" />
+<meta name="generator" content="pdoc 0.7.4" />
 <title>src.frontend.preprocessor API documentation</title>
 <meta name="description" content="This module serves as the pre-processor for any given C program. By searching for any pre-processor keywords it will perform the necessary …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
@@ -37,14 +37,14 @@ def remove_comments(text):
 
     Args:
         text: The string representation of C code.
-    
+
     Returns:
         The text with all C comments removed.
     &#34;&#34;&#34;
 
     # Regex that will capture both &#39;//&#39; and &#39;/* */&#39; style comments
     regex = r&#34;/(\*(\w|\W)*?\*/|/([^\n]*))&#34;
-    
+
     return re.sub(regex, &#39;&#39;, text)
 
 
@@ -55,7 +55,7 @@ def find_preprocessors(text):
 
     Args:
         text: The string representation of C code.
-    
+
     Returns:
         List of the found preprocessor keywords and their corresponding values.
     &#34;&#34;&#34;
@@ -72,7 +72,7 @@ def get_text(file_name, path):
 
     Args:
         file_name: The import file name.
-    
+
     Returns:
         Text of the import file.
     &#34;&#34;&#34;
@@ -93,18 +93,12 @@ def cleanup(text):
 
     Args:
         text: text format of C code to be cleaned up.
-    
+
     Returns:
         New text of the C code after cleanup.
     &#34;&#34;&#34;
 
-    new_text = &#34;&#34;
-
-    for line in text.splitlines():
-        if not line.startswith(&#39;#&#39;):
-            new_text += line + &#34;\n&#34;
-
-    return new_text
+    return &#34;\n&#34;.join([x for x in text.splitlines() if not x.startswith(&#34;#&#34;)])
 
 
 
@@ -114,7 +108,7 @@ def run(text, path):
 
     Args:
         text: text format of C code to be pre-processed.
-    
+
     Returns:
         Text of the C code after pre-processing.
     &#34;&#34;&#34;
@@ -123,7 +117,7 @@ def run(text, path):
     text = remove_comments(text)
 
     # Find all preprocessor elements (if any)
-    # NOTE: Currrently the list is sorted so the &#39;#define&#39; statements are 
+    # NOTE: Currrently the list is sorted so the &#39;#define&#39; statements are
     #       first on the list. This prevents the manipulation of the imported C code.
     proc_list = sorted(find_preprocessors(text), key = lambda x: x[0])
 
@@ -158,7 +152,7 @@ def run(text, path):
                 text = re.sub(rf&#39;\s*#include &lt;{file_name[0]}&gt;\n&#39;, &#34;&#34;, text)
                 #text = get_text(PATH_TO_STD_LIBRARIES) + text
                 continue
-            
+
             # Try to match to local library import (i.e. &#34;xyz.h&#34;, &#39;xyz.h&#39;)
             file_name = [&#34;&#34;.join(x) for x in re.findall(&#39;[&#34;]([^&#34;]*)[&#34;]|[\&#39;]([^&#34;]*)[\&#39;]&#39;, pre_proc[1])]
             if file_name:
@@ -219,18 +213,12 @@ if __name__ == &#34;__main__&#34;:
 
     Args:
         text: text format of C code to be cleaned up.
-    
+
     Returns:
         New text of the C code after cleanup.
     &#34;&#34;&#34;
 
-    new_text = &#34;&#34;
-
-    for line in text.splitlines():
-        if not line.startswith(&#39;#&#39;):
-            new_text += line + &#34;\n&#34;
-
-    return new_text</code></pre>
+    return &#34;\n&#34;.join([x for x in text.splitlines() if not x.startswith(&#34;#&#34;)])</code></pre>
 </details>
 </dd>
 <dt id="src.frontend.preprocessor.find_preprocessors"><code class="name flex">
@@ -255,7 +243,7 @@ if __name__ == &#34;__main__&#34;:
 
     Args:
         text: The string representation of C code.
-    
+
     Returns:
         List of the found preprocessor keywords and their corresponding values.
     &#34;&#34;&#34;
@@ -287,7 +275,7 @@ if __name__ == &#34;__main__&#34;:
 
     Args:
         file_name: The import file name.
-    
+
     Returns:
         Text of the import file.
     &#34;&#34;&#34;
@@ -341,14 +329,14 @@ if __name__ == &#34;__main__&#34;:
 
     Args:
         text: The string representation of C code.
-    
+
     Returns:
         The text with all C comments removed.
     &#34;&#34;&#34;
 
     # Regex that will capture both &#39;//&#39; and &#39;/* */&#39; style comments
     regex = r&#34;/(\*(\w|\W)*?\*/|/([^\n]*))&#34;
-    
+
     return re.sub(regex, &#39;&#39;, text)</code></pre>
 </details>
 </dd>
@@ -374,7 +362,7 @@ if __name__ == &#34;__main__&#34;:
 
     Args:
         text: text format of C code to be pre-processed.
-    
+
     Returns:
         Text of the C code after pre-processing.
     &#34;&#34;&#34;
@@ -383,7 +371,7 @@ if __name__ == &#34;__main__&#34;:
     text = remove_comments(text)
 
     # Find all preprocessor elements (if any)
-    # NOTE: Currrently the list is sorted so the &#39;#define&#39; statements are 
+    # NOTE: Currrently the list is sorted so the &#39;#define&#39; statements are
     #       first on the list. This prevents the manipulation of the imported C code.
     proc_list = sorted(find_preprocessors(text), key = lambda x: x[0])
 
@@ -418,7 +406,7 @@ if __name__ == &#34;__main__&#34;:
                 text = re.sub(rf&#39;\s*#include &lt;{file_name[0]}&gt;\n&#39;, &#34;&#34;, text)
                 #text = get_text(PATH_TO_STD_LIBRARIES) + text
                 continue
-            
+
             # Try to match to local library import (i.e. &#34;xyz.h&#34;, &#39;xyz.h&#39;)
             file_name = [&#34;&#34;.join(x) for x in re.findall(&#39;[&#34;]([^&#34;]*)[&#34;]|[\&#39;]([^&#34;]*)[\&#39;]&#39;, pre_proc[1])]
             if file_name:
@@ -468,7 +456,7 @@ if __name__ == &#34;__main__&#34;:
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.5</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.4</a>.</p>
 </footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad()</script>
