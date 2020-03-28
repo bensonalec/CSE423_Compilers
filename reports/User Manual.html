@@ -21,22 +21,66 @@
             <dd>
                 The compiler is split up into three modules, the frontend, the optimizer, and the backend. So far only the frontend is implemented, but there are two alternatives for how to execute the compiler. <code>run.py</code> is located in <code>./src</code> and provides the interface to the whole compiler. However if you desire to run the frontend by itself you can execute the file <code>frontend.py</code> located in <code>./src/frontend</code>. Both of these files will accept the following arguments:
                 <dl>
-                    <dt><code>-h</code></dt>
+                    <dt><code>
+                        -h
+                    </code></dt>
                     <dd>Displays the help message.</dd>
-                    <dt><code>--all</code></dt>
+                    <dt><code>
+                        --all
+                    </code></dt>
                     <dd>Prints out all intermediate representations as they are encountered in the compilation process.</dd>
-                    <dt><code>-l</code> or <code>--lex</code></dt>
+                    <dt><code>
+                        -l
+                    </code> or <code>
+                        --lex
+                    </code></dt>
                     <dd>Prints out the tokens produced by the lexer in a list.</dd>
-                    <dt><code>-t</code> or <code>--tree</code></dt>
+                    <dt><code>
+                        -t
+                    </code> or <code>
+                        --tree
+                    </code></dt>
                     <dd>Prints a list like tree structure of the tokens after they have been parsed.</dd>
-                    <dt><code>-p</code> or <code>--pretty</code></dt>
+                    <dt><code>
+                        -p
+                    </code> or <code>
+                        --pretty
+                    </code></dt>
                     <dd>Prints a tree structure of the tokens after they have been parsed.</dd>
-                    <dt><code>-a</code> or <code>--ast</code></dt>
+                    <dt><code>
+                        -a
+                    </code> or <code>
+                        --ast
+                    </code></dt>
                     <dd>Prints out the abstract syntax tree.</dd>
-                    <dt><code>-s</code> or <code>--symbol_table</code></dt>
-                    <dd>Prints out the known and unknown symbols encountered during semantic Analysis.</dd>
-                    <dt><code>-b</code> <code>[INPUT FILE]</code> or <code>--bnf</code> <code>[INPUT FILE]</code></dt>
+                    <dt><code>
+                        -s
+                    </code> or <code>
+                        --symbol_table
+                    </code></dt>
+                    <dd>Prints out the known and unknown symbols encountered during semantic analysis.</dd>
+                    <dt><code>
+                        -e
+                    </code> or <code>
+                        --errors
+                    </code></dt>
+                    <dd>Prints out the errors in the semantic analysis.</dd>
+                    <dt><code>
+                        -IR1
+                    </code></dt>
+                    <dd>Output the first level of IR in the optimizer phase.</dd>
+                    <dt><code>
+                        -b
+                    </code> <code>[INPUT FILE]</code> or <code>
+                        --bnf
+                    </code> <code>[INPUT FILE]</code></dt>
                     <dd>Allows for rebuilding of BNF grammar and parser before the frontend touches the input. <code>[INPUT FILE]</code> defaults to the file <code>BNF_defintion</code> located in <code>./src/frontend</code>. The BNF grammar is not updated unless this option is provided</dd>
+                    <dt><code>
+                        -i
+                    </code> <code>[INPUT FILE]</code> or <code>
+                        --input
+                    </code> <code>[INPUT FILE]</code></dt>
+                    <dd>Used to input IR from file.</dd>
                 </dl>
             </dd>
             <dt><h3>Subset of C supported</h3></dt>

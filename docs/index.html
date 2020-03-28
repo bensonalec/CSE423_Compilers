@@ -381,7 +381,27 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
             </code>
            </dt>
            <dd>
-            Prints out the known and unknown symbols encountered during semantic Analysis.
+            Prints out the known and unknown symbols encountered during semantic analysis.
+           </dd>
+           <dt>
+            <code>
+             -e
+            </code>
+            or
+            <code>
+             --errors
+            </code>
+           </dt>
+           <dd>
+            Prints out the errors in the semantic analysis.
+           </dd>
+           <dt>
+            <code>
+             -IR1
+            </code>
+           </dt>
+           <dd>
+            Output the first level of IR in the optimizer phase.
            </dd>
            <dt>
             <code>
@@ -412,6 +432,24 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              ./src/frontend
             </code>
             . The BNF grammar is not updated unless this option is provided
+           </dd>
+           <dt>
+            <code>
+             -i
+            </code>
+            <code>
+             [INPUT FILE]
+            </code>
+            or
+            <code>
+             --input
+            </code>
+            <code>
+             [INPUT FILE]
+            </code>
+           </dt>
+           <dd>
+            Used to input IR from file.
            </dd>
           </dl>
          </dd>
