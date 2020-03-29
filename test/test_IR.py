@@ -28,7 +28,7 @@ class IRTest(unittest.TestCase):
     def test_ir(self):
         print()
 
-        for c_filename in os.listdir(path_to_C_files):
+        for c_filename in sorted(os.listdir(path_to_C_files)):
             
             if c_filename.endswith('.c') and c_filename not in self.skip_programs:
 
@@ -61,9 +61,9 @@ class IRTest(unittest.TestCase):
                 sym.analyze()
                 ir = ir1.LevelOneIR(astree,sym)
                 l1ir = ir.construct()
-                result = ""
-                for x in l1ir:
-                    result += x + "\n"
+                result = str(ir)
+                # for x in l1ir:
+                #     result += x + "\n"
                 
                 with self.subTest():
                     self.assertEqual(result, expected)

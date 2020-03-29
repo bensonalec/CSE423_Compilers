@@ -11,7 +11,7 @@ int D.1234;
   goto <D.1237>;
   
   _0 = i;
-  i = i + 1;
+i = i + 1;
   
   <D.1235>:
   if (i < 10) goto <D.1236>; else goto <D.1237>;
@@ -27,14 +27,14 @@ int D.1234;
   goto <D.1243>;
   
   _0 = i;
-  i = i + 1;
+i = i + 1;
   
   <D.1242>:
   if (i < 10) goto <D.1243>; else goto <D.1244>;
   <D.1244>:
   
   _0 = i;
-  i = i + 1;
+i = i + 1;
   
   <D.1239>:
   if (i < 10) goto <D.1240>; else goto <D.1241>;
@@ -46,7 +46,7 @@ int D.1234;
   goto <D.1244>;
   
   _0 = i;
-  i = i + 1;
+i = i + 1;
   
   <D.1243>:
   if (i < 10) goto <D.1244>; else goto <D.1245>;
@@ -62,14 +62,14 @@ int D.1234;
   goto <D.1251>;
   
   _0 = i;
-  i = i + 1;
+i = i + 1;
   
   <D.1250>:
   if (i < 10) goto <D.1251>; else goto <D.1252>;
   <D.1252>:
   
   _0 = i;
-  i = i + 1;
+i = i + 1;
   
   <D.1247>:
   if (i < 10) goto <D.1248>; else goto <D.1249>;
