@@ -2,8 +2,8 @@ import re
 import sys
 import importlib
 
-simp = importlib.import_module("simplify", __name__)
 ast = importlib.import_module("AST_builder", __name__)
+irl = importlib.import_module("IRLine", __name__)
 
 class LevelOneIR():
     def __init__(self,astHead,symTable):
@@ -50,7 +50,7 @@ class LevelOneIR():
         return self.IR
 
     def __str__(self):
-        return "\n".join(self.IR) + "\n"
+        return "\n".join([str(x) for x in self.IR]) + "\n"
 
 def buildBoilerPlate(symTable):
     namesandparams = []
@@ -106,10 +106,14 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
             ind = [splits.index(x) for x in splits if element.name in x]
             ind = ind[0]
             if ind == 0:
-                tmp, tvs, labelList = simp.breakdownExpression(element, tvs=[], labelList=[labelDigit])
-                for x in tmp: lines.append(f"{prefix}{x}")
+
+                line = irl.IRLine(element, tvs=[], labelList=[labelDigit], prefix=prefix)
+                tvs, labelList = line.retrieve()
+                # tmp, tvs, labelList = simp.breakdownExpression(element, tvs=[], labelList=[labelDigit])
+                # for x in tmp: lines.append(f"{prefix}{x}")
                 if labelList != []:
                     labelDigit = labelList[-1]
+                lines.append(line)
             elif ind == 1:
                 # For Loop
                 ns = False
@@ -161,8 +165,14 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                         tmpNode = ast.ASTNode("!=", None)
                         tmpNode.children.append(element.children[1])
                         tmpNode.children.append(ast.ASTNode("0", tmpNode))
-                    tmp, tvs, labelList = simp.breakdownExpression(tmpNode, tvs=[], success=loopStart, failure=loopEnd, labelList=[labelDigit])
-                    for x in tmp: lines.append(f"{prefix}{x}")
+
+                    line = irl.IRLine(tmpNode, tvs=[], success=loopStart, failure=loopEnd, labelList=[labelDigit], prefix=prefix)
+                    tvs, labelList = line.retrieve()
+                    if labelList != []:
+                        labelDigit = labelList[-1]
+                    lines.append(line)
+
+        
                     lines.append(f"{prefix}<D.{loopEnd}>:")
                     if labelList != []:
                         labelDigit = labelList[-1]
@@ -221,13 +231,16 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                         tmpNode.children.append(ast.ASTNode("0", tmpNode))
 
                     #break down argument for if statement into smaller if statements
-                    temp_lines, tvs, labelList = simp.breakdownExpression(tmpNode, tvs=[], success=success_label, failure=failure_label, labelList=[labelDigit])
+                    line = irl.IRLine(tmpNode, tvs=[], success=success_label, failure=failure_label, labelList=[labelDigit], prefix=prefix)
+                    tvs, labelList = line.retrieve()
+                    lines.append(line)
+                    # temp_lines, tvs, labelList = simp.breakdownExpression(tmpNode, tvs=[], success=success_label, failure=failure_label, labelList=[labelDigit])
 
                     if labelList != []:
                         labelDigit = labelList[-1] + 1
 
                     #adds broken down if statement
-                    for x in temp_lines: lines.append(f"{prefix}{x}")
+                    # for x in temp_lines: lines.append(f"{prefix}{x}")
 
                     #Add goto for body statement
                     lines.append(f"{prefix}<D.{success_label}>:")
@@ -259,8 +272,11 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
 
                 # If returns some type of arithmetic expression, breaks it down.
                 if len(element.children) > 0 and element.children[0].children != []:
-                    tmp, tvs, labelList = simp.breakdownExpression(element.children[0], tvs=[], labelList=[labelDigit])
-                    for x in tmp: lines.append(f"{prefix}{x}")
+                    line = irl.IRLine(element.children[0], tvs=[], labelList=[labelDigit], prefix=prefix)
+                    tvs, labelList = line.retrieve()
+                    lines.append(line)
+                    # tmp, tvs, labelList = simp.breakdownExpression(element.children[0], tvs=[], labelList=[labelDigit])
+                    # for x in tmp: lines.append(f"{prefix}{x}")
                     lines.append(f"{prefix}D.{returnDigit} = {tvs[-1]};")
                     lines.append(f"{prefix}return D.{returnDigit};")
                     if labelList != []:
@@ -280,9 +296,12 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
 
                 # function call has parameters
                 if element.children[0] != []:
-                    tmp, tvs, labelList = simp.breakdownExpression(element, tvs=[], labelList=[labelDigit])
-                    tmp[-1] = tmp[-1].split(' = ')[1]
-                    for x in tmp: lines.append(f"{prefix}{x}")
+                    line = irl.IRLine(element.children[0], tvs=[], labelList=[labelDigit], prefix=prefix)
+                    tvs, labelList = line.retrieve()
+                    lines.append(line)
+                    # tmp, tvs, labelList = simp.breakdownExpression(element, tvs=[], labelList=[labelDigit])
+                    # tmp[-1] = tmp[-1].split(' = ')[1]
+                    # for x in tmp: lines.append(f"{prefix}{x}")
                     if labelList != []:
                         labelDigit = labelList[-1] + 1
 
@@ -332,9 +351,13 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                         tmpNode = ast.ASTNode("!=", None)
                         tmpNode.children.append(element.children[0])
                         tmpNode.children.append(ast.ASTNode("0", tmpNode))
-                tmp, tvs, labelList = simp.breakdownExpression(tmpNode, tvs=[], success=loopStart, failure=loopEnd, labelList=[labelDigit])
 
-                for x in tmp: lines.append(f"{prefix}{x}")
+                line = irl.IRLine(tmpNode, tvs=[], success=loopStart, failure=loopEnd, labelList=[labelDigit], prefix=prefix)
+                tvs, labelList = line.retrieve()
+                lines.append(line)
+                # tmp, tvs, labelList = simp.breakdownExpression(tmpNode, tvs=[], success=loopStart, failure=loopEnd, labelList=[labelDigit])
+
+                # for x in tmp: lines.append(f"{prefix}{x}")
                 lines.append(f"{prefix}<D.{loopEnd}>:")
 
                 if labelList != []:
@@ -359,8 +382,12 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                     lines.extend(temp_lines)
 
             elif ind == 11:
-                tmp, tvs, labelList_ = simp.breakdownExpression(element, tvs=[])
-                for x in tmp: lines.append(f"{prefix}{x}")
+                # prefix += "  "
+                line = irl.IRLine(element, tvs=[], prefix=prefix)
+                tvs, labelList = line.retrieve()
+                lines.append(line)
+                # tmp, tvs, labelList_ = simp.breakdownExpression(element, tvs=[])
+                # for x in tmp: lines.append(f"{prefix}{x}")
             else:
                 print("Unsupported at this time")
 

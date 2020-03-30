@@ -10,7 +10,7 @@ main ()
 int D.1235;
   int i;
 
-  _1 = return_strings("test",1);
+  _1 = return_strings("test", 1);
   i = _1;
 
 }
