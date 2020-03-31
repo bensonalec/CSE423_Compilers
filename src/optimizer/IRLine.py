@@ -250,7 +250,11 @@ class IRLine():
                 self.expression_breakdown(tmpNode, success, failure)
 
     def constantFolding(self):
-        #TODO: Implement modulus, maybe ++, --?
+        #Perform constant folding for the following operatros:
+        #   +,-,/,*,%
+        #On the following types:
+        #   int,float
+        #TODO: Maybe ++, --?
         print("Folding")
         for it,x in enumerate(self.treeList):
             #check that it's arithmetic
