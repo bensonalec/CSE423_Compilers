@@ -250,7 +250,7 @@ class IRLine():
                 self.expression_breakdown(tmpNode, success, failure)
 
     def constantFolding(self):
-        #perform a in order traversal, on the encountering of arithmetic, fold it
+        #TODO: Implement more operators, implement more types
         print("Folding")
         for it,x in enumerate(self.treeList):
             #check that it's arithmetic
@@ -262,7 +262,13 @@ class IRLine():
                             # self.treeList = [newValue]
                             self.treeList[it] = f"{x.var} = {newValue}"
                     except ValueError:
-                        pass
+                        try:
+                            if(float(x.lhs) and float(x.rhs)):
+                                newValue = str((float(x.lhs) + float(x.rhs)))
+                                # self.treeList = [newValue]
+                                self.treeList[it] = f"{x.var} = {newValue}"
+                        except ValueError:
+                            pass
                 elif(x.operator == "-"):
                     try:
                         if(int(x.lhs) and int(x.rhs)):
@@ -270,7 +276,13 @@ class IRLine():
                             # self.treeList = [newValue]
                             self.treeList[it] = f"{x.var} = {newValue}"
                     except ValueError:
-                        pass
+                        try:
+                            if(float(x.lhs) and float(x.rhs)):
+                                newValue = str((float(x.lhs) - float(x.rhs)))
+                                # self.treeList = [newValue]
+                                self.treeList[it] = f"{x.var} = {newValue}"
+                        except ValueError:
+                            pass
                 elif(x.operator == "*"):
                     try:
                         if(int(x.lhs) and int(x.rhs)):
@@ -278,6 +290,14 @@ class IRLine():
                             # self.treeList = [newValue]
                             self.treeList[it] = f"{x.var} = {newValue}"
                     except ValueError:
+                        try:
+                            if(float(x.lhs) and float(x.rhs)):
+                                newValue = str((float(x.lhs) * float(x.rhs)))
+                                # self.treeList = [newValue]
+                                self.treeList[it] = f"{x.var} = {newValue}"
+                        except ValueError:
+                            pass
+
                         pass
                 elif(x.operator == "/"):
                     try:
@@ -287,6 +307,14 @@ class IRLine():
                             self.treeList[it] = f"{x.var} = {newValue}"
                             print(it)
                     except ValueError:
+                        try:
+                            if(float(x.lhs) and float(x.rhs)):
+                                newValue = str((float(x.lhs) / float(x.rhs)))
+                                # self.treeList = [newValue]
+                                self.treeList[it] = f"{x.var} = {newValue}"
+                        except ValueError:
+                            pass
+
                         pass
 
         pass
