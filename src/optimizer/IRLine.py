@@ -261,10 +261,34 @@ class IRLine():
                             newValue = str((int(x.lhs) + int(x.rhs)))
                             # self.treeList = [newValue]
                             self.treeList[it] = f"{x.var} = {newValue}"
-                            print(it)
-                            pass
                     except ValueError:
                         pass
+                elif(x.operator == "-"):
+                    try:
+                        if(int(x.lhs) and int(x.rhs)):
+                            newValue = str((int(x.lhs) - int(x.rhs)))
+                            # self.treeList = [newValue]
+                            self.treeList[it] = f"{x.var} = {newValue}"
+                    except ValueError:
+                        pass
+                elif(x.operator == "*"):
+                    try:
+                        if(int(x.lhs) and int(x.rhs)):
+                            newValue = str((int(x.lhs) * int(x.rhs)))
+                            # self.treeList = [newValue]
+                            self.treeList[it] = f"{x.var} = {newValue}"
+                    except ValueError:
+                        pass
+                elif(x.operator == "/"):
+                    try:
+                        if(int(x.lhs) and int(x.rhs)):
+                            newValue = str((int(x.lhs) / int(x.rhs)))
+                            # self.treeList = [newValue]
+                            self.treeList[it] = f"{x.var} = {newValue}"
+                            print(it)
+                    except ValueError:
+                        pass
+
         pass
 
     def __str__(self):
