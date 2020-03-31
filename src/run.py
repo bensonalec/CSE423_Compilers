@@ -20,7 +20,6 @@ def main(args):
         sym = None
 
 
-
     # Execution of Optimization
     optimizer.mainAST(args,ast,sym)
 
@@ -58,9 +57,7 @@ if __name__ == "__main__":
 
     cmd_options.add_argument('-b', '--bnf', nargs='?', const=os.path.abspath(os.path.dirname(__file__)) + "/frontend/BNF_definition", type=str, help='Rebuilds the parser using the current BNF grammar')
 
-    cmd_options.add_argument('-O0',help='Does no optimization')
-
-    cmd_options.add_argument('-O1',help='Optimize the symbol table and AST')
+    cmd_options.add_argument('-O', '--opt', type=int, choices=range(3), default=0, help='Determines the optimization level')
 
     cmd_options.add_argument('-IR1',help='Output the first level of IR in the optimizer phase', action="store_true")
 
