@@ -66,6 +66,9 @@ class LevelOneIR():
 
         return self.IR
 
+    def constantFolding(self):
+        pass
+
     def __str__(self):
         return "\n".join([str(x) for x in self.IR]) + "\n"
 
