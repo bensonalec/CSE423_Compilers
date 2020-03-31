@@ -39,6 +39,7 @@ class IRLine():
             self.boolean_breakdown(self.astNode, success, failure)
         else:
             self.expression_breakdown(self.astNode, success, failure)
+        self.constantFolding()
 
     def retrieve(self):
         """
@@ -248,6 +249,19 @@ class IRLine():
             else:
                 self.expression_breakdown(tmpNode, success, failure)
 
+    def constantFolding(self):
+        #perform a in order traversal, on the encountering of arithmetic, fold it
+        print("Folding")  
+        for x in self.treeList:
+            #check that it's arithmetic
+            if "operator" in x.__dict__:
+                if(x.operator == "+"):
+                    try:
+                        if(int(x.lhs) and int(x.rhs)):
+                            print(int(x.lhs) + int(x.rhs))
+                    except ValueError:
+                        pass
+        pass
 
     def __str__(self):
         return "\n".join([f"{self.prefix}{x}" for x in self.treeList])
