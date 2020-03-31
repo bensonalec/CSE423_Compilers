@@ -250,7 +250,7 @@ class IRLine():
                 self.expression_breakdown(tmpNode, success, failure)
 
     def constantFolding(self):
-        #TODO: Implement more operators, implement more types
+        #TODO: Implement modulus, maybe ++, --?
         print("Folding")
         for it,x in enumerate(self.treeList):
             #check that it's arithmetic
@@ -316,6 +316,21 @@ class IRLine():
                             pass
 
                         pass
+                elif(x.operator == "%"):
+                    try:
+                        if(int(x.lhs) and int(x.rhs)):
+                            newValue = str((int(x.lhs) % int(x.rhs)))
+                            # self.treeList = [newValue]
+                            self.treeList[it] = f"{x.var} = {newValue}"
+                    except ValueError:
+                        try:
+                            if(float(x.lhs) and float(x.rhs)):
+                                newValue = str((float(x.lhs) % float(x.rhs)))
+                                # self.treeList = [newValue]
+                                self.treeList[it] = f"{x.var} = {newValue}"
+                        except ValueError:
+                            pass
+
 
         pass
 
