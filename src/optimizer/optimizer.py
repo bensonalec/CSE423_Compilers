@@ -38,8 +38,7 @@ if __name__ == "__main__":
     cmd_options = argparse.ArgumentParser(description='Optimizer of the compiler. Can take in an AST and Symbol Table or a File with an IR')
 
     cmd_options.add_argument('--all',help='Prints out all intermediate representations as they are encountered in the compilation process', action="store_true")
-    cmd_options.add_argument('-O0',help='Does no optimization')
-    cmd_options.add_argument('-O1',help='Optimize the symbol table and AST')
+    cmd_options.add_argument('-O', '--opt', type=int, choices=range(3), default=0, help='Determines the optimization level')
     cmd_options.add_argument('-i', action='store', dest="input", type=str, help="Used to input IR from file")
     args = cmd_options.parse_args()
 
