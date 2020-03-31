@@ -33,19 +33,19 @@ for command line arguments that can be used to determine which portion is run.
 &#34;&#34;&#34;
 import os
 import argparse
-import importlib
+from importlib.machinery import SourceFileLoader
 import traceback
 import sys
 
 from rply.errors import LexingError
 from copy import deepcopy
 
-lex = importlib.import_module(&#34;lexer&#34;, __name__)
-par = importlib.import_module(&#34;parser&#34;, __name__)
-btp = importlib.import_module(&#34;bnfToParser&#34;, __name__)
-ast = importlib.import_module(&#34;AST_builder&#34;, __name__)
-sem = importlib.import_module(&#34;semantics&#34;, __name__)
-pre = importlib.import_module(&#34;preprocessor&#34;, __name__)
+lex = SourceFileLoader(&#34;lexer&#34;, f&#34;{os.path.dirname(__file__)}/lexer.py&#34;).load_module()
+par = SourceFileLoader(&#34;parser&#34;, f&#34;{os.path.dirname(__file__)}/parser.py&#34;).load_module()
+btp = SourceFileLoader(&#34;bnfToParser&#34;, f&#34;{os.path.dirname(__file__)}/bnfToParser.py&#34;).load_module()
+ast = SourceFileLoader(&#34;AST_builder&#34;, f&#34;{os.path.dirname(__file__)}/AST_builder.py&#34;).load_module()
+sem = SourceFileLoader(&#34;semantics&#34;, f&#34;{os.path.dirname(__file__)}/semantics.py&#34;).load_module()
+pre = SourceFileLoader(&#34;preprocessor&#34;, f&#34;{os.path.dirname(__file__)}/preprocessor.py&#34;).load_module()
 
 
 def getTree(head,level):
@@ -55,7 +55,7 @@ def getTree(head,level):
     Args:
         head: The head node of the tree.
         level: The current level of the tree.
-    
+
     Returns:
         A string of the nodes in the tree.
     &#34;&#34;&#34;
@@ -69,7 +69,7 @@ def getTree(head,level):
             li.append(node)
         else:
             li.append(node.token)
-    
+
     out = (level,li)
 
 
@@ -94,7 +94,7 @@ def print_tokens(tokens):
 def main(args):
     &#34;&#34;&#34;
     The main function of the frontend, takes in command line input via an object from argparse, and the name of the file.
-    
+
     Args:
         args: The object that contains the command line arguements.
         fi: The file object that is open.
@@ -103,7 +103,7 @@ def main(args):
     if args.bnf:
         btp.main(args.bnf)
         importlib.reload(par)
-    
+
 
     try:
 
@@ -120,9 +120,9 @@ def main(args):
         lexer = lex.Lexer().get_lexer()
         tokens = lexer.lex(text_input)
         lex.validateTokens(tokens)
-        
+
         if args.lex or args.all:
-            # Print the tokens from the lexer 
+            # Print the tokens from the lexer
             print_tokens(tokens)
 
         #set up parser and parse the given tokens
@@ -136,28 +136,36 @@ def main(args):
 
         if args.tree or args.all:
             # Represent parse tree as a list with levels
-            print(head.getListView(0))
+            # print(head.getListView(0))
+            print(head.__repr__)
+            # print(str(head) == head.getListView(0))
 
         if args.pretty or args.all:
             # Pretty print parse tree
             # pprint_tree(head)
-            head.print_ParseTree()
+            # head.print_ParseTree()
+            print(head)
 
         # Build Abstract Syntax Tree
         astree = ast.buildAST(head)
 
         if args.ast or args.all:
             # Pretty print AST
-            astree.print_AST()
+            # astree.print_AST()
+            print(astree)
 
         # Initialize symbol table and begin semantic analysis
         sym = sem.symbol_table(astree)
         sym.analyze()
 
         if args.symbol_table or args.all:
-            sym.print_symbol_table()
-            print (&#34;&#34;)
-            sym.print_unknown_symbols()
+            # sym.print_symbol_table()
+            # sym.print_unknown_symbols()
+
+            print (sym)
+
+        if args.errors or args.all:
+            sym.printSemanticErrors()
 
     except LexingError as err:
         print(&#34;Received error(s) from token validation. Exiting...&#34;)
@@ -180,12 +188,12 @@ if __name__ == &#34;__main__&#34;:
 
     #decription of the comiler
     cmd_options = argparse.ArgumentParser(description=&#39;Frontend of the compiler. Can produce tokens and syntax tree&#39;)
-    
+
     cmd_options.add_argument(&#39;--all&#39;,help=&#39;Prints out all intermediate representations as they are encountered in the compilation process&#39;, action=&#34;store_true&#34;)
 
     #input file option
     cmd_options.add_argument(&#39;input_file&#39;, metavar=&#39;&lt;filename.c&gt;&#39;, type=str, help=&#39;Input c file.&#39;)
-    
+
     #Arguement to print tokens from lexer
     cmd_options.add_argument(&#39;-l&#39;,&#39;--lex&#39;, help=&#39;Prints out tokens from lexer&#39;, action=&#39;store_true&#39;)
 
@@ -201,6 +209,7 @@ if __name__ == &#34;__main__&#34;:
 
     cmd_options.add_argument(&#39;-b&#39;, &#39;--bnf&#39;, nargs=&#39;?&#39;, const=os.path.realpath(&#34;./BNF_definition&#34;), type=str, help=&#39;Rebuilds the parser using the current BNF grammar&#39;)
 
+    cmd_options.add_argument(&#39;-e&#39;, &#39;--errors&#39;,help=&#39;Prints out the errors in the semantic analysis&#39;,action=&#34;store_true&#34;)
 
     #generate arguements
     args = cmd_options.parse_args()
@@ -214,8 +223,7 @@ if __name__ == &#34;__main__&#34;:
         if not args.input_file.endswith(&#34;.c&#34;):
             print(&#34;Error file must end with .c&#34;)
         cmd_options.print_help()
-        exit()
-    </code></pre>
+        exit()</code></pre>
 </details>
 </section>
 <section>
@@ -250,7 +258,7 @@ if __name__ == &#34;__main__&#34;:
     Args:
         head: The head node of the tree.
         level: The current level of the tree.
-    
+
     Returns:
         A string of the nodes in the tree.
     &#34;&#34;&#34;
@@ -264,7 +272,7 @@ if __name__ == &#34;__main__&#34;:
             li.append(node)
         else:
             li.append(node.token)
-    
+
     out = (level,li)
 
 
@@ -294,7 +302,7 @@ if __name__ == &#34;__main__&#34;:
 <pre><code class="python">def main(args):
     &#34;&#34;&#34;
     The main function of the frontend, takes in command line input via an object from argparse, and the name of the file.
-    
+
     Args:
         args: The object that contains the command line arguements.
         fi: The file object that is open.
@@ -303,7 +311,7 @@ if __name__ == &#34;__main__&#34;:
     if args.bnf:
         btp.main(args.bnf)
         importlib.reload(par)
-    
+
 
     try:
 
@@ -320,9 +328,9 @@ if __name__ == &#34;__main__&#34;:
         lexer = lex.Lexer().get_lexer()
         tokens = lexer.lex(text_input)
         lex.validateTokens(tokens)
-        
+
         if args.lex or args.all:
-            # Print the tokens from the lexer 
+            # Print the tokens from the lexer
             print_tokens(tokens)
 
         #set up parser and parse the given tokens
@@ -336,28 +344,36 @@ if __name__ == &#34;__main__&#34;:
 
         if args.tree or args.all:
             # Represent parse tree as a list with levels
-            print(head.getListView(0))
+            # print(head.getListView(0))
+            print(head.__repr__)
+            # print(str(head) == head.getListView(0))
 
         if args.pretty or args.all:
             # Pretty print parse tree
             # pprint_tree(head)
-            head.print_ParseTree()
+            # head.print_ParseTree()
+            print(head)
 
         # Build Abstract Syntax Tree
         astree = ast.buildAST(head)
 
         if args.ast or args.all:
             # Pretty print AST
-            astree.print_AST()
+            # astree.print_AST()
+            print(astree)
 
         # Initialize symbol table and begin semantic analysis
         sym = sem.symbol_table(astree)
         sym.analyze()
 
         if args.symbol_table or args.all:
-            sym.print_symbol_table()
-            print (&#34;&#34;)
-            sym.print_unknown_symbols()
+            # sym.print_symbol_table()
+            # sym.print_unknown_symbols()
+
+            print (sym)
+
+        if args.errors or args.all:
+            sym.printSemanticErrors()
 
     except LexingError as err:
         print(&#34;Received error(s) from token validation. Exiting...&#34;)

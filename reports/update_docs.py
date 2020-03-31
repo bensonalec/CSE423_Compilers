@@ -1,5 +1,5 @@
 """
-This module is only supposed to generate the documentation for the compiler as a whole including User Manual. 
+This module is only supposed to generate the documentation for the compiler as a whole including User Manual.
 """
 
 import os
@@ -8,6 +8,63 @@ import itertools
 import pathlib
 
 import bs4
+
+from copy import deepcopy
+from importlib.machinery import SourceFileLoader
+
+print (pathlib.Path(__file__).parent)
+
+prep = SourceFileLoader("preprocessor", f"{pathlib.Path(__file__).parent}/../src/frontend/preprocessor.py").load_module()
+lexe = SourceFileLoader("lexer", f"{pathlib.Path(__file__).parent}/../src/frontend/lexer.py").load_module()
+pars = SourceFileLoader("parser", f"{pathlib.Path(__file__).parent}/../src/frontend/parser.py").load_module()
+astt = SourceFileLoader("AST_builder", f"{pathlib.Path(__file__).parent}/../src/frontend/AST_builder.py").load_module()
+sema = SourceFileLoader("semantics", f"{pathlib.Path(__file__).parent}/../src/frontend/semantics.py").load_module()
+ir1 = SourceFileLoader("IR_Lv1_Builder", f"{pathlib.Path(__file__).parent}/../src/optimizer/IR_Lv1_Builder.py").load_module()
+
+def retrieve_lex(file):
+    lexer = lexe.Lexer().get_lexer()
+    tokens = lexer.lex(file)
+    lexe.validateTokens(tokens)
+
+    return [(tokens, lexe.tokensToString(deepcopy(tokens)))]
+
+def retrieve_par(file):
+    pg = pars.Parser()
+    pg.parse()
+    parser = pg.get_parser()
+    tmp = retrieve_lex(file)
+    parser.parse(tmp[-1][0])
+
+    head = pg.getTree()
+
+    return tmp + [(head, head.__repr__())]
+
+def retrieve_ast(file):
+    tmp = retrieve_par(file)
+    astree = astt.buildAST(tmp[-1][0])
+
+    return tmp + [(astree, str(astree))]
+
+def retrieve_sym(file):
+    tmp = retrieve_ast(file)
+    sym = sema.symbol_table(tmp[-1][0])
+    sym.analyze()
+
+    return tmp + [(sym, str(sym))]
+
+def retrieve_sem(file):
+    tmp = retrieve_sym(file)
+
+    return tmp
+
+def retrieve_ir1(file):
+    tmp = retrieve_sem(file)
+
+    ir = ir1.LevelOneIR(tmp[-2][0], tmp[-1][0])
+    ir.construct()
+
+
+    return tmp + [(ir, str(ir))]
 
 if __name__ == "__main__":
     # Setus up /docs for the newly generated documentation.
@@ -49,13 +106,15 @@ if __name__ == "__main__":
         b = True
 
         style = "text-align: center; "
-        
+
         if td.string == "✓":
             style += "background: rgb(170, 255, 170);"
         elif td.string == "✕":
             style += "background: rgb(255, 170, 170);"
         elif td.string == "−":
             style += "background: rgb(170, 170, 170);"
+        elif td.string == "…":
+            style += "background: rgb(255, 255, 170);"
         else:
             b = False
 
@@ -82,7 +141,7 @@ if __name__ == "__main__":
     for idx, dd in enumerate(des_parser.select("h2"), idx + 1):
         dd['id'] = f"section_{idx}" if 'id' not in dd else dd['id']
         sections.append(dd)
-        
+
     for idx, h3 in enumerate(des_parser.select("h3"), idx + 1):
         h3['id'] = f"section_{idx}" if 'id' not in h3 else h3['id']
         sections.append(h3)
@@ -90,7 +149,7 @@ if __name__ == "__main__":
     for idx, um in enumerate(usr_parser.select("h2"), idx + 1):
         um['id'] = f"section_{idx}" if 'id' not in um else um['id']
         sections.append(um)
-        
+
     for idx, h3 in enumerate(usr_parser.select("h3"), idx + 1):
         h3['id'] = f"section_{idx}" if 'id' not in h3 else h3['id']
         sections.append(h3)
@@ -135,10 +194,15 @@ if __name__ == "__main__":
     header.insert_after(names)
 
     doc_loc = usr_parser.select("dl")[-1]
-    comp_loc = pathlib.Path("../src/run.py")
-    comp_flags = [("-l", "Token List"), ("-p", "Parse Tree"), ("-a", "Abstract Syntax Tree"), ("-s", "Symbol Table")]
+    comp_flags = [
+        ("Token List", 0),
+        ("Parse Tree", 1),
+        ("Abstract Syntax Tree", 2),
+        ("Symbol Table", 3),
+        ("Linear IR1 (-O0)", 4),
+    ]
 
-    for program in [x for x in pathlib.Path("../test/programs").iterdir() if x.suffix == '.c' ]:
+    for program in [x for x in sorted(pathlib.Path("../test/programs").iterdir()) if x.suffix == '.c' ]:
         print (program)
         title = usr_parser.new_tag("dt")
         title.string = program.stem
@@ -146,21 +210,21 @@ if __name__ == "__main__":
 
         data = usr_parser.new_tag("dd")
         data.append(usr_parser.new_tag("div", attrs={'class' : "example_buttons"}))
-        for name in ["Program"] + [x[1] for x in comp_flags]:
+        for name in ["Program"] + [x[0] for x in comp_flags]:
             a = usr_parser.new_tag("a")
             a.string = name
             data.select("div")[-1].append(a)
-        
+
         par = usr_parser.new_tag("div", attrs={'class' : "example_representations"})
-        for idx, arg in enumerate([""] + [x[0] for x in comp_flags]):
+        outs = retrieve_ir1(prep.run(program.read_text(), program.resolve()))
+        outs.insert(0, ("", program.read_text()))
+        for idx, arg in enumerate([""] + [x[-1] for x in comp_flags]):
             div = usr_parser.new_tag("div")
             div.append(usr_parser.new_tag("pre", attrs={'style' : "overflow-x: auto;"}))
+            div.pre.string = outs[idx][-1]
             if idx == 0:
-                div.pre.string = program.read_text()
                 div.pre.string.wrap(usr_parser.new_tag("code", attrs={'class' : "C++ hljs"}))
-            else:
-                inp = " ".join(["python", str(comp_loc.resolve()), arg, str(program.resolve())])
-                div.pre.string = os.popen(inp).read()
+
             par.append(div)
         data.append(par)
         doc_loc.append(title)

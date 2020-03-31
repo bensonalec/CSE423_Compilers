@@ -2,11 +2,12 @@
 This module serves as the main interface to the optimization process in order to streamline the compiler.
 """
 
+import os
 import argparse
-import importlib
+from importlib.machinery import SourceFileLoader
 
-ir1 = importlib.import_module("IR_Lv1_Builder", __name__)
-import_ir = importlib.import_module("import_ir", __name__)
+ir1 = SourceFileLoader("IR_Lv1_Builder", f"{os.path.dirname(__file__)}/IR_Lv1_Builder.py").load_module()
+import_ir = SourceFileLoader("import_ir", f"{os.path.dirname(__file__)}/import_ir.py").load_module()
 
 def mainAST(args,astHead,symbolTable):
     """

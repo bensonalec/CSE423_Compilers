@@ -1,18 +1,35 @@
+"""
+This module serves to construct the first linear intermediate representation in the compiler.
+"""
+import os
 import re
 import sys
-import importlib
+from importlib.machinery import SourceFileLoader
 
-ast = importlib.import_module("AST_builder", __name__)
-irl = importlib.import_module("IRLine", __name__)
+irl = SourceFileLoader("IRLine", f"{os.path.dirname(__file__)}/IRLine.py").load_module()
+ast = SourceFileLoader("AST_builder", f"{os.path.dirname(__file__)}/../frontend/AST_builder.py").load_module()
 
 class LevelOneIR():
+    """
+    Constructs the linear representation of the input program in order to allow for optimizations such as constant folding, constant proagation, as well as removal of unused variables and functions depending on the optimization level provided as a commandline argument.
+    """
     def __init__(self,astHead,symTable):
+        """
+        Args:
+            astHead: The root node of the AST
+            symTable: The symbol table for the input
+        """
         self.astHead = astHead
         self.symTable = symTable
         self.IR = []
 
     def construct(self):
+        """
+        Constructs the linear representation for the object.
 
+        Returns:
+            IR: A collection of strings and IRLine objects which can be optimized and/or transformed into assembly.
+        """
         sym = self.symTable
         ntv = self.astHead
 
@@ -72,6 +89,12 @@ def buildBoilerPlate(symTable):
     return namesandparams
 
 def beginWrapper(function_tuple, returnDigit):
+    """
+    Produces the function wrappers and initializes the return digit for the given function.
+
+    Returns:
+        lines: The lines of the start of the function
+    """
     lines = []
     params = ""
     func_type = function_tuple[0].children[0].name
@@ -89,6 +112,21 @@ def beginWrapper(function_tuple, returnDigit):
     return lines
 
 def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None, prefix=""):
+    """
+    Produces a linear representation of the content nested within `node`.
+
+    Args:
+        node: The AST node.
+        returnDigit: The variable to store the return value.
+        labelDigit: A list of all previously used label values.
+        successDigit: The label value to jump to if there is a `continue`.
+        failureDigit: The label value to jump to if there is a `break`.
+        prefix: The string prefix for indenting the given line.
+
+    Returns:
+        lines: The lines produced from the content.
+        labelDigit: The list of all used label values.
+    """
     lines = []
     if node.name == "body":
         il = [x.children[0] for x in node.children if x.name == "=" and x.children[0].children[0].name in ["auto", "long double", "double", "float", "long long", "long long int", "long", "int", "short", "char"]]
@@ -159,7 +197,6 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                 # Start of conditionals for the loop
                 if conditionLabel != None:
                     lines.append(f"{prefix}<D.{conditionLabel}>:")
-                    # TODO: Create tempoary AST if its a unary logical comparison
                     tmpNode = element.children[1]
                     if tmpNode.name not in ['||', '&&', "<=", "<", ">=", ">", "==", "!="]:
                         tmpNode = ast.ASTNode("!=", None)
@@ -172,7 +209,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                         labelDigit = labelList[-1]
                     lines.append(line)
 
-        
+
                     lines.append(f"{prefix}<D.{loopEnd}>:")
                     if labelList != []:
                         labelDigit = labelList[-1]
@@ -223,7 +260,6 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                             lines.append(f"{prefix}}}")
                         break
 
-                    # TODO: Create tempoary AST if its a unary logical comparison
                     tmpNode = case.children[0]
                     if tmpNode.name not in ['||', '&&', "<=", "<", ">=", ">", "==", "!="]:
                         tmpNode = ast.ASTNode("!=", None)
@@ -345,7 +381,6 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
 
                 # Start of conditionals for the loop
                 lines.append(f"{prefix}<D.{conditionLabel}>:")
-                # TODO: Create tempoary AST if its a unary logical comparison
                 tmpNode = element.children[0]
                 if tmpNode.name not in ['||', '&&', "<=", "<", ">=", ">", "==", "!="]:
                         tmpNode = ast.ASTNode("!=", None)

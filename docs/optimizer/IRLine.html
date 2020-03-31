@@ -1,0 +1,1472 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.4" />
+<title>src.optimizer.IRLine API documentation</title>
+<meta name="description" content="This module abstracts the necessary lines for the linear IR to allow for easier optimization methods like constant propagation, constant folding, …" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>src.optimizer.IRLine</code></h1>
+</header>
+<section id="section-intro">
+<p>This module abstracts the necessary lines for the linear IR to allow for easier optimization methods like constant propagation, constant folding, unused references ect.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+This module abstracts the necessary lines for the linear IR to allow for easier optimization methods like constant propagation, constant folding, unused references ect.
+&#34;&#34;&#34;
+import importlib
+
+ast = importlib.import_module(&#34;AST_builder&#34;, __name__)
+
+class IRLine():
+    &#34;&#34;&#34;
+    A class that contains all the intermediate representations for a given AST node. Will produce a linear representation when converted to a string
+    &#34;&#34;&#34;
+    def __init__(self, node, tvs = [], success = None, failure = None, labelList = [], prefix = &#34;&#34;):
+        &#34;&#34;&#34;
+        Args:
+            node: The AST node corresponding to the collection of lines
+            tvs: The current tempoary variable storage
+            success: The success label
+            failure: The failure label
+            labelList: The list of used label names
+            prefix: The output prefix
+        &#34;&#34;&#34;
+        self.astNode = node
+        self.treeList = []
+
+        self.tvs = tvs
+        self.labelList = labelList
+        self.prefix = prefix
+
+        self.log_ops = [&#39;||&#39;, &#39;&amp;&amp;&#39;]
+        self.comp_ops = [&#34;&lt;=&#34;, &#34;&lt;&#34;, &#34;&gt;=&#34;, &#34;&gt;&#34;, &#34;==&#34;, &#34;!=&#34;]
+        self.arth_ops = [&#34;+&#34;, &#34;-&#34;, &#34;*&#34;, &#34;/&#34;, &#34;%&#34;, &#34;&lt;&lt;&#34;, &#34;&gt;&gt;&#34;, &#34;|&#34;, &#34;&amp;&#34;, &#34;^&#34;, &#34;!&#34;, &#34;~&#34;]
+        self.spec_ops = [&#34;++&#34;, &#34;--&#34;]
+        self.ass_ops = [&#34;=&#34;, &#34;+=&#34;, &#34;-=&#34;, &#34;*=&#34;, &#34;/=&#34;, &#34;%=&#34;, &#34;&lt;&lt;=&#34;, &#34;&gt;&gt;=&#34;, &#34;|=&#34;, &#34;&amp;=&#34;, &#34;^=&#34;]
+        self.id_ops = [&#34;var&#34;, &#34;call&#34;]
+
+        # Based on the node construct the needed intermediate trees in order
+
+        if node.name in self.log_ops:
+            self.boolean_breakdown(self.astNode, success, failure)
+        else:
+            self.expression_breakdown(self.astNode, success, failure)
+
+    def retrieve(self):
+        &#34;&#34;&#34;
+        Retrieves the updated tempoary variable storage and list of unavialable label names for the future.
+
+        Returns:
+            tvs: The current tempoary variable storage
+            labelList: The list of used label names
+        &#34;&#34;&#34;
+        return self.tvs, self.labelList
+
+    def expression_breakdown(self, root, success, failure):
+        &#34;&#34;&#34;
+        Breaks down smaller expressions in order to evaluate them
+
+        Args:
+            root: The root AST node
+            success: The success label
+            failure: The failure label
+        &#34;&#34;&#34;
+        if success not in self.labelList and success != None:
+            self.labelList.append(success)
+        if failure not in self.labelList and failure != None:
+            self.labelList.append(failure)
+
+        ns = root.list_POT()
+
+        ns = [x for x in ns if x.name in self.arth_ops or x.name in self.spec_ops or x.name in self.ass_ops or x.name in self.id_ops or x.name in self.comp_ops]
+        for node in ns:
+            if node.name in self.comp_ops:
+                self.treeList.append(
+                    IRIf(
+                        node,
+                        success,
+                        failure,
+                        [self.tvs.pop() for x in node.children if len(x.children) != 0]
+                    )
+                )
+
+            elif node.name in self.arth_ops:
+                self.treeList.append(
+                    IRArth(
+                        node,
+                        [self.tvs.pop() for x in node.children if len(x.children) != 0],
+                        self.tvs
+                    )
+                )
+
+                self.tvs.append(self.treeList[-1].var)
+
+            elif node.name in self.spec_ops:
+                var = self.tvs.pop()
+
+                # Create a temporay AST to deal with storing of the current value of the variable
+                tmpNode = ast.ASTNode(&#34;=&#34;, None)
+                tmpNode.children.append(ast.ASTNode(f&#34;_{len(self.tvs)}&#34;, tmpNode))
+                tmpNode.children.append(ast.ASTNode(var, tmpNode))
+
+                self.treeList.append(
+                    IRAssignment(
+                        f&#34;_{len(self.tvs)}&#34;,
+                        var
+                    )
+                )
+                if [node.children.index(x) for x in node.children if x.name == &#34;NULL&#34;][0] == 1:
+                    self.treeList.append(
+                        IRSpecial(
+                            node,
+                            var
+                        )
+                    )
+                else:
+                    self.treeList.insert(len(self.treeList) - 2,
+                        IRSpecial(
+                            node,
+                            var
+                        )
+                    )
+
+                self.tvs.append(tmpNode.children[0].name)
+
+            elif node.name in self.ass_ops:
+                if self.ass_ops.index(node.name) == 0:
+                    lhs = None
+                    rhs = None
+                    # Case 1: Assignment is constant. ie. int i = 0
+                    if len(node.children[1].children) == 0:
+                        lhs = self.tvs.pop()
+                        rhs = node.children[1].name
+                    # Case 2: Assignment is complex
+                    else:
+                        lhs = node.children[0].children[len(node.children[0].children)-1].name
+                        rhs = self.tvs.pop()
+
+                    self.treeList.append(
+                            IRAssignment(
+                                lhs,
+                                rhs
+                            )
+                        )
+                else:
+                    # create a temporary parent node
+                    p = ast.ASTNode(&#34;=&#34;, None)
+
+                    # append the variable who is assigned a value as its first child
+                    p.children.append(node.children[0])
+
+                    # create a right subtree with the correct operation
+                    r = ast.ASTNode(node.name[:-1], p)
+                    p.children.append(r)
+
+                    # assign the variable as the left operand of the new expression
+                    r.children.append(node.children[0])
+
+                    # assign the remaining operations as the right operand of the new expression
+                    r.children.append(node.children[1])
+
+                    self.expression_breakdown(p, success, failure)
+
+            elif node.name in self.id_ops:
+                if node.name == &#34;var&#34;:
+                    self.tvs.append(f&#34;{node.children[len(node.children)-1].name}&#34;)
+                elif node.name == &#34;call&#34;:
+                    # list of indices that correspond to the complex parameters of the function call
+                    complexP = [node.children[0].children.index(x) for x in node.children[0].children if len(x.children) &gt; 0]
+                    simpleP = [x for x in range(len(node.children[0].children)) if x not in complexP]
+
+                    params = [self.tvs.pop() for x in range(len(node.children[0].children)) if x in complexP]
+                    self.treeList.append(
+                        IRFunction(
+                            node,
+                            [params.pop() if x in complexP else node.children[0].children[x].name for x in range(len(node.children[0].children))],
+                            self.tvs
+                        )
+                    )
+
+                    self.tvs.append(self.treeList[-1].var)
+
+    def boolean_breakdown(self, root, success, failure):
+        &#34;&#34;&#34;
+        Breaks down larger boolean expressions in order to evaluate them
+
+        Args:
+            root: The root AST node
+            success: The success label
+            failure: The failure label
+        &#34;&#34;&#34;
+        if success not in self.labelList and success != None:
+            self.labelList.append(success)
+        if failure not in self.labelList and failure != None:
+            self.labelList.append(failure)
+
+        index = self.log_ops.index(root.name)
+        if index == 0:
+            # OR
+            tmp_label = max(self.labelList)
+            self.labelList.append(tmp_label+1)
+            tmpNode = root.children[0]
+            if tmpNode.name not in self.comp_ops and tmpNode.name not in log_ops:
+                tmpNode = ast.ASTNode(&#34;!=&#34;, None)
+                tmpNode.children.append(root.children[0])
+                tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
+
+            if tmpNode.name in self.log_ops:
+                self.boolean_breakdown(tmpNode, success, tmp_label)
+            else:
+                self.expression_breakdown(tmpNode, success, tmp_label)
+
+            self.treeList.append(IRJump(f&#34;&lt;D.{tmp_label}&gt;&#34;))
+
+            tmpNode = root.children[1]
+            if tmpNode.name not in self.comp_ops and tmpNode.name not in log_ops:
+                tmpNode = ast.ASTNode(&#34;!=&#34;, None)
+                tmpNode.children.append(root.children[1])
+                tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
+
+            if tmpNode.name in self.log_ops:
+                self.boolean_breakdown(tmpNode, success, failure)
+            else:
+                self.expression_breakdown(tmpNode, success, failure)
+
+        elif index == 1:
+            # AND
+            tmp_label = max(self.labelList)
+            self.labelList.append(tmp_label+1)
+            tmpNode = root.children[0]
+            if tmpNode.name not in self.comp_ops and tmpNode.name not in log_ops:
+                tmpNode = ast.ASTNode(&#34;!=&#34;, None)
+                tmpNode.children.append(root.children[0])
+                tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
+
+            if tmpNode.name in self.log_ops:
+                self.boolean_breakdown(tmpNode, tmp_label, failure)
+            else:
+                self.expression_breakdown(tmpNode, tmp_label, failure)
+
+            self.treeList.append(IRJump(f&#34;&lt;D.{tmp_label}&gt;&#34;))
+
+            tmpNode = root.children[1]
+            if tmpNode.name not in self.comp_ops and tmpNode.name not in log_ops:
+                tmpNode = ast.ASTNode(&#34;!=&#34;, None)
+                tmpNode.children.append(root.children[1])
+                tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
+
+            if tmpNode.name in self.log_ops:
+                self.boolean_breakdown(tmpNode, success, failure)
+            else:
+                self.expression_breakdown(tmpNode, success, failure)
+
+
+    def __str__(self):
+        return &#34;\n&#34;.join([f&#34;{self.prefix}{x}&#34; for x in self.treeList])
+
+class IRNode():
+    &#34;&#34;&#34;
+    Abstract intermediate representation node. Base class for all other IR representations other than IRLines.
+    &#34;&#34;&#34;
+    def __init__(self):
+        pass
+
+    def __str__(self):
+        pass
+
+    def __repr__():
+        pass
+
+class IRJump(IRNode):
+    &#34;&#34;&#34;
+    Intermediate representation node for a jump label.
+    &#34;&#34;&#34;
+    def __init__(self, name):
+        &#34;&#34;&#34;
+        Args:
+            name: Name of the jump label
+        &#34;&#34;&#34;
+        self.name = name
+
+    def __str__(self):
+        return f&#34;{self.name}:&#34;
+
+    def __repr__():
+        pass
+
+class IRGoTo(IRNode):
+    &#34;&#34;&#34;
+    Intermediate representation node for a goto label.
+    &#34;&#34;&#34;
+    def __init__(self, name):
+        &#34;&#34;&#34;
+        Args:
+            name: Name of the label which is jumped to
+        &#34;&#34;&#34;
+        self.name = name
+
+    def __str__(self):
+        return f&#34;goto {self.name};&#34;
+
+    def __repr__():
+        pass
+
+class IRIf(IRNode):
+    &#34;&#34;&#34;
+    Intermediate representation node for an if statement. If statements are constructed to represent actual If Statements, While Loops, and For Loops in C.
+    &#34;&#34;&#34;
+    def __init__(self, node, success, failure, ops):
+        &#34;&#34;&#34;
+        Args:
+            node: `AST-node` for the given 
+            success: Success label digit
+            failure: Failure label digit
+            ops: The potential complex operands for the left/right hand side of the comparison
+        &#34;&#34;&#34;
+
+        self.node = node
+        self.success = success
+        self.failure = failure
+        self.children = []
+
+        self.comp = node.name
+        self.lhs = None
+        self.rhs = None
+
+        # Case 1: ops is empty
+        if ops == [] and len(node.children) &gt; 1:
+            self.lhs = node.children[0].name
+            self.rhs = node.children[1].name
+
+        # Case 2: two elem in ops
+        elif len(ops) == 2:
+            self.lhs = ops[1]
+            self.rhs = ops[0]
+
+        else:
+            pos = [node.children.index(x) for x in node.children if len(x.children) != 0 and len(node.children) &gt; 1]
+
+            # Case 3: one elem in ops but its the left element in the operation
+            if pos == [0]:
+                self.lhs = ops[0]
+                self.rhs = node.children[1].name
+
+            # Case 4: one elem in ops but its the right element in the operation
+            elif pos == [1]:
+                self.lhs = node.children[0].name
+                self.rhs = ops[0]
+
+    def __str__(self):
+        return f&#34;if ({self.lhs} {self.comp} {self.rhs}) goto &lt;D.{self.success}&gt;; else goto &lt;D.{self.failure}&gt;;&#34;
+
+    def __repr__():
+        pass
+
+class IRArth(IRNode):
+    &#34;&#34;&#34;
+    Intermediate representation node for an arithmetic/assignment operation.
+    &#34;&#34;&#34;
+    def __init__(self, node, ops, tvs):
+        &#34;&#34;&#34;
+        Args:
+            node: The AST node for the arithmetical expression
+            ops: The potential complex operands for the expression
+            tvs: The tempoary variable stack
+        &#34;&#34;&#34;
+        self.node = node
+        self.var = f&#34;_{len(tvs)}&#34;
+
+        self.operator = node.name
+        self.lhs = None
+        self.rhs = None
+
+        # Case 1: ops is empty
+        if ops == [] and len(node.children) &gt; 1:
+            self.lhs = node.children[0].name
+            self.rhs = node.children[1].name
+        # Case 2: two elem in ops
+        elif len(ops) == 2:
+            self.lhs = ops[0]
+            self.rhs = ops[1]
+        else:
+            pos = [node.children.index(x) for x in node.children if len(x.children) != 0 and len(node.children) &gt; 1]
+
+            # Case 3: one elem in ops but its the left element in the operation
+            if pos == [0]:
+                self.lhs = ops[0]
+                self.rhs = node.children[1].name
+            # Case 4: one elem in ops but its the right element in the operation
+            elif pos == [1]:
+                self.lhs = node.children[0].name
+                self.rhs = ops[0]
+            # Case 5: Its a unary operator
+            elif pos == []:
+                self.lhs = ops[0] if ops != [] else node.children[0].name
+
+
+    def __str__(self):
+        if self.rhs:
+            return f&#34;{self.var} = {self.lhs} {self.operator} {self.rhs};&#34;
+        else:
+            return f&#34;{self.var} = {self.operator}{self.lhs};&#34;
+
+    def __repr__():
+        pass
+
+class IRSpecial(IRNode):
+    &#34;&#34;&#34;
+    Intermediate representation node for a special operation assignment. Special operations consist of pre/post increment and decrement operations.
+    &#34;&#34;&#34;
+    def __init__(self, node, var):
+        &#34;&#34;&#34;
+        Args:
+            node: The AST node for the operation
+            var: The variable which the operation is applied to
+        &#34;&#34;&#34;
+        self.node = node
+        self.var = var
+
+    def __str__(self):
+        return f&#34;{self.var} = {self.var} {self.node.name[0]} 1;&#34;
+
+class IRAssignment(IRNode):
+    &#34;&#34;&#34;
+    Intermediate representation node for an assignment operation.
+    &#34;&#34;&#34;
+    def __init__(self, lhs, rhs):
+        &#34;&#34;&#34;
+        Args:
+            lhs: The left hand side of the assignment
+            rhs: The right hand side of the assignment
+        &#34;&#34;&#34;
+        self.lhs = lhs
+        self.rhs = rhs
+
+    def __str__(self):
+        return f&#34;{self.lhs} = {self.rhs};&#34;
+
+class IRFunction(IRNode):
+    &#34;&#34;&#34;
+    Intermediate representation node for a function call assignment.
+    &#34;&#34;&#34;
+    def __init__(self, node, params, tvs):
+        &#34;&#34;&#34;
+        Args:
+            node: The AST node for the funtion
+            params: A list of parameters for the function call
+            tvs: The tempoary variable stack
+        &#34;&#34;&#34;
+        self.node = node
+        self.params = params
+        self.var = f&#34;_{len(tvs)}&#34;
+
+    def __str__(self):
+        if self.var:
+            return f&#34;{self.var} = {self.node.children[0].name}({&#39;, &#39;.join(self.params)});&#34;
+        else:
+            return f&#34;{self.node.children[0].name}({&#39;, &#39;.join(self.params)});&#34;</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="src.optimizer.IRLine.IRArth"><code class="flex name class">
+<span>class <span class="ident">IRArth</span></span>
+<span>(</span><span>node, ops, tvs)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Intermediate representation node for an arithmetic/assignment operation.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node</code></strong></dt>
+<dd>The AST node for the arithmetical expression</dd>
+<dt><strong><code>ops</code></strong></dt>
+<dd>The potential complex operands for the expression</dd>
+<dt><strong><code>tvs</code></strong></dt>
+<dd>The tempoary variable stack</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class IRArth(IRNode):
+    &#34;&#34;&#34;
+    Intermediate representation node for an arithmetic/assignment operation.
+    &#34;&#34;&#34;
+    def __init__(self, node, ops, tvs):
+        &#34;&#34;&#34;
+        Args:
+            node: The AST node for the arithmetical expression
+            ops: The potential complex operands for the expression
+            tvs: The tempoary variable stack
+        &#34;&#34;&#34;
+        self.node = node
+        self.var = f&#34;_{len(tvs)}&#34;
+
+        self.operator = node.name
+        self.lhs = None
+        self.rhs = None
+
+        # Case 1: ops is empty
+        if ops == [] and len(node.children) &gt; 1:
+            self.lhs = node.children[0].name
+            self.rhs = node.children[1].name
+        # Case 2: two elem in ops
+        elif len(ops) == 2:
+            self.lhs = ops[0]
+            self.rhs = ops[1]
+        else:
+            pos = [node.children.index(x) for x in node.children if len(x.children) != 0 and len(node.children) &gt; 1]
+
+            # Case 3: one elem in ops but its the left element in the operation
+            if pos == [0]:
+                self.lhs = ops[0]
+                self.rhs = node.children[1].name
+            # Case 4: one elem in ops but its the right element in the operation
+            elif pos == [1]:
+                self.lhs = node.children[0].name
+                self.rhs = ops[0]
+            # Case 5: Its a unary operator
+            elif pos == []:
+                self.lhs = ops[0] if ops != [] else node.children[0].name
+
+
+    def __str__(self):
+        if self.rhs:
+            return f&#34;{self.var} = {self.lhs} {self.operator} {self.rhs};&#34;
+        else:
+            return f&#34;{self.var} = {self.operator}{self.lhs};&#34;
+
+    def __repr__():
+        pass</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="src.optimizer.IRLine.IRNode" href="#src.optimizer.IRLine.IRNode">IRNode</a></li>
+</ul>
+</dd>
+<dt id="src.optimizer.IRLine.IRAssignment"><code class="flex name class">
+<span>class <span class="ident">IRAssignment</span></span>
+<span>(</span><span>lhs, rhs)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Intermediate representation node for an assignment operation.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>lhs</code></strong></dt>
+<dd>The left hand side of the assignment</dd>
+<dt><strong><code>rhs</code></strong></dt>
+<dd>The right hand side of the assignment</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class IRAssignment(IRNode):
+    &#34;&#34;&#34;
+    Intermediate representation node for an assignment operation.
+    &#34;&#34;&#34;
+    def __init__(self, lhs, rhs):
+        &#34;&#34;&#34;
+        Args:
+            lhs: The left hand side of the assignment
+            rhs: The right hand side of the assignment
+        &#34;&#34;&#34;
+        self.lhs = lhs
+        self.rhs = rhs
+
+    def __str__(self):
+        return f&#34;{self.lhs} = {self.rhs};&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="src.optimizer.IRLine.IRNode" href="#src.optimizer.IRLine.IRNode">IRNode</a></li>
+</ul>
+</dd>
+<dt id="src.optimizer.IRLine.IRFunction"><code class="flex name class">
+<span>class <span class="ident">IRFunction</span></span>
+<span>(</span><span>node, params, tvs)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Intermediate representation node for a function call assignment.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node</code></strong></dt>
+<dd>The AST node for the funtion</dd>
+<dt><strong><code>params</code></strong></dt>
+<dd>A list of parameters for the function call</dd>
+<dt><strong><code>tvs</code></strong></dt>
+<dd>The tempoary variable stack</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class IRFunction(IRNode):
+    &#34;&#34;&#34;
+    Intermediate representation node for a function call assignment.
+    &#34;&#34;&#34;
+    def __init__(self, node, params, tvs):
+        &#34;&#34;&#34;
+        Args:
+            node: The AST node for the funtion
+            params: A list of parameters for the function call
+            tvs: The tempoary variable stack
+        &#34;&#34;&#34;
+        self.node = node
+        self.params = params
+        self.var = f&#34;_{len(tvs)}&#34;
+
+    def __str__(self):
+        if self.var:
+            return f&#34;{self.var} = {self.node.children[0].name}({&#39;, &#39;.join(self.params)});&#34;
+        else:
+            return f&#34;{self.node.children[0].name}({&#39;, &#39;.join(self.params)});&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="src.optimizer.IRLine.IRNode" href="#src.optimizer.IRLine.IRNode">IRNode</a></li>
+</ul>
+</dd>
+<dt id="src.optimizer.IRLine.IRGoTo"><code class="flex name class">
+<span>class <span class="ident">IRGoTo</span></span>
+<span>(</span><span>name)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Intermediate representation node for a goto label.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>Name of the label which is jumped to</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class IRGoTo(IRNode):
+    &#34;&#34;&#34;
+    Intermediate representation node for a goto label.
+    &#34;&#34;&#34;
+    def __init__(self, name):
+        &#34;&#34;&#34;
+        Args:
+            name: Name of the label which is jumped to
+        &#34;&#34;&#34;
+        self.name = name
+
+    def __str__(self):
+        return f&#34;goto {self.name};&#34;
+
+    def __repr__():
+        pass</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="src.optimizer.IRLine.IRNode" href="#src.optimizer.IRLine.IRNode">IRNode</a></li>
+</ul>
+</dd>
+<dt id="src.optimizer.IRLine.IRIf"><code class="flex name class">
+<span>class <span class="ident">IRIf</span></span>
+<span>(</span><span>node, success, failure, ops)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Intermediate representation node for an if statement. If statements are constructed to represent actual If Statements, While Loops, and For Loops in C.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node</code></strong></dt>
+<dd><code>AST-node</code> for the given </dd>
+<dt><strong><code>success</code></strong></dt>
+<dd>Success label digit</dd>
+<dt><strong><code>failure</code></strong></dt>
+<dd>Failure label digit</dd>
+<dt><strong><code>ops</code></strong></dt>
+<dd>The potential complex operands for the left/right hand side of the comparison</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class IRIf(IRNode):
+    &#34;&#34;&#34;
+    Intermediate representation node for an if statement. If statements are constructed to represent actual If Statements, While Loops, and For Loops in C.
+    &#34;&#34;&#34;
+    def __init__(self, node, success, failure, ops):
+        &#34;&#34;&#34;
+        Args:
+            node: `AST-node` for the given 
+            success: Success label digit
+            failure: Failure label digit
+            ops: The potential complex operands for the left/right hand side of the comparison
+        &#34;&#34;&#34;
+
+        self.node = node
+        self.success = success
+        self.failure = failure
+        self.children = []
+
+        self.comp = node.name
+        self.lhs = None
+        self.rhs = None
+
+        # Case 1: ops is empty
+        if ops == [] and len(node.children) &gt; 1:
+            self.lhs = node.children[0].name
+            self.rhs = node.children[1].name
+
+        # Case 2: two elem in ops
+        elif len(ops) == 2:
+            self.lhs = ops[1]
+            self.rhs = ops[0]
+
+        else:
+            pos = [node.children.index(x) for x in node.children if len(x.children) != 0 and len(node.children) &gt; 1]
+
+            # Case 3: one elem in ops but its the left element in the operation
+            if pos == [0]:
+                self.lhs = ops[0]
+                self.rhs = node.children[1].name
+
+            # Case 4: one elem in ops but its the right element in the operation
+            elif pos == [1]:
+                self.lhs = node.children[0].name
+                self.rhs = ops[0]
+
+    def __str__(self):
+        return f&#34;if ({self.lhs} {self.comp} {self.rhs}) goto &lt;D.{self.success}&gt;; else goto &lt;D.{self.failure}&gt;;&#34;
+
+    def __repr__():
+        pass</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="src.optimizer.IRLine.IRNode" href="#src.optimizer.IRLine.IRNode">IRNode</a></li>
+</ul>
+</dd>
+<dt id="src.optimizer.IRLine.IRJump"><code class="flex name class">
+<span>class <span class="ident">IRJump</span></span>
+<span>(</span><span>name)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Intermediate representation node for a jump label.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>Name of the jump label</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class IRJump(IRNode):
+    &#34;&#34;&#34;
+    Intermediate representation node for a jump label.
+    &#34;&#34;&#34;
+    def __init__(self, name):
+        &#34;&#34;&#34;
+        Args:
+            name: Name of the jump label
+        &#34;&#34;&#34;
+        self.name = name
+
+    def __str__(self):
+        return f&#34;{self.name}:&#34;
+
+    def __repr__():
+        pass</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="src.optimizer.IRLine.IRNode" href="#src.optimizer.IRLine.IRNode">IRNode</a></li>
+</ul>
+</dd>
+<dt id="src.optimizer.IRLine.IRLine"><code class="flex name class">
+<span>class <span class="ident">IRLine</span></span>
+<span>(</span><span>node, tvs=[], success=None, failure=None, labelList=[], prefix='')</span>
+</code></dt>
+<dd>
+<section class="desc"><p>A class that contains all the intermediate representations for a given AST node. Will produce a linear representation when converted to a string</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node</code></strong></dt>
+<dd>The AST node corresponding to the collection of lines</dd>
+<dt><strong><code>tvs</code></strong></dt>
+<dd>The current tempoary variable storage</dd>
+<dt><strong><code>success</code></strong></dt>
+<dd>The success label</dd>
+<dt><strong><code>failure</code></strong></dt>
+<dd>The failure label</dd>
+<dt><strong><code>labelList</code></strong></dt>
+<dd>The list of used label names</dd>
+<dt><strong><code>prefix</code></strong></dt>
+<dd>The output prefix</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class IRLine():
+    &#34;&#34;&#34;
+    A class that contains all the intermediate representations for a given AST node. Will produce a linear representation when converted to a string
+    &#34;&#34;&#34;
+    def __init__(self, node, tvs = [], success = None, failure = None, labelList = [], prefix = &#34;&#34;):
+        &#34;&#34;&#34;
+        Args:
+            node: The AST node corresponding to the collection of lines
+            tvs: The current tempoary variable storage
+            success: The success label
+            failure: The failure label
+            labelList: The list of used label names
+            prefix: The output prefix
+        &#34;&#34;&#34;
+        self.astNode = node
+        self.treeList = []
+
+        self.tvs = tvs
+        self.labelList = labelList
+        self.prefix = prefix
+
+        self.log_ops = [&#39;||&#39;, &#39;&amp;&amp;&#39;]
+        self.comp_ops = [&#34;&lt;=&#34;, &#34;&lt;&#34;, &#34;&gt;=&#34;, &#34;&gt;&#34;, &#34;==&#34;, &#34;!=&#34;]
+        self.arth_ops = [&#34;+&#34;, &#34;-&#34;, &#34;*&#34;, &#34;/&#34;, &#34;%&#34;, &#34;&lt;&lt;&#34;, &#34;&gt;&gt;&#34;, &#34;|&#34;, &#34;&amp;&#34;, &#34;^&#34;, &#34;!&#34;, &#34;~&#34;]
+        self.spec_ops = [&#34;++&#34;, &#34;--&#34;]
+        self.ass_ops = [&#34;=&#34;, &#34;+=&#34;, &#34;-=&#34;, &#34;*=&#34;, &#34;/=&#34;, &#34;%=&#34;, &#34;&lt;&lt;=&#34;, &#34;&gt;&gt;=&#34;, &#34;|=&#34;, &#34;&amp;=&#34;, &#34;^=&#34;]
+        self.id_ops = [&#34;var&#34;, &#34;call&#34;]
+
+        # Based on the node construct the needed intermediate trees in order
+
+        if node.name in self.log_ops:
+            self.boolean_breakdown(self.astNode, success, failure)
+        else:
+            self.expression_breakdown(self.astNode, success, failure)
+
+    def retrieve(self):
+        &#34;&#34;&#34;
+        Retrieves the updated tempoary variable storage and list of unavialable label names for the future.
+
+        Returns:
+            tvs: The current tempoary variable storage
+            labelList: The list of used label names
+        &#34;&#34;&#34;
+        return self.tvs, self.labelList
+
+    def expression_breakdown(self, root, success, failure):
+        &#34;&#34;&#34;
+        Breaks down smaller expressions in order to evaluate them
+
+        Args:
+            root: The root AST node
+            success: The success label
+            failure: The failure label
+        &#34;&#34;&#34;
+        if success not in self.labelList and success != None:
+            self.labelList.append(success)
+        if failure not in self.labelList and failure != None:
+            self.labelList.append(failure)
+
+        ns = root.list_POT()
+
+        ns = [x for x in ns if x.name in self.arth_ops or x.name in self.spec_ops or x.name in self.ass_ops or x.name in self.id_ops or x.name in self.comp_ops]
+        for node in ns:
+            if node.name in self.comp_ops:
+                self.treeList.append(
+                    IRIf(
+                        node,
+                        success,
+                        failure,
+                        [self.tvs.pop() for x in node.children if len(x.children) != 0]
+                    )
+                )
+
+            elif node.name in self.arth_ops:
+                self.treeList.append(
+                    IRArth(
+                        node,
+                        [self.tvs.pop() for x in node.children if len(x.children) != 0],
+                        self.tvs
+                    )
+                )
+
+                self.tvs.append(self.treeList[-1].var)
+
+            elif node.name in self.spec_ops:
+                var = self.tvs.pop()
+
+                # Create a temporay AST to deal with storing of the current value of the variable
+                tmpNode = ast.ASTNode(&#34;=&#34;, None)
+                tmpNode.children.append(ast.ASTNode(f&#34;_{len(self.tvs)}&#34;, tmpNode))
+                tmpNode.children.append(ast.ASTNode(var, tmpNode))
+
+                self.treeList.append(
+                    IRAssignment(
+                        f&#34;_{len(self.tvs)}&#34;,
+                        var
+                    )
+                )
+                if [node.children.index(x) for x in node.children if x.name == &#34;NULL&#34;][0] == 1:
+                    self.treeList.append(
+                        IRSpecial(
+                            node,
+                            var
+                        )
+                    )
+                else:
+                    self.treeList.insert(len(self.treeList) - 2,
+                        IRSpecial(
+                            node,
+                            var
+                        )
+                    )
+
+                self.tvs.append(tmpNode.children[0].name)
+
+            elif node.name in self.ass_ops:
+                if self.ass_ops.index(node.name) == 0:
+                    lhs = None
+                    rhs = None
+                    # Case 1: Assignment is constant. ie. int i = 0
+                    if len(node.children[1].children) == 0:
+                        lhs = self.tvs.pop()
+                        rhs = node.children[1].name
+                    # Case 2: Assignment is complex
+                    else:
+                        lhs = node.children[0].children[len(node.children[0].children)-1].name
+                        rhs = self.tvs.pop()
+
+                    self.treeList.append(
+                            IRAssignment(
+                                lhs,
+                                rhs
+                            )
+                        )
+                else:
+                    # create a temporary parent node
+                    p = ast.ASTNode(&#34;=&#34;, None)
+
+                    # append the variable who is assigned a value as its first child
+                    p.children.append(node.children[0])
+
+                    # create a right subtree with the correct operation
+                    r = ast.ASTNode(node.name[:-1], p)
+                    p.children.append(r)
+
+                    # assign the variable as the left operand of the new expression
+                    r.children.append(node.children[0])
+
+                    # assign the remaining operations as the right operand of the new expression
+                    r.children.append(node.children[1])
+
+                    self.expression_breakdown(p, success, failure)
+
+            elif node.name in self.id_ops:
+                if node.name == &#34;var&#34;:
+                    self.tvs.append(f&#34;{node.children[len(node.children)-1].name}&#34;)
+                elif node.name == &#34;call&#34;:
+                    # list of indices that correspond to the complex parameters of the function call
+                    complexP = [node.children[0].children.index(x) for x in node.children[0].children if len(x.children) &gt; 0]
+                    simpleP = [x for x in range(len(node.children[0].children)) if x not in complexP]
+
+                    params = [self.tvs.pop() for x in range(len(node.children[0].children)) if x in complexP]
+                    self.treeList.append(
+                        IRFunction(
+                            node,
+                            [params.pop() if x in complexP else node.children[0].children[x].name for x in range(len(node.children[0].children))],
+                            self.tvs
+                        )
+                    )
+
+                    self.tvs.append(self.treeList[-1].var)
+
+    def boolean_breakdown(self, root, success, failure):
+        &#34;&#34;&#34;
+        Breaks down larger boolean expressions in order to evaluate them
+
+        Args:
+            root: The root AST node
+            success: The success label
+            failure: The failure label
+        &#34;&#34;&#34;
+        if success not in self.labelList and success != None:
+            self.labelList.append(success)
+        if failure not in self.labelList and failure != None:
+            self.labelList.append(failure)
+
+        index = self.log_ops.index(root.name)
+        if index == 0:
+            # OR
+            tmp_label = max(self.labelList)
+            self.labelList.append(tmp_label+1)
+            tmpNode = root.children[0]
+            if tmpNode.name not in self.comp_ops and tmpNode.name not in log_ops:
+                tmpNode = ast.ASTNode(&#34;!=&#34;, None)
+                tmpNode.children.append(root.children[0])
+                tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
+
+            if tmpNode.name in self.log_ops:
+                self.boolean_breakdown(tmpNode, success, tmp_label)
+            else:
+                self.expression_breakdown(tmpNode, success, tmp_label)
+
+            self.treeList.append(IRJump(f&#34;&lt;D.{tmp_label}&gt;&#34;))
+
+            tmpNode = root.children[1]
+            if tmpNode.name not in self.comp_ops and tmpNode.name not in log_ops:
+                tmpNode = ast.ASTNode(&#34;!=&#34;, None)
+                tmpNode.children.append(root.children[1])
+                tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
+
+            if tmpNode.name in self.log_ops:
+                self.boolean_breakdown(tmpNode, success, failure)
+            else:
+                self.expression_breakdown(tmpNode, success, failure)
+
+        elif index == 1:
+            # AND
+            tmp_label = max(self.labelList)
+            self.labelList.append(tmp_label+1)
+            tmpNode = root.children[0]
+            if tmpNode.name not in self.comp_ops and tmpNode.name not in log_ops:
+                tmpNode = ast.ASTNode(&#34;!=&#34;, None)
+                tmpNode.children.append(root.children[0])
+                tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
+
+            if tmpNode.name in self.log_ops:
+                self.boolean_breakdown(tmpNode, tmp_label, failure)
+            else:
+                self.expression_breakdown(tmpNode, tmp_label, failure)
+
+            self.treeList.append(IRJump(f&#34;&lt;D.{tmp_label}&gt;&#34;))
+
+            tmpNode = root.children[1]
+            if tmpNode.name not in self.comp_ops and tmpNode.name not in log_ops:
+                tmpNode = ast.ASTNode(&#34;!=&#34;, None)
+                tmpNode.children.append(root.children[1])
+                tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
+
+            if tmpNode.name in self.log_ops:
+                self.boolean_breakdown(tmpNode, success, failure)
+            else:
+                self.expression_breakdown(tmpNode, success, failure)
+
+
+    def __str__(self):
+        return &#34;\n&#34;.join([f&#34;{self.prefix}{x}&#34; for x in self.treeList])</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="src.optimizer.IRLine.IRLine.boolean_breakdown"><code class="name flex">
+<span>def <span class="ident">boolean_breakdown</span></span>(<span>self, root, success, failure)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Breaks down larger boolean expressions in order to evaluate them</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>root</code></strong></dt>
+<dd>The root AST node</dd>
+<dt><strong><code>success</code></strong></dt>
+<dd>The success label</dd>
+<dt><strong><code>failure</code></strong></dt>
+<dd>The failure label</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def boolean_breakdown(self, root, success, failure):
+    &#34;&#34;&#34;
+    Breaks down larger boolean expressions in order to evaluate them
+
+    Args:
+        root: The root AST node
+        success: The success label
+        failure: The failure label
+    &#34;&#34;&#34;
+    if success not in self.labelList and success != None:
+        self.labelList.append(success)
+    if failure not in self.labelList and failure != None:
+        self.labelList.append(failure)
+
+    index = self.log_ops.index(root.name)
+    if index == 0:
+        # OR
+        tmp_label = max(self.labelList)
+        self.labelList.append(tmp_label+1)
+        tmpNode = root.children[0]
+        if tmpNode.name not in self.comp_ops and tmpNode.name not in log_ops:
+            tmpNode = ast.ASTNode(&#34;!=&#34;, None)
+            tmpNode.children.append(root.children[0])
+            tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
+
+        if tmpNode.name in self.log_ops:
+            self.boolean_breakdown(tmpNode, success, tmp_label)
+        else:
+            self.expression_breakdown(tmpNode, success, tmp_label)
+
+        self.treeList.append(IRJump(f&#34;&lt;D.{tmp_label}&gt;&#34;))
+
+        tmpNode = root.children[1]
+        if tmpNode.name not in self.comp_ops and tmpNode.name not in log_ops:
+            tmpNode = ast.ASTNode(&#34;!=&#34;, None)
+            tmpNode.children.append(root.children[1])
+            tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
+
+        if tmpNode.name in self.log_ops:
+            self.boolean_breakdown(tmpNode, success, failure)
+        else:
+            self.expression_breakdown(tmpNode, success, failure)
+
+    elif index == 1:
+        # AND
+        tmp_label = max(self.labelList)
+        self.labelList.append(tmp_label+1)
+        tmpNode = root.children[0]
+        if tmpNode.name not in self.comp_ops and tmpNode.name not in log_ops:
+            tmpNode = ast.ASTNode(&#34;!=&#34;, None)
+            tmpNode.children.append(root.children[0])
+            tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
+
+        if tmpNode.name in self.log_ops:
+            self.boolean_breakdown(tmpNode, tmp_label, failure)
+        else:
+            self.expression_breakdown(tmpNode, tmp_label, failure)
+
+        self.treeList.append(IRJump(f&#34;&lt;D.{tmp_label}&gt;&#34;))
+
+        tmpNode = root.children[1]
+        if tmpNode.name not in self.comp_ops and tmpNode.name not in log_ops:
+            tmpNode = ast.ASTNode(&#34;!=&#34;, None)
+            tmpNode.children.append(root.children[1])
+            tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
+
+        if tmpNode.name in self.log_ops:
+            self.boolean_breakdown(tmpNode, success, failure)
+        else:
+            self.expression_breakdown(tmpNode, success, failure)</code></pre>
+</details>
+</dd>
+<dt id="src.optimizer.IRLine.IRLine.expression_breakdown"><code class="name flex">
+<span>def <span class="ident">expression_breakdown</span></span>(<span>self, root, success, failure)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Breaks down smaller expressions in order to evaluate them</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>root</code></strong></dt>
+<dd>The root AST node</dd>
+<dt><strong><code>success</code></strong></dt>
+<dd>The success label</dd>
+<dt><strong><code>failure</code></strong></dt>
+<dd>The failure label</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def expression_breakdown(self, root, success, failure):
+    &#34;&#34;&#34;
+    Breaks down smaller expressions in order to evaluate them
+
+    Args:
+        root: The root AST node
+        success: The success label
+        failure: The failure label
+    &#34;&#34;&#34;
+    if success not in self.labelList and success != None:
+        self.labelList.append(success)
+    if failure not in self.labelList and failure != None:
+        self.labelList.append(failure)
+
+    ns = root.list_POT()
+
+    ns = [x for x in ns if x.name in self.arth_ops or x.name in self.spec_ops or x.name in self.ass_ops or x.name in self.id_ops or x.name in self.comp_ops]
+    for node in ns:
+        if node.name in self.comp_ops:
+            self.treeList.append(
+                IRIf(
+                    node,
+                    success,
+                    failure,
+                    [self.tvs.pop() for x in node.children if len(x.children) != 0]
+                )
+            )
+
+        elif node.name in self.arth_ops:
+            self.treeList.append(
+                IRArth(
+                    node,
+                    [self.tvs.pop() for x in node.children if len(x.children) != 0],
+                    self.tvs
+                )
+            )
+
+            self.tvs.append(self.treeList[-1].var)
+
+        elif node.name in self.spec_ops:
+            var = self.tvs.pop()
+
+            # Create a temporay AST to deal with storing of the current value of the variable
+            tmpNode = ast.ASTNode(&#34;=&#34;, None)
+            tmpNode.children.append(ast.ASTNode(f&#34;_{len(self.tvs)}&#34;, tmpNode))
+            tmpNode.children.append(ast.ASTNode(var, tmpNode))
+
+            self.treeList.append(
+                IRAssignment(
+                    f&#34;_{len(self.tvs)}&#34;,
+                    var
+                )
+            )
+            if [node.children.index(x) for x in node.children if x.name == &#34;NULL&#34;][0] == 1:
+                self.treeList.append(
+                    IRSpecial(
+                        node,
+                        var
+                    )
+                )
+            else:
+                self.treeList.insert(len(self.treeList) - 2,
+                    IRSpecial(
+                        node,
+                        var
+                    )
+                )
+
+            self.tvs.append(tmpNode.children[0].name)
+
+        elif node.name in self.ass_ops:
+            if self.ass_ops.index(node.name) == 0:
+                lhs = None
+                rhs = None
+                # Case 1: Assignment is constant. ie. int i = 0
+                if len(node.children[1].children) == 0:
+                    lhs = self.tvs.pop()
+                    rhs = node.children[1].name
+                # Case 2: Assignment is complex
+                else:
+                    lhs = node.children[0].children[len(node.children[0].children)-1].name
+                    rhs = self.tvs.pop()
+
+                self.treeList.append(
+                        IRAssignment(
+                            lhs,
+                            rhs
+                        )
+                    )
+            else:
+                # create a temporary parent node
+                p = ast.ASTNode(&#34;=&#34;, None)
+
+                # append the variable who is assigned a value as its first child
+                p.children.append(node.children[0])
+
+                # create a right subtree with the correct operation
+                r = ast.ASTNode(node.name[:-1], p)
+                p.children.append(r)
+
+                # assign the variable as the left operand of the new expression
+                r.children.append(node.children[0])
+
+                # assign the remaining operations as the right operand of the new expression
+                r.children.append(node.children[1])
+
+                self.expression_breakdown(p, success, failure)
+
+        elif node.name in self.id_ops:
+            if node.name == &#34;var&#34;:
+                self.tvs.append(f&#34;{node.children[len(node.children)-1].name}&#34;)
+            elif node.name == &#34;call&#34;:
+                # list of indices that correspond to the complex parameters of the function call
+                complexP = [node.children[0].children.index(x) for x in node.children[0].children if len(x.children) &gt; 0]
+                simpleP = [x for x in range(len(node.children[0].children)) if x not in complexP]
+
+                params = [self.tvs.pop() for x in range(len(node.children[0].children)) if x in complexP]
+                self.treeList.append(
+                    IRFunction(
+                        node,
+                        [params.pop() if x in complexP else node.children[0].children[x].name for x in range(len(node.children[0].children))],
+                        self.tvs
+                    )
+                )
+
+                self.tvs.append(self.treeList[-1].var)</code></pre>
+</details>
+</dd>
+<dt id="src.optimizer.IRLine.IRLine.retrieve"><code class="name flex">
+<span>def <span class="ident">retrieve</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Retrieves the updated tempoary variable storage and list of unavialable label names for the future.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>tvs</code></strong></dt>
+<dd>The current tempoary variable storage</dd>
+<dt><strong><code>labelList</code></strong></dt>
+<dd>The list of used label names</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def retrieve(self):
+    &#34;&#34;&#34;
+    Retrieves the updated tempoary variable storage and list of unavialable label names for the future.
+
+    Returns:
+        tvs: The current tempoary variable storage
+        labelList: The list of used label names
+    &#34;&#34;&#34;
+    return self.tvs, self.labelList</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="src.optimizer.IRLine.IRNode"><code class="flex name class">
+<span>class <span class="ident">IRNode</span></span>
+</code></dt>
+<dd>
+<section class="desc"><p>Abstract intermediate representation node. Base class for all other IR representations other than IRLines.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class IRNode():
+    &#34;&#34;&#34;
+    Abstract intermediate representation node. Base class for all other IR representations other than IRLines.
+    &#34;&#34;&#34;
+    def __init__(self):
+        pass
+
+    def __str__(self):
+        pass
+
+    def __repr__():
+        pass</code></pre>
+</details>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="src.optimizer.IRLine.IRArth" href="#src.optimizer.IRLine.IRArth">IRArth</a></li>
+<li><a title="src.optimizer.IRLine.IRAssignment" href="#src.optimizer.IRLine.IRAssignment">IRAssignment</a></li>
+<li><a title="src.optimizer.IRLine.IRFunction" href="#src.optimizer.IRLine.IRFunction">IRFunction</a></li>
+<li><a title="src.optimizer.IRLine.IRGoTo" href="#src.optimizer.IRLine.IRGoTo">IRGoTo</a></li>
+<li><a title="src.optimizer.IRLine.IRIf" href="#src.optimizer.IRLine.IRIf">IRIf</a></li>
+<li><a title="src.optimizer.IRLine.IRJump" href="#src.optimizer.IRLine.IRJump">IRJump</a></li>
+<li><a title="src.optimizer.IRLine.IRSpecial" href="#src.optimizer.IRLine.IRSpecial">IRSpecial</a></li>
+</ul>
+</dd>
+<dt id="src.optimizer.IRLine.IRSpecial"><code class="flex name class">
+<span>class <span class="ident">IRSpecial</span></span>
+<span>(</span><span>node, var)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Intermediate representation node for a special operation assignment. Special operations consist of pre/post increment and decrement operations.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node</code></strong></dt>
+<dd>The AST node for the operation</dd>
+<dt><strong><code>var</code></strong></dt>
+<dd>The variable which the operation is applied to</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class IRSpecial(IRNode):
+    &#34;&#34;&#34;
+    Intermediate representation node for a special operation assignment. Special operations consist of pre/post increment and decrement operations.
+    &#34;&#34;&#34;
+    def __init__(self, node, var):
+        &#34;&#34;&#34;
+        Args:
+            node: The AST node for the operation
+            var: The variable which the operation is applied to
+        &#34;&#34;&#34;
+        self.node = node
+        self.var = var
+
+    def __str__(self):
+        return f&#34;{self.var} = {self.var} {self.node.name[0]} 1;&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="src.optimizer.IRLine.IRNode" href="#src.optimizer.IRLine.IRNode">IRNode</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="src.optimizer" href="index.html">src.optimizer</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="src.optimizer.IRLine.IRArth" href="#src.optimizer.IRLine.IRArth">IRArth</a></code></h4>
+</li>
+<li>
+<h4><code><a title="src.optimizer.IRLine.IRAssignment" href="#src.optimizer.IRLine.IRAssignment">IRAssignment</a></code></h4>
+</li>
+<li>
+<h4><code><a title="src.optimizer.IRLine.IRFunction" href="#src.optimizer.IRLine.IRFunction">IRFunction</a></code></h4>
+</li>
+<li>
+<h4><code><a title="src.optimizer.IRLine.IRGoTo" href="#src.optimizer.IRLine.IRGoTo">IRGoTo</a></code></h4>
+</li>
+<li>
+<h4><code><a title="src.optimizer.IRLine.IRIf" href="#src.optimizer.IRLine.IRIf">IRIf</a></code></h4>
+</li>
+<li>
+<h4><code><a title="src.optimizer.IRLine.IRJump" href="#src.optimizer.IRLine.IRJump">IRJump</a></code></h4>
+</li>
+<li>
+<h4><code><a title="src.optimizer.IRLine.IRLine" href="#src.optimizer.IRLine.IRLine">IRLine</a></code></h4>
+<ul class="">
+<li><code><a title="src.optimizer.IRLine.IRLine.boolean_breakdown" href="#src.optimizer.IRLine.IRLine.boolean_breakdown">boolean_breakdown</a></code></li>
+<li><code><a title="src.optimizer.IRLine.IRLine.expression_breakdown" href="#src.optimizer.IRLine.IRLine.expression_breakdown">expression_breakdown</a></code></li>
+<li><code><a title="src.optimizer.IRLine.IRLine.retrieve" href="#src.optimizer.IRLine.IRLine.retrieve">retrieve</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="src.optimizer.IRLine.IRNode" href="#src.optimizer.IRLine.IRNode">IRNode</a></code></h4>
+</li>
+<li>
+<h4><code><a title="src.optimizer.IRLine.IRSpecial" href="#src.optimizer.IRLine.IRSpecial">IRSpecial</a></code></h4>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.4</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

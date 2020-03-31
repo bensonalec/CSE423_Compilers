@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.4" />
 <title>src.frontend.semantics API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="The module serves to create the symbol table and perform semantic analysis on the AST in order to verify the typing of the program." />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,41 +20,73 @@
 <h1 class="title">Module <code>src.frontend.semantics</code></h1>
 </header>
 <section id="section-intro">
+<p>The module serves to create the symbol table and perform semantic analysis on the AST in order to verify the typing of the program.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import importlib,re
+<pre><code class="python">&#34;&#34;&#34;
+The module serves to create the symbol table and perform semantic analysis on the AST in order to verify the typing of the program.
+&#34;&#34;&#34;
+import os
+import re
+from importlib.machinery import SourceFileLoader
 from collections import namedtuple
 
-lex = importlib.import_module(&#34;lexer&#34;, __name__)
-ast = importlib.import_module(&#34;AST_builder&#34;, __name__)
+lex = SourceFileLoader(&#34;lexer&#34;, f&#34;{os.path.dirname(__file__)}/lexer.py&#34;).load_module()
+ast = SourceFileLoader(&#34;AST_builder&#34;, f&#34;{os.path.dirname(__file__)}/AST_builder.py&#34;).load_module()
+
+en_map = {
+    0 : &#34;Variable&#34;,
+    1 : &#34;Function&#34;,
+    2 : &#34;Parameter&#34;,
+    3 : &#34;Label&#34;,
+}
 
 class Entry():
-    def __init__(self, is_func,is_param, is_goto, nam, typ, scop):
-        self.is_function = is_func
-        self.is_param = is_param
-        self.is_goto = is_goto
+    &#34;&#34;&#34;
+    A class that represents a singular entry in the symbol table
+    &#34;&#34;&#34;
+    def __init__(self, en_typ, nam, typ, scop, modif):
+        &#34;&#34;&#34;
+        Args:
+            en_typ: Whether the entry is a variable, function, parameter, or label.
+            nam: Name of the entry.
+            typ: The associated type of the entry such as `int`, `float` ect. For functions this represents the return type.
+            scop: The scope where the entry exists.
+            modif: The modifiers associated with the entry such as `unsigned`, `const`, `static` ect.
+        &#34;&#34;&#34;
+        self.entry_type = en_typ
         self.name = nam
         self.type = typ
         self.scope = scop
         self.references = []
-        self.modifiers = []
+        self.modifiers = list(sorted(set(modif)))
 
 
 Node = namedtuple(&#34;Node&#34;, [&#34;Node&#34;, &#34;Scope&#34;])
-Node.__docstring__ = &#34;&#34;&#34;
+Node.__doc__ = &#34;&#34;&#34;
 A simple namedtuple to allow for better readability when performing the depth first search required for the semantic analysis.
 &#34;&#34;&#34;
 class symbol_table():
+    &#34;&#34;&#34;
+    A class that stores all the known and unknown symbols, as well as the semantic errors that may be discovered.
+    &#34;&#34;&#34;
     def __init__(self,AST):
+        &#34;&#34;&#34;
+        Args:
+            AST: The head node of the abstract syntax tree.
+        &#34;&#34;&#34;
         self.AST = AST
 
         self.symbols = []
         self.undefined = []
-    
-    def analyze(self):
+        self.errors = []
 
+    def analyze(self):
+        &#34;&#34;&#34;
+        Analyses the abstract syntax tree to determine whether there are any undeclared references, and semantic errors.
+        &#34;&#34;&#34;
         ntv = [Node(self.AST, &#34;/&#34;)]
         scopenum = 0
         typ = None
@@ -64,8 +96,8 @@ class symbol_table():
             # Grabs the first element which will be the residual left most child
             cur = ntv[0]
 
-            # checks whether the current node is an operation that will need to access the symbol table 
-            try:                
+            # checks whether the current node is an operation that will need to access the symbol table
+            try:
                 index = [&#34;func&#34;, &#34;decl&#34;, &#34;call&#34;, &#34;var&#34;, &#34;body&#34;].index(cur.Node.name)
 
                 #Catches edge case where var or func is used an self_defined name
@@ -73,77 +105,79 @@ class symbol_table():
                     ntv = [Node(x, cur.Scope) for x in cur.Node.children if &#39;children&#39; in x.__dict__] + ntv[1:]
                     continue
 
-                
+
                 # Function Declaration
                 if index == 0:
-                    if [x for x in self.symbols if x.name == &#34;main&#34;] != [] and [x for x in self.symbols if cur.Node.children[1].name == x.name] == []:
-                        print(f&#39;Function Not Properly Declared {cur.Node.children[0].name}&#39;)
-                        self.undefined.append(Entry(True,False, False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope))
-                    else:
-                        self.symbols.append(Entry(True,False, False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
+                    # If a function is declared after main without a prototype
+                    if [x for x in self.symbols if x.name == &#34;main&#34; and x.entry_type == {value: key for key, value in en_map.items()}[&#34;Function&#34;]] != [] and [x for x in self.symbols if cur.Node.children[1].name == x.name] == []:
+                        # print(f&#39;Function Not Properly Declared {cur.Node.children[0].name}&#39;)
+                        self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Function&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                    # If a function is declared befor main is declared without a prototype
+                    elif [x for x in self.symbols if x.name == &#34;main&#34; and x.entry_type == {value: key for key, value in en_map.items()}[&#34;Function&#34;]] == []:
+                        self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Function&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
                         cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + &#34;/&#34;)
-
+                    else:
+                        cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + &#34;/&#34;)
                 #Function Prototype Declaration
                 elif index == 1:
-                    self.symbols.append(Entry(True,False, False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
+                    self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Function&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
                     cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + &#34;/&#34;)
                     pass
-                
-                
+
+
                 # Function Call
                 elif index == 2:
-                    if [x for x in self.symbols if x.is_function == True and x.name == cur.Node.children[0].name] == []:
-                        print(f&#39;Function Undefined {cur.Node.children[0].name}&#39;)
-                        self.undefined.append(Entry(True,False,  False,cur.Node.children[0].name, &#34;None&#34;, cur.Scope))
+                    if [x for x in self.symbols if x.entry_type == {value: key for key, value in en_map.items()}[&#34;Function&#34;] and x.name == cur.Node.children[0].name] == []:
+                        # print(f&#39;Function Undefined {cur.Node.children[0].name}&#39;)
+                        self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Function&#34;],cur.Node.children[0].name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
                     pass
                 # Initialization and Usage
                 elif index == 3:
-                    
+
                     #declaration of variable
                     if len(cur.Node.children) &gt; 1:
                         #add to symbol table this should also handle function param being that they are still within the same scope as there parent function
-                        if([x for x in self.symbols if x.name == cur.Node.children[1].name and cur.Scope in x.scope] == []):
+                        if([x for x in self.symbols if x.name == cur.Node.children[1].name and x.scope in cur.Scope] == []):
                             if cur.Node.parent.parent.name == &#34;func&#34; or cur.Node.parent.parent.name == &#34;decl&#34;:
                                 if cur.Node.parent.name == &#34;param&#34;:
-                                    self.symbols.append(Entry(False,True,  False,cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
+                                    self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Parameter&#34;],cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
                                 else:
-                                    self.symbols.append(Entry(False,False,  False,cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
+                                    self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;],cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
                             else:
-                                    self.symbols.append(Entry(False,False,  False,cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
+                                    self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;],cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
                         elif(cur.Node.parent.name != &#34;param&#34;):
                             print(f&#39;Variable Already Declared {cur.Node.children[1].name} {cur.Node.children[0].name}&#39;)
-                            self.undefined.append(Entry(False,False, False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
-                        elif(cur.Node.parent.name == &#34;param&#34; and [x for x in self.symbols if cur.Node.children[1].name == x.name] == []):                
+                            self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                        elif(cur.Node.parent.name == &#34;param&#34; and [x for x in self.symbols if cur.Node.children[1].name == x.name] == []):
                             print(f&#39;Undeclared parameter{cur.Node.children[1].name} {cur.Node.children[0].name}&#39;)
-                            self.undefined.append(Entry(False,False, False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
-                
+                            self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+
                         pass
                     #usage of varible
                     else:
-                        if ([x for x in self.symbols if x.name == cur.Node.children[0].name and cur.Scope in x.scope] == []):
+                        if ([x for x in self.symbols if x.name == cur.Node.children[0].name and x.scope in cur.Scope] == []):
                             print(f&#39;Variable Undeclared {cur.Node.children[0].name}&#39;)
-                            self.undefined.append(Entry(False,False, False,  cur.Node.children[0].name, &#34;None&#34;, cur.Scope)) 
-                            
+                            self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;],  cur.Node.children[0].name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+
                         pass
                 elif index == 4:
                     cur = cur._replace(Scope = f&#34;{cur.Scope}{scopenum}/&#34;)
                     scopenum += 1
 
                     #gets all labels declared in body of a function
-                    labels = [x for x in cur.Node.children if x.name.endswith(&#34;:&#34;)]
-                    
+                    labels = [x.children[0] for x in cur.Node.children if x.name == &#34;label&#34;]
                     if labels != []:
 
                         #for each label in the body
                         for i in labels:
                             #checks if label is already in the symbol table.
                             if [x for x in self.symbols if x.name == i.name] == []:
-                                self.symbols.append(Entry(False,False, True,  i.name, &#34;None&#34;, cur.Scope)) 
+                                self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Label&#34;],  i.name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
                             else:
-                                self.undefined.append(Entry(False,False, True,  i.name, &#34;None&#34;, cur.Scope)) 
-                                
+                                self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Label&#34;],  i.name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+
                     pass
-         
+
             except ValueError:
                 # This means that the token is not in that list
                 pass
@@ -163,7 +197,7 @@ class symbol_table():
             # Grabs the first element which will be the residual left most child
             cur = ntv[0]
 
-            # checks whether the current node is an operation that will need to access the symbol table 
+            # checks whether the current node is an operation that will need to access the symbol table
             try:
                 index = [&#34;=&#34;,&#34;call&#34;,&#34;func&#34;,&#34;goto&#34;].index(cur.Node.name)
 
@@ -171,7 +205,7 @@ class symbol_table():
                 if cur.Node.children == []:
                     ntv = [Node(x, cur.Scope) for x in cur.Node.children if &#39;children&#39; in x.__dict__] + ntv[1:]
                     continue
-                
+
                 # Function Declaration
                 if index == 0:
                     children = cur.Node.children
@@ -179,7 +213,7 @@ class symbol_table():
                     topVar = &#34;&#34;
                     #regexes to do type checks on the fly
                     isDigit = r&#34;\-?([1-9]\d*|\d)&#34;
-                    isOp = r&#39;\+|\-|\/|\*&#39;
+                    isOp = r&#39;\+|\-|\/|\*|\||\&amp;|\^|\~&#39;
                     isPrec = r&#34;\-?(\d\.\d+|[1-9]\d*\.\d+)&#34;
                     isChar = r&#34;(\&#39;[\w\;\\ \%\&#34;\&#39;]\&#39;)&#34;
                     isString = r&#34;(\&#34;[\w+\;\\ \%\&#34;\&#39;]*\&#34;)&#34;
@@ -197,9 +231,9 @@ class symbol_table():
                             #this is the variable that is being assigned to
                             var = chil[-1]
                             #get the expected type from symbol table
-                            
+
                             tblEntry = [x for x in self.symbols if x.name == var.name and funcname in x.scope]
-                            
+
                             if(expectedType == &#34;&#34;):
                                 if(len(tblEntry) == 1):
                                     #it is in the table already (good)
@@ -207,30 +241,30 @@ class symbol_table():
                                     expectedType = tblEntry[0].type
                             else:
                                 if(expectedType != tblEntry[0].type):
-                                    print(&#34;Type mismatch for variable&#34;,var.name)
+                                    self.errors.append(&#34;Type mismatch for variable&#34; + &#34; &#34; + var.name)
                         #check function calls
                         elif(x.name == &#34;call&#34;):
                             chil = [z for z in x.children]
                             func = chil[-1]
-                            tblEntry = [x for x in self.symbols if x.name == func.name and cur.Scope in x.scope and x.is_function]
+                            tblEntry = [x for x in self.symbols if x.name == func.name and cur.Scope in x.scope and x.entry_type == {value: key for key, value in en_map.items()}[&#34;Function&#34;]]
                             if(len(tblEntry) == 1):
                                 funcType = tblEntry[0].type
                                 if(funcType != expectedType):
-                                    print(&#34;Type mismatch for&#34;,topVar)
+                                    self.errors.append(&#34;Type mismatch for &#34; + topVar)
                         #one of the children is a precision
                         elif(precCheck.match(x.name)):
                             if(expectedType != &#34;float&#34; and expectedType != &#34;double&#34;):
-                                print(&#34;Type mismatch for&#34;,topVar,&#34;, unexpected precision&#34;,x.name)
+                                self.errors.append(&#34;Type mismatch for &#34; + topVar + &#34;, unexpected precision &#34; + x.name)
                         #one of the chidlren is an integer
                         elif(digCheck.match(x.name)):
                             if(expectedType != &#34;int&#34;):
-                                print(&#34;Type mismatch for&#34;,topVar,&#34;, unexpected integer&#34;,x.name)
+                                self.errors.append(&#34;Type mismatch for &#34; + topVar + &#34;, unexpected integer &#34; + x.name)
                         elif(charCheck.match(x.name)):
                             if(expectedType != &#34;char&#34;):
-                                print(&#34;Type mismatch for&#34;,topVar,&#34;, unexpected character&#34;,x.name)
+                                self.errors.append(&#34;Type mismatch for &#34; + topVar + &#34;, unexpected character &#34; + x.name)
                         elif(stringCheck.match(x.name)):
                             if(expectedType != &#34;string&#34;):
-                                print(&#34;Type mismatch for&#34;,topVar,&#34;, unexpected string&#34;,x.name)
+                                self.errors.append(&#34;Type mismatch for &#34; + topVar + &#34;, unexpected string &#34; + x.name)
                         #case that operators are in use
                         elif(opCheck.match(x.name)):
                             #need to desced through all possible branches of this, and ensure everything is use is an integer
@@ -246,11 +280,11 @@ class symbol_table():
                                     elif([x for x in self.symbols if x.name == curTemp.Node.name and curTemp.Scope in x.scope] != []):
                                         var = [x for x in self.symbols if x.name == curTemp.Node.name and curTemp.Scope in x.scope][0]
                                         if(var.type != &#34;int&#34;):
-                                            print(&#34;Type mismatch for&#34;,topVar)
+                                            self.errors.append(&#34;Type mismatch for &#34; + topVar)
                                     elif((precCheck.match(curTemp.Node.name))):
-                                        print(&#34;Type mismatch for&#34;,topVar)
+                                        self.errors.append(&#34;Type mismatch for &#34; + topVar)
                                     elif(not (digCheck.match(curTemp.Node.name) or opCheck.match(curTemp.Node.name))):
-                                        print(&#34;Type mismatch for&#34;,topVar)
+                                        self.errors.append(&#34;Type mismatch for &#34; + topVar)
                                 ntvTemp = [Node(z, curTemp.Scope) for z in curTemp.Node.children if &#39;children&#39; in z.__dict__] + ntvTemp[1:]
 
                             pass
@@ -261,10 +295,10 @@ class symbol_table():
                     functionName = func.name
                     functionChildren = [x.name for x in func.children]
                     #get the number of params and types from the symbol table
-                    params = [x for x in self.symbols if functionName in x.scope and x.is_param]
+                    params = [x for x in self.symbols if functionName in x.scope and x.entry_type == {value: key for key, value in en_map.items()}[&#34;Parameter&#34;]]
                     types = [x.type for x in params]
                     if(len(params) != len(functionChildren)):
-                        print(&#34;Improper amount of arguments in call to function&#34;,functionName,functionChildren)
+                        self.errors.append(&#34;Improper amount of arguments in call to function &#34; + functionName)
                     else:
                         for it,par in enumerate(functionChildren):
                             #get type of par
@@ -272,45 +306,46 @@ class symbol_table():
                             #one of the children is a precision
                             if(precCheck.match(par)):
                                 if(expec != &#34;float&#34; and expec != &#34;double&#34;):
-                                    print(&#34;Type mismatch for&#34;,functionName,&#34;, unexpected precision&#34;,par)
+                                    self.errors.append(&#34;Type mismatch for &#34; + functionName + &#34;, unexpected precision &#34; + par)
                             #one of the chidlren is an integer
                             elif(digCheck.match(par)):
                                 if(expec != &#34;int&#34;):
-                                    print(&#34;Type mismatch for&#34;,functionName,&#34;, unexpected integer&#34;,par)
+                                    self.errors.append(&#34;Type mismatch for &#34; + functionName + &#34;, unexpected integer &#34; + par)
                             elif(charCheck.match(par)):
                                 if(expec != &#34;char&#34;):
-                                    print(&#34;Type mismatch for&#34;,functionName,&#34;, unexpected character&#34;,par)
+                                    self.errors.append(&#34;Type mismatch for &#34; + functionName + &#34;, unexpected character &#34; + par)
                             elif(stringCheck.match(par)):
                                 if(expec != &#34;string&#34;):
-                                    print(&#34;Type mismatch for&#34;,functionName,&#34;, unexpected string&#34;,par)
+                                    self.errors.append(&#34;Type mismatch for &#34; + functionName + &#34;, unexpected string &#34; + par)
 
                             #check if type of par and types[it] are the same
-                            
+
                             pass
                     #then iterate through the children of this and check the types of the parameters
                     pass
                 elif index == 2:
                     funcname = cur.Node.children[1].name
-                    
+
                     #get params of the node currently being visited
                     params = [x for x in cur.Node.children[2].children]
                     params = [(x.children[0].name) for x in params]
                     # print(params)
                     #get the expected params
-                    
-                    expected = ([(x.type) for x in self.symbols if x.is_param and f&#34;/{funcname}/&#34; == x.scope])
+
+                    expected = ([(x.type) for x in self.symbols if x.entry_type == {value: key for key, value in en_map.items()}[&#34;Parameter&#34;] and f&#34;/{funcname}/&#34; == x.scope])
                     if expected != params:
-                        print(&#34;Parameters in function prototype do not match function definition in &#34;,funcname)
+                        self.errors.append(&#34;Parameters in function prototype do not match function definition in &#34; + funcname)
                 elif index == 3:
                     label = cur.Node.children[0]
                     labelName = label.name
+
                     #look for labelName: in the symbol table
-                    toLook = labelName + &#34;:&#34;
-                    found = ([x.name for x in self.symbols if x.is_goto and x.name == toLook])
+                    toLook = labelName
+                    found = ([x.name for x in self.symbols if x.entry_type == {value: key for key, value in en_map.items()}[&#34;Label&#34;] and x.name == toLook])
                     if(found == []):
-                        print(&#34;Label&#34;, labelName,&#34;not found&#34;)
+                        self.errors.append(&#34;Label &#34; +  labelName + &#34; not found&#34;)
                     elif(len(found) &gt; 1):
-                        print(&#34;Multiple labels with name&#34;,  labelName,&#34;found&#34;)
+                        self.errors.append(&#34;Multiple labels with name &#34; +   labelName + &#34; found&#34;)
 
             except ValueError:
                 # This means that the token is not in that list
@@ -319,46 +354,103 @@ class symbol_table():
             # fetches the relevant children of the current node and appends the already known children to the list of residual nodes
             ntv = [Node(x, cur.Scope) for x in cur.Node.children if &#39;children&#39; in x.__dict__] + ntv[1:]
 
+    def __str__(self):
+        li = []
+
+        known_len = [
+            max([len(x.name) for x in self.symbols] + [len(&#34;Name&#34;)]),
+            max([len(en_map[x.entry_type]) for x in self.symbols] + [len(&#34;Entry Type&#34;)]),
+            max([len(x.type) for x in self.symbols] + [len(&#34;Type&#34;)]),
+            max([len(x.scope) for x in self.symbols] + [len(&#34;Scope&#34;)]),
+            max([len(&#34;, &#34;.join(x.modifiers)) for x in self.symbols] + [len(&#34;Modifiers&#34;)]),
+        ]
+        unknown_len = [
+            max([len(x.name) for x in self.undefined] + [len(&#34;Name&#34;)]),
+            max([len(en_map[x.entry_type]) for x in self.undefined] + [len(&#34;Entry Type&#34;)]),
+            max([len(x.scope) for x in self.undefined] + [len(&#34;Scope&#34;)]),
+        ]
+
+        li.append(&#34;Known Symbols&#34;)
+        li.append(f&#34; {&#39;Name&#39;:^{known_len[0]}} | {&#39;Entry Type&#39;:^{known_len[1]}} | {&#39;Type&#39;:^{known_len[2]}} | {&#39;Scope&#39;:^{known_len[3]}} | {&#39;Modifiers&#39;:^{known_len[4]}} &#34;)
+        li.append(f&#34;-{&#39;-&#39;*known_len[0]}-+-{&#39;-&#39;*known_len[1]}-+-{&#39;-&#39;*known_len[2]}-+-{&#39;-&#39;*known_len[3]}-+-{&#39;-&#39;*known_len[4]}-&#34;)
+        for x in self.symbols:
+            li.append(f&#34; {x.name:&gt;{known_len[0]}} | {en_map[x.entry_type]:&gt;{known_len[1]}} | {x.type :&gt;{known_len[2]}} | {x.scope :&lt;{known_len[3]}} | {&#39;, &#39;.join(x.modifiers) :&gt;{known_len[4]}}&#34;)
+        li.append(&#34;&#34;)
+        li.append(&#34;Unknown Symbols&#34;)
+        li.append(f&#34; {&#39;Name&#39;:^{unknown_len[0]}} | {&#39;Entry Type&#39;:^{unknown_len[1]}} | {&#39;Type&#39;:^{unknown_len[2]}}&#34;)
+        li.append(f&#34;-{&#39;-&#39;*unknown_len[0]}-+-{&#39;-&#39;*unknown_len[1]}-+-{&#39;-&#39;*unknown_len[2]}-&#34;)
+        for x in self.undefined:
+            li.append(f&#34; {x.name:&gt;{unknown_len[0]}} | {en_map[x.entry_type]:&gt;{unknown_len[1]}} | {x.type :&gt;{unknown_len[2]}}&#34;)
+
+        return &#34;\n&#34;.join(li) + &#34;\n&#34;
+
+    def __repr__(self):
+        return &#34;\n&#34;.join(self.errors)
 
     def print_symbol_table(self):
-        if len(self.symbols) == 0:
-            print (&#34;No defined symbols available&#34;)
-            return
+        &#34;&#34;&#34;
+        Prints the known symbols in the symbol table to stdout
+        &#34;&#34;&#34;
+        # if len(self.symbols) == 0:
+        #     print (&#34;No defined symbols available&#34;)
+        #     return
 
         col_lengths = [
-            max(max([len(x.name) for x in self.symbols]), len(&#34;Name&#34;)),
-            max(max([len(str(x.is_function)) for x in self.symbols]), len(&#34;Function?&#34;)),
-            max(max([len(x.type) for x in self.symbols]), len(&#34;Type&#34;)),
-            max(max([len(x.scope) for x in self.symbols]), len(&#34;Scope&#34;)),
-            max(max([len(str(x.is_param)) for x in self.symbols]), len(&#34;Param?&#34;)),
-            max(max([len(str(x.is_goto)) for x in self.symbols]), len(&#34;Goto?&#34;)),           
-            max(max([len(x.references) for x in self.symbols]), len(&#34;References&#34;)),
-            max(max([len(x.modifiers) for x in self.symbols]), len(&#34;Modifiers&#34;)),
-            
+            max([len(x.name) for x in self.symbols] + [len(&#34;Name&#34;)]),
+            max([len(en_map[x.entry_type]) for x in self.symbols] + [len(&#34;Entry Type&#34;)]),
+            max([len(x.type) for x in self.symbols] + [len(&#34;Type&#34;)]),
+            max([len(x.scope) for x in self.symbols] + [len(&#34;Scope&#34;)]),
+            max([len(&#34;, &#34;.join(x.modifiers)) for x in self.symbols] + [len(&#34;Modifiers&#34;)]),
+
         ]
 
-        self.symbols.sort(key=lambda x: x.scope)
-
-        print (f&#34;{&#39;Name&#39;:^{col_lengths[0]}} | {&#39;Function?&#39;:^{col_lengths[1]}} | {&#39;Type&#39;:^{col_lengths[2]}} | {&#39;Scope&#39;:^{col_lengths[3]}} | {&#39;Param?&#39;:^{col_lengths[4]}} | {&#39;Label?&#39;:^{col_lengths[5]}} &#34;)
-        print (f&#34;{&#39;-&#39;*col_lengths[0]}-+-{&#39;-&#39;*col_lengths[1]}-+-{&#39;-&#39;*col_lengths[2]}-+-{&#39;-&#39;*col_lengths[3]}-+-{&#39;-&#39;*col_lengths[4]}-+-{&#39;-&#39;*col_lengths[5]}-&#34;)
-        for x in self.symbols: print(f&#34;{x.name:&gt;{col_lengths[0]}} | {str(x.is_function) :&gt;{col_lengths[1]}} | {x.type :&gt;{col_lengths[2]}} | {x.scope :&lt;{col_lengths[3]}} | {str(x.is_param) :&gt;{col_lengths[4]}} | {str(x.is_goto) :&gt;{col_lengths[5]}}&#34;)
+        print (&#34;Known Symbols&#34;)
+        print (f&#34; {&#39;Name&#39;:^{col_lengths[0]}} | {&#39;Entry Type&#39;:^{col_lengths[1]}} | {&#39;Type&#39;:^{col_lengths[2]}} | {&#39;Scope&#39;:^{col_lengths[3]}} | {&#39;Modifiers&#39;:^{col_lengths[4]}} &#34;)
+        print (f&#34;-{&#39;-&#39;*col_lengths[0]}-+-{&#39;-&#39;*col_lengths[1]}-+-{&#39;-&#39;*col_lengths[2]}-+-{&#39;-&#39;*col_lengths[3]}-+-{&#39;-&#39;*col_lengths[4]}-&#34;)
+        for x in self.symbols:
+            print(f&#34; {x.name:&gt;{col_lengths[0]}} | {en_map[x.entry_type]:&gt;{col_lengths[1]}} | {x.type :&gt;{col_lengths[2]}} | {x.scope :&lt;{col_lengths[3]}} | {&#39;, &#39;.join(x.modifiers) :&gt;{col_lengths[4]}}&#34;)
+        # print(&#34;&#34;)
 
     def print_unknown_symbols(self):
-        if len(self.undefined) == 0:
-            print (&#34;No undefined symbols available&#34;)
-            return
+        &#34;&#34;&#34;
+        Prints the unknown symbols in the symbol table to stdout
+        &#34;&#34;&#34;
+        # if len(self.undefined) == 0:
+        #     print (&#34;No undefined symbols available&#34;)
+        #     return
 
         col_lengths = [
-            max(max([len(x.name) for x in self.undefined]), len(&#34;Name&#34;)),
-            max(max([len(str(x.is_function)) for x in self.undefined]), len(&#34;Function?&#34;)),
-            max(max([len(x.scope) for x in self.undefined]), len(&#34;Scope&#34;)),  
+            max([len(x.name) for x in self.undefined] + [len(&#34;Name&#34;)]),
+            max([len(en_map[x.entry_type]) for x in self.undefined] + [len(&#34;Entry Type&#34;)]),
+            max([len(x.scope) for x in self.undefined] + [len(&#34;Scope&#34;)]),
         ]
 
-        self.undefined.sort(key=lambda x: x.scope)
+        print (&#34;Unknown Symbols&#34;)
+        print (f&#34; {&#39;Name&#39;:^{col_lengths[0]}} | {&#39;Entry Type&#39;:^{col_lengths[1]}} | {&#39;Type&#39;:^{col_lengths[2]}}&#34;)
+        print (f&#34;-{&#39;-&#39;*col_lengths[0]}-+-{&#39;-&#39;*col_lengths[1]}-+-{&#39;-&#39;*col_lengths[2]}-&#34;)
+        for x in self.undefined:
+            print(f&#34; {x.name:&gt;{col_lengths[0]}} | {en_map[x.entry_type]:&gt;{col_lengths[1]}} | {x.type :&gt;{col_lengths[2]}}&#34;)
+        # print(&#34;&#34;)
 
-        print (f&#34;{&#39;Name&#39;:^{col_lengths[0]}} | {&#39;Function?&#39;:^{col_lengths[1]}} | {&#39;Type&#39;:^{col_lengths[2]}}&#34;)
-        print (f&#34;{&#39;-&#39;*col_lengths[0]}-+-{&#39;-&#39;*col_lengths[1]}-+-{&#39;-&#39;*col_lengths[2]}-&#34;)
-        for x in self.undefined: print(f&#34;{x.name:&gt;{col_lengths[0]}} | {str(x.is_function) :&gt;{col_lengths[1]}} | {x.type :&gt;{col_lengths[2]}}&#34;)</code></pre>
+    def printSemanticErrors(self):
+        &#34;&#34;&#34;
+        Prints the semantic errors to stdout
+        &#34;&#34;&#34;
+        for i in self.errors:
+            print(i)
+
+    def lineSemanticErrors(self):
+        &#34;&#34;&#34;
+        Retrieves the semantic errors
+
+        Returns:
+            output: All the semantic errors as a string separated by new lines
+        &#34;&#34;&#34;
+        output = &#34;&#34;
+        for i in self.errors:
+            output += (i+&#34;\n&#34;)
+
+        return output</code></pre>
 </details>
 </section>
 <section>
@@ -372,24 +464,46 @@ class symbol_table():
 <dl>
 <dt id="src.frontend.semantics.Entry"><code class="flex name class">
 <span>class <span class="ident">Entry</span></span>
-<span>(</span><span>is_func, is_param, is_goto, nam, typ, scop)</span>
+<span>(</span><span>en_typ, nam, typ, scop, modif)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>A class that represents a singular entry in the symbol table</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>en_typ</code></strong></dt>
+<dd>Whether the entry is a variable, function, parameter, or label.</dd>
+<dt><strong><code>nam</code></strong></dt>
+<dd>Name of the entry.</dd>
+<dt><strong><code>typ</code></strong></dt>
+<dd>The associated type of the entry such as <code>int</code>, <code>float</code> ect. For functions this represents the return type.</dd>
+<dt><strong><code>scop</code></strong></dt>
+<dd>The scope where the entry exists.</dd>
+<dt><strong><code>modif</code></strong></dt>
+<dd>The modifiers associated with the entry such as <code>unsigned</code>, <code>const</code>, <code>static</code> ect.</dd>
+</dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Entry():
-    def __init__(self, is_func,is_param, is_goto, nam, typ, scop):
-        self.is_function = is_func
-        self.is_param = is_param
-        self.is_goto = is_goto
+    &#34;&#34;&#34;
+    A class that represents a singular entry in the symbol table
+    &#34;&#34;&#34;
+    def __init__(self, en_typ, nam, typ, scop, modif):
+        &#34;&#34;&#34;
+        Args:
+            en_typ: Whether the entry is a variable, function, parameter, or label.
+            nam: Name of the entry.
+            typ: The associated type of the entry such as `int`, `float` ect. For functions this represents the return type.
+            scop: The scope where the entry exists.
+            modif: The modifiers associated with the entry such as `unsigned`, `const`, `static` ect.
+        &#34;&#34;&#34;
+        self.entry_type = en_typ
         self.name = nam
         self.type = typ
         self.scope = scop
         self.references = []
-        self.modifiers = []</code></pre>
+        self.modifiers = list(sorted(set(modif)))</code></pre>
 </details>
 </dd>
 <dt id="src.frontend.semantics.Node"><code class="flex name class">
@@ -397,7 +511,7 @@ class symbol_table():
 <span>(</span><span>Node, Scope)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Node(Node, Scope)</p></section>
+<section class="desc"><p>A simple namedtuple to allow for better readability when performing the depth first search required for the semantic analysis.</p></section>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>builtins.tuple</li>
@@ -419,20 +533,35 @@ class symbol_table():
 <span>(</span><span>AST)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>A class that stores all the known and unknown symbols, as well as the semantic errors that may be discovered.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>AST</code></strong></dt>
+<dd>The head node of the abstract syntax tree.</dd>
+</dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class symbol_table():
+    &#34;&#34;&#34;
+    A class that stores all the known and unknown symbols, as well as the semantic errors that may be discovered.
+    &#34;&#34;&#34;
     def __init__(self,AST):
+        &#34;&#34;&#34;
+        Args:
+            AST: The head node of the abstract syntax tree.
+        &#34;&#34;&#34;
         self.AST = AST
 
         self.symbols = []
         self.undefined = []
-    
-    def analyze(self):
+        self.errors = []
 
+    def analyze(self):
+        &#34;&#34;&#34;
+        Analyses the abstract syntax tree to determine whether there are any undeclared references, and semantic errors.
+        &#34;&#34;&#34;
         ntv = [Node(self.AST, &#34;/&#34;)]
         scopenum = 0
         typ = None
@@ -442,8 +571,8 @@ class symbol_table():
             # Grabs the first element which will be the residual left most child
             cur = ntv[0]
 
-            # checks whether the current node is an operation that will need to access the symbol table 
-            try:                
+            # checks whether the current node is an operation that will need to access the symbol table
+            try:
                 index = [&#34;func&#34;, &#34;decl&#34;, &#34;call&#34;, &#34;var&#34;, &#34;body&#34;].index(cur.Node.name)
 
                 #Catches edge case where var or func is used an self_defined name
@@ -451,77 +580,79 @@ class symbol_table():
                     ntv = [Node(x, cur.Scope) for x in cur.Node.children if &#39;children&#39; in x.__dict__] + ntv[1:]
                     continue
 
-                
+
                 # Function Declaration
                 if index == 0:
-                    if [x for x in self.symbols if x.name == &#34;main&#34;] != [] and [x for x in self.symbols if cur.Node.children[1].name == x.name] == []:
-                        print(f&#39;Function Not Properly Declared {cur.Node.children[0].name}&#39;)
-                        self.undefined.append(Entry(True,False, False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope))
-                    else:
-                        self.symbols.append(Entry(True,False, False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
+                    # If a function is declared after main without a prototype
+                    if [x for x in self.symbols if x.name == &#34;main&#34; and x.entry_type == {value: key for key, value in en_map.items()}[&#34;Function&#34;]] != [] and [x for x in self.symbols if cur.Node.children[1].name == x.name] == []:
+                        # print(f&#39;Function Not Properly Declared {cur.Node.children[0].name}&#39;)
+                        self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Function&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                    # If a function is declared befor main is declared without a prototype
+                    elif [x for x in self.symbols if x.name == &#34;main&#34; and x.entry_type == {value: key for key, value in en_map.items()}[&#34;Function&#34;]] == []:
+                        self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Function&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
                         cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + &#34;/&#34;)
-
+                    else:
+                        cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + &#34;/&#34;)
                 #Function Prototype Declaration
                 elif index == 1:
-                    self.symbols.append(Entry(True,False, False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
+                    self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Function&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
                     cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + &#34;/&#34;)
                     pass
-                
-                
+
+
                 # Function Call
                 elif index == 2:
-                    if [x for x in self.symbols if x.is_function == True and x.name == cur.Node.children[0].name] == []:
-                        print(f&#39;Function Undefined {cur.Node.children[0].name}&#39;)
-                        self.undefined.append(Entry(True,False,  False,cur.Node.children[0].name, &#34;None&#34;, cur.Scope))
+                    if [x for x in self.symbols if x.entry_type == {value: key for key, value in en_map.items()}[&#34;Function&#34;] and x.name == cur.Node.children[0].name] == []:
+                        # print(f&#39;Function Undefined {cur.Node.children[0].name}&#39;)
+                        self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Function&#34;],cur.Node.children[0].name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
                     pass
                 # Initialization and Usage
                 elif index == 3:
-                    
+
                     #declaration of variable
                     if len(cur.Node.children) &gt; 1:
                         #add to symbol table this should also handle function param being that they are still within the same scope as there parent function
-                        if([x for x in self.symbols if x.name == cur.Node.children[1].name and cur.Scope in x.scope] == []):
+                        if([x for x in self.symbols if x.name == cur.Node.children[1].name and x.scope in cur.Scope] == []):
                             if cur.Node.parent.parent.name == &#34;func&#34; or cur.Node.parent.parent.name == &#34;decl&#34;:
                                 if cur.Node.parent.name == &#34;param&#34;:
-                                    self.symbols.append(Entry(False,True,  False,cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
+                                    self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Parameter&#34;],cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
                                 else:
-                                    self.symbols.append(Entry(False,False,  False,cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
+                                    self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;],cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
                             else:
-                                    self.symbols.append(Entry(False,False,  False,cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
+                                    self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;],cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
                         elif(cur.Node.parent.name != &#34;param&#34;):
                             print(f&#39;Variable Already Declared {cur.Node.children[1].name} {cur.Node.children[0].name}&#39;)
-                            self.undefined.append(Entry(False,False, False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
-                        elif(cur.Node.parent.name == &#34;param&#34; and [x for x in self.symbols if cur.Node.children[1].name == x.name] == []):                
+                            self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                        elif(cur.Node.parent.name == &#34;param&#34; and [x for x in self.symbols if cur.Node.children[1].name == x.name] == []):
                             print(f&#39;Undeclared parameter{cur.Node.children[1].name} {cur.Node.children[0].name}&#39;)
-                            self.undefined.append(Entry(False,False, False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
-                
+                            self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+
                         pass
                     #usage of varible
                     else:
-                        if ([x for x in self.symbols if x.name == cur.Node.children[0].name and cur.Scope in x.scope] == []):
+                        if ([x for x in self.symbols if x.name == cur.Node.children[0].name and x.scope in cur.Scope] == []):
                             print(f&#39;Variable Undeclared {cur.Node.children[0].name}&#39;)
-                            self.undefined.append(Entry(False,False, False,  cur.Node.children[0].name, &#34;None&#34;, cur.Scope)) 
-                            
+                            self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;],  cur.Node.children[0].name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+
                         pass
                 elif index == 4:
                     cur = cur._replace(Scope = f&#34;{cur.Scope}{scopenum}/&#34;)
                     scopenum += 1
 
                     #gets all labels declared in body of a function
-                    labels = [x for x in cur.Node.children if x.name.endswith(&#34;:&#34;)]
-                    
+                    labels = [x.children[0] for x in cur.Node.children if x.name == &#34;label&#34;]
                     if labels != []:
 
                         #for each label in the body
                         for i in labels:
                             #checks if label is already in the symbol table.
                             if [x for x in self.symbols if x.name == i.name] == []:
-                                self.symbols.append(Entry(False,False, True,  i.name, &#34;None&#34;, cur.Scope)) 
+                                self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Label&#34;],  i.name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
                             else:
-                                self.undefined.append(Entry(False,False, True,  i.name, &#34;None&#34;, cur.Scope)) 
-                                
+                                self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Label&#34;],  i.name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+
                     pass
-         
+
             except ValueError:
                 # This means that the token is not in that list
                 pass
@@ -541,7 +672,7 @@ class symbol_table():
             # Grabs the first element which will be the residual left most child
             cur = ntv[0]
 
-            # checks whether the current node is an operation that will need to access the symbol table 
+            # checks whether the current node is an operation that will need to access the symbol table
             try:
                 index = [&#34;=&#34;,&#34;call&#34;,&#34;func&#34;,&#34;goto&#34;].index(cur.Node.name)
 
@@ -549,7 +680,7 @@ class symbol_table():
                 if cur.Node.children == []:
                     ntv = [Node(x, cur.Scope) for x in cur.Node.children if &#39;children&#39; in x.__dict__] + ntv[1:]
                     continue
-                
+
                 # Function Declaration
                 if index == 0:
                     children = cur.Node.children
@@ -557,7 +688,7 @@ class symbol_table():
                     topVar = &#34;&#34;
                     #regexes to do type checks on the fly
                     isDigit = r&#34;\-?([1-9]\d*|\d)&#34;
-                    isOp = r&#39;\+|\-|\/|\*&#39;
+                    isOp = r&#39;\+|\-|\/|\*|\||\&amp;|\^|\~&#39;
                     isPrec = r&#34;\-?(\d\.\d+|[1-9]\d*\.\d+)&#34;
                     isChar = r&#34;(\&#39;[\w\;\\ \%\&#34;\&#39;]\&#39;)&#34;
                     isString = r&#34;(\&#34;[\w+\;\\ \%\&#34;\&#39;]*\&#34;)&#34;
@@ -575,9 +706,9 @@ class symbol_table():
                             #this is the variable that is being assigned to
                             var = chil[-1]
                             #get the expected type from symbol table
-                            
+
                             tblEntry = [x for x in self.symbols if x.name == var.name and funcname in x.scope]
-                            
+
                             if(expectedType == &#34;&#34;):
                                 if(len(tblEntry) == 1):
                                     #it is in the table already (good)
@@ -585,30 +716,30 @@ class symbol_table():
                                     expectedType = tblEntry[0].type
                             else:
                                 if(expectedType != tblEntry[0].type):
-                                    print(&#34;Type mismatch for variable&#34;,var.name)
+                                    self.errors.append(&#34;Type mismatch for variable&#34; + &#34; &#34; + var.name)
                         #check function calls
                         elif(x.name == &#34;call&#34;):
                             chil = [z for z in x.children]
                             func = chil[-1]
-                            tblEntry = [x for x in self.symbols if x.name == func.name and cur.Scope in x.scope and x.is_function]
+                            tblEntry = [x for x in self.symbols if x.name == func.name and cur.Scope in x.scope and x.entry_type == {value: key for key, value in en_map.items()}[&#34;Function&#34;]]
                             if(len(tblEntry) == 1):
                                 funcType = tblEntry[0].type
                                 if(funcType != expectedType):
-                                    print(&#34;Type mismatch for&#34;,topVar)
+                                    self.errors.append(&#34;Type mismatch for &#34; + topVar)
                         #one of the children is a precision
                         elif(precCheck.match(x.name)):
                             if(expectedType != &#34;float&#34; and expectedType != &#34;double&#34;):
-                                print(&#34;Type mismatch for&#34;,topVar,&#34;, unexpected precision&#34;,x.name)
+                                self.errors.append(&#34;Type mismatch for &#34; + topVar + &#34;, unexpected precision &#34; + x.name)
                         #one of the chidlren is an integer
                         elif(digCheck.match(x.name)):
                             if(expectedType != &#34;int&#34;):
-                                print(&#34;Type mismatch for&#34;,topVar,&#34;, unexpected integer&#34;,x.name)
+                                self.errors.append(&#34;Type mismatch for &#34; + topVar + &#34;, unexpected integer &#34; + x.name)
                         elif(charCheck.match(x.name)):
                             if(expectedType != &#34;char&#34;):
-                                print(&#34;Type mismatch for&#34;,topVar,&#34;, unexpected character&#34;,x.name)
+                                self.errors.append(&#34;Type mismatch for &#34; + topVar + &#34;, unexpected character &#34; + x.name)
                         elif(stringCheck.match(x.name)):
                             if(expectedType != &#34;string&#34;):
-                                print(&#34;Type mismatch for&#34;,topVar,&#34;, unexpected string&#34;,x.name)
+                                self.errors.append(&#34;Type mismatch for &#34; + topVar + &#34;, unexpected string &#34; + x.name)
                         #case that operators are in use
                         elif(opCheck.match(x.name)):
                             #need to desced through all possible branches of this, and ensure everything is use is an integer
@@ -624,11 +755,11 @@ class symbol_table():
                                     elif([x for x in self.symbols if x.name == curTemp.Node.name and curTemp.Scope in x.scope] != []):
                                         var = [x for x in self.symbols if x.name == curTemp.Node.name and curTemp.Scope in x.scope][0]
                                         if(var.type != &#34;int&#34;):
-                                            print(&#34;Type mismatch for&#34;,topVar)
+                                            self.errors.append(&#34;Type mismatch for &#34; + topVar)
                                     elif((precCheck.match(curTemp.Node.name))):
-                                        print(&#34;Type mismatch for&#34;,topVar)
+                                        self.errors.append(&#34;Type mismatch for &#34; + topVar)
                                     elif(not (digCheck.match(curTemp.Node.name) or opCheck.match(curTemp.Node.name))):
-                                        print(&#34;Type mismatch for&#34;,topVar)
+                                        self.errors.append(&#34;Type mismatch for &#34; + topVar)
                                 ntvTemp = [Node(z, curTemp.Scope) for z in curTemp.Node.children if &#39;children&#39; in z.__dict__] + ntvTemp[1:]
 
                             pass
@@ -639,10 +770,10 @@ class symbol_table():
                     functionName = func.name
                     functionChildren = [x.name for x in func.children]
                     #get the number of params and types from the symbol table
-                    params = [x for x in self.symbols if functionName in x.scope and x.is_param]
+                    params = [x for x in self.symbols if functionName in x.scope and x.entry_type == {value: key for key, value in en_map.items()}[&#34;Parameter&#34;]]
                     types = [x.type for x in params]
                     if(len(params) != len(functionChildren)):
-                        print(&#34;Improper amount of arguments in call to function&#34;,functionName,functionChildren)
+                        self.errors.append(&#34;Improper amount of arguments in call to function &#34; + functionName)
                     else:
                         for it,par in enumerate(functionChildren):
                             #get type of par
@@ -650,45 +781,46 @@ class symbol_table():
                             #one of the children is a precision
                             if(precCheck.match(par)):
                                 if(expec != &#34;float&#34; and expec != &#34;double&#34;):
-                                    print(&#34;Type mismatch for&#34;,functionName,&#34;, unexpected precision&#34;,par)
+                                    self.errors.append(&#34;Type mismatch for &#34; + functionName + &#34;, unexpected precision &#34; + par)
                             #one of the chidlren is an integer
                             elif(digCheck.match(par)):
                                 if(expec != &#34;int&#34;):
-                                    print(&#34;Type mismatch for&#34;,functionName,&#34;, unexpected integer&#34;,par)
+                                    self.errors.append(&#34;Type mismatch for &#34; + functionName + &#34;, unexpected integer &#34; + par)
                             elif(charCheck.match(par)):
                                 if(expec != &#34;char&#34;):
-                                    print(&#34;Type mismatch for&#34;,functionName,&#34;, unexpected character&#34;,par)
+                                    self.errors.append(&#34;Type mismatch for &#34; + functionName + &#34;, unexpected character &#34; + par)
                             elif(stringCheck.match(par)):
                                 if(expec != &#34;string&#34;):
-                                    print(&#34;Type mismatch for&#34;,functionName,&#34;, unexpected string&#34;,par)
+                                    self.errors.append(&#34;Type mismatch for &#34; + functionName + &#34;, unexpected string &#34; + par)
 
                             #check if type of par and types[it] are the same
-                            
+
                             pass
                     #then iterate through the children of this and check the types of the parameters
                     pass
                 elif index == 2:
                     funcname = cur.Node.children[1].name
-                    
+
                     #get params of the node currently being visited
                     params = [x for x in cur.Node.children[2].children]
                     params = [(x.children[0].name) for x in params]
                     # print(params)
                     #get the expected params
-                    
-                    expected = ([(x.type) for x in self.symbols if x.is_param and f&#34;/{funcname}/&#34; == x.scope])
+
+                    expected = ([(x.type) for x in self.symbols if x.entry_type == {value: key for key, value in en_map.items()}[&#34;Parameter&#34;] and f&#34;/{funcname}/&#34; == x.scope])
                     if expected != params:
-                        print(&#34;Parameters in function prototype do not match function definition in &#34;,funcname)
+                        self.errors.append(&#34;Parameters in function prototype do not match function definition in &#34; + funcname)
                 elif index == 3:
                     label = cur.Node.children[0]
                     labelName = label.name
+
                     #look for labelName: in the symbol table
-                    toLook = labelName + &#34;:&#34;
-                    found = ([x.name for x in self.symbols if x.is_goto and x.name == toLook])
+                    toLook = labelName
+                    found = ([x.name for x in self.symbols if x.entry_type == {value: key for key, value in en_map.items()}[&#34;Label&#34;] and x.name == toLook])
                     if(found == []):
-                        print(&#34;Label&#34;, labelName,&#34;not found&#34;)
+                        self.errors.append(&#34;Label &#34; +  labelName + &#34; not found&#34;)
                     elif(len(found) &gt; 1):
-                        print(&#34;Multiple labels with name&#34;,  labelName,&#34;found&#34;)
+                        self.errors.append(&#34;Multiple labels with name &#34; +   labelName + &#34; found&#34;)
 
             except ValueError:
                 # This means that the token is not in that list
@@ -697,46 +829,103 @@ class symbol_table():
             # fetches the relevant children of the current node and appends the already known children to the list of residual nodes
             ntv = [Node(x, cur.Scope) for x in cur.Node.children if &#39;children&#39; in x.__dict__] + ntv[1:]
 
+    def __str__(self):
+        li = []
+
+        known_len = [
+            max([len(x.name) for x in self.symbols] + [len(&#34;Name&#34;)]),
+            max([len(en_map[x.entry_type]) for x in self.symbols] + [len(&#34;Entry Type&#34;)]),
+            max([len(x.type) for x in self.symbols] + [len(&#34;Type&#34;)]),
+            max([len(x.scope) for x in self.symbols] + [len(&#34;Scope&#34;)]),
+            max([len(&#34;, &#34;.join(x.modifiers)) for x in self.symbols] + [len(&#34;Modifiers&#34;)]),
+        ]
+        unknown_len = [
+            max([len(x.name) for x in self.undefined] + [len(&#34;Name&#34;)]),
+            max([len(en_map[x.entry_type]) for x in self.undefined] + [len(&#34;Entry Type&#34;)]),
+            max([len(x.scope) for x in self.undefined] + [len(&#34;Scope&#34;)]),
+        ]
+
+        li.append(&#34;Known Symbols&#34;)
+        li.append(f&#34; {&#39;Name&#39;:^{known_len[0]}} | {&#39;Entry Type&#39;:^{known_len[1]}} | {&#39;Type&#39;:^{known_len[2]}} | {&#39;Scope&#39;:^{known_len[3]}} | {&#39;Modifiers&#39;:^{known_len[4]}} &#34;)
+        li.append(f&#34;-{&#39;-&#39;*known_len[0]}-+-{&#39;-&#39;*known_len[1]}-+-{&#39;-&#39;*known_len[2]}-+-{&#39;-&#39;*known_len[3]}-+-{&#39;-&#39;*known_len[4]}-&#34;)
+        for x in self.symbols:
+            li.append(f&#34; {x.name:&gt;{known_len[0]}} | {en_map[x.entry_type]:&gt;{known_len[1]}} | {x.type :&gt;{known_len[2]}} | {x.scope :&lt;{known_len[3]}} | {&#39;, &#39;.join(x.modifiers) :&gt;{known_len[4]}}&#34;)
+        li.append(&#34;&#34;)
+        li.append(&#34;Unknown Symbols&#34;)
+        li.append(f&#34; {&#39;Name&#39;:^{unknown_len[0]}} | {&#39;Entry Type&#39;:^{unknown_len[1]}} | {&#39;Type&#39;:^{unknown_len[2]}}&#34;)
+        li.append(f&#34;-{&#39;-&#39;*unknown_len[0]}-+-{&#39;-&#39;*unknown_len[1]}-+-{&#39;-&#39;*unknown_len[2]}-&#34;)
+        for x in self.undefined:
+            li.append(f&#34; {x.name:&gt;{unknown_len[0]}} | {en_map[x.entry_type]:&gt;{unknown_len[1]}} | {x.type :&gt;{unknown_len[2]}}&#34;)
+
+        return &#34;\n&#34;.join(li) + &#34;\n&#34;
+
+    def __repr__(self):
+        return &#34;\n&#34;.join(self.errors)
 
     def print_symbol_table(self):
-        if len(self.symbols) == 0:
-            print (&#34;No defined symbols available&#34;)
-            return
+        &#34;&#34;&#34;
+        Prints the known symbols in the symbol table to stdout
+        &#34;&#34;&#34;
+        # if len(self.symbols) == 0:
+        #     print (&#34;No defined symbols available&#34;)
+        #     return
 
         col_lengths = [
-            max(max([len(x.name) for x in self.symbols]), len(&#34;Name&#34;)),
-            max(max([len(str(x.is_function)) for x in self.symbols]), len(&#34;Function?&#34;)),
-            max(max([len(x.type) for x in self.symbols]), len(&#34;Type&#34;)),
-            max(max([len(x.scope) for x in self.symbols]), len(&#34;Scope&#34;)),
-            max(max([len(str(x.is_param)) for x in self.symbols]), len(&#34;Param?&#34;)),
-            max(max([len(str(x.is_goto)) for x in self.symbols]), len(&#34;Goto?&#34;)),           
-            max(max([len(x.references) for x in self.symbols]), len(&#34;References&#34;)),
-            max(max([len(x.modifiers) for x in self.symbols]), len(&#34;Modifiers&#34;)),
-            
+            max([len(x.name) for x in self.symbols] + [len(&#34;Name&#34;)]),
+            max([len(en_map[x.entry_type]) for x in self.symbols] + [len(&#34;Entry Type&#34;)]),
+            max([len(x.type) for x in self.symbols] + [len(&#34;Type&#34;)]),
+            max([len(x.scope) for x in self.symbols] + [len(&#34;Scope&#34;)]),
+            max([len(&#34;, &#34;.join(x.modifiers)) for x in self.symbols] + [len(&#34;Modifiers&#34;)]),
+
         ]
 
-        self.symbols.sort(key=lambda x: x.scope)
-
-        print (f&#34;{&#39;Name&#39;:^{col_lengths[0]}} | {&#39;Function?&#39;:^{col_lengths[1]}} | {&#39;Type&#39;:^{col_lengths[2]}} | {&#39;Scope&#39;:^{col_lengths[3]}} | {&#39;Param?&#39;:^{col_lengths[4]}} | {&#39;Label?&#39;:^{col_lengths[5]}} &#34;)
-        print (f&#34;{&#39;-&#39;*col_lengths[0]}-+-{&#39;-&#39;*col_lengths[1]}-+-{&#39;-&#39;*col_lengths[2]}-+-{&#39;-&#39;*col_lengths[3]}-+-{&#39;-&#39;*col_lengths[4]}-+-{&#39;-&#39;*col_lengths[5]}-&#34;)
-        for x in self.symbols: print(f&#34;{x.name:&gt;{col_lengths[0]}} | {str(x.is_function) :&gt;{col_lengths[1]}} | {x.type :&gt;{col_lengths[2]}} | {x.scope :&lt;{col_lengths[3]}} | {str(x.is_param) :&gt;{col_lengths[4]}} | {str(x.is_goto) :&gt;{col_lengths[5]}}&#34;)
+        print (&#34;Known Symbols&#34;)
+        print (f&#34; {&#39;Name&#39;:^{col_lengths[0]}} | {&#39;Entry Type&#39;:^{col_lengths[1]}} | {&#39;Type&#39;:^{col_lengths[2]}} | {&#39;Scope&#39;:^{col_lengths[3]}} | {&#39;Modifiers&#39;:^{col_lengths[4]}} &#34;)
+        print (f&#34;-{&#39;-&#39;*col_lengths[0]}-+-{&#39;-&#39;*col_lengths[1]}-+-{&#39;-&#39;*col_lengths[2]}-+-{&#39;-&#39;*col_lengths[3]}-+-{&#39;-&#39;*col_lengths[4]}-&#34;)
+        for x in self.symbols:
+            print(f&#34; {x.name:&gt;{col_lengths[0]}} | {en_map[x.entry_type]:&gt;{col_lengths[1]}} | {x.type :&gt;{col_lengths[2]}} | {x.scope :&lt;{col_lengths[3]}} | {&#39;, &#39;.join(x.modifiers) :&gt;{col_lengths[4]}}&#34;)
+        # print(&#34;&#34;)
 
     def print_unknown_symbols(self):
-        if len(self.undefined) == 0:
-            print (&#34;No undefined symbols available&#34;)
-            return
+        &#34;&#34;&#34;
+        Prints the unknown symbols in the symbol table to stdout
+        &#34;&#34;&#34;
+        # if len(self.undefined) == 0:
+        #     print (&#34;No undefined symbols available&#34;)
+        #     return
 
         col_lengths = [
-            max(max([len(x.name) for x in self.undefined]), len(&#34;Name&#34;)),
-            max(max([len(str(x.is_function)) for x in self.undefined]), len(&#34;Function?&#34;)),
-            max(max([len(x.scope) for x in self.undefined]), len(&#34;Scope&#34;)),  
+            max([len(x.name) for x in self.undefined] + [len(&#34;Name&#34;)]),
+            max([len(en_map[x.entry_type]) for x in self.undefined] + [len(&#34;Entry Type&#34;)]),
+            max([len(x.scope) for x in self.undefined] + [len(&#34;Scope&#34;)]),
         ]
 
-        self.undefined.sort(key=lambda x: x.scope)
+        print (&#34;Unknown Symbols&#34;)
+        print (f&#34; {&#39;Name&#39;:^{col_lengths[0]}} | {&#39;Entry Type&#39;:^{col_lengths[1]}} | {&#39;Type&#39;:^{col_lengths[2]}}&#34;)
+        print (f&#34;-{&#39;-&#39;*col_lengths[0]}-+-{&#39;-&#39;*col_lengths[1]}-+-{&#39;-&#39;*col_lengths[2]}-&#34;)
+        for x in self.undefined:
+            print(f&#34; {x.name:&gt;{col_lengths[0]}} | {en_map[x.entry_type]:&gt;{col_lengths[1]}} | {x.type :&gt;{col_lengths[2]}}&#34;)
+        # print(&#34;&#34;)
 
-        print (f&#34;{&#39;Name&#39;:^{col_lengths[0]}} | {&#39;Function?&#39;:^{col_lengths[1]}} | {&#39;Type&#39;:^{col_lengths[2]}}&#34;)
-        print (f&#34;{&#39;-&#39;*col_lengths[0]}-+-{&#39;-&#39;*col_lengths[1]}-+-{&#39;-&#39;*col_lengths[2]}-&#34;)
-        for x in self.undefined: print(f&#34;{x.name:&gt;{col_lengths[0]}} | {str(x.is_function) :&gt;{col_lengths[1]}} | {x.type :&gt;{col_lengths[2]}}&#34;)</code></pre>
+    def printSemanticErrors(self):
+        &#34;&#34;&#34;
+        Prints the semantic errors to stdout
+        &#34;&#34;&#34;
+        for i in self.errors:
+            print(i)
+
+    def lineSemanticErrors(self):
+        &#34;&#34;&#34;
+        Retrieves the semantic errors
+
+        Returns:
+            output: All the semantic errors as a string separated by new lines
+        &#34;&#34;&#34;
+        output = &#34;&#34;
+        for i in self.errors:
+            output += (i+&#34;\n&#34;)
+
+        return output</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -744,13 +933,15 @@ class symbol_table():
 <span>def <span class="ident">analyze</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Analyses the abstract syntax tree to determine whether there are any undeclared references, and semantic errors.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def analyze(self):
-
+    &#34;&#34;&#34;
+    Analyses the abstract syntax tree to determine whether there are any undeclared references, and semantic errors.
+    &#34;&#34;&#34;
     ntv = [Node(self.AST, &#34;/&#34;)]
     scopenum = 0
     typ = None
@@ -760,8 +951,8 @@ class symbol_table():
         # Grabs the first element which will be the residual left most child
         cur = ntv[0]
 
-        # checks whether the current node is an operation that will need to access the symbol table 
-        try:                
+        # checks whether the current node is an operation that will need to access the symbol table
+        try:
             index = [&#34;func&#34;, &#34;decl&#34;, &#34;call&#34;, &#34;var&#34;, &#34;body&#34;].index(cur.Node.name)
 
             #Catches edge case where var or func is used an self_defined name
@@ -769,77 +960,79 @@ class symbol_table():
                 ntv = [Node(x, cur.Scope) for x in cur.Node.children if &#39;children&#39; in x.__dict__] + ntv[1:]
                 continue
 
-            
+
             # Function Declaration
             if index == 0:
-                if [x for x in self.symbols if x.name == &#34;main&#34;] != [] and [x for x in self.symbols if cur.Node.children[1].name == x.name] == []:
-                    print(f&#39;Function Not Properly Declared {cur.Node.children[0].name}&#39;)
-                    self.undefined.append(Entry(True,False, False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope))
-                else:
-                    self.symbols.append(Entry(True,False, False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
+                # If a function is declared after main without a prototype
+                if [x for x in self.symbols if x.name == &#34;main&#34; and x.entry_type == {value: key for key, value in en_map.items()}[&#34;Function&#34;]] != [] and [x for x in self.symbols if cur.Node.children[1].name == x.name] == []:
+                    # print(f&#39;Function Not Properly Declared {cur.Node.children[0].name}&#39;)
+                    self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Function&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                # If a function is declared befor main is declared without a prototype
+                elif [x for x in self.symbols if x.name == &#34;main&#34; and x.entry_type == {value: key for key, value in en_map.items()}[&#34;Function&#34;]] == []:
+                    self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Function&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
                     cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + &#34;/&#34;)
-
+                else:
+                    cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + &#34;/&#34;)
             #Function Prototype Declaration
             elif index == 1:
-                self.symbols.append(Entry(True,False, False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
+                self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Function&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
                 cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + &#34;/&#34;)
                 pass
-            
-            
+
+
             # Function Call
             elif index == 2:
-                if [x for x in self.symbols if x.is_function == True and x.name == cur.Node.children[0].name] == []:
-                    print(f&#39;Function Undefined {cur.Node.children[0].name}&#39;)
-                    self.undefined.append(Entry(True,False,  False,cur.Node.children[0].name, &#34;None&#34;, cur.Scope))
+                if [x for x in self.symbols if x.entry_type == {value: key for key, value in en_map.items()}[&#34;Function&#34;] and x.name == cur.Node.children[0].name] == []:
+                    # print(f&#39;Function Undefined {cur.Node.children[0].name}&#39;)
+                    self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Function&#34;],cur.Node.children[0].name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
                 pass
             # Initialization and Usage
             elif index == 3:
-                
+
                 #declaration of variable
                 if len(cur.Node.children) &gt; 1:
                     #add to symbol table this should also handle function param being that they are still within the same scope as there parent function
-                    if([x for x in self.symbols if x.name == cur.Node.children[1].name and cur.Scope in x.scope] == []):
+                    if([x for x in self.symbols if x.name == cur.Node.children[1].name and x.scope in cur.Scope] == []):
                         if cur.Node.parent.parent.name == &#34;func&#34; or cur.Node.parent.parent.name == &#34;decl&#34;:
                             if cur.Node.parent.name == &#34;param&#34;:
-                                self.symbols.append(Entry(False,True,  False,cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
+                                self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Parameter&#34;],cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
                             else:
-                                self.symbols.append(Entry(False,False,  False,cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
+                                self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;],cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
                         else:
-                                self.symbols.append(Entry(False,False,  False,cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
+                                self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;],cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
                     elif(cur.Node.parent.name != &#34;param&#34;):
                         print(f&#39;Variable Already Declared {cur.Node.children[1].name} {cur.Node.children[0].name}&#39;)
-                        self.undefined.append(Entry(False,False, False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
-                    elif(cur.Node.parent.name == &#34;param&#34; and [x for x in self.symbols if cur.Node.children[1].name == x.name] == []):                
+                        self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                    elif(cur.Node.parent.name == &#34;param&#34; and [x for x in self.symbols if cur.Node.children[1].name == x.name] == []):
                         print(f&#39;Undeclared parameter{cur.Node.children[1].name} {cur.Node.children[0].name}&#39;)
-                        self.undefined.append(Entry(False,False, False, cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope)) 
-            
+                        self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+
                     pass
                 #usage of varible
                 else:
-                    if ([x for x in self.symbols if x.name == cur.Node.children[0].name and cur.Scope in x.scope] == []):
+                    if ([x for x in self.symbols if x.name == cur.Node.children[0].name and x.scope in cur.Scope] == []):
                         print(f&#39;Variable Undeclared {cur.Node.children[0].name}&#39;)
-                        self.undefined.append(Entry(False,False, False,  cur.Node.children[0].name, &#34;None&#34;, cur.Scope)) 
-                        
+                        self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;],  cur.Node.children[0].name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+
                     pass
             elif index == 4:
                 cur = cur._replace(Scope = f&#34;{cur.Scope}{scopenum}/&#34;)
                 scopenum += 1
 
                 #gets all labels declared in body of a function
-                labels = [x for x in cur.Node.children if x.name.endswith(&#34;:&#34;)]
-                
+                labels = [x.children[0] for x in cur.Node.children if x.name == &#34;label&#34;]
                 if labels != []:
 
                     #for each label in the body
                     for i in labels:
                         #checks if label is already in the symbol table.
                         if [x for x in self.symbols if x.name == i.name] == []:
-                            self.symbols.append(Entry(False,False, True,  i.name, &#34;None&#34;, cur.Scope)) 
+                            self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Label&#34;],  i.name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
                         else:
-                            self.undefined.append(Entry(False,False, True,  i.name, &#34;None&#34;, cur.Scope)) 
-                            
+                            self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Label&#34;],  i.name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+
                 pass
-     
+
         except ValueError:
             # This means that the token is not in that list
             pass
@@ -859,7 +1052,7 @@ class symbol_table():
         # Grabs the first element which will be the residual left most child
         cur = ntv[0]
 
-        # checks whether the current node is an operation that will need to access the symbol table 
+        # checks whether the current node is an operation that will need to access the symbol table
         try:
             index = [&#34;=&#34;,&#34;call&#34;,&#34;func&#34;,&#34;goto&#34;].index(cur.Node.name)
 
@@ -867,7 +1060,7 @@ class symbol_table():
             if cur.Node.children == []:
                 ntv = [Node(x, cur.Scope) for x in cur.Node.children if &#39;children&#39; in x.__dict__] + ntv[1:]
                 continue
-            
+
             # Function Declaration
             if index == 0:
                 children = cur.Node.children
@@ -875,7 +1068,7 @@ class symbol_table():
                 topVar = &#34;&#34;
                 #regexes to do type checks on the fly
                 isDigit = r&#34;\-?([1-9]\d*|\d)&#34;
-                isOp = r&#39;\+|\-|\/|\*&#39;
+                isOp = r&#39;\+|\-|\/|\*|\||\&amp;|\^|\~&#39;
                 isPrec = r&#34;\-?(\d\.\d+|[1-9]\d*\.\d+)&#34;
                 isChar = r&#34;(\&#39;[\w\;\\ \%\&#34;\&#39;]\&#39;)&#34;
                 isString = r&#34;(\&#34;[\w+\;\\ \%\&#34;\&#39;]*\&#34;)&#34;
@@ -893,9 +1086,9 @@ class symbol_table():
                         #this is the variable that is being assigned to
                         var = chil[-1]
                         #get the expected type from symbol table
-                        
+
                         tblEntry = [x for x in self.symbols if x.name == var.name and funcname in x.scope]
-                        
+
                         if(expectedType == &#34;&#34;):
                             if(len(tblEntry) == 1):
                                 #it is in the table already (good)
@@ -903,30 +1096,30 @@ class symbol_table():
                                 expectedType = tblEntry[0].type
                         else:
                             if(expectedType != tblEntry[0].type):
-                                print(&#34;Type mismatch for variable&#34;,var.name)
+                                self.errors.append(&#34;Type mismatch for variable&#34; + &#34; &#34; + var.name)
                     #check function calls
                     elif(x.name == &#34;call&#34;):
                         chil = [z for z in x.children]
                         func = chil[-1]
-                        tblEntry = [x for x in self.symbols if x.name == func.name and cur.Scope in x.scope and x.is_function]
+                        tblEntry = [x for x in self.symbols if x.name == func.name and cur.Scope in x.scope and x.entry_type == {value: key for key, value in en_map.items()}[&#34;Function&#34;]]
                         if(len(tblEntry) == 1):
                             funcType = tblEntry[0].type
                             if(funcType != expectedType):
-                                print(&#34;Type mismatch for&#34;,topVar)
+                                self.errors.append(&#34;Type mismatch for &#34; + topVar)
                     #one of the children is a precision
                     elif(precCheck.match(x.name)):
                         if(expectedType != &#34;float&#34; and expectedType != &#34;double&#34;):
-                            print(&#34;Type mismatch for&#34;,topVar,&#34;, unexpected precision&#34;,x.name)
+                            self.errors.append(&#34;Type mismatch for &#34; + topVar + &#34;, unexpected precision &#34; + x.name)
                     #one of the chidlren is an integer
                     elif(digCheck.match(x.name)):
                         if(expectedType != &#34;int&#34;):
-                            print(&#34;Type mismatch for&#34;,topVar,&#34;, unexpected integer&#34;,x.name)
+                            self.errors.append(&#34;Type mismatch for &#34; + topVar + &#34;, unexpected integer &#34; + x.name)
                     elif(charCheck.match(x.name)):
                         if(expectedType != &#34;char&#34;):
-                            print(&#34;Type mismatch for&#34;,topVar,&#34;, unexpected character&#34;,x.name)
+                            self.errors.append(&#34;Type mismatch for &#34; + topVar + &#34;, unexpected character &#34; + x.name)
                     elif(stringCheck.match(x.name)):
                         if(expectedType != &#34;string&#34;):
-                            print(&#34;Type mismatch for&#34;,topVar,&#34;, unexpected string&#34;,x.name)
+                            self.errors.append(&#34;Type mismatch for &#34; + topVar + &#34;, unexpected string &#34; + x.name)
                     #case that operators are in use
                     elif(opCheck.match(x.name)):
                         #need to desced through all possible branches of this, and ensure everything is use is an integer
@@ -942,11 +1135,11 @@ class symbol_table():
                                 elif([x for x in self.symbols if x.name == curTemp.Node.name and curTemp.Scope in x.scope] != []):
                                     var = [x for x in self.symbols if x.name == curTemp.Node.name and curTemp.Scope in x.scope][0]
                                     if(var.type != &#34;int&#34;):
-                                        print(&#34;Type mismatch for&#34;,topVar)
+                                        self.errors.append(&#34;Type mismatch for &#34; + topVar)
                                 elif((precCheck.match(curTemp.Node.name))):
-                                    print(&#34;Type mismatch for&#34;,topVar)
+                                    self.errors.append(&#34;Type mismatch for &#34; + topVar)
                                 elif(not (digCheck.match(curTemp.Node.name) or opCheck.match(curTemp.Node.name))):
-                                    print(&#34;Type mismatch for&#34;,topVar)
+                                    self.errors.append(&#34;Type mismatch for &#34; + topVar)
                             ntvTemp = [Node(z, curTemp.Scope) for z in curTemp.Node.children if &#39;children&#39; in z.__dict__] + ntvTemp[1:]
 
                         pass
@@ -957,10 +1150,10 @@ class symbol_table():
                 functionName = func.name
                 functionChildren = [x.name for x in func.children]
                 #get the number of params and types from the symbol table
-                params = [x for x in self.symbols if functionName in x.scope and x.is_param]
+                params = [x for x in self.symbols if functionName in x.scope and x.entry_type == {value: key for key, value in en_map.items()}[&#34;Parameter&#34;]]
                 types = [x.type for x in params]
                 if(len(params) != len(functionChildren)):
-                    print(&#34;Improper amount of arguments in call to function&#34;,functionName,functionChildren)
+                    self.errors.append(&#34;Improper amount of arguments in call to function &#34; + functionName)
                 else:
                     for it,par in enumerate(functionChildren):
                         #get type of par
@@ -968,45 +1161,46 @@ class symbol_table():
                         #one of the children is a precision
                         if(precCheck.match(par)):
                             if(expec != &#34;float&#34; and expec != &#34;double&#34;):
-                                print(&#34;Type mismatch for&#34;,functionName,&#34;, unexpected precision&#34;,par)
+                                self.errors.append(&#34;Type mismatch for &#34; + functionName + &#34;, unexpected precision &#34; + par)
                         #one of the chidlren is an integer
                         elif(digCheck.match(par)):
                             if(expec != &#34;int&#34;):
-                                print(&#34;Type mismatch for&#34;,functionName,&#34;, unexpected integer&#34;,par)
+                                self.errors.append(&#34;Type mismatch for &#34; + functionName + &#34;, unexpected integer &#34; + par)
                         elif(charCheck.match(par)):
                             if(expec != &#34;char&#34;):
-                                print(&#34;Type mismatch for&#34;,functionName,&#34;, unexpected character&#34;,par)
+                                self.errors.append(&#34;Type mismatch for &#34; + functionName + &#34;, unexpected character &#34; + par)
                         elif(stringCheck.match(par)):
                             if(expec != &#34;string&#34;):
-                                print(&#34;Type mismatch for&#34;,functionName,&#34;, unexpected string&#34;,par)
+                                self.errors.append(&#34;Type mismatch for &#34; + functionName + &#34;, unexpected string &#34; + par)
 
                         #check if type of par and types[it] are the same
-                        
+
                         pass
                 #then iterate through the children of this and check the types of the parameters
                 pass
             elif index == 2:
                 funcname = cur.Node.children[1].name
-                
+
                 #get params of the node currently being visited
                 params = [x for x in cur.Node.children[2].children]
                 params = [(x.children[0].name) for x in params]
                 # print(params)
                 #get the expected params
-                
-                expected = ([(x.type) for x in self.symbols if x.is_param and f&#34;/{funcname}/&#34; == x.scope])
+
+                expected = ([(x.type) for x in self.symbols if x.entry_type == {value: key for key, value in en_map.items()}[&#34;Parameter&#34;] and f&#34;/{funcname}/&#34; == x.scope])
                 if expected != params:
-                    print(&#34;Parameters in function prototype do not match function definition in &#34;,funcname)
+                    self.errors.append(&#34;Parameters in function prototype do not match function definition in &#34; + funcname)
             elif index == 3:
                 label = cur.Node.children[0]
                 labelName = label.name
+
                 #look for labelName: in the symbol table
-                toLook = labelName + &#34;:&#34;
-                found = ([x.name for x in self.symbols if x.is_goto and x.name == toLook])
+                toLook = labelName
+                found = ([x.name for x in self.symbols if x.entry_type == {value: key for key, value in en_map.items()}[&#34;Label&#34;] and x.name == toLook])
                 if(found == []):
-                    print(&#34;Label&#34;, labelName,&#34;not found&#34;)
+                    self.errors.append(&#34;Label &#34; +  labelName + &#34; not found&#34;)
                 elif(len(found) &gt; 1):
-                    print(&#34;Multiple labels with name&#34;,  labelName,&#34;found&#34;)
+                    self.errors.append(&#34;Multiple labels with name &#34; +   labelName + &#34; found&#34;)
 
         except ValueError:
             # This means that the token is not in that list
@@ -1016,64 +1210,112 @@ class symbol_table():
         ntv = [Node(x, cur.Scope) for x in cur.Node.children if &#39;children&#39; in x.__dict__] + ntv[1:]</code></pre>
 </details>
 </dd>
+<dt id="src.frontend.semantics.symbol_table.lineSemanticErrors"><code class="name flex">
+<span>def <span class="ident">lineSemanticErrors</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Retrieves the semantic errors</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>output</code></strong></dt>
+<dd>All the semantic errors as a string separated by new lines</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def lineSemanticErrors(self):
+    &#34;&#34;&#34;
+    Retrieves the semantic errors
+
+    Returns:
+        output: All the semantic errors as a string separated by new lines
+    &#34;&#34;&#34;
+    output = &#34;&#34;
+    for i in self.errors:
+        output += (i+&#34;\n&#34;)
+
+    return output</code></pre>
+</details>
+</dd>
+<dt id="src.frontend.semantics.symbol_table.printSemanticErrors"><code class="name flex">
+<span>def <span class="ident">printSemanticErrors</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Prints the semantic errors to stdout</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def printSemanticErrors(self):
+    &#34;&#34;&#34;
+    Prints the semantic errors to stdout
+    &#34;&#34;&#34;
+    for i in self.errors:
+        print(i)</code></pre>
+</details>
+</dd>
 <dt id="src.frontend.semantics.symbol_table.print_symbol_table"><code class="name flex">
 <span>def <span class="ident">print_symbol_table</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Prints the known symbols in the symbol table to stdout</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def print_symbol_table(self):
-    if len(self.symbols) == 0:
-        print (&#34;No defined symbols available&#34;)
-        return
+    &#34;&#34;&#34;
+    Prints the known symbols in the symbol table to stdout
+    &#34;&#34;&#34;
+    # if len(self.symbols) == 0:
+    #     print (&#34;No defined symbols available&#34;)
+    #     return
 
     col_lengths = [
-        max(max([len(x.name) for x in self.symbols]), len(&#34;Name&#34;)),
-        max(max([len(str(x.is_function)) for x in self.symbols]), len(&#34;Function?&#34;)),
-        max(max([len(x.type) for x in self.symbols]), len(&#34;Type&#34;)),
-        max(max([len(x.scope) for x in self.symbols]), len(&#34;Scope&#34;)),
-        max(max([len(str(x.is_param)) for x in self.symbols]), len(&#34;Param?&#34;)),
-        max(max([len(str(x.is_goto)) for x in self.symbols]), len(&#34;Goto?&#34;)),           
-        max(max([len(x.references) for x in self.symbols]), len(&#34;References&#34;)),
-        max(max([len(x.modifiers) for x in self.symbols]), len(&#34;Modifiers&#34;)),
-        
+        max([len(x.name) for x in self.symbols] + [len(&#34;Name&#34;)]),
+        max([len(en_map[x.entry_type]) for x in self.symbols] + [len(&#34;Entry Type&#34;)]),
+        max([len(x.type) for x in self.symbols] + [len(&#34;Type&#34;)]),
+        max([len(x.scope) for x in self.symbols] + [len(&#34;Scope&#34;)]),
+        max([len(&#34;, &#34;.join(x.modifiers)) for x in self.symbols] + [len(&#34;Modifiers&#34;)]),
+
     ]
 
-    self.symbols.sort(key=lambda x: x.scope)
-
-    print (f&#34;{&#39;Name&#39;:^{col_lengths[0]}} | {&#39;Function?&#39;:^{col_lengths[1]}} | {&#39;Type&#39;:^{col_lengths[2]}} | {&#39;Scope&#39;:^{col_lengths[3]}} | {&#39;Param?&#39;:^{col_lengths[4]}} | {&#39;Label?&#39;:^{col_lengths[5]}} &#34;)
-    print (f&#34;{&#39;-&#39;*col_lengths[0]}-+-{&#39;-&#39;*col_lengths[1]}-+-{&#39;-&#39;*col_lengths[2]}-+-{&#39;-&#39;*col_lengths[3]}-+-{&#39;-&#39;*col_lengths[4]}-+-{&#39;-&#39;*col_lengths[5]}-&#34;)
-    for x in self.symbols: print(f&#34;{x.name:&gt;{col_lengths[0]}} | {str(x.is_function) :&gt;{col_lengths[1]}} | {x.type :&gt;{col_lengths[2]}} | {x.scope :&lt;{col_lengths[3]}} | {str(x.is_param) :&gt;{col_lengths[4]}} | {str(x.is_goto) :&gt;{col_lengths[5]}}&#34;)</code></pre>
+    print (&#34;Known Symbols&#34;)
+    print (f&#34; {&#39;Name&#39;:^{col_lengths[0]}} | {&#39;Entry Type&#39;:^{col_lengths[1]}} | {&#39;Type&#39;:^{col_lengths[2]}} | {&#39;Scope&#39;:^{col_lengths[3]}} | {&#39;Modifiers&#39;:^{col_lengths[4]}} &#34;)
+    print (f&#34;-{&#39;-&#39;*col_lengths[0]}-+-{&#39;-&#39;*col_lengths[1]}-+-{&#39;-&#39;*col_lengths[2]}-+-{&#39;-&#39;*col_lengths[3]}-+-{&#39;-&#39;*col_lengths[4]}-&#34;)
+    for x in self.symbols:
+        print(f&#34; {x.name:&gt;{col_lengths[0]}} | {en_map[x.entry_type]:&gt;{col_lengths[1]}} | {x.type :&gt;{col_lengths[2]}} | {x.scope :&lt;{col_lengths[3]}} | {&#39;, &#39;.join(x.modifiers) :&gt;{col_lengths[4]}}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="src.frontend.semantics.symbol_table.print_unknown_symbols"><code class="name flex">
 <span>def <span class="ident">print_unknown_symbols</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Prints the unknown symbols in the symbol table to stdout</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def print_unknown_symbols(self):
-    if len(self.undefined) == 0:
-        print (&#34;No undefined symbols available&#34;)
-        return
+    &#34;&#34;&#34;
+    Prints the unknown symbols in the symbol table to stdout
+    &#34;&#34;&#34;
+    # if len(self.undefined) == 0:
+    #     print (&#34;No undefined symbols available&#34;)
+    #     return
 
     col_lengths = [
-        max(max([len(x.name) for x in self.undefined]), len(&#34;Name&#34;)),
-        max(max([len(str(x.is_function)) for x in self.undefined]), len(&#34;Function?&#34;)),
-        max(max([len(x.scope) for x in self.undefined]), len(&#34;Scope&#34;)),  
+        max([len(x.name) for x in self.undefined] + [len(&#34;Name&#34;)]),
+        max([len(en_map[x.entry_type]) for x in self.undefined] + [len(&#34;Entry Type&#34;)]),
+        max([len(x.scope) for x in self.undefined] + [len(&#34;Scope&#34;)]),
     ]
 
-    self.undefined.sort(key=lambda x: x.scope)
-
-    print (f&#34;{&#39;Name&#39;:^{col_lengths[0]}} | {&#39;Function?&#39;:^{col_lengths[1]}} | {&#39;Type&#39;:^{col_lengths[2]}}&#34;)
-    print (f&#34;{&#39;-&#39;*col_lengths[0]}-+-{&#39;-&#39;*col_lengths[1]}-+-{&#39;-&#39;*col_lengths[2]}-&#34;)
-    for x in self.undefined: print(f&#34;{x.name:&gt;{col_lengths[0]}} | {str(x.is_function) :&gt;{col_lengths[1]}} | {x.type :&gt;{col_lengths[2]}}&#34;)</code></pre>
+    print (&#34;Unknown Symbols&#34;)
+    print (f&#34; {&#39;Name&#39;:^{col_lengths[0]}} | {&#39;Entry Type&#39;:^{col_lengths[1]}} | {&#39;Type&#39;:^{col_lengths[2]}}&#34;)
+    print (f&#34;-{&#39;-&#39;*col_lengths[0]}-+-{&#39;-&#39;*col_lengths[1]}-+-{&#39;-&#39;*col_lengths[2]}-&#34;)
+    for x in self.undefined:
+        print(f&#34; {x.name:&gt;{col_lengths[0]}} | {en_map[x.entry_type]:&gt;{col_lengths[1]}} | {x.type :&gt;{col_lengths[2]}}&#34;)</code></pre>
 </details>
 </dd>
 </dl>
@@ -1108,6 +1350,8 @@ class symbol_table():
 <h4><code><a title="src.frontend.semantics.symbol_table" href="#src.frontend.semantics.symbol_table">symbol_table</a></code></h4>
 <ul class="">
 <li><code><a title="src.frontend.semantics.symbol_table.analyze" href="#src.frontend.semantics.symbol_table.analyze">analyze</a></code></li>
+<li><code><a title="src.frontend.semantics.symbol_table.lineSemanticErrors" href="#src.frontend.semantics.symbol_table.lineSemanticErrors">lineSemanticErrors</a></code></li>
+<li><code><a title="src.frontend.semantics.symbol_table.printSemanticErrors" href="#src.frontend.semantics.symbol_table.printSemanticErrors">printSemanticErrors</a></code></li>
 <li><code><a title="src.frontend.semantics.symbol_table.print_symbol_table" href="#src.frontend.semantics.symbol_table.print_symbol_table">print_symbol_table</a></code></li>
 <li><code><a title="src.frontend.semantics.symbol_table.print_unknown_symbols" href="#src.frontend.semantics.symbol_table.print_unknown_symbols">print_unknown_symbols</a></code></li>
 </ul>

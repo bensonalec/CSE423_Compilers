@@ -27,7 +27,8 @@
 <pre><code class="python">import os
 import sys
 
-sys.path.insert(0, os.path.dirname(__file__))</code></pre>
+# sys.path.insert(0, os.path.dirname(__file__))
+sys.path.append(os.path.dirname(__file__))</code></pre>
 </details>
 </section>
 <section>
@@ -56,11 +57,11 @@ for command line arguments that can be used to …</p></section>
 </dd>
 <dt><code class="name"><a title="src.frontend.preprocessor" href="preprocessor.html">src.frontend.preprocessor</a></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>This module serves as the pre-processor for any given C program. By searching for any pre-processor keywords it will perform the necessary …</p></section>
 </dd>
 <dt><code class="name"><a title="src.frontend.semantics" href="semantics.html">src.frontend.semantics</a></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>The module serves to create the symbol table and perform semantic analysis on the AST in order to verify the typing of the program.</p></section>
 </dd>
 </dl>
 </section>

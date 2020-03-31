@@ -21,22 +21,66 @@
             <dd>
                 The compiler is split up into three modules, the frontend, the optimizer, and the backend. So far only the frontend is implemented, but there are two alternatives for how to execute the compiler. <code>run.py</code> is located in <code>./src</code> and provides the interface to the whole compiler. However if you desire to run the frontend by itself you can execute the file <code>frontend.py</code> located in <code>./src/frontend</code>. Both of these files will accept the following arguments:
                 <dl>
-                    <dt><code>-h</code></dt>
+                    <dt><code>
+                        -h
+                    </code></dt>
                     <dd>Displays the help message.</dd>
-                    <dt><code>--all</code></dt>
+                    <dt><code>
+                        --all
+                    </code></dt>
                     <dd>Prints out all intermediate representations as they are encountered in the compilation process.</dd>
-                    <dt><code>-l</code> or <code>--lex</code></dt>
+                    <dt><code>
+                        -l
+                    </code> or <code>
+                        --lex
+                    </code></dt>
                     <dd>Prints out the tokens produced by the lexer in a list.</dd>
-                    <dt><code>-t</code> or <code>--tree</code></dt>
+                    <dt><code>
+                        -t
+                    </code> or <code>
+                        --tree
+                    </code></dt>
                     <dd>Prints a list like tree structure of the tokens after they have been parsed.</dd>
-                    <dt><code>-p</code> or <code>--pretty</code></dt>
+                    <dt><code>
+                        -p
+                    </code> or <code>
+                        --pretty
+                    </code></dt>
                     <dd>Prints a tree structure of the tokens after they have been parsed.</dd>
-                    <dt><code>-a</code> or <code>--ast</code></dt>
+                    <dt><code>
+                        -a
+                    </code> or <code>
+                        --ast
+                    </code></dt>
                     <dd>Prints out the abstract syntax tree.</dd>
-                    <dt><code>-s</code> or <code>--symbol_table</code></dt>
-                    <dd>Prints out the known and unknown symbols encountered during semantic Analysis.</dd>
-                    <dt><code>-b</code> <code>[INPUT FILE]</code> or <code>--bnf</code> <code>[INPUT FILE]</code></dt>
+                    <dt><code>
+                        -s
+                    </code> or <code>
+                        --symbol_table
+                    </code></dt>
+                    <dd>Prints out the known and unknown symbols encountered during semantic analysis.</dd>
+                    <dt><code>
+                        -e
+                    </code> or <code>
+                        --errors
+                    </code></dt>
+                    <dd>Prints out the errors in the semantic analysis.</dd>
+                    <dt><code>
+                        -IR1
+                    </code></dt>
+                    <dd>Output the first level of IR in the optimizer phase.</dd>
+                    <dt><code>
+                        -b
+                    </code> <code>[INPUT FILE]</code> or <code>
+                        --bnf
+                    </code> <code>[INPUT FILE]</code></dt>
                     <dd>Allows for rebuilding of BNF grammar and parser before the frontend touches the input. <code>[INPUT FILE]</code> defaults to the file <code>BNF_defintion</code> located in <code>./src/frontend</code>. The BNF grammar is not updated unless this option is provided</dd>
+                    <dt><code>
+                        -i
+                    </code> <code>[INPUT FILE]</code> or <code>
+                        --input
+                    </code> <code>[INPUT FILE]</code></dt>
+                    <dd>Used to input IR from file. When this option is used, there is no need for a C file to be inputted as well. The output is not optimized.</dd>
                 </dl>
             </dd>
             <dt><h3>Subset of C supported</h3></dt>
@@ -51,6 +95,8 @@
                             <th>Parser</th>
                             <th>AST Building</th>
                             <th>Semantic Analysis</th>
+                            <th>Intermediate Representation</th>
+                            <th>Optimization</th>
                         </tr>
                     </thead>
                     <tfoot>
@@ -73,10 +119,12 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td>Assigning Variables</td>
                             <td>&#x2212;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
@@ -89,6 +137,7 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td>Defining Functions<sup>[1]</sup></td>
@@ -97,10 +146,12 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td>Calling Functions<sup>[1]</sup></td>
                             <td>&#x2212;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
@@ -116,10 +167,12 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>+=</code></td>
                             <td>&#x2212;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
@@ -132,10 +185,12 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>*=</code></td>
                             <td>&#x2212;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
@@ -148,34 +203,39 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>%=</code></td>
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
-                            <td>&#x2715;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>&lt;&lt;=</code></td>
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
-                            <td>&#x2715;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>&gt;&gt;=</code></td>
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
-                            <td>&#x2715;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>|=</code></td>
                             <td>&#x2212;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
@@ -185,16 +245,18 @@
                             <td><code>&amp;=</code></td>
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>^=</code></td>
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
                             <td>&#x2713;</td>
                         </tr>
                         <tr>
@@ -207,6 +269,7 @@
                             <td>&#x2715;</td>
                             <td>&#x2715;</td>
                             <td>&#x2715;</td>
+                            <td>&#x2715;</td>
                         </tr>
                         <tr>
                             <td><code>typedef</code></td>
@@ -215,70 +278,79 @@
                             <td>&#x2715;</td>
                             <td>&#x2715;</td>
                             <td>&#x2715;</td>
+                            <td>&#x2715;</td>
                         </tr>
                         <tr>
                             <td><code>inline</code></td>
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
-                            <td>&#x2715;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>register</code></td>
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
-                            <td>&#x2715;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>volatile</code></td>
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
-                            <td>&#x2715;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>const</code></td>
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
-                            <td>&#x2715;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>signed</code></td>
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
-                            <td>&#x2715;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>static</code></td>
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
-                            <td>&#x2715;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>unsigned</code></td>
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
-                            <td>&#x2715;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>extern</code></td>
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
-                            <td>&#x2715;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <th>Arithmetic Operations with Precedence</th>
@@ -289,7 +361,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>-</code></td>
@@ -297,7 +370,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>*</code></td>
@@ -305,7 +379,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>/</code></td>
@@ -313,7 +388,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>%</code></td>
@@ -321,23 +397,26 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>&lt;&lt;</code></td>
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
-                            <td>&#x2715;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>&gt;&gt;</code></td>
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
-                            <td>&#x2715;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2713;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>|</code></td>
@@ -345,7 +424,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>&amp;</code></td>
@@ -353,7 +433,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>^</code></td>
@@ -361,7 +442,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>~</code></td>
@@ -369,7 +451,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td>Using Integers</td>
@@ -377,7 +460,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td>Using Floating Point</td>
@@ -385,7 +469,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2026;</td>
                         </tr>
                         <tr>
                             <td>Using Characters</td>
@@ -393,7 +478,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2026;</td>
                         </tr>
                         <tr>
                             <td>Using Hex</td>
@@ -401,7 +487,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2026;</td>
                         </tr>
                         <tr>
                             <td>Using Octal</td>
@@ -409,7 +496,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2026;</td>
                         </tr>
                         <tr>
                             <td>Using Binary</td>
@@ -417,7 +505,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2026;</td>
                         </tr>
                         <tr>
                             <th>Comperative Operations</th>
@@ -428,7 +517,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>&lt;=</code></td>
@@ -436,7 +526,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>&gt;=</code></td>
@@ -444,7 +535,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>!=</code></td>
@@ -452,7 +544,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>&lt;</code></td>
@@ -460,7 +553,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>&gt;</code></td>
@@ -468,7 +562,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <th>Branching</th>
@@ -479,7 +574,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>Else If</code><sup>[2]</sup></td>
@@ -487,7 +583,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>Else</code><sup>[2]</sup></td>
@@ -495,7 +592,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>Switch</code></td>
@@ -503,7 +601,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <th>Unary</th>
@@ -514,7 +613,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2026;</td>
                         </tr>
                         <tr>
                             <td><code>-</code></td>
@@ -522,7 +622,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2026;</td>
                         </tr>
                         <tr>
                             <td><code>++</code><sup>[3]</sup></td>
@@ -530,7 +631,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>--</code><sup>[3]</sup></td>
@@ -538,7 +640,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>!</code></td>
@@ -546,7 +649,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>~</code></td>
@@ -554,7 +658,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td>Casting</td>
@@ -563,11 +668,13 @@
                             <td>&#x2713;</td>
                             <td>&#x2715;</td>
                             <td>&#x2715;</td>
+                            <td>&#x2715;</td>
                         </tr>
                         <tr>
                             <td><code>sizeof</code></td>
                             <td>&#x2212;</td>
                             <td>&#x2713;</td>
+                            <td>&#x2715;</td>
                             <td>&#x2715;</td>
                             <td>&#x2715;</td>
                             <td>&#x2715;</td>
@@ -581,7 +688,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>For</code><sup>[2]</sup></td>
@@ -589,7 +697,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>Do While</code><sup>[2]</sup></td>
@@ -597,7 +706,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <th>Jumps</th>
@@ -608,7 +718,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>Goto</code></td>
@@ -616,7 +727,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>Break</code></td>
@@ -624,7 +736,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>Continue</code></td>
@@ -632,7 +745,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <th>Types</th>
@@ -643,7 +757,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>long double</code></td>
@@ -651,7 +766,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>double</code></td>
@@ -659,7 +775,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>float</code></td>
@@ -667,7 +784,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>long long int</code><sup>[4]</sup></td>
@@ -675,7 +793,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>long</code></td>
@@ -683,7 +802,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>int</code></td>
@@ -691,7 +811,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>short</code></td>
@@ -699,7 +820,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>char</code></td>
@@ -707,7 +829,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td><code>void</code></td>
@@ -715,7 +838,8 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
-                            <td>&#x2715;</td>
+                            <td>&#x2026;</td>
+                            <td>&#x2713;</td>
                         </tr>
                         <tr>
                             <td>Immutable Strings</td>
@@ -723,6 +847,7 @@
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
+                            <td>&#x2715;</td>
                             <td>&#x2715;</td>
                         </tr>
                         <tr>
@@ -735,11 +860,13 @@
                             <td>&#x2212;</td>
                             <td>&#x2212;</td>
                             <td>&#x2212;</td>
+                            <td>&#x2212;</td>
                         </tr>
                         <tr>
                             <td><code>#Include</code><sup>[5]</sup></td>
                             <td>&#x2713;</td>
                             <td>&#x2713;</td>
+                            <td>&#x2212;</td>
                             <td>&#x2212;</td>
                             <td>&#x2212;</td>
                             <td>&#x2212;</td>
@@ -751,11 +878,13 @@
                             <td>&#x2212;</td>
                             <td>&#x2212;</td>
                             <td>&#x2212;</td>
+                            <td>&#x2212;</td>
                         </tr>
                         <tr>
                             <td><code>#Undef</code></td>
                             <td>&#x2715;</td>
                             <td>&#x2713;</td>
+                            <td>&#x2212;</td>
                             <td>&#x2212;</td>
                             <td>&#x2212;</td>
                             <td>&#x2212;</td>
@@ -767,11 +896,13 @@
                             <td>&#x2212;</td>
                             <td>&#x2212;</td>
                             <td>&#x2212;</td>
+                            <td>&#x2212;</td>
                         </tr>
                         <tr>
                             <td><code>#Ifdef</code></td>
                             <td>&#x2715;</td>
                             <td>&#x2713;</td>
+                            <td>&#x2212;</td>
                             <td>&#x2212;</td>
                             <td>&#x2212;</td>
                             <td>&#x2212;</td>
@@ -783,11 +914,13 @@
                             <td>&#x2212;</td>
                             <td>&#x2212;</td>
                             <td>&#x2212;</td>
+                            <td>&#x2212;</td>
                         </tr>
                         <tr>
                             <td><code>#Elif</code></td>
                             <td>&#x2715;</td>
                             <td>&#x2713;</td>
+                            <td>&#x2212;</td>
                             <td>&#x2212;</td>
                             <td>&#x2212;</td>
                             <td>&#x2212;</td>
@@ -799,11 +932,13 @@
                             <td>&#x2212;</td>
                             <td>&#x2212;</td>
                             <td>&#x2212;</td>
+                            <td>&#x2212;</td>
                         </tr>
                         <tr>
                             <td><code>#Endif</code></td>
                             <td>&#x2715;</td>
                             <td>&#x2713;</td>
+                            <td>&#x2212;</td>
                             <td>&#x2212;</td>
                             <td>&#x2212;</td>
                             <td>&#x2212;</td>
@@ -815,11 +950,13 @@
                             <td>&#x2212;</td>
                             <td>&#x2212;</td>
                             <td>&#x2212;</td>
+                            <td>&#x2212;</td>
                         </tr>
                         <tr>
                             <td><code>#Error</code></td>
                             <td>&#x2715;</td>
                             <td>&#x2713;</td>
+                            <td>&#x2212;</td>
                             <td>&#x2212;</td>
                             <td>&#x2212;</td>
                             <td>&#x2212;</td>
@@ -831,9 +968,59 @@
                             <td>&#x2212;</td>
                             <td>&#x2212;</td>
                             <td>&#x2212;</td>
+                            <td>&#x2212;</td>
                         </tr>
                     </tbody>
                 </table>
+            </dd>
+            <dt>
+                <h3>Symbol Legend</h3>
+            </dt>
+            <dd>
+                <table>
+                    <tr>
+                        <td>&#x2713;</td>
+                        <td>The feature is fully implemented to the extent that we feel comfortable with it.</td>
+                    </tr>
+                    <tr>
+                        <td>&#x2715;</td>
+                        <td>The feature is not implemented and any functioning output it produces is purely coincidental.</td>
+                    </tr>
+                    <tr>
+                        <td>&#x2026;</td>
+                        <td>The feature is thought to be implemented but not strictly verified. Support may be sporadic.</td>
+                    </tr>
+                    <tr>
+                        <td>&#x2212;</td>
+                        <td>Feature has no use in this section.</td>
+                    </tr>
+                </table>
+            </dd>
+            <dt>
+                <h3>Optimization Algorithms Implemented</h3>
+            </dt>
+            <dd>
+                As a group we decided to implement four different optimization mechanisms as a part of three total optimization levels. <code>-O0</code> means that no optimization occurs during the compilation process. <code>-O1</code> means that there are slight optimizations done during the compilation process. <code>-O2</code> means that there are more advanced optimizations done during the compilaion process. Keep in mind that they are by no means agressive, and there is no risk of altered behavior of the program when using these optimizations.<br>
+                <dl>
+                    <dt><code>-O1</code></dt>
+                    <dd>
+                        <dl>
+                            <dt>Unreferenced Variables</dt>
+                            <dd>If, during the compilation process, the compiler recognices that there are variables declared, tempoary or not, that are only intialized and unused. It will try to remove them as a measure to try and reduce the number of instructions for a given program.</dd>
+                            <dt>Unreferenced Functions</dt>
+                            <dd>If, during the compilation process, the compiler recognices that there are functions declared and defined, that are unused. It will try to remove them as a measure to try and reduce the number of instructions for a given program.</dd>
+                        </dl>
+                    </dd>
+                    <dt><code>-O2</code></dt>
+                    <dd>
+                        <dl>
+                            <dt>Constant Folding</dt>
+                            <dd>For expressions that require some sort of evaluation before the value can be used the compiler will try to evaluate the expression at compile time and replace the evaluation with the resultant value in the program.</dd>
+                            <dt>Constant Propagation</dt>
+                            <dd>Whenever a variable is referenced within the program, the compiler will try to replace the value of the variable with the known value of the variable wherever it deems it is safe to do so.</dd>
+                        </dl>
+                    </dd>
+                </dl>
             </dd>
             <dt><h3>Examples of C Programs and their Intermediate Representations</h3></dt>
             <dd>

@@ -1,8 +1,13 @@
-import importlib,re
+"""
+The module serves to create the symbol table and perform semantic analysis on the AST in order to verify the typing of the program.
+"""
+import os
+import re
+from importlib.machinery import SourceFileLoader
 from collections import namedtuple
 
-lex = importlib.import_module("lexer", __name__)
-ast = importlib.import_module("AST_builder", __name__)
+lex = SourceFileLoader("lexer", f"{os.path.dirname(__file__)}/lexer.py").load_module()
+ast = SourceFileLoader("AST_builder", f"{os.path.dirname(__file__)}/AST_builder.py").load_module()
 
 en_map = {
     0 : "Variable",
@@ -12,7 +17,18 @@ en_map = {
 }
 
 class Entry():
+    """
+    A class that represents a singular entry in the symbol table
+    """
     def __init__(self, en_typ, nam, typ, scop, modif):
+        """
+        Args:
+            en_typ: Whether the entry is a variable, function, parameter, or label.
+            nam: Name of the entry.
+            typ: The associated type of the entry such as `int`, `float` ect. For functions this represents the return type.
+            scop: The scope where the entry exists.
+            modif: The modifiers associated with the entry such as `unsigned`, `const`, `static` ect.
+        """
         self.entry_type = en_typ
         self.name = nam
         self.type = typ
@@ -22,11 +38,18 @@ class Entry():
 
 
 Node = namedtuple("Node", ["Node", "Scope"])
-Node.__docstring__ = """
+Node.__doc__ = """
 A simple namedtuple to allow for better readability when performing the depth first search required for the semantic analysis.
 """
 class symbol_table():
+    """
+    A class that stores all the known and unknown symbols, as well as the semantic errors that may be discovered.
+    """
     def __init__(self,AST):
+        """
+        Args:
+            AST: The head node of the abstract syntax tree.
+        """
         self.AST = AST
 
         self.symbols = []
@@ -34,7 +57,9 @@ class symbol_table():
         self.errors = []
 
     def analyze(self):
-
+        """
+        Analyses the abstract syntax tree to determine whether there are any undeclared references, and semantic errors.
+        """
         ntv = [Node(self.AST, "/")]
         scopenum = 0
         typ = None
@@ -336,6 +361,9 @@ class symbol_table():
         return "\n".join(self.errors)
 
     def print_symbol_table(self):
+        """
+        Prints the known symbols in the symbol table to stdout
+        """
         # if len(self.symbols) == 0:
         #     print ("No defined symbols available")
         #     return
@@ -357,6 +385,9 @@ class symbol_table():
         # print("")
 
     def print_unknown_symbols(self):
+        """
+        Prints the unknown symbols in the symbol table to stdout
+        """
         # if len(self.undefined) == 0:
         #     print ("No undefined symbols available")
         #     return
@@ -375,10 +406,19 @@ class symbol_table():
         # print("")
 
     def printSemanticErrors(self):
+        """
+        Prints the semantic errors to stdout
+        """
         for i in self.errors:
             print(i)
 
     def lineSemanticErrors(self):
+        """
+        Retrieves the semantic errors
+
+        Returns:
+            output: All the semantic errors as a string separated by new lines
+        """
         output = ""
         for i in self.errors:
             output += (i+"\n")
