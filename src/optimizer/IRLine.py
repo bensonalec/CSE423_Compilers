@@ -251,14 +251,18 @@ class IRLine():
 
     def constantFolding(self):
         #perform a in order traversal, on the encountering of arithmetic, fold it
-        print("Folding")  
-        for x in self.treeList:
+        print("Folding")
+        for it,x in enumerate(self.treeList):
             #check that it's arithmetic
             if "operator" in x.__dict__:
                 if(x.operator == "+"):
                     try:
                         if(int(x.lhs) and int(x.rhs)):
-                            print(int(x.lhs) + int(x.rhs))
+                            newValue = str((int(x.lhs) + int(x.rhs)))
+                            # self.treeList = [newValue]
+                            self.treeList[it] = f"{x.var} = {newValue}"
+                            print(it)
+                            pass
                     except ValueError:
                         pass
         pass
