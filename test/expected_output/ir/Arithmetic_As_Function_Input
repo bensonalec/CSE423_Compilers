@@ -1,6 +1,7 @@
 function (int arithmetic_input)
 {
 int D.1234;
+
 D.1234 = arithmetic_input;
 return D.1234;
 

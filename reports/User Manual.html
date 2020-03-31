@@ -80,7 +80,7 @@
                     </code> <code>[INPUT FILE]</code> or <code>
                         --input
                     </code> <code>[INPUT FILE]</code></dt>
-                    <dd>Used to input IR from file.</dd>
+                    <dd>Used to input IR from file. When this option is used, there is no need for a C file to be inputted as well. The output is not optimized.</dd>
                 </dl>
             </dd>
             <dt><h3>Subset of C supported</h3></dt>
@@ -96,6 +96,7 @@
                             <th>AST Building</th>
                             <th>Semantic Analysis</th>
                             <th>Intermediate Representation</th>
+                            <th>Optimization</th>
                         </tr>
                     </thead>
                     <tfoot>
@@ -994,6 +995,32 @@
                         <td>Feature has no use in this section.</td>
                     </tr>
                 </table>
+            </dd>
+            <dt>
+                <h3>Optimization Algorithms Implemented</h3>
+            </dt>
+            <dd>
+                As a group we decided to implement four different optimization mechanisms as a part of three total optimization levels. <code>-O0</code> means that no optimization occurs during the compilation process. <code>-O1</code> means that there are slight optimizations done during the compilation process. <code>-O2</code> means that there are more advanced optimizations done during the compilaion process. Keep in mind that they are by no means agressive, and there is no risk of altered behavior of the program when using these optimizations.<br>
+                <dl>
+                    <dt><code>-O1</code></dt>
+                    <dd>
+                        <dl>
+                            <dt>Unreferenced Variables</dt>
+                            <dd>If, during the compilation process, the compiler recognices that there are variables declared, tempoary or not, that are only intialized and unused. It will try to remove them as a measure to try and reduce the number of instructions for a given program.</dd>
+                            <dt>Unreferenced Functions</dt>
+                            <dd>If, during the compilation process, the compiler recognices that there are functions declared and defined, that are unused. It will try to remove them as a measure to try and reduce the number of instructions for a given program.</dd>
+                        </dl>
+                    </dd>
+                    <dt><code>-O2</code></dt>
+                    <dd>
+                        <dl>
+                            <dt>Constant Folding</dt>
+                            <dd>For expressions that require some sort of evaluation before the value can be used the compiler will try to evaluate the expression at compile time and replace the evaluation with the resultant value in the program.</dd>
+                            <dt>Constant Propagation</dt>
+                            <dd>Whenever a variable is referenced within the program, the compiler will try to replace the value of the variable with the known value of the variable wherever it deems it is safe to do so.</dd>
+                        </dl>
+                    </dd>
+                </dl>
             </dd>
             <dt><h3>Examples of C Programs and their Intermediate Representations</h3></dt>
             <dd>
