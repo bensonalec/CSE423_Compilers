@@ -4,20 +4,16 @@ int D.1234;
 goto <D.1235>;
 <D.1236>:
 {
-    int k;
-  
-    k = NULL;
-  
+int k;
+k = NULL;
 }
 <D.1235>:
 if (1 != 0) goto <D.1236>; else goto <D.1237>;
 <D.1237>:
 <D.1240>:
 {
-    int j;
-  
-    j = NULL;
-  
+int j;
+j = NULL;
 }
 <D.1239>:
 if (1 != 0) goto <D.1240>; else goto <D.1241>;
@@ -25,9 +21,7 @@ if (1 != 0) goto <D.1240>; else goto <D.1241>;
 goto <D.1243>;
 <D.1244>:
 goto <D.1245>;
-
 <D.1243>:
 if (2 != 0) goto <D.1244>; else goto <D.1245>;
 <D.1245>:
-
 }

@@ -60,10 +60,8 @@ class IRTest(unittest.TestCase):
                 sym = symbol_table(astree)
                 sym.analyze()
                 ir = ir1.LevelOneIR(astree,sym)
-                l1ir = ir.construct()
+                ir.construct()
                 result = str(ir)
-                # for x in l1ir:
-                #     result += x + "\n"
                 
                 with self.subTest():
                     self.assertEqual(result, expected)
