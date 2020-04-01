@@ -258,6 +258,20 @@ class IRLine():
     def __str__(self):
         return "\n".join([f"{self.prefix}{x}" for x in self.treeList])
 
+    @staticmethod
+    def singleEntry(irNode, labelDigit=None, prefix=""):
+        """
+        Creates a new instance of an IRLine but with only one entry.
+
+        Args:
+            irNode: The given 'IRNode' entry for this new IRLine.
+            labelList: The list of used label names.
+            prefix: The output prefix.
+        """
+        entry = IRLine(node=None, tvs=[], labelList=[labelDigit], prefix=prefix)
+        entry.treeList.append(irNode)
+        return entry
+
 class IRNode():
     """
     Abstract intermediate representation node. Base class for all other IR representations other than IRLines.
@@ -270,6 +284,7 @@ class IRNode():
 
     def __repr__():
         pass
+
 
 class IRJump(IRNode):
     """
@@ -473,11 +488,21 @@ class IRFunctionCall(IRNode):
         self.name = name
         self.params = params
 
+class IRFunctionDecl(IRNode):
+    """
+    Intermediate representation node for a function declaration.
+    """
+    def __init__(self, name, params):
+        """
+        Args:
+            name: Name of function call.
+            params: The function params as a string
+        """
+        self.name = name
+        self.params = params
+
     def __str__(self):
-        if self.params:
-            return f"{self.name}({self.params});"
-        else:
-            return f"{self.name}();"
+            return f"{self.name} ({self.params})"
 
 class IRReturn(IRNode):
     """
@@ -495,4 +520,23 @@ class IRReturn(IRNode):
             return f"return {self.value};"
         else:
             return f"return;"
+
+class IRBracket(IRNode):
+    """
+    Intermediate representation node for a bracket
+    """
+    def __init__(self, opening):
+        """
+        Args:
+            opening: Either True or False depending on if bracket is open/close
+        """
+        self.opening = opening
+
+    def __str__(self):
+        if self.opening == True:
+            return "{"
+        else:
+            return "}"
+    
+    
 

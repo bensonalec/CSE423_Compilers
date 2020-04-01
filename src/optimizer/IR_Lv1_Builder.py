@@ -56,8 +56,9 @@ class LevelOneIR():
             tmp_lines , labelDigit = returnLines(i[1], returnDigit, labelDigit)
             lines.extend(tmp_lines)
 
-            # End of function wrapper
-            lines.append("}")
+            # End of function wrapper, add closing bracket
+            lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=False)))
+
 
             # NOTE: 'labelDigit' should be the newest and unused digit
             returnDigit = labelDigit
@@ -104,8 +105,9 @@ def beginWrapper(function_tuple, returnDigit):
         if var.name == "var":
             params += f"{var.children[0].name} {var.children[1].name},"
 
-    lines.append(f"{func_name} ({params[:-1]})")
-    lines.append("{")
+    lines.append(irl.IRLine.singleEntry(irl.IRFunctionDecl(func_name, params[:-1])))
+    lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=True)))
+
     if func_type != "void":
         lines.append(f"{''.join([x.name for x in function_tuple[0].children[0].children if x.name in ['signed', 'unsigned']])}{' ' if [x.name for x in function_tuple[0].children[0].children if x.name in ['signed', 'unsigned']] else ''}{func_type} D.{returnDigit};")
 
@@ -160,7 +162,8 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                     initNode = ast.ASTNode("body", None)
                     initNode.children.append(element.children[0])
                     if [x.children[0] for x in initNode.children if x.name == "=" and x.children[0].children[0].name in ["auto", "long double", "double", "float", "long long", "long long int", "long", "int", "short", "char"]]:
-                        lines.append(f"{prefix}{{")
+                        # Append an IRBracket node
+                        lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=True), [labelDigit], prefix))
                         ns = True
                     tmp, labelDigit = returnLines(initNode, returnDigit, labelDigit, prefix=prefix[:-2])
                     for x in tmp: lines.append(f"{prefix}{x}")
@@ -173,17 +176,13 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                 if element.children[1].children != []:
 
                     # Append an IRGoTo node
-                    entry = irl.IRLine(node=None, tvs=[], labelList=[labelDigit], prefix=prefix)
-                    entry.treeList.append(irl.IRGoTo(f"<D.{labelDigit}>"))
-                    lines.append(entry)
+                    lines.append(irl.IRLine.singleEntry(irl.IRGoTo(f"<D.{labelDigit}>"), [labelDigit], prefix))
 
                     conditionLabel = labelDigit
                     labelDigit += 1
 
                 # Append an IRJump node for the label that belongs to the start of the loop
-                entry = irl.IRLine(node=None, tvs=[], labelList=[labelDigit], prefix=prefix)
-                entry.treeList.append(irl.IRJump(f"<D.{labelDigit}>"))
-                lines.append(entry)
+                lines.append(irl.IRLine.singleEntry(irl.IRJump(f"<D.{labelDigit}>"), [labelDigit], prefix))
 
                 # Assign labels for start/end of loop
                 loopStart = labelDigit
@@ -203,9 +202,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
 
                 # Start of conditionals for the loop
                 if conditionLabel != None:
-                    entry = irl.IRLine(node=None, tvs=[], labelList=[labelDigit], prefix=prefix)
-                    entry.treeList.append(irl.IRJump(f"<D.{conditionLabel}>"))
-                    lines.append(entry)
+                    lines.append(irl.IRLine.singleEntry(irl.IRJump(f"<D.{conditionLabel}>"), [labelDigit], prefix))
 
                     tmpNode = element.children[1]
                     if tmpNode.name not in ['||', '&&', "<=", "<", ">=", ">", "==", "!="]:
@@ -220,30 +217,28 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                     if labelList != []:
                         labelDigit = labelList[-1]
 
-
-                    entry = irl.IRLine(node=None, tvs=[], labelList=[labelDigit], prefix=prefix)
-                    entry.treeList.append(irl.IRJump(f"<D.{loopEnd}>"))
-                    lines.append(entry)
+                    lines.append(irl.IRLine.singleEntry(irl.IRJump(f"<D.{loopEnd}>"), [labelDigit], prefix))
 
                 else:
                     # No conditional (jump to start of body...always True)
-                    entry = irl.IRLine(node=None, tvs=[], labelList=[labelDigit], prefix=prefix)
-                    entry.treeList.append(irl.IRGoTo(f"<D.{loopStart}>"))
-                    lines.append(entry)
+                    lines.append(irl.IRLine.singleEntry(irl.IRGoTo(f"<D.{loopStart}>"), [labelDigit], prefix))
 
                 # increment twice for new index
                 labelDigit += 2
 
                 if ns:
                     prefix = prefix[:-2]
-                    lines.append(f"{prefix}}}")
+                    # Append an IRBracket node
+                    lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=False), [labelDigit], prefix))
                 pass
 
             elif ind == 2:
                 tmp, labelDigit = returnLines(element, returnDigit, labelDigit, successDigit, failureDigit, prefix)
-                lines.append(f"{prefix}{{")
+                # Append an IRBracket node 
+                lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=True), [labelDigit], prefix))
                 for x in tmp: lines.append(f"{prefix}{x}")
-                lines.append(f"{prefix}}}")
+                # Append an IRBracket node
+                lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=False), [labelDigit], prefix))
 
             elif ind == 3:
                 # If/Else statement(s)
@@ -263,7 +258,8 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                     #default is an 'else'. Only has one child, body
                     if case.name == "default":
                         if [x.children[0] for x in case.children[0].children if x.name == "=" and x.children[0].children[0].name in ["auto", "long double", "double", "float", "long long", "long long int", "long", "int", "short", "char"]]:
-                            lines.append(f"{prefix}{{")
+                            # Append an IRBracket node
+                            lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=True), [labelDigit], prefix))
                             prefix += "  "
                             ns = True
 
@@ -273,7 +269,8 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
 
                         if ns:
                             prefix = prefix[:-2]
-                            lines.append(f"{prefix}}}")
+                            # Append an IRBracket node
+                            lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=False), [labelDigit], prefix))
                         break
 
                     tmpNode = case.children[0]
@@ -292,12 +289,11 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
 
 
                     #Add goto for body statement
-                    entry = irl.IRLine(node=None, tvs=[], labelList=[labelDigit], prefix=prefix)
-                    entry.treeList.append(irl.IRJump(f"<D.{success_label}>"))
-                    lines.append(entry)
+                    lines.append(irl.IRLine.singleEntry(irl.IRJump(f"<D.{success_label}>"), [labelDigit], prefix))
                     
                     if [x.children[0] for x in case.children[1].children if x.name == "=" and x.children[0].children[0].name in ["auto", "long double", "double", "float", "long long", "long long int", "long", "int", "short", "char"]]:
-                        lines.append(f"{prefix}{{")
+                        # Append an IRBracket node
+                        lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=True), [labelDigit], prefix))
                         prefix += "  "
                         ns = True
                     #Get lines for the if body and assign new labeldigit
@@ -307,24 +303,19 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
 
                     if ns:
                         prefix = prefix[:-2]
-                        lines.append(f"{prefix}}}")
+                        # Append an IRBracket node
+                        lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=False), [labelDigit], prefix))
 
                     #append goto for end of if body
-                    entry = irl.IRLine(node=None, tvs=[], labelList=[labelDigit], prefix=prefix)
-                    entry.treeList.append(irl.IRGoTo(f"<D.{labelDigit}>"))
-                    lines.append(entry)
+                    lines.append(irl.IRLine.singleEntry(irl.IRGoTo(f"<D.{labelDigit}>"), [labelDigit], prefix))
 
                     end_if.append(labelDigit)
                     labelDigit += 1
 
-                    entry = irl.IRLine(node=None, tvs=[], labelList=[labelDigit], prefix=prefix)
-                    entry.treeList.append(irl.IRJump(f"<D.{failure_label}>"))
-                    lines.append(entry)
+                    lines.append(irl.IRLine.singleEntry(irl.IRJump(f"<D.{failure_label}>"), [labelDigit], prefix))
 
                 for i in end_if:
-                    entry = irl.IRLine(node=None, tvs=[], labelList=[labelDigit], prefix=prefix)
-                    entry.treeList.append(irl.IRJump(f"<D.{i}>"))
-                    lines.append(entry)
+                    lines.append(irl.IRLine.singleEntry(irl.IRJump(f"<D.{i}>"), [labelDigit], prefix))
 
             elif ind == 4:
                 #Return
@@ -335,31 +326,19 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                     tvs, labelList = line.retrieve()
                     lines.append(line)
 
-                    entry = irl.IRLine(node=None, tvs=[], labelList=[labelDigit], prefix=prefix)
-                    entry.treeList.append(irl.IRAssignment(f"D.{returnDigit}", f"{tvs[-1]}"))
-                    lines.append(entry)
-
-                    entry = irl.IRLine(node=None, tvs=[], labelList=[labelDigit], prefix=prefix)
-                    entry.treeList.append(irl.IRReturn(f"D.{returnDigit}"))
-                    lines.append(entry)
+                    lines.append(irl.IRLine.singleEntry(irl.IRAssignment(f"D.{returnDigit}", f"{tvs[-1]}"), [labelDigit], prefix))
+                    lines.append(irl.IRLine.singleEntry(irl.IRReturn(f"D.{returnDigit}"), [labelDigit], prefix))
 
                     if labelList != []:
                         labelDigit = labelList[-1]
 
                 elif len(element.children) > 0 and element.children[0].children == []:
-                    entry = irl.IRLine(node=None, tvs=[], labelList=[labelDigit], prefix=prefix)
-                    entry.treeList.append(irl.IRAssignment(f"D.{returnDigit}", f"{element.children[0].name}"))
-                    lines.append(entry)
-
-                    entry = irl.IRLine(node=None, tvs=[], labelList=[labelDigit], prefix=prefix)
-                    entry.treeList.append(irl.IRReturn(f"D.{returnDigit}"))
-                    lines.append(entry)
+                    lines.append(irl.IRLine.singleEntry(irl.IRAssignment(f"D.{returnDigit}", f"{element.children[0].name}"), [labelDigit], prefix))
+                    lines.append(irl.IRLine.singleEntry(irl.IRReturn(f"D.{returnDigit}"), [labelDigit], prefix))
 
                 # Returns nothing
-                else:
-                    entry = irl.IRLine(node=None, tvs=[], labelList=[labelDigit], prefix=prefix)
-                    entry.treeList.append(irl.IRReturn(None))
-                    lines.append(entry)
+                else:             
+                    lines.append(irl.IRLine.singleEntry(irl.IRReturn(None), [labelDigit], prefix))
 
             elif ind == 5:
                 #Function Call
@@ -376,10 +355,8 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
 
                 # no parameters
                 else:
-                    # Append Empty function call node
-                    entry = irl.IRLine(node=None, tvs=[], labelList=[labelDigit], prefix=prefix)
-                    entry.treeList.append(irl.IRFunctionCall(func_call, None))
-                    lines.append(entry)
+                    # Append Empty function call node             
+                    lines.append(irl.IRLine.singleEntry(irl.IRFunctionCall(func_call, None), [labelDigit], prefix))
 
             elif ind == 6:
                 #While and Do While
@@ -388,21 +365,18 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
 
                 # Jump straight to conditionals for only 'While' statements
                 if element.name == "while":
-                    entry = irl.IRLine(node=None, tvs=[], labelList=[labelDigit], prefix=prefix)
-                    entry.treeList.append(irl.IRGoTo(f"<D.{labelDigit}>"))
-                    lines.append(entry)
+                    lines.append(irl.IRLine.singleEntry(irl.IRGoTo(f"<D.{labelDigit}>"), [labelDigit], prefix))
 
                 # Keep track of label for conditional block
                 conditionLabel = labelDigit
                 labelDigit += 1
 
                 # Add the label that belongs to the start of the loop
-                entry = irl.IRLine(node=None, tvs=[], labelList=[labelDigit], prefix=prefix)
-                entry.treeList.append(irl.IRJump(f"<D.{labelDigit}>"))
-                lines.append(entry)
+                lines.append(irl.IRLine.singleEntry(irl.IRJump(f"<D.{labelDigit}>"), [labelDigit], prefix))
 
                 if [x.children[0] for x in element.children[1].children if x.name == "=" and x.children[0].children[0].name in ["auto", "long double", "double", "float", "long long", "long long int", "long", "int", "short", "char"]]:
-                        lines.append(f"{prefix}{{")
+                        # Append an IRBracket node
+                        lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=True), [labelDigit], prefix))
                         prefix += "  "
                         ns = True
 
@@ -417,12 +391,11 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
 
                 if ns:
                     prefix = prefix[:-2]
-                    lines.append(f"{prefix}}}")
+                    # Append an IRBracket node
+                    lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=False), [labelDigit], prefix))
 
                 # Start of conditionals for the loop
-                entry = irl.IRLine(node=None, tvs=[], labelList=[labelDigit], prefix=prefix)
-                entry.treeList.append(irl.IRJump(f"<D.{conditionLabel}>"))
-                lines.append(entry)
+                lines.append(irl.IRLine.singleEntry(irl.IRJump(f"<D.{conditionLabel}>"), [labelDigit], prefix))
 
                 tmpNode = element.children[0]
                 if tmpNode.name not in ['||', '&&', "<=", "<", ">=", ">", "==", "!="]:
@@ -434,9 +407,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                 tvs, labelList = line.retrieve()
                 lines.append(line)
 
-                entry = irl.IRLine(node=None, tvs=[], labelList=[labelDigit], prefix=prefix)
-                entry.treeList.append(irl.IRJump(f"<D.{loopEnd}>"))
-                lines.append(entry)
+                lines.append(irl.IRLine.singleEntry(irl.IRJump(f"<D.{loopEnd}>"), [labelDigit], prefix))
 
                 if labelList != []:
                     labelDigit = labelList[-1]
@@ -445,26 +416,18 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
 
             elif ind == 7:
                 # Break
-                entry = irl.IRLine(node=None, tvs=[], labelList=[labelDigit], prefix=prefix)
-                entry.treeList.append(irl.IRGoTo(f"<D.{failureDigit}>"))
-                lines.append(entry)
+                lines.append(irl.IRLine.singleEntry(irl.IRGoTo(f"<D.{failureDigit}>"), [labelDigit], prefix))
 
             elif ind == 8:
                 # Continue
-                entry = irl.IRLine(node=None, tvs=[], labelList=[labelDigit], prefix=prefix)
-                entry.treeList.append(irl.IRGoTo(f"<D.{successDigit}>"))
-                lines.append(entry)
+                lines.append(irl.IRLine.singleEntry(irl.IRGoTo(f"<D.{successDigit}>"), [labelDigit], prefix))
 
             elif ind == 9:
                 # Goto
-                entry = irl.IRLine(node=None, tvs=[], labelList=[labelDigit], prefix=prefix)
-                entry.treeList.append(irl.IRGoTo(f"{element.children[0].name}"))
-                lines.append(entry)
+                lines.append(irl.IRLine.singleEntry(irl.IRGoTo(f"{element.children[0].name}"), [labelDigit], prefix))
             elif ind == 10:
                 # Jump Label
-                entry = irl.IRLine(node=None, tvs=[], labelList=[labelDigit], prefix=prefix)
-                entry.treeList.append(irl.IRJump(f"{element.children[0].name}"))
-                lines.append(entry)
+                lines.append(irl.IRLine.singleEntry(irl.IRJump(f"{element.children[0].name}"), [labelDigit], prefix))
                 
                 if (len(element.children) > 1):
                     temp_lines, labelDigit = returnLines(element.children[1], returnDigit, labelDigit)
