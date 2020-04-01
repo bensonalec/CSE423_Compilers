@@ -70,6 +70,105 @@ class LevelOneIR():
     def __str__(self):
         return "\n".join([str(x) for x in self.IR]) + "\n"
 
+    def optimize(self):        
+        self.remove_unused_funcs()
+        self.remove_unused_vars()
+
+    def remove_unused_vars(self):
+        ir = self.IR
+        scope = ""
+
+        en_map = {
+            0 : "Variable",
+            1 : "Function",
+            2 : "Parameter",
+            3 : "Label",
+        }
+        
+        #get variables to remove
+        vars_temp = [[x.name, x.scope] for x in self.symTable.symbols if en_map[x.entry_type] != "Param" and en_map[x.entry_type] != "Function" and en_map[x.entry_type] != "Label" and len(x.references) == 0]
+        #get function from symbol table.
+        funcs = [x.name for x in self.symTable.symbols if en_map[x.entry_type] == "Function"]
+
+        final_ir = []
+
+        #for each line in ir
+        
+        for irLine in ir:
+           
+            #TODO: we shouldnt have any empty lines!! OJ!!!
+            if (irLine == ""):
+                continue
+
+            for idx, irNode in enumerate(irLine.treeList):
+                #check if function declaration to set new scope
+                if type(irNode) == type(irl.IRFunctionDecl(None, None)):
+                    scope = irNode.name
+
+                #check if declaration
+                if type(irNode) == type(irl.IRVariableInit(None, None, None)):
+                    #check if variable needs to be skippped
+                    if [x for x in vars_temp if x[0] == irNode.var and scope in x[1]] != []:
+                        del irLine.treeList[idx]
+            
+                #check if usage
+                elif type(irNode) == type(irl.IRAssignment(None, None)):
+                    if [x for x in vars_temp if x[0] == irNode.lhs and scope in x[1]] != []:
+                        del irLine.treeList[idx]
+
+            #irLine has no irNode inside...so we dont add it to new IR list
+            if irLine.treeList == []:
+                pass
+            else:
+                final_ir.append(irLine)
+            
+            
+        self.IR = final_ir
+
+    def remove_unused_funcs(self):
+        ir = self.IR
+        en_map = {
+            0 : "Variable",
+            1 : "Function",
+            2 : "Parameter",
+            3 : "Label",
+        }
+        
+        inFunction = False
+
+        to_remove = []
+
+        for idx, irLine in enumerate(ir):
+
+            if irLine == "":
+                to_remove.append(idx)
+                continue
+
+            ir_firstNode = irLine.treeList[0]
+
+            if inFunction == True:
+                if type(ir_firstNode) == type(irl.IRBracket(None)):
+                    if ir_firstNode.opening == False:
+                        inFunction = False
+                        
+                to_remove.append(idx)
+                continue
+
+            
+            if type(ir_firstNode) == type(irl.IRFunctionDecl(None, None)):
+                func_name = ir_firstNode.name
+                referenceNum = len([x.references for x in self.symTable.symbols if func_name == x.name and en_map[x.entry_type] == "Function"])
+
+                if referenceNum == 1 and func_name != "main":
+                    to_remove.append(idx)
+                    inFunction = True
+
+        for i in to_remove[::-1]:
+            del ir[i]
+                
+
+        self.IR = ir
+
 def buildBoilerPlate(symTable):
     namesandparams = []
     functionNames = [(x.name,x.type) for x in symTable.symbols if x.is_function]
@@ -107,10 +206,11 @@ def beginWrapper(function_tuple, returnDigit):
 
     lines.append(irl.IRLine.singleEntry(irl.IRFunctionDecl(func_name, params[:-1])))
     lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=True)))
-
+    
     if func_type != "void":
-        lines.append(f"{''.join([x.name for x in function_tuple[0].children[0].children if x.name in ['signed', 'unsigned']])}{' ' if [x.name for x in function_tuple[0].children[0].children if x.name in ['signed', 'unsigned']] else ''}{func_type} D.{returnDigit};")
-
+        modifiers = f"{''.join([x.name for x in function_tuple[0].children[0].children if x.name in ['signed', 'unsigned']])}{' ' if [x.name for x in function_tuple[0].children[0].children if x.name in ['signed', 'unsigned']] else ''}"
+        lines.append(irl.IRLine.singleEntry(irl.IRVariableInit(modifiers, func_type, f"D.{returnDigit}")))
+    
     return lines
 
 def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None, prefix=""):
@@ -137,7 +237,11 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
         if il:
             # lines.append(f"{prefix}{{")
             prefix += "  "
-            for x in il: lines.append(f"{prefix}{' '.join([y.name for y in x.children[0].children])}{' ' if [y.name for y in x.children[0].children] else ''}{x.children[0].name} {x.children[1].name};")
+
+            for x in il:
+                modifiers = f"{' '.join([y.name for y in x.children[0].children])}{' ' if [y.name for y in x.children[0].children] else ''}"
+                lines.append(irl.IRLine.singleEntry(irl.IRVariableInit(modifiers, x.children[0].name, x.children[1].name), [labelDigit], prefix))
+            
             lines.append("")
 
     for element in node.children:

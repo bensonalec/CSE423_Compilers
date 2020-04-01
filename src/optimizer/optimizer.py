@@ -29,6 +29,7 @@ def mainAST(args,astHead,symbolTable):
     else:
         ir = ir1.LevelOneIR(astHead,symbolTable)
         l1ir = ir.construct()
+        ir.optimize()
 
     if args.IR1 or args.all:
         for x in l1ir: print (x)

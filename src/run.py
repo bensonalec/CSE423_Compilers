@@ -4,9 +4,13 @@ This module serves as the main interface to the compiler. It connects all the pa
 import os
 import argparse
 from importlib.machinery import SourceFileLoader
+import importlib
 
-frontend = SourceFileLoader("frontend.frontend", f"{os.path.dirname(__file__)}/frontend/frontend.py").load_module()
-optimizer = SourceFileLoader("optimizer.optimizer", f"{os.path.dirname(__file__)}/optimizer/optimizer.py").load_module()
+frontend = importlib.import_module("frontend.frontend", package="frontend")
+optimizer = importlib.import_module("optimizer.optimizer", package="optimizer")
+
+# frontend = SourceFileLoader("frontend.frontend", f"{os.path.dirname(__file__)}/frontend/frontend.py").load_module()
+# optimizer = SourceFileLoader("optimizer.optimizer", f"{os.path.dirname(__file__)}/optimizer/optimizer.py").load_module()
 #backend = importlib.import_module("backend.backend", package="backend")
 
 def main(args):

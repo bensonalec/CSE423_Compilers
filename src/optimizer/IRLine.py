@@ -537,6 +537,28 @@ class IRBracket(IRNode):
             return "{"
         else:
             return "}"
+
+class IRVariableInit(IRNode):
+    """
+    Intermediate representation node for a variable initialization.
+    """
+    def __init__(self, modifiers, typ, var):
+        """
+        Args:
+            modifiers: 
+            type: 
+            var: 
+        """
+        self.modifiers = modifiers
+
+        self.typ = typ
+        
+        self.var = var
+
+    def __str__(self):
+        return f"{self.modifiers}{self.typ} {self.var};"
+                
+
     
     
 
