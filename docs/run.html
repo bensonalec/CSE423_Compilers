@@ -28,13 +28,13 @@
 <pre><code class="python">&#34;&#34;&#34;
 This module serves as the main interface to the compiler. It connects all the parts of the compiler in such a way that all representations are handed off to the next step.
 &#34;&#34;&#34;
+from inspect import getsourcefile
 import os
 import argparse
 from importlib.machinery import SourceFileLoader
 
-frontend = SourceFileLoader(&#34;frontend.frontend&#34;, f&#34;{os.path.dirname(__file__)}/frontend/frontend.py&#34;).load_module()
-optimizer = SourceFileLoader(&#34;optimizer.optimizer&#34;, f&#34;{os.path.dirname(__file__)}/optimizer/optimizer.py&#34;).load_module()
-#backend = importlib.import_module(&#34;backend.backend&#34;, package=&#34;backend&#34;)
+frontend = SourceFileLoader(&#34;frontend.frontend&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/frontend/frontend.py&#34;).load_module()
+optimizer = SourceFileLoader(&#34;optimizer.optimizer&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/optimizer/optimizer.py&#34;).load_module()
 
 def main(args):
 
@@ -45,7 +45,6 @@ def main(args):
     else:
         ast = None
         sym = None
-
 
 
     # Execution of Optimization
@@ -85,9 +84,7 @@ if __name__ == &#34;__main__&#34;:
 
     cmd_options.add_argument(&#39;-b&#39;, &#39;--bnf&#39;, nargs=&#39;?&#39;, const=os.path.abspath(os.path.dirname(__file__)) + &#34;/frontend/BNF_definition&#34;, type=str, help=&#39;Rebuilds the parser using the current BNF grammar&#39;)
 
-    cmd_options.add_argument(&#39;-O0&#39;,help=&#39;Does no optimization&#39;)
-
-    cmd_options.add_argument(&#39;-O1&#39;,help=&#39;Optimize the symbol table and AST&#39;)
+    cmd_options.add_argument(&#39;-O&#39;, &#39;--opt&#39;, type=int, choices=range(3), default=0, help=&#39;Determines the optimization level&#39;)
 
     cmd_options.add_argument(&#39;-IR1&#39;,help=&#39;Output the first level of IR in the optimizer phase&#39;, action=&#34;store_true&#34;)
 
@@ -135,7 +132,6 @@ if __name__ == &#34;__main__&#34;:
     else:
         ast = None
         sym = None
-
 
 
     # Execution of Optimization

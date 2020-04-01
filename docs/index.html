@@ -3293,10 +3293,7 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
             </div>
             <div class="example_representations">
              <div class="representation_0" style="display: block;">
-              <pre style="overflow-x: auto;"><code class="C++ hljs">int function(int z);
-
-
-int main() {
+              <pre style="overflow-x: auto;"><code class="C++ hljs">int main() {
     int a = (1 + 2 + 3);
     int b = (56 * 78 * 5 / 20 - 3);
     int c = 56 % 2;
@@ -3320,22 +3317,10 @@ int main() {
     i |=  (d ^  b) /  20;
     j &amp;=  (c +  a) &gt;&gt; 12;
     k ^=  (a %  f) &lt;&lt; 31;
-    k = function(10);
-}
-
-int function(int z) {
-    return 1;
 }</code></pre>
              </div>
              <div class="representation_0" style="display: none;">
               <pre style="overflow-x: auto;">Token('TYPE', 'int')
-Token('SELF_DEFINED', 'function')
-Token('OPEN_PAREN', '(')
-Token('TYPE', 'int')
-Token('SELF_DEFINED', 'z')
-Token('CLOSE_PAREN', ')')
-Token('SEMICOLON', ';')
-Token('TYPE', 'int')
 Token('SELF_DEFINED', 'main')
 Token('OPEN_PAREN', '(')
 Token('CLOSE_PAREN', ')')
@@ -3534,44 +3519,68 @@ Token('CLOSE_PAREN', ')')
 Token('LSH', '&lt;&lt;')
 Token('INTEGER', '31')
 Token('SEMICOLON', ';')
-Token('SELF_DEFINED', 'k')
-Token('SET', '=')
-Token('SELF_DEFINED', 'function')
-Token('OPEN_PAREN', '(')
-Token('INTEGER', '10')
-Token('CLOSE_PAREN', ')')
-Token('SEMICOLON', ';')
-Token('CLOSE_BRACE', '}')
-Token('TYPE', 'int')
-Token('SELF_DEFINED', 'function')
-Token('OPEN_PAREN', '(')
-Token('TYPE', 'int')
-Token('SELF_DEFINED', 'z')
-Token('CLOSE_PAREN', ')')
-Token('OPEN_BRACE', '{')
-Token('RETURN', 'return')
-Token('INTEGER', '1')
-Token('SEMICOLON', ';')
 Token('CLOSE_BRACE', '}')</pre>
              </div>
              <div class="representation_0" style="display: none;">
               <pre style="overflow-x: auto;">1 : ['definitionList']
-2 : ['definition_terminal', 'definitionList']
-3 : ['functionDeclaration']
-4 : ['func_type', Token('SELF_DEFINED', 'function'), Token('OPEN_PAREN', '('), 'args', Token('CLOSE_PAREN', ')'), Token('SEMICOLON', ';')]
+2 : ['definition_terminal']
+3 : ['function definition']
+4 : ['func_type', Token('SELF_DEFINED', 'main'), Token('OPEN_PAREN', '('), Token('CLOSE_PAREN', ')'), 'block']
 5 : [Token('TYPE', 'int')]
-5 : ['arg_terminal']
-6 : ['var_type', Token('SELF_DEFINED', 'z')]
-7 : [Token('TYPE', 'int')]
-3 : ['definition_terminal', 'definitionList']
-4 : ['function definition']
-5 : ['func_type', Token('SELF_DEFINED', 'main'), Token('OPEN_PAREN', '('), Token('CLOSE_PAREN', ')'), 'block']
-6 : [Token('TYPE', 'int')]
-6 : [Token('OPEN_BRACE', '{'), 'content', Token('CLOSE_BRACE', '}')]
+5 : [Token('OPEN_BRACE', '{'), 'content', Token('CLOSE_BRACE', '}')]
+6 : ['content_terminal', 'content']
+7 : ['single_line']
+8 : ['initialization', Token('SEMICOLON', ';')]
+9 : ['var_type', Token('SELF_DEFINED', 'a'), Token('SET', '='), 'initialization_terminal']
+10 : [Token('TYPE', 'int')]
+10 : ['collation']
+11 : ['collation_or']
+12 : ['collation_and']
+13 : ['collation_bor']
+14 : ['collation_xor']
+15 : ['collation_band']
+16 : ['collation_eq']
+17 : ['collation_rel']
+18 : ['arithmetic']
+19 : ['arithmetic_sh']
+20 : ['arithmetic_pm']
+21 : ['arithmetic_mul']
+22 : ['arithmetic_cast']
+23 : ['arithmetic_unary']
+24 : ['arithmetic_post']
+25 : [Token('OPEN_PAREN', '('), 'collation', Token('CLOSE_PAREN', ')')]
+26 : ['collation_or']
+27 : ['collation_and']
+28 : ['collation_bor']
+29 : ['collation_xor']
+30 : ['collation_band']
+31 : ['collation_eq']
+32 : ['collation_rel']
+33 : ['arithmetic']
+34 : ['arithmetic_sh']
+35 : ['arithmetic_pm']
+36 : ['arithmetic_pm', Token('ADD', '+'), 'arithmetic_mul']
+37 : ['arithmetic_pm', Token('ADD', '+'), 'arithmetic_mul']
+38 : ['arithmetic_mul']
+39 : ['arithmetic_cast']
+40 : ['arithmetic_unary']
+41 : ['arithmetic_post']
+42 : ['value']
+43 : [Token('INTEGER', '1')]
+38 : ['arithmetic_cast']
+39 : ['arithmetic_unary']
+40 : ['arithmetic_post']
+41 : ['value']
+42 : [Token('INTEGER', '2')]
+37 : ['arithmetic_cast']
+38 : ['arithmetic_unary']
+39 : ['arithmetic_post']
+40 : ['value']
+41 : [Token('INTEGER', '3')]
 7 : ['content_terminal', 'content']
 8 : ['single_line']
 9 : ['initialization', Token('SEMICOLON', ';')]
-10 : ['var_type', Token('SELF_DEFINED', 'a'), Token('SET', '='), 'initialization_terminal']
+10 : ['var_type', Token('SELF_DEFINED', 'b'), Token('SET', '='), 'initialization_terminal']
 11 : [Token('TYPE', 'int')]
 11 : ['collation']
 12 : ['collation_or']
@@ -3599,19 +3608,28 @@ Token('CLOSE_BRACE', '}')</pre>
 34 : ['arithmetic']
 35 : ['arithmetic_sh']
 36 : ['arithmetic_pm']
-37 : ['arithmetic_pm', Token('ADD', '+'), 'arithmetic_mul']
-38 : ['arithmetic_pm', Token('ADD', '+'), 'arithmetic_mul']
-39 : ['arithmetic_mul']
-40 : ['arithmetic_cast']
+37 : ['arithmetic_pm', Token('SUB', '-'), 'arithmetic_mul']
+38 : ['arithmetic_mul']
+39 : ['arithmetic_mul', Token('DIV', '/'), 'arithmetic_cast']
+40 : ['arithmetic_mul', Token('MUL', '*'), 'arithmetic_cast']
+41 : ['arithmetic_mul', Token('MUL', '*'), 'arithmetic_cast']
+42 : ['arithmetic_cast']
+43 : ['arithmetic_unary']
+44 : ['arithmetic_post']
+45 : ['value']
+46 : [Token('INTEGER', '56')]
+42 : ['arithmetic_unary']
+43 : ['arithmetic_post']
+44 : ['value']
+45 : [Token('INTEGER', '78')]
 41 : ['arithmetic_unary']
 42 : ['arithmetic_post']
 43 : ['value']
-44 : [Token('INTEGER', '1')]
-39 : ['arithmetic_cast']
+44 : [Token('INTEGER', '5')]
 40 : ['arithmetic_unary']
 41 : ['arithmetic_post']
 42 : ['value']
-43 : [Token('INTEGER', '2')]
+43 : [Token('INTEGER', '20')]
 38 : ['arithmetic_cast']
 39 : ['arithmetic_unary']
 40 : ['arithmetic_post']
@@ -3620,7 +3638,7 @@ Token('CLOSE_BRACE', '}')</pre>
 8 : ['content_terminal', 'content']
 9 : ['single_line']
 10 : ['initialization', Token('SEMICOLON', ';')]
-11 : ['var_type', Token('SELF_DEFINED', 'b'), Token('SET', '='), 'initialization_terminal']
+11 : ['var_type', Token('SELF_DEFINED', 'c'), Token('SET', '='), 'initialization_terminal']
 12 : [Token('TYPE', 'int')]
 12 : ['collation']
 13 : ['collation_or']
@@ -3634,51 +3652,20 @@ Token('CLOSE_BRACE', '}')</pre>
 21 : ['arithmetic_sh']
 22 : ['arithmetic_pm']
 23 : ['arithmetic_mul']
-24 : ['arithmetic_cast']
+24 : ['arithmetic_mul', Token('MOD', '%'), 'arithmetic_cast']
+25 : ['arithmetic_cast']
+26 : ['arithmetic_unary']
+27 : ['arithmetic_post']
+28 : ['value']
+29 : [Token('INTEGER', '56')]
 25 : ['arithmetic_unary']
 26 : ['arithmetic_post']
-27 : [Token('OPEN_PAREN', '('), 'collation', Token('CLOSE_PAREN', ')')]
-28 : ['collation_or']
-29 : ['collation_and']
-30 : ['collation_bor']
-31 : ['collation_xor']
-32 : ['collation_band']
-33 : ['collation_eq']
-34 : ['collation_rel']
-35 : ['arithmetic']
-36 : ['arithmetic_sh']
-37 : ['arithmetic_pm']
-38 : ['arithmetic_pm', Token('SUB', '-'), 'arithmetic_mul']
-39 : ['arithmetic_mul']
-40 : ['arithmetic_mul', Token('DIV', '/'), 'arithmetic_cast']
-41 : ['arithmetic_mul', Token('MUL', '*'), 'arithmetic_cast']
-42 : ['arithmetic_mul', Token('MUL', '*'), 'arithmetic_cast']
-43 : ['arithmetic_cast']
-44 : ['arithmetic_unary']
-45 : ['arithmetic_post']
-46 : ['value']
-47 : [Token('INTEGER', '56')]
-43 : ['arithmetic_unary']
-44 : ['arithmetic_post']
-45 : ['value']
-46 : [Token('INTEGER', '78')]
-42 : ['arithmetic_unary']
-43 : ['arithmetic_post']
-44 : ['value']
-45 : [Token('INTEGER', '5')]
-41 : ['arithmetic_unary']
-42 : ['arithmetic_post']
-43 : ['value']
-44 : [Token('INTEGER', '20')]
-39 : ['arithmetic_cast']
-40 : ['arithmetic_unary']
-41 : ['arithmetic_post']
-42 : ['value']
-43 : [Token('INTEGER', '3')]
+27 : ['value']
+28 : [Token('INTEGER', '2')]
 9 : ['content_terminal', 'content']
 10 : ['single_line']
 11 : ['initialization', Token('SEMICOLON', ';')]
-12 : ['var_type', Token('SELF_DEFINED', 'c'), Token('SET', '='), 'initialization_terminal']
+12 : ['var_type', Token('SELF_DEFINED', 'd'), Token('SET', '='), 'initialization_terminal']
 13 : [Token('TYPE', 'int')]
 13 : ['collation']
 14 : ['collation_or']
@@ -3692,20 +3679,18 @@ Token('CLOSE_BRACE', '}')</pre>
 22 : ['arithmetic_sh']
 23 : ['arithmetic_pm']
 24 : ['arithmetic_mul']
-25 : ['arithmetic_mul', Token('MOD', '%'), 'arithmetic_cast']
-26 : ['arithmetic_cast']
-27 : ['arithmetic_unary']
-28 : ['arithmetic_post']
-29 : ['value']
-30 : [Token('INTEGER', '56')]
+25 : ['arithmetic_cast']
 26 : ['arithmetic_unary']
-27 : ['arithmetic_post']
-28 : ['value']
-29 : [Token('INTEGER', '2')]
+27 : ['unary_op', 'arithmetic_cast']
+28 : [Token('SUB', '-')]
+28 : ['arithmetic_unary']
+29 : ['arithmetic_post']
+30 : ['value']
+31 : [Token('INTEGER', '10')]
 10 : ['content_terminal', 'content']
 11 : ['single_line']
 12 : ['initialization', Token('SEMICOLON', ';')]
-13 : ['var_type', Token('SELF_DEFINED', 'd'), Token('SET', '='), 'initialization_terminal']
+13 : ['var_type', Token('SELF_DEFINED', 'e'), Token('SET', '='), 'initialization_terminal']
 14 : [Token('TYPE', 'int')]
 14 : ['collation']
 15 : ['collation_or']
@@ -3713,7 +3698,18 @@ Token('CLOSE_BRACE', '}')</pre>
 17 : ['collation_bor']
 18 : ['collation_xor']
 19 : ['collation_band']
-20 : ['collation_eq']
+20 : ['collation_band', Token('BAND', '&amp;'), 'collation_eq']
+21 : ['collation_eq']
+22 : ['collation_rel']
+23 : ['arithmetic']
+24 : ['arithmetic_sh']
+25 : ['arithmetic_pm']
+26 : ['arithmetic_mul']
+27 : ['arithmetic_cast']
+28 : ['arithmetic_unary']
+29 : ['arithmetic_post']
+30 : ['var_access']
+31 : [Token('SELF_DEFINED', 'a')]
 21 : ['collation_rel']
 22 : ['arithmetic']
 23 : ['arithmetic_sh']
@@ -3721,24 +3717,21 @@ Token('CLOSE_BRACE', '}')</pre>
 25 : ['arithmetic_mul']
 26 : ['arithmetic_cast']
 27 : ['arithmetic_unary']
-28 : ['unary_op', 'arithmetic_cast']
-29 : [Token('SUB', '-')]
-29 : ['arithmetic_unary']
-30 : ['arithmetic_post']
-31 : ['value']
-32 : [Token('INTEGER', '10')]
+28 : ['arithmetic_post']
+29 : ['var_access']
+30 : [Token('SELF_DEFINED', 'b')]
 11 : ['content_terminal', 'content']
 12 : ['single_line']
 13 : ['initialization', Token('SEMICOLON', ';')]
-14 : ['var_type', Token('SELF_DEFINED', 'e'), Token('SET', '='), 'initialization_terminal']
+14 : ['var_type', Token('SELF_DEFINED', 'f'), Token('SET', '='), 'initialization_terminal']
 15 : [Token('TYPE', 'int')]
 15 : ['collation']
 16 : ['collation_or']
 17 : ['collation_and']
 18 : ['collation_bor']
-19 : ['collation_xor']
-20 : ['collation_band']
-21 : ['collation_band', Token('BAND', '&amp;'), 'collation_eq']
+19 : ['collation_bor', Token('BOR', '|'), 'collation_xor']
+20 : ['collation_xor']
+21 : ['collation_band']
 22 : ['collation_eq']
 23 : ['collation_rel']
 24 : ['arithmetic']
@@ -3750,6 +3743,8 @@ Token('CLOSE_BRACE', '}')</pre>
 30 : ['arithmetic_post']
 31 : ['var_access']
 32 : [Token('SELF_DEFINED', 'a')]
+20 : ['collation_band']
+21 : ['collation_eq']
 22 : ['collation_rel']
 23 : ['arithmetic']
 24 : ['arithmetic_sh']
@@ -3763,14 +3758,14 @@ Token('CLOSE_BRACE', '}')</pre>
 12 : ['content_terminal', 'content']
 13 : ['single_line']
 14 : ['initialization', Token('SEMICOLON', ';')]
-15 : ['var_type', Token('SELF_DEFINED', 'f'), Token('SET', '='), 'initialization_terminal']
+15 : ['var_type', Token('SELF_DEFINED', 'g'), Token('SET', '='), 'initialization_terminal']
 16 : [Token('TYPE', 'int')]
 16 : ['collation']
 17 : ['collation_or']
 18 : ['collation_and']
 19 : ['collation_bor']
-20 : ['collation_bor', Token('BOR', '|'), 'collation_xor']
-21 : ['collation_xor']
+20 : ['collation_xor']
+21 : ['collation_xor', Token('XOR', '^'), 'collation_band']
 22 : ['collation_band']
 23 : ['collation_eq']
 24 : ['collation_rel']
@@ -3783,7 +3778,6 @@ Token('CLOSE_BRACE', '}')</pre>
 31 : ['arithmetic_post']
 32 : ['var_access']
 33 : [Token('SELF_DEFINED', 'a')]
-21 : ['collation_band']
 22 : ['collation_eq']
 23 : ['collation_rel']
 24 : ['arithmetic']
@@ -3798,26 +3792,14 @@ Token('CLOSE_BRACE', '}')</pre>
 13 : ['content_terminal', 'content']
 14 : ['single_line']
 15 : ['initialization', Token('SEMICOLON', ';')]
-16 : ['var_type', Token('SELF_DEFINED', 'g'), Token('SET', '='), 'initialization_terminal']
+16 : ['var_type', Token('SELF_DEFINED', 'h'), Token('SET', '='), 'initialization_terminal']
 17 : [Token('TYPE', 'int')]
 17 : ['collation']
 18 : ['collation_or']
 19 : ['collation_and']
 20 : ['collation_bor']
 21 : ['collation_xor']
-22 : ['collation_xor', Token('XOR', '^'), 'collation_band']
-23 : ['collation_band']
-24 : ['collation_eq']
-25 : ['collation_rel']
-26 : ['arithmetic']
-27 : ['arithmetic_sh']
-28 : ['arithmetic_pm']
-29 : ['arithmetic_mul']
-30 : ['arithmetic_cast']
-31 : ['arithmetic_unary']
-32 : ['arithmetic_post']
-33 : ['var_access']
-34 : [Token('SELF_DEFINED', 'a')]
+22 : ['collation_band']
 23 : ['collation_eq']
 24 : ['collation_rel']
 25 : ['arithmetic']
@@ -3826,13 +3808,16 @@ Token('CLOSE_BRACE', '}')</pre>
 28 : ['arithmetic_mul']
 29 : ['arithmetic_cast']
 30 : ['arithmetic_unary']
-31 : ['arithmetic_post']
-32 : ['var_access']
-33 : [Token('SELF_DEFINED', 'b')]
+31 : ['unary_op', 'arithmetic_cast']
+32 : [Token('COMP', '~')]
+32 : ['arithmetic_unary']
+33 : ['arithmetic_post']
+34 : ['var_access']
+35 : [Token('SELF_DEFINED', 'a')]
 14 : ['content_terminal', 'content']
 15 : ['single_line']
 16 : ['initialization', Token('SEMICOLON', ';')]
-17 : ['var_type', Token('SELF_DEFINED', 'h'), Token('SET', '='), 'initialization_terminal']
+17 : ['var_type', Token('SELF_DEFINED', 'i'), Token('SET', '='), 'initialization_terminal']
 18 : [Token('TYPE', 'int')]
 18 : ['collation']
 19 : ['collation_or']
@@ -3853,11 +3838,11 @@ Token('CLOSE_BRACE', '}')</pre>
 33 : ['arithmetic_unary']
 34 : ['arithmetic_post']
 35 : ['var_access']
-36 : [Token('SELF_DEFINED', 'a')]
+36 : [Token('SELF_DEFINED', 'b')]
 15 : ['content_terminal', 'content']
 16 : ['single_line']
 17 : ['initialization', Token('SEMICOLON', ';')]
-18 : ['var_type', Token('SELF_DEFINED', 'i'), Token('SET', '='), 'initialization_terminal']
+18 : ['var_type', Token('SELF_DEFINED', 'j'), Token('SET', '='), 'initialization_terminal']
 19 : [Token('TYPE', 'int')]
 19 : ['collation']
 20 : ['collation_or']
@@ -3878,11 +3863,11 @@ Token('CLOSE_BRACE', '}')</pre>
 34 : ['arithmetic_unary']
 35 : ['arithmetic_post']
 36 : ['var_access']
-37 : [Token('SELF_DEFINED', 'b')]
+37 : [Token('SELF_DEFINED', 'c')]
 16 : ['content_terminal', 'content']
 17 : ['single_line']
 18 : ['initialization', Token('SEMICOLON', ';')]
-19 : ['var_type', Token('SELF_DEFINED', 'j'), Token('SET', '='), 'initialization_terminal']
+19 : ['var_type', Token('SELF_DEFINED', 'k'), Token('SET', '='), 'initialization_terminal']
 20 : [Token('TYPE', 'int')]
 20 : ['collation']
 21 : ['collation_or']
@@ -3903,71 +3888,34 @@ Token('CLOSE_BRACE', '}')</pre>
 35 : ['arithmetic_unary']
 36 : ['arithmetic_post']
 37 : ['var_access']
-38 : [Token('SELF_DEFINED', 'c')]
+38 : [Token('SELF_DEFINED', 'd')]
 17 : ['content_terminal', 'content']
 18 : ['single_line']
-19 : ['initialization', Token('SEMICOLON', ';')]
-20 : ['var_type', Token('SELF_DEFINED', 'k'), Token('SET', '='), 'initialization_terminal']
-21 : [Token('TYPE', 'int')]
-21 : ['collation']
-22 : ['collation_or']
-23 : ['collation_and']
-24 : ['collation_bor']
-25 : ['collation_xor']
-26 : ['collation_band']
-27 : ['collation_eq']
-28 : ['collation_rel']
-29 : ['arithmetic']
-30 : ['arithmetic_sh']
-31 : ['arithmetic_pm']
+19 : ['designation', Token('SEMICOLON', ';')]
+20 : ['var_access', 'assignment', 'collation']
+21 : [Token('SELF_DEFINED', 'a')]
+21 : [Token('SET', '=')]
+21 : ['collation_or']
+22 : ['collation_and']
+23 : ['collation_bor']
+24 : ['collation_xor']
+25 : ['collation_band']
+26 : ['collation_eq']
+27 : ['collation_rel']
+28 : ['arithmetic']
+29 : ['arithmetic_sh']
+30 : ['arithmetic_pm']
+31 : ['arithmetic_pm', Token('SUB', '-'), 'arithmetic_mul']
 32 : ['arithmetic_mul']
 33 : ['arithmetic_cast']
 34 : ['arithmetic_unary']
-35 : ['unary_op', 'arithmetic_cast']
-36 : [Token('COMP', '~')]
-36 : ['arithmetic_unary']
-37 : ['arithmetic_post']
-38 : ['var_access']
-39 : [Token('SELF_DEFINED', 'd')]
-18 : ['content_terminal', 'content']
-19 : ['single_line']
-20 : ['designation', Token('SEMICOLON', ';')]
-21 : ['var_access', 'assignment', 'collation']
-22 : [Token('SELF_DEFINED', 'a')]
-22 : [Token('SET', '=')]
-22 : ['collation_or']
-23 : ['collation_and']
-24 : ['collation_bor']
-25 : ['collation_xor']
-26 : ['collation_band']
-27 : ['collation_eq']
-28 : ['collation_rel']
-29 : ['arithmetic']
-30 : ['arithmetic_sh']
-31 : ['arithmetic_pm']
-32 : ['arithmetic_pm', Token('SUB', '-'), 'arithmetic_mul']
-33 : ['arithmetic_mul']
-34 : ['arithmetic_cast']
-35 : ['arithmetic_unary']
-36 : ['arithmetic_post']
-37 : [Token('OPEN_PAREN', '('), 'collation', Token('CLOSE_PAREN', ')')]
-38 : ['collation_or']
-39 : ['collation_and']
-40 : ['collation_bor']
-41 : ['collation_bor', Token('BOR', '|'), 'collation_xor']
-42 : ['collation_xor']
-43 : ['collation_band']
-44 : ['collation_eq']
-45 : ['collation_rel']
-46 : ['arithmetic']
-47 : ['arithmetic_sh']
-48 : ['arithmetic_pm']
-49 : ['arithmetic_mul']
-50 : ['arithmetic_cast']
-51 : ['arithmetic_unary']
-52 : ['arithmetic_post']
-53 : ['var_access']
-54 : [Token('SELF_DEFINED', 'j')]
+35 : ['arithmetic_post']
+36 : [Token('OPEN_PAREN', '('), 'collation', Token('CLOSE_PAREN', ')')]
+37 : ['collation_or']
+38 : ['collation_and']
+39 : ['collation_bor']
+40 : ['collation_bor', Token('BOR', '|'), 'collation_xor']
+41 : ['collation_xor']
 42 : ['collation_band']
 43 : ['collation_eq']
 44 : ['collation_rel']
@@ -3979,18 +3927,79 @@ Token('CLOSE_BRACE', '}')</pre>
 50 : ['arithmetic_unary']
 51 : ['arithmetic_post']
 52 : ['var_access']
-53 : [Token('SELF_DEFINED', 'a')]
+53 : [Token('SELF_DEFINED', 'j')]
+41 : ['collation_band']
+42 : ['collation_eq']
+43 : ['collation_rel']
+44 : ['arithmetic']
+45 : ['arithmetic_sh']
+46 : ['arithmetic_pm']
+47 : ['arithmetic_mul']
+48 : ['arithmetic_cast']
+49 : ['arithmetic_unary']
+50 : ['arithmetic_post']
+51 : ['var_access']
+52 : [Token('SELF_DEFINED', 'a')]
+32 : ['arithmetic_cast']
+33 : ['arithmetic_unary']
+34 : ['arithmetic_post']
+35 : ['value']
+36 : [Token('INTEGER', '97')]
+18 : ['content_terminal', 'content']
+19 : ['single_line']
+20 : ['designation', Token('SEMICOLON', ';')]
+21 : ['var_access', 'assignment', 'collation']
+22 : [Token('SELF_DEFINED', 'b')]
+22 : [Token('AEQ', '+=')]
+22 : ['collation_or']
+23 : ['collation_and']
+24 : ['collation_bor']
+25 : ['collation_xor']
+26 : ['collation_band']
+27 : ['collation_eq']
+28 : ['collation_rel']
+29 : ['arithmetic']
+30 : ['arithmetic_sh']
+31 : ['arithmetic_pm']
+32 : ['arithmetic_pm', Token('ADD', '+'), 'arithmetic_mul']
+33 : ['arithmetic_mul']
+34 : ['arithmetic_cast']
+35 : ['arithmetic_unary']
+36 : ['arithmetic_post']
+37 : [Token('OPEN_PAREN', '('), 'collation', Token('CLOSE_PAREN', ')')]
+38 : ['collation_or']
+39 : ['collation_and']
+40 : ['collation_bor']
+41 : ['collation_xor']
+42 : ['collation_band']
+43 : ['collation_eq']
+44 : ['collation_rel']
+45 : ['arithmetic']
+46 : ['arithmetic_sh']
+47 : ['arithmetic_pm']
+48 : ['arithmetic_pm', Token('ADD', '+'), 'arithmetic_mul']
+49 : ['arithmetic_mul']
+50 : ['arithmetic_cast']
+51 : ['arithmetic_unary']
+52 : ['arithmetic_post']
+53 : ['var_access']
+54 : [Token('SELF_DEFINED', 'i')]
+49 : ['arithmetic_cast']
+50 : ['arithmetic_unary']
+51 : ['arithmetic_post']
+52 : ['var_access']
+53 : [Token('SELF_DEFINED', 'g')]
 33 : ['arithmetic_cast']
 34 : ['arithmetic_unary']
 35 : ['arithmetic_post']
 36 : ['value']
-37 : [Token('INTEGER', '97')]
+37 : [Token('INTEGER', '40')]
 19 : ['content_terminal', 'content']
 20 : ['single_line']
 21 : ['designation', Token('SEMICOLON', ';')]
 22 : ['var_access', 'assignment', 'collation']
-23 : [Token('SELF_DEFINED', 'b')]
-23 : [Token('AEQ', '+=')]
+23 : [Token('SELF_DEFINED', 'c')]
+23 : [Token('SEQ', '-=')]
 23 : ['collation_or']
 24 : ['collation_and']
 25 : ['collation_bor']
@@ -4000,8 +4009,8 @@ Token('CLOSE_BRACE', '}')</pre>
 29 : ['collation_rel']
 30 : ['arithmetic']
 31 : ['arithmetic_sh']
-32 : ['arithmetic_pm']
-33 : ['arithmetic_pm', Token('ADD', '+'), 'arithmetic_mul']
+32 : ['arithmetic_sh', Token('RSH', '&gt;&gt;'), 'arithmetic_pm']
+33 : ['arithmetic_pm']
 34 : ['arithmetic_mul']
 35 : ['arithmetic_cast']
 36 : ['arithmetic_unary']
@@ -4023,23 +4032,24 @@ Token('CLOSE_BRACE', '}')</pre>
 52 : ['arithmetic_unary']
 53 : ['arithmetic_post']
 54 : ['var_access']
-55 : [Token('SELF_DEFINED', 'i')]
+55 : [Token('SELF_DEFINED', 'b')]
 50 : ['arithmetic_cast']
 51 : ['arithmetic_unary']
 52 : ['arithmetic_post']
 53 : ['var_access']
 54 : [Token('SELF_DEFINED', 'g')]
+33 : ['arithmetic_mul']
 34 : ['arithmetic_cast']
 35 : ['arithmetic_unary']
 36 : ['arithmetic_post']
 37 : ['value']
-38 : [Token('INTEGER', '40')]
+38 : [Token('INTEGER', '76')]
 20 : ['content_terminal', 'content']
 21 : ['single_line']
 22 : ['designation', Token('SEMICOLON', ';')]
 23 : ['var_access', 'assignment', 'collation']
-24 : [Token('SELF_DEFINED', 'c')]
-24 : [Token('SEQ', '-=')]
+24 : [Token('SELF_DEFINED', 'd')]
+24 : [Token('MEQ', '*=')]
 24 : ['collation_or']
 25 : ['collation_and']
 26 : ['collation_bor']
@@ -4049,8 +4059,8 @@ Token('CLOSE_BRACE', '}')</pre>
 30 : ['collation_rel']
 31 : ['arithmetic']
 32 : ['arithmetic_sh']
-33 : ['arithmetic_sh', Token('RSH', '&gt;&gt;'), 'arithmetic_pm']
-34 : ['arithmetic_pm']
+33 : ['arithmetic_pm']
+34 : ['arithmetic_pm', Token('SUB', '-'), 'arithmetic_mul']
 35 : ['arithmetic_mul']
 36 : ['arithmetic_cast']
 37 : ['arithmetic_unary']
@@ -4072,35 +4082,34 @@ Token('CLOSE_BRACE', '}')</pre>
 53 : ['arithmetic_unary']
 54 : ['arithmetic_post']
 55 : ['var_access']
-56 : [Token('SELF_DEFINED', 'b')]
+56 : [Token('SELF_DEFINED', 'j')]
 51 : ['arithmetic_cast']
 52 : ['arithmetic_unary']
 53 : ['arithmetic_post']
 54 : ['var_access']
-55 : [Token('SELF_DEFINED', 'g')]
-34 : ['arithmetic_mul']
+55 : [Token('SELF_DEFINED', 'c')]
 35 : ['arithmetic_cast']
 36 : ['arithmetic_unary']
 37 : ['arithmetic_post']
 38 : ['value']
-39 : [Token('INTEGER', '76')]
+39 : [Token('INTEGER', '25')]
 21 : ['content_terminal', 'content']
 22 : ['single_line']
 23 : ['designation', Token('SEMICOLON', ';')]
 24 : ['var_access', 'assignment', 'collation']
-25 : [Token('SELF_DEFINED', 'd')]
-25 : [Token('MEQ', '*=')]
+25 : [Token('SELF_DEFINED', 'e')]
+25 : [Token('DEQ', '/=')]
 25 : ['collation_or']
 26 : ['collation_and']
 27 : ['collation_bor']
-28 : ['collation_xor']
-29 : ['collation_band']
-30 : ['collation_eq']
-31 : ['collation_rel']
-32 : ['arithmetic']
-33 : ['arithmetic_sh']
-34 : ['arithmetic_pm']
-35 : ['arithmetic_pm', Token('SUB', '-'), 'arithmetic_mul']
+28 : ['collation_bor', Token('BOR', '|'), 'collation_xor']
+29 : ['collation_xor']
+30 : ['collation_band']
+31 : ['collation_eq']
+32 : ['collation_rel']
+33 : ['arithmetic']
+34 : ['arithmetic_sh']
+35 : ['arithmetic_pm']
 36 : ['arithmetic_mul']
 37 : ['arithmetic_cast']
 38 : ['arithmetic_unary']
@@ -4115,69 +4124,42 @@ Token('CLOSE_BRACE', '}')</pre>
 47 : ['collation_rel']
 48 : ['arithmetic']
 49 : ['arithmetic_sh']
-50 : ['arithmetic_pm']
-51 : ['arithmetic_pm', Token('ADD', '+'), 'arithmetic_mul']
+50 : ['arithmetic_sh', Token('LSH', '&lt;&lt;'), 'arithmetic_pm']
+51 : ['arithmetic_pm']
 52 : ['arithmetic_mul']
 53 : ['arithmetic_cast']
 54 : ['arithmetic_unary']
 55 : ['arithmetic_post']
 56 : ['var_access']
-57 : [Token('SELF_DEFINED', 'j')]
+57 : [Token('SELF_DEFINED', 'c')]
+51 : ['arithmetic_mul']
 52 : ['arithmetic_cast']
 53 : ['arithmetic_unary']
 54 : ['arithmetic_post']
 55 : ['var_access']
-56 : [Token('SELF_DEFINED', 'c')]
+56 : [Token('SELF_DEFINED', 'i')]
+29 : ['collation_band']
+30 : ['collation_eq']
+31 : ['collation_rel']
+32 : ['arithmetic']
+33 : ['arithmetic_sh']
+34 : ['arithmetic_pm']
+35 : ['arithmetic_mul']
 36 : ['arithmetic_cast']
 37 : ['arithmetic_unary']
 38 : ['arithmetic_post']
 39 : ['value']
-40 : [Token('INTEGER', '25')]
+40 : [Token('INTEGER', '37')]
 22 : ['content_terminal', 'content']
 23 : ['single_line']
 24 : ['designation', Token('SEMICOLON', ';')]
 25 : ['var_access', 'assignment', 'collation']
-26 : [Token('SELF_DEFINED', 'e')]
-26 : [Token('DEQ', '/=')]
+26 : [Token('SELF_DEFINED', 'f')]
+26 : [Token('MODEQ', '%=')]
 26 : ['collation_or']
 27 : ['collation_and']
 28 : ['collation_bor']
-29 : ['collation_bor', Token('BOR', '|'), 'collation_xor']
-30 : ['collation_xor']
-31 : ['collation_band']
-32 : ['collation_eq']
-33 : ['collation_rel']
-34 : ['arithmetic']
-35 : ['arithmetic_sh']
-36 : ['arithmetic_pm']
-37 : ['arithmetic_mul']
-38 : ['arithmetic_cast']
-39 : ['arithmetic_unary']
-40 : ['arithmetic_post']
-41 : [Token('OPEN_PAREN', '('), 'collation', Token('CLOSE_PAREN', ')')]
-42 : ['collation_or']
-43 : ['collation_and']
-44 : ['collation_bor']
-45 : ['collation_xor']
-46 : ['collation_band']
-47 : ['collation_eq']
-48 : ['collation_rel']
-49 : ['arithmetic']
-50 : ['arithmetic_sh']
-51 : ['arithmetic_sh', Token('LSH', '&lt;&lt;'), 'arithmetic_pm']
-52 : ['arithmetic_pm']
-53 : ['arithmetic_mul']
-54 : ['arithmetic_cast']
-55 : ['arithmetic_unary']
-56 : ['arithmetic_post']
-57 : ['var_access']
-58 : [Token('SELF_DEFINED', 'c')]
-52 : ['arithmetic_mul']
-53 : ['arithmetic_cast']
-54 : ['arithmetic_unary']
-55 : ['arithmetic_post']
-56 : ['var_access']
-57 : [Token('SELF_DEFINED', 'i')]
+29 : ['collation_xor']
 30 : ['collation_band']
 31 : ['collation_eq']
 32 : ['collation_rel']
@@ -4185,50 +4167,16 @@ Token('CLOSE_BRACE', '}')</pre>
 34 : ['arithmetic_sh']
 35 : ['arithmetic_pm']
 36 : ['arithmetic_mul']
-37 : ['arithmetic_cast']
-38 : ['arithmetic_unary']
-39 : ['arithmetic_post']
-40 : ['value']
-41 : [Token('INTEGER', '37')]
-23 : ['content_terminal', 'content']
-24 : ['single_line']
-25 : ['designation', Token('SEMICOLON', ';')]
-26 : ['var_access', 'assignment', 'collation']
-27 : [Token('SELF_DEFINED', 'f')]
-27 : [Token('MODEQ', '%=')]
-27 : ['collation_or']
-28 : ['collation_and']
-29 : ['collation_bor']
-30 : ['collation_xor']
-31 : ['collation_band']
-32 : ['collation_eq']
-33 : ['collation_rel']
-34 : ['arithmetic']
-35 : ['arithmetic_sh']
-36 : ['arithmetic_pm']
-37 : ['arithmetic_mul']
-38 : ['arithmetic_mul', Token('MUL', '*'), 'arithmetic_cast']
-39 : ['arithmetic_cast']
-40 : ['arithmetic_unary']
-41 : ['arithmetic_post']
-42 : [Token('OPEN_PAREN', '('), 'collation', Token('CLOSE_PAREN', ')')]
-43 : ['collation_or']
-44 : ['collation_and']
-45 : ['collation_bor']
-46 : ['collation_bor', Token('BOR', '|'), 'collation_xor']
-47 : ['collation_xor']
-48 : ['collation_band']
-49 : ['collation_eq']
-50 : ['collation_rel']
-51 : ['arithmetic']
-52 : ['arithmetic_sh']
-53 : ['arithmetic_pm']
-54 : ['arithmetic_mul']
-55 : ['arithmetic_cast']
-56 : ['arithmetic_unary']
-57 : ['arithmetic_post']
-58 : ['var_access']
-59 : [Token('SELF_DEFINED', 'b')]
+37 : ['arithmetic_mul', Token('MUL', '*'), 'arithmetic_cast']
+38 : ['arithmetic_cast']
+39 : ['arithmetic_unary']
+40 : ['arithmetic_post']
+41 : [Token('OPEN_PAREN', '('), 'collation', Token('CLOSE_PAREN', ')')]
+42 : ['collation_or']
+43 : ['collation_and']
+44 : ['collation_bor']
+45 : ['collation_bor', Token('BOR', '|'), 'collation_xor']
+46 : ['collation_xor']
 47 : ['collation_band']
 48 : ['collation_eq']
 49 : ['collation_rel']
@@ -4240,28 +4188,96 @@ Token('CLOSE_BRACE', '}')</pre>
 55 : ['arithmetic_unary']
 56 : ['arithmetic_post']
 57 : ['var_access']
-58 : [Token('SELF_DEFINED', 'a')]
+58 : [Token('SELF_DEFINED', 'b')]
+46 : ['collation_band']
+47 : ['collation_eq']
+48 : ['collation_rel']
+49 : ['arithmetic']
+50 : ['arithmetic_sh']
+51 : ['arithmetic_pm']
+52 : ['arithmetic_mul']
+53 : ['arithmetic_cast']
+54 : ['arithmetic_unary']
+55 : ['arithmetic_post']
+56 : ['var_access']
+57 : [Token('SELF_DEFINED', 'a')]
+38 : ['arithmetic_unary']
+39 : ['arithmetic_post']
+40 : ['value']
+41 : [Token('INTEGER', '42')]
+23 : ['content_terminal', 'content']
+24 : ['single_line']
+25 : ['designation', Token('SEMICOLON', ';')]
+26 : ['var_access', 'assignment', 'collation']
+27 : [Token('SELF_DEFINED', 'g')]
+27 : [Token('LSEQ', '&lt;&lt;=')]
+27 : ['collation_or']
+28 : ['collation_and']
+29 : ['collation_bor']
+30 : ['collation_xor']
+31 : ['collation_xor', Token('XOR', '^'), 'collation_band']
+32 : ['collation_band']
+33 : ['collation_eq']
+34 : ['collation_rel']
+35 : ['arithmetic']
+36 : ['arithmetic_sh']
+37 : ['arithmetic_pm']
+38 : ['arithmetic_mul']
+39 : ['arithmetic_cast']
+40 : ['arithmetic_unary']
+41 : ['arithmetic_post']
+42 : [Token('OPEN_PAREN', '('), 'collation', Token('CLOSE_PAREN', ')')]
+43 : ['collation_or']
+44 : ['collation_and']
+45 : ['collation_bor']
+46 : ['collation_xor']
+47 : ['collation_band']
+48 : ['collation_eq']
+49 : ['collation_rel']
+50 : ['arithmetic']
+51 : ['arithmetic_sh']
+52 : ['arithmetic_sh', Token('RSH', '&gt;&gt;'), 'arithmetic_pm']
+53 : ['arithmetic_pm']
+54 : ['arithmetic_mul']
+55 : ['arithmetic_cast']
+56 : ['arithmetic_unary']
+57 : ['arithmetic_post']
+58 : ['var_access']
+59 : [Token('SELF_DEFINED', 'a')]
+53 : ['arithmetic_mul']
+54 : ['arithmetic_cast']
+55 : ['arithmetic_unary']
+56 : ['arithmetic_post']
+57 : ['var_access']
+58 : [Token('SELF_DEFINED', 'b')]
+32 : ['collation_eq']
+33 : ['collation_rel']
+34 : ['arithmetic']
+35 : ['arithmetic_sh']
+36 : ['arithmetic_pm']
+37 : ['arithmetic_mul']
+38 : ['arithmetic_cast']
 39 : ['arithmetic_unary']
 40 : ['arithmetic_post']
 41 : ['value']
-42 : [Token('INTEGER', '42')]
+42 : [Token('INTEGER', '19')]
 24 : ['content_terminal', 'content']
 25 : ['single_line']
 26 : ['designation', Token('SEMICOLON', ';')]
 27 : ['var_access', 'assignment', 'collation']
-28 : [Token('SELF_DEFINED', 'g')]
-28 : [Token('LSEQ', '&lt;&lt;=')]
+28 : [Token('SELF_DEFINED', 'h')]
+28 : [Token('RSEQ', '&gt;&gt;=')]
 28 : ['collation_or']
 29 : ['collation_and']
 30 : ['collation_bor']
 31 : ['collation_xor']
-32 : ['collation_xor', Token('XOR', '^'), 'collation_band']
-33 : ['collation_band']
-34 : ['collation_eq']
-35 : ['collation_rel']
-36 : ['arithmetic']
-37 : ['arithmetic_sh']
-38 : ['arithmetic_pm']
+32 : ['collation_band']
+33 : ['collation_eq']
+34 : ['collation_rel']
+35 : ['arithmetic']
+36 : ['arithmetic_sh']
+37 : ['arithmetic_pm']
+38 : ['arithmetic_pm', Token('ADD', '+'), 'arithmetic_mul']
 39 : ['arithmetic_mul']
 40 : ['arithmetic_cast']
 41 : ['arithmetic_unary']
@@ -4276,26 +4292,18 @@ Token('CLOSE_BRACE', '}')</pre>
 50 : ['collation_rel']
 51 : ['arithmetic']
 52 : ['arithmetic_sh']
-53 : ['arithmetic_sh', Token('RSH', '&gt;&gt;'), 'arithmetic_pm']
-54 : ['arithmetic_pm']
-55 : ['arithmetic_mul']
+53 : ['arithmetic_pm']
+54 : ['arithmetic_mul']
+55 : ['arithmetic_mul', Token('DIV', '/'), 'arithmetic_cast']
 56 : ['arithmetic_cast']
 57 : ['arithmetic_unary']
 58 : ['arithmetic_post']
 59 : ['var_access']
-60 : [Token('SELF_DEFINED', 'a')]
-54 : ['arithmetic_mul']
-55 : ['arithmetic_cast']
+60 : [Token('SELF_DEFINED', 'c')]
 56 : ['arithmetic_unary']
 57 : ['arithmetic_post']
 58 : ['var_access']
-59 : [Token('SELF_DEFINED', 'b')]
-33 : ['collation_eq']
-34 : ['collation_rel']
-35 : ['arithmetic']
-36 : ['arithmetic_sh']
-37 : ['arithmetic_pm']
-38 : ['arithmetic_mul']
+59 : [Token('SELF_DEFINED', 'g')]
 39 : ['arithmetic_cast']
 40 : ['arithmetic_unary']
 41 : ['arithmetic_post']
@@ -4305,8 +4313,8 @@ Token('CLOSE_BRACE', '}')</pre>
 26 : ['single_line']
 27 : ['designation', Token('SEMICOLON', ';')]
 28 : ['var_access', 'assignment', 'collation']
-29 : [Token('SELF_DEFINED', 'h')]
-29 : [Token('RSEQ', '&gt;&gt;=')]
+29 : [Token('SELF_DEFINED', 'i')]
+29 : [Token('BOEQ', '|=')]
 29 : ['collation_or']
 30 : ['collation_and']
 31 : ['collation_bor']
@@ -4317,8 +4325,8 @@ Token('CLOSE_BRACE', '}')</pre>
 36 : ['arithmetic']
 37 : ['arithmetic_sh']
 38 : ['arithmetic_pm']
-39 : ['arithmetic_pm', Token('ADD', '+'), 'arithmetic_mul']
-40 : ['arithmetic_mul']
+39 : ['arithmetic_mul']
+40 : ['arithmetic_mul', Token('DIV', '/'), 'arithmetic_cast']
 41 : ['arithmetic_cast']
 42 : ['arithmetic_unary']
 43 : ['arithmetic_post']
@@ -4327,67 +4335,8 @@ Token('CLOSE_BRACE', '}')</pre>
 46 : ['collation_and']
 47 : ['collation_bor']
 48 : ['collation_xor']
-49 : ['collation_band']
-50 : ['collation_eq']
-51 : ['collation_rel']
-52 : ['arithmetic']
-53 : ['arithmetic_sh']
-54 : ['arithmetic_pm']
-55 : ['arithmetic_mul']
-56 : ['arithmetic_mul', Token('DIV', '/'), 'arithmetic_cast']
-57 : ['arithmetic_cast']
-58 : ['arithmetic_unary']
-59 : ['arithmetic_post']
-60 : ['var_access']
-61 : [Token('SELF_DEFINED', 'c')]
-57 : ['arithmetic_unary']
-58 : ['arithmetic_post']
-59 : ['var_access']
-60 : [Token('SELF_DEFINED', 'g')]
-40 : ['arithmetic_cast']
-41 : ['arithmetic_unary']
-42 : ['arithmetic_post']
-43 : ['value']
-44 : [Token('INTEGER', '19')]
-26 : ['content_terminal', 'content']
-27 : ['single_line']
-28 : ['designation', Token('SEMICOLON', ';')]
-29 : ['var_access', 'assignment', 'collation']
-30 : [Token('SELF_DEFINED', 'i')]
-30 : [Token('BOEQ', '|=')]
-30 : ['collation_or']
-31 : ['collation_and']
-32 : ['collation_bor']
-33 : ['collation_xor']
-34 : ['collation_band']
-35 : ['collation_eq']
-36 : ['collation_rel']
-37 : ['arithmetic']
-38 : ['arithmetic_sh']
-39 : ['arithmetic_pm']
-40 : ['arithmetic_mul']
-41 : ['arithmetic_mul', Token('DIV', '/'), 'arithmetic_cast']
-42 : ['arithmetic_cast']
-43 : ['arithmetic_unary']
-44 : ['arithmetic_post']
-45 : [Token('OPEN_PAREN', '('), 'collation', Token('CLOSE_PAREN', ')')]
-46 : ['collation_or']
-47 : ['collation_and']
-48 : ['collation_bor']
-49 : ['collation_xor']
-50 : ['collation_xor', Token('XOR', '^'), 'collation_band']
-51 : ['collation_band']
-52 : ['collation_eq']
-53 : ['collation_rel']
-54 : ['arithmetic']
-55 : ['arithmetic_sh']
-56 : ['arithmetic_pm']
-57 : ['arithmetic_mul']
-58 : ['arithmetic_cast']
-59 : ['arithmetic_unary']
-60 : ['arithmetic_post']
-61 : ['var_access']
-62 : [Token('SELF_DEFINED', 'd')]
+49 : ['collation_xor', Token('XOR', '^'), 'collation_band']
+50 : ['collation_band']
 51 : ['collation_eq']
 52 : ['collation_rel']
 53 : ['arithmetic']
@@ -4398,17 +4347,78 @@ Token('CLOSE_BRACE', '}')</pre>
 58 : ['arithmetic_unary']
 59 : ['arithmetic_post']
 60 : ['var_access']
-61 : [Token('SELF_DEFINED', 'b')]
+61 : [Token('SELF_DEFINED', 'd')]
+50 : ['collation_eq']
+51 : ['collation_rel']
+52 : ['arithmetic']
+53 : ['arithmetic_sh']
+54 : ['arithmetic_pm']
+55 : ['arithmetic_mul']
+56 : ['arithmetic_cast']
+57 : ['arithmetic_unary']
+58 : ['arithmetic_post']
+59 : ['var_access']
+60 : [Token('SELF_DEFINED', 'b')]
+41 : ['arithmetic_unary']
+42 : ['arithmetic_post']
+43 : ['value']
+44 : [Token('INTEGER', '20')]
+26 : ['content_terminal', 'content']
+27 : ['single_line']
+28 : ['designation', Token('SEMICOLON', ';')]
+29 : ['var_access', 'assignment', 'collation']
+30 : [Token('SELF_DEFINED', 'j')]
+30 : [Token('BAEQ', '&amp;=')]
+30 : ['collation_or']
+31 : ['collation_and']
+32 : ['collation_bor']
+33 : ['collation_xor']
+34 : ['collation_band']
+35 : ['collation_eq']
+36 : ['collation_rel']
+37 : ['arithmetic']
+38 : ['arithmetic_sh']
+39 : ['arithmetic_sh', Token('RSH', '&gt;&gt;'), 'arithmetic_pm']
+40 : ['arithmetic_pm']
+41 : ['arithmetic_mul']
+42 : ['arithmetic_cast']
+43 : ['arithmetic_unary']
+44 : ['arithmetic_post']
+45 : [Token('OPEN_PAREN', '('), 'collation', Token('CLOSE_PAREN', ')')]
+46 : ['collation_or']
+47 : ['collation_and']
+48 : ['collation_bor']
+49 : ['collation_xor']
+50 : ['collation_band']
+51 : ['collation_eq']
+52 : ['collation_rel']
+53 : ['arithmetic']
+54 : ['arithmetic_sh']
+55 : ['arithmetic_pm']
+56 : ['arithmetic_pm', Token('ADD', '+'), 'arithmetic_mul']
+57 : ['arithmetic_mul']
+58 : ['arithmetic_cast']
+59 : ['arithmetic_unary']
+60 : ['arithmetic_post']
+61 : ['var_access']
+62 : [Token('SELF_DEFINED', 'c')]
+57 : ['arithmetic_cast']
+58 : ['arithmetic_unary']
+59 : ['arithmetic_post']
+60 : ['var_access']
+61 : [Token('SELF_DEFINED', 'a')]
+40 : ['arithmetic_mul']
+41 : ['arithmetic_cast']
 42 : ['arithmetic_unary']
 43 : ['arithmetic_post']
 44 : ['value']
-45 : [Token('INTEGER', '20')]
-27 : ['content_terminal', 'content']
+45 : [Token('INTEGER', '12')]
+27 : ['content_terminal']
 28 : ['single_line']
 29 : ['designation', Token('SEMICOLON', ';')]
 30 : ['var_access', 'assignment', 'collation']
-31 : [Token('SELF_DEFINED', 'j')]
-31 : [Token('BAEQ', '&amp;=')]
+31 : [Token('SELF_DEFINED', 'k')]
+31 : [Token('XEQ', '^=')]
 31 : ['collation_or']
 32 : ['collation_and']
 33 : ['collation_bor']
@@ -4418,7 +4428,7 @@ Token('CLOSE_BRACE', '}')</pre>
 37 : ['collation_rel']
 38 : ['arithmetic']
 39 : ['arithmetic_sh']
-40 : ['arithmetic_sh', Token('RSH', '&gt;&gt;'), 'arithmetic_pm']
+40 : ['arithmetic_sh', Token('LSH', '&lt;&lt;'), 'arithmetic_pm']
 41 : ['arithmetic_pm']
 42 : ['arithmetic_mul']
 43 : ['arithmetic_cast']
@@ -4435,384 +4445,249 @@ Token('CLOSE_BRACE', '}')</pre>
 54 : ['arithmetic']
 55 : ['arithmetic_sh']
 56 : ['arithmetic_pm']
-57 : ['arithmetic_pm', Token('ADD', '+'), 'arithmetic_mul']
-58 : ['arithmetic_mul']
+57 : ['arithmetic_mul']
+58 : ['arithmetic_mul', Token('MOD', '%'), 'arithmetic_cast']
 59 : ['arithmetic_cast']
 60 : ['arithmetic_unary']
 61 : ['arithmetic_post']
 62 : ['var_access']
-63 : [Token('SELF_DEFINED', 'c')]
-58 : ['arithmetic_cast']
+63 : [Token('SELF_DEFINED', 'a')]
 59 : ['arithmetic_unary']
 60 : ['arithmetic_post']
 61 : ['var_access']
-62 : [Token('SELF_DEFINED', 'a')]
+62 : [Token('SELF_DEFINED', 'f')]
 41 : ['arithmetic_mul']
 42 : ['arithmetic_cast']
 43 : ['arithmetic_unary']
 44 : ['arithmetic_post']
 45 : ['value']
-46 : [Token('INTEGER', '12')]
-28 : ['content_terminal', 'content']
-29 : ['single_line']
-30 : ['designation', Token('SEMICOLON', ';')]
-31 : ['var_access', 'assignment', 'collation']
-32 : [Token('SELF_DEFINED', 'k')]
-32 : [Token('XEQ', '^=')]
-32 : ['collation_or']
-33 : ['collation_and']
-34 : ['collation_bor']
-35 : ['collation_xor']
-36 : ['collation_band']
-37 : ['collation_eq']
-38 : ['collation_rel']
-39 : ['arithmetic']
-40 : ['arithmetic_sh']
-41 : ['arithmetic_sh', Token('LSH', '&lt;&lt;'), 'arithmetic_pm']
-42 : ['arithmetic_pm']
-43 : ['arithmetic_mul']
-44 : ['arithmetic_cast']
-45 : ['arithmetic_unary']
-46 : ['arithmetic_post']
-47 : [Token('OPEN_PAREN', '('), 'collation', Token('CLOSE_PAREN', ')')]
-48 : ['collation_or']
-49 : ['collation_and']
-50 : ['collation_bor']
-51 : ['collation_xor']
-52 : ['collation_band']
-53 : ['collation_eq']
-54 : ['collation_rel']
-55 : ['arithmetic']
-56 : ['arithmetic_sh']
-57 : ['arithmetic_pm']
-58 : ['arithmetic_mul']
-59 : ['arithmetic_mul', Token('MOD', '%'), 'arithmetic_cast']
-60 : ['arithmetic_cast']
-61 : ['arithmetic_unary']
-62 : ['arithmetic_post']
-63 : ['var_access']
-64 : [Token('SELF_DEFINED', 'a')]
-60 : ['arithmetic_unary']
-61 : ['arithmetic_post']
-62 : ['var_access']
-63 : [Token('SELF_DEFINED', 'f')]
-42 : ['arithmetic_mul']
-43 : ['arithmetic_cast']
-44 : ['arithmetic_unary']
-45 : ['arithmetic_post']
-46 : ['value']
-47 : [Token('INTEGER', '31')]
-29 : ['content_terminal']
-30 : ['single_line']
-31 : ['designation', Token('SEMICOLON', ';')]
-32 : ['var_access', 'assignment', 'collation']
-33 : [Token('SELF_DEFINED', 'k')]
-33 : [Token('SET', '=')]
-33 : ['collation_or']
-34 : ['collation_and']
-35 : ['collation_bor']
-36 : ['collation_xor']
-37 : ['collation_band']
-38 : ['collation_eq']
-39 : ['collation_rel']
-40 : ['arithmetic']
-41 : ['arithmetic_sh']
-42 : ['arithmetic_pm']
-43 : ['arithmetic_mul']
-44 : ['arithmetic_cast']
-45 : ['arithmetic_unary']
-46 : ['arithmetic_post']
-47 : ['function call']
-48 : [Token('SELF_DEFINED', 'function'), Token('OPEN_PAREN', '('), 'parameter', Token('CLOSE_PAREN', ')')]
-49 : ['param_terminal']
-50 : ['arithmetic']
-51 : ['arithmetic_sh']
-52 : ['arithmetic_pm']
-53 : ['arithmetic_mul']
-54 : ['arithmetic_cast']
-55 : ['arithmetic_unary']
-56 : ['arithmetic_post']
-57 : ['value']
-58 : [Token('INTEGER', '10')]
-4 : ['definition_terminal']
-5 : ['function definition']
-6 : ['func_type', Token('SELF_DEFINED', 'function'), Token('OPEN_PAREN', '('), 'args', Token('CLOSE_PAREN', ')'), 'block']
-7 : [Token('TYPE', 'int')]
-7 : ['arg_terminal']
-8 : ['var_type', Token('SELF_DEFINED', 'z')]
-9 : [Token('TYPE', 'int')]
-7 : [Token('OPEN_BRACE', '{'), 'content', Token('CLOSE_BRACE', '}')]
-8 : ['content_terminal']
-9 : ['single_line']
-10 : ['return', Token('SEMICOLON', ';')]
-11 : [Token('RETURN', 'return'), 'collation']
-12 : ['collation_or']
-13 : ['collation_and']
-14 : ['collation_bor']
-15 : ['collation_xor']
-16 : ['collation_band']
-17 : ['collation_eq']
-18 : ['collation_rel']
-19 : ['arithmetic']
-20 : ['arithmetic_sh']
-21 : ['arithmetic_pm']
-22 : ['arithmetic_mul']
-23 : ['arithmetic_cast']
-24 : ['arithmetic_unary']
-25 : ['arithmetic_post']
-26 : ['value']
-27 : [Token('INTEGER', '1')]</pre>
+46 : [Token('INTEGER', '31')]</pre>
              </div>
              <div class="representation_0" style="display: none;">
               <pre style="overflow-x: auto;">`-- program
-    |-- decl
-    |   |-- int
-    |   |-- function
-    |   `-- param
-    |       `-- var
-    |           |-- int
-    |           `-- z
-    |-- func
-    |   |-- int
-    |   |-- main
-    |   |-- param
-    |   `-- body
-    |       |-- =
-    |       |   |-- var
-    |       |   |   |-- int
-    |       |   |   `-- a
-    |       |   `-- +
-    |       |       |-- +
-    |       |       |   |-- 1
-    |       |       |   `-- 2
-    |       |       `-- 3
-    |       |-- =
-    |       |   |-- var
-    |       |   |   |-- int
-    |       |   |   `-- b
-    |       |   `-- -
-    |       |       |-- /
-    |       |       |   |-- *
-    |       |       |   |   |-- *
-    |       |       |   |   |   |-- 56
-    |       |       |   |   |   `-- 78
-    |       |       |   |   `-- 5
-    |       |       |   `-- 20
-    |       |       `-- 3
-    |       |-- =
-    |       |   |-- var
-    |       |   |   |-- int
-    |       |   |   `-- c
-    |       |   `-- %
-    |       |       |-- 56
-    |       |       `-- 2
-    |       |-- =
-    |       |   |-- var
-    |       |   |   |-- int
-    |       |   |   `-- d
-    |       |   `-- -
-    |       |       `-- 10
-    |       |-- =
-    |       |   |-- var
-    |       |   |   |-- int
-    |       |   |   `-- e
-    |       |   `-- &amp;
-    |       |       |-- var
-    |       |       |   `-- a
-    |       |       `-- var
-    |       |           `-- b
-    |       |-- =
-    |       |   |-- var
-    |       |   |   |-- int
-    |       |   |   `-- f
-    |       |   `-- |
-    |       |       |-- var
-    |       |       |   `-- a
-    |       |       `-- var
-    |       |           `-- b
-    |       |-- =
-    |       |   |-- var
-    |       |   |   |-- int
-    |       |   |   `-- g
-    |       |   `-- ^
-    |       |       |-- var
-    |       |       |   `-- a
-    |       |       `-- var
-    |       |           `-- b
-    |       |-- =
-    |       |   |-- var
-    |       |   |   |-- int
-    |       |   |   `-- h
-    |       |   `-- ~
-    |       |       `-- var
-    |       |           `-- a
-    |       |-- =
-    |       |   |-- var
-    |       |   |   |-- int
-    |       |   |   `-- i
-    |       |   `-- ~
-    |       |       `-- var
-    |       |           `-- b
-    |       |-- =
-    |       |   |-- var
-    |       |   |   |-- int
-    |       |   |   `-- j
-    |       |   `-- ~
-    |       |       `-- var
-    |       |           `-- c
-    |       |-- =
-    |       |   |-- var
-    |       |   |   |-- int
-    |       |   |   `-- k
-    |       |   `-- ~
-    |       |       `-- var
-    |       |           `-- d
-    |       |-- =
-    |       |   |-- var
-    |       |   |   `-- a
-    |       |   `-- -
-    |       |       |-- |
-    |       |       |   |-- var
-    |       |       |   |   `-- j
-    |       |       |   `-- var
-    |       |       |       `-- a
-    |       |       `-- 97
-    |       |-- +=
-    |       |   |-- var
-    |       |   |   `-- b
-    |       |   `-- +
-    |       |       |-- +
-    |       |       |   |-- var
-    |       |       |   |   `-- i
-    |       |       |   `-- var
-    |       |       |       `-- g
-    |       |       `-- 40
-    |       |-- -=
-    |       |   |-- var
-    |       |   |   `-- c
-    |       |   `-- &gt;&gt;
-    |       |       |-- +
-    |       |       |   |-- var
-    |       |       |   |   `-- b
-    |       |       |   `-- var
-    |       |       |       `-- g
-    |       |       `-- 76
-    |       |-- *=
-    |       |   |-- var
-    |       |   |   `-- d
-    |       |   `-- -
-    |       |       |-- +
-    |       |       |   |-- var
-    |       |       |   |   `-- j
-    |       |       |   `-- var
-    |       |       |       `-- c
-    |       |       `-- 25
-    |       |-- /=
-    |       |   |-- var
-    |       |   |   `-- e
-    |       |   `-- |
-    |       |       |-- &lt;&lt;
-    |       |       |   |-- var
-    |       |       |   |   `-- c
-    |       |       |   `-- var
-    |       |       |       `-- i
-    |       |       `-- 37
-    |       |-- %=
-    |       |   |-- var
-    |       |   |   `-- f
-    |       |   `-- *
-    |       |       |-- |
-    |       |       |   |-- var
-    |       |       |   |   `-- b
-    |       |       |   `-- var
-    |       |       |       `-- a
-    |       |       `-- 42
-    |       |-- &lt;&lt;=
-    |       |   |-- var
-    |       |   |   `-- g
-    |       |   `-- ^
-    |       |       |-- &gt;&gt;
-    |       |       |   |-- var
-    |       |       |   |   `-- a
-    |       |       |   `-- var
-    |       |       |       `-- b
-    |       |       `-- 19
-    |       |-- &gt;&gt;=
-    |       |   |-- var
-    |       |   |   `-- h
-    |       |   `-- +
-    |       |       |-- /
-    |       |       |   |-- var
-    |       |       |   |   `-- c
-    |       |       |   `-- var
-    |       |       |       `-- g
-    |       |       `-- 19
-    |       |-- |=
-    |       |   |-- var
-    |       |   |   `-- i
-    |       |   `-- /
-    |       |       |-- ^
-    |       |       |   |-- var
-    |       |       |   |   `-- d
-    |       |       |   `-- var
-    |       |       |       `-- b
-    |       |       `-- 20
-    |       |-- &amp;=
-    |       |   |-- var
-    |       |   |   `-- j
-    |       |   `-- &gt;&gt;
-    |       |       |-- +
-    |       |       |   |-- var
-    |       |       |   |   `-- c
-    |       |       |   `-- var
-    |       |       |       `-- a
-    |       |       `-- 12
-    |       |-- ^=
-    |       |   |-- var
-    |       |   |   `-- k
-    |       |   `-- &lt;&lt;
-    |       |       |-- %
-    |       |       |   |-- var
-    |       |       |   |   `-- a
-    |       |       |   `-- var
-    |       |       |       `-- f
-    |       |       `-- 31
-    |       `-- =
-    |           |-- var
-    |           |   `-- k
-    |           `-- call
-    |               `-- function
-    |                   `-- 10
     `-- func
         |-- int
-        |-- function
+        |-- main
         |-- param
-        |   `-- var
-        |       |-- int
-        |       `-- z
         `-- body
-            `-- return
-                `-- 1
+            |-- =
+            |   |-- var
+            |   |   |-- int
+            |   |   `-- a
+            |   `-- +
+            |       |-- +
+            |       |   |-- 1
+            |       |   `-- 2
+            |       `-- 3
+            |-- =
+            |   |-- var
+            |   |   |-- int
+            |   |   `-- b
+            |   `-- -
+            |       |-- /
+            |       |   |-- *
+            |       |   |   |-- *
+            |       |   |   |   |-- 56
+            |       |   |   |   `-- 78
+            |       |   |   `-- 5
+            |       |   `-- 20
+            |       `-- 3
+            |-- =
+            |   |-- var
+            |   |   |-- int
+            |   |   `-- c
+            |   `-- %
+            |       |-- 56
+            |       `-- 2
+            |-- =
+            |   |-- var
+            |   |   |-- int
+            |   |   `-- d
+            |   `-- -
+            |       `-- 10
+            |-- =
+            |   |-- var
+            |   |   |-- int
+            |   |   `-- e
+            |   `-- &amp;
+            |       |-- var
+            |       |   `-- a
+            |       `-- var
+            |           `-- b
+            |-- =
+            |   |-- var
+            |   |   |-- int
+            |   |   `-- f
+            |   `-- |
+            |       |-- var
+            |       |   `-- a
+            |       `-- var
+            |           `-- b
+            |-- =
+            |   |-- var
+            |   |   |-- int
+            |   |   `-- g
+            |   `-- ^
+            |       |-- var
+            |       |   `-- a
+            |       `-- var
+            |           `-- b
+            |-- =
+            |   |-- var
+            |   |   |-- int
+            |   |   `-- h
+            |   `-- ~
+            |       `-- var
+            |           `-- a
+            |-- =
+            |   |-- var
+            |   |   |-- int
+            |   |   `-- i
+            |   `-- ~
+            |       `-- var
+            |           `-- b
+            |-- =
+            |   |-- var
+            |   |   |-- int
+            |   |   `-- j
+            |   `-- ~
+            |       `-- var
+            |           `-- c
+            |-- =
+            |   |-- var
+            |   |   |-- int
+            |   |   `-- k
+            |   `-- ~
+            |       `-- var
+            |           `-- d
+            |-- =
+            |   |-- var
+            |   |   `-- a
+            |   `-- -
+            |       |-- |
+            |       |   |-- var
+            |       |   |   `-- j
+            |       |   `-- var
+            |       |       `-- a
+            |       `-- 97
+            |-- +=
+            |   |-- var
+            |   |   `-- b
+            |   `-- +
+            |       |-- +
+            |       |   |-- var
+            |       |   |   `-- i
+            |       |   `-- var
+            |       |       `-- g
+            |       `-- 40
+            |-- -=
+            |   |-- var
+            |   |   `-- c
+            |   `-- &gt;&gt;
+            |       |-- +
+            |       |   |-- var
+            |       |   |   `-- b
+            |       |   `-- var
+            |       |       `-- g
+            |       `-- 76
+            |-- *=
+            |   |-- var
+            |   |   `-- d
+            |   `-- -
+            |       |-- +
+            |       |   |-- var
+            |       |   |   `-- j
+            |       |   `-- var
+            |       |       `-- c
+            |       `-- 25
+            |-- /=
+            |   |-- var
+            |   |   `-- e
+            |   `-- |
+            |       |-- &lt;&lt;
+            |       |   |-- var
+            |       |   |   `-- c
+            |       |   `-- var
+            |       |       `-- i
+            |       `-- 37
+            |-- %=
+            |   |-- var
+            |   |   `-- f
+            |   `-- *
+            |       |-- |
+            |       |   |-- var
+            |       |   |   `-- b
+            |       |   `-- var
+            |       |       `-- a
+            |       `-- 42
+            |-- &lt;&lt;=
+            |   |-- var
+            |   |   `-- g
+            |   `-- ^
+            |       |-- &gt;&gt;
+            |       |   |-- var
+            |       |   |   `-- a
+            |       |   `-- var
+            |       |       `-- b
+            |       `-- 19
+            |-- &gt;&gt;=
+            |   |-- var
+            |   |   `-- h
+            |   `-- +
+            |       |-- /
+            |       |   |-- var
+            |       |   |   `-- c
+            |       |   `-- var
+            |       |       `-- g
+            |       `-- 19
+            |-- |=
+            |   |-- var
+            |   |   `-- i
+            |   `-- /
+            |       |-- ^
+            |       |   |-- var
+            |       |   |   `-- d
+            |       |   `-- var
+            |       |       `-- b
+            |       `-- 20
+            |-- &amp;=
+            |   |-- var
+            |   |   `-- j
+            |   `-- &gt;&gt;
+            |       |-- +
+            |       |   |-- var
+            |       |   |   `-- c
+            |       |   `-- var
+            |       |       `-- a
+            |       `-- 12
+            `-- ^=
+                |-- var
+                |   `-- k
+                `-- &lt;&lt;
+                    |-- %
+                    |   |-- var
+                    |   |   `-- a
+                    |   `-- var
+                    |       `-- f
+                    `-- 31
 </pre>
              </div>
              <div class="representation_0" style="display: none;">
               <pre style="overflow-x: auto;">Known Symbols
-   Name   | Entry Type | Type |   Scope    | Modifiers 
-----------+------------+------+------------+-----------
- function |   Function |  int | /          |          
-        z |  Parameter |  int | /function/ |          
-     main |   Function |  int | /          |          
-        a |   Variable |  int | /main/0/   |          
-        b |   Variable |  int | /main/0/   |          
-        c |   Variable |  int | /main/0/   |          
-        d |   Variable |  int | /main/0/   |          
-        e |   Variable |  int | /main/0/   |          
-        f |   Variable |  int | /main/0/   |          
-        g |   Variable |  int | /main/0/   |          
-        h |   Variable |  int | /main/0/   |          
-        i |   Variable |  int | /main/0/   |          
-        j |   Variable |  int | /main/0/   |          
-        k |   Variable |  int | /main/0/   |          
+ Name | Entry Type | Type |  Scope   | Modifiers 
+------+------------+------+----------+-----------
+ main |   Function |  int | /        |          
+    a |   Variable |  int | /main/0/ |          
+    b |   Variable |  int | /main/0/ |          
+    c |   Variable |  int | /main/0/ |          
+    d |   Variable |  int | /main/0/ |          
+    e |   Variable |  int | /main/0/ |          
+    f |   Variable |  int | /main/0/ |          
+    g |   Variable |  int | /main/0/ |          
+    h |   Variable |  int | /main/0/ |          
+    i |   Variable |  int | /main/0/ |          
+    j |   Variable |  int | /main/0/ |          
+    k |   Variable |  int | /main/0/ |          
 
 Unknown Symbols
  Name | Entry Type | Type 
@@ -4823,117 +4698,106 @@ Unknown Symbols
               <pre style="overflow-x: auto;">main ()
 {
 int D.1234;
-  int a;
-  int b;
-  int c;
-  int d;
-  int e;
-  int f;
-  int g;
-  int h;
-  int i;
-  int j;
-  int k;
-
-  _1 = 1 + 2;
-  _1 = _1 + 3;
-  a = _1;
-  _1 = 56 * 78;
-  _1 = _1 * 5;
-  _1 = _1 / 20;
-  _1 = _1 - 3;
-  b = _1;
-  _1 = 56 % 2;
-  c = _1;
-  _1 = -10;
-  d = _1;
-  _1 = b &amp; a;
-  e = _1;
-  _1 = b | a;
-  f = _1;
-  _1 = b ^ a;
-  g = _1;
-  _1 = ~a;
-  h = _1;
-  _1 = ~b;
-  i = _1;
-  _1 = ~c;
-  j = _1;
-  _1 = ~d;
-  k = _1;
-  _1 = a | j;
-  _1 = _1 - 97;
-  a = _1;
-  _1 = g + i;
-  _1 = _1 + 40;
-  _4 = g + i;
-  _4 = _4 + 40;
-  _3 = _4 + b;
-  b = _3;
-  _1 = g + b;
-  _1 = _1 &gt;&gt; 76;
-  _4 = g + b;
-  _4 = _4 &gt;&gt; 76;
-  _3 = _4 - c;
-  c = _3;
-  _1 = c + j;
-  _1 = _1 - 25;
-  _4 = c + j;
-  _4 = _4 - 25;
-  _3 = _4 * d;
-  d = _3;
-  _1 = i &lt;&lt; c;
-  _1 = _1 | 37;
-  _4 = i &lt;&lt; c;
-  _4 = _4 | 37;
-  _3 = _4 / e;
-  e = _3;
-  _1 = a | b;
-  _1 = _1 * 42;
-  _4 = a | b;
-  _4 = _4 * 42;
-  _3 = _4 % f;
-  f = _3;
-  _1 = b &gt;&gt; a;
-  _1 = _1 ^ 19;
-  _4 = b &gt;&gt; a;
-  _4 = _4 ^ 19;
-  _3 = _4 &lt;&lt; g;
-  g = _3;
-  _1 = g / c;
-  _1 = _1 + 19;
-  _4 = g / c;
-  _4 = _4 + 19;
-  _3 = _4 &gt;&gt; h;
-  h = _3;
-  _1 = b ^ d;
-  _1 = _1 / 20;
-  _4 = b ^ d;
-  _4 = _4 / 20;
-  _3 = _4 | i;
-  i = _3;
-  _1 = a + c;
-  _1 = _1 &gt;&gt; 12;
-  _4 = a + c;
-  _4 = _4 &gt;&gt; 12;
-  _3 = _4 &amp; j;
-  j = _3;
-  _1 = f % a;
-  _1 = _1 &lt;&lt; 31;
-  _4 = f % a;
-  _4 = _4 &lt;&lt; 31;
-  _3 = _4 ^ k;
-  k = _3;
-  _1 = function(10);
-  k = _1;
-
-}
-function (int z)
-{
-int D.1235;
-D.1235 = 1;
-return D.1235;
-
+int a;
+int b;
+int c;
+int d;
+int e;
+int f;
+int g;
+int h;
+int i;
+int j;
+int k;
+_1 = 1 + 2;
+_1 = _1 + 3;
+a = _1;
+_1 = 56 * 78;
+_1 = _1 * 5;
+_1 = _1 / 20;
+_1 = _1 - 3;
+b = _1;
+_1 = 56 % 2;
+c = _1;
+_1 = -10;
+d = _1;
+_1 = b &amp; a;
+e = _1;
+_1 = b | a;
+f = _1;
+_1 = b ^ a;
+g = _1;
+_1 = ~a;
+h = _1;
+_1 = ~b;
+i = _1;
+_1 = ~c;
+j = _1;
+_1 = ~d;
+k = _1;
+_1 = a | j;
+_1 = _1 - 97;
+a = _1;
+_1 = g + i;
+_1 = _1 + 40;
+_4 = g + i;
+_4 = _4 + 40;
+_3 = _4 + b;
+b = _3;
+_1 = g + b;
+_1 = _1 &gt;&gt; 76;
+_4 = g + b;
+_4 = _4 &gt;&gt; 76;
+_3 = _4 - c;
+c = _3;
+_1 = c + j;
+_1 = _1 - 25;
+_4 = c + j;
+_4 = _4 - 25;
+_3 = _4 * d;
+d = _3;
+_1 = i &lt;&lt; c;
+_1 = _1 | 37;
+_4 = i &lt;&lt; c;
+_4 = _4 | 37;
+_3 = _4 / e;
+e = _3;
+_1 = a | b;
+_1 = _1 * 42;
+_4 = a | b;
+_4 = _4 * 42;
+_3 = _4 % f;
+f = _3;
+_1 = b &gt;&gt; a;
+_1 = _1 ^ 19;
+_4 = b &gt;&gt; a;
+_4 = _4 ^ 19;
+_3 = _4 &lt;&lt; g;
+g = _3;
+_1 = g / c;
+_1 = _1 + 19;
+_4 = g / c;
+_4 = _4 + 19;
+_3 = _4 &gt;&gt; h;
+h = _3;
+_1 = b ^ d;
+_1 = _1 / 20;
+_4 = b ^ d;
+_4 = _4 / 20;
+_3 = _4 | i;
+i = _3;
+_1 = a + c;
+_1 = _1 &gt;&gt; 12;
+_4 = a + c;
+_4 = _4 &gt;&gt; 12;
+_3 = _4 &amp; j;
+j = _3;
+_1 = f % a;
+_1 = _1 &lt;&lt; 31;
+_4 = f % a;
+_4 = _4 &lt;&lt; 31;
+_3 = _4 ^ k;
+k = _3;
 }
 </pre>
              </div>
@@ -5117,19 +4981,15 @@ Unknown Symbols
               <pre style="overflow-x: auto;">function (int arithmetic_input)
 {
 int D.1234;
-
 D.1234 = arithmetic_input;
 return D.1234;
-
 }
 main ()
 {
 int D.1235;
-  int value_1;
-
-  _1 = function(1);
-  value_1 = _1;
-
+int value_1;
+_1 = function(1);
+value_1 = _1;
 }
 </pre>
              </div>
@@ -5369,21 +5229,18 @@ Unknown Symbols
 int D.1234;
 D.1234 = 1;
 return D.1234;
-
 }
 main ()
 {
 int D.1235;
-  int a;
-  int b;
-  int c;
-
-  a = 1;
-  _1 = 1 + 1;
-  b = _1;
-  _1 = function();
-  c = _1;
-
+int a;
+int b;
+int c;
+a = 1;
+_1 = 1 + 1;
+b = _1;
+_1 = function();
+c = _1;
 }
 </pre>
              </div>
@@ -5818,52 +5675,43 @@ Unknown Symbols
               <pre style="overflow-x: auto;">main ()
 {
 int D.1234;
-  int one;
-
-  one = 1;
-  if (one != 0) goto &lt;D.1235&gt;; else goto &lt;D.1236&gt;;
-  &lt;D.1235&gt;:
-  
-  goto &lt;D.1237&gt;;
-  &lt;D.1236&gt;:
-  &lt;D.1237&gt;:
-  if (one &gt; one) goto &lt;D.1238&gt;; else goto &lt;D.1239&gt;;
-  &lt;D.1238&gt;:
-  
-  goto &lt;D.1240&gt;;
-  &lt;D.1239&gt;:
-  &lt;D.1240&gt;:
-  if (one &lt; one) goto &lt;D.1241&gt;; else goto &lt;D.1242&gt;;
-  &lt;D.1241&gt;:
-  
-  goto &lt;D.1243&gt;;
-  &lt;D.1242&gt;:
-  &lt;D.1243&gt;:
-  if (one == one) goto &lt;D.1244&gt;; else goto &lt;D.1245&gt;;
-  &lt;D.1244&gt;:
-  
-  goto &lt;D.1246&gt;;
-  &lt;D.1245&gt;:
-  &lt;D.1246&gt;:
-  if (one != one) goto &lt;D.1247&gt;; else goto &lt;D.1248&gt;;
-  &lt;D.1247&gt;:
-  
-  goto &lt;D.1249&gt;;
-  &lt;D.1248&gt;:
-  &lt;D.1249&gt;:
-  if (one &gt;= one) goto &lt;D.1250&gt;; else goto &lt;D.1251&gt;;
-  &lt;D.1250&gt;:
-  
-  goto &lt;D.1252&gt;;
-  &lt;D.1251&gt;:
-  &lt;D.1252&gt;:
-  if (one &lt;= one) goto &lt;D.1253&gt;; else goto &lt;D.1254&gt;;
-  &lt;D.1253&gt;:
-  
-  goto &lt;D.1255&gt;;
-  &lt;D.1254&gt;:
-  &lt;D.1255&gt;:
-
+int one;
+one = 1;
+if (one != 0) goto &lt;D.1235&gt;; else goto &lt;D.1236&gt;;
+&lt;D.1235&gt;:
+goto &lt;D.1237&gt;;
+&lt;D.1236&gt;:
+&lt;D.1237&gt;:
+if (one &gt; one) goto &lt;D.1238&gt;; else goto &lt;D.1239&gt;;
+&lt;D.1238&gt;:
+goto &lt;D.1240&gt;;
+&lt;D.1239&gt;:
+&lt;D.1240&gt;:
+if (one &lt; one) goto &lt;D.1241&gt;; else goto &lt;D.1242&gt;;
+&lt;D.1241&gt;:
+goto &lt;D.1243&gt;;
+&lt;D.1242&gt;:
+&lt;D.1243&gt;:
+if (one == one) goto &lt;D.1244&gt;; else goto &lt;D.1245&gt;;
+&lt;D.1244&gt;:
+goto &lt;D.1246&gt;;
+&lt;D.1245&gt;:
+&lt;D.1246&gt;:
+if (one != one) goto &lt;D.1247&gt;; else goto &lt;D.1248&gt;;
+&lt;D.1247&gt;:
+goto &lt;D.1249&gt;;
+&lt;D.1248&gt;:
+&lt;D.1249&gt;:
+if (one &gt;= one) goto &lt;D.1250&gt;; else goto &lt;D.1251&gt;;
+&lt;D.1250&gt;:
+goto &lt;D.1252&gt;;
+&lt;D.1251&gt;:
+&lt;D.1252&gt;:
+if (one &lt;= one) goto &lt;D.1253&gt;; else goto &lt;D.1254&gt;;
+&lt;D.1253&gt;:
+goto &lt;D.1255&gt;;
+&lt;D.1254&gt;:
+&lt;D.1255&gt;:
 }
 </pre>
              </div>
@@ -5985,11 +5833,9 @@ int D.1234;
 goto &lt;D.1235&gt;;
 &lt;D.1236&gt;:
 goto &lt;D.1237&gt;;
-
 &lt;D.1235&gt;:
 if (1 != 0) goto &lt;D.1236&gt;; else goto &lt;D.1237&gt;;
 &lt;D.1237&gt;:
-
 }
 </pre>
              </div>
@@ -6973,118 +6819,87 @@ Unknown Symbols
               <pre style="overflow-x: auto;">main ()
 {
 int D.1234;
-  int i;
-
-  i = 0;
-  i = 0;
-  
-  goto &lt;D.1235&gt;;
-  &lt;D.1236&gt;:
-  goto &lt;D.1237&gt;;
-  
-  _0 = i;
+int i;
+i = 0;
+i = 0;
+goto &lt;D.1235&gt;;
+&lt;D.1236&gt;:
+goto &lt;D.1237&gt;;
+_0 = i;
 i = i + 1;
-  
-  &lt;D.1235&gt;:
-  if (i &lt; 10) goto &lt;D.1236&gt;; else goto &lt;D.1237&gt;;
-  &lt;D.1237&gt;:
-  i = 0;
-  
-  goto &lt;D.1239&gt;;
-  &lt;D.1240&gt;:
-  i = 0;
-  
-  goto &lt;D.1242&gt;;
-  &lt;D.1243&gt;:
-  goto &lt;D.1243&gt;;
-  
-  _0 = i;
+&lt;D.1235&gt;:
+if (i &lt; 10) goto &lt;D.1236&gt;; else goto &lt;D.1237&gt;;
+&lt;D.1237&gt;:
+i = 0;
+goto &lt;D.1239&gt;;
+&lt;D.1240&gt;:
+i = 0;
+goto &lt;D.1242&gt;;
+&lt;D.1243&gt;:
+goto &lt;D.1243&gt;;
+_0 = i;
 i = i + 1;
-  
-  &lt;D.1242&gt;:
-  if (i &lt; 10) goto &lt;D.1243&gt;; else goto &lt;D.1244&gt;;
-  &lt;D.1244&gt;:
-  
-  _0 = i;
+&lt;D.1242&gt;:
+if (i &lt; 10) goto &lt;D.1243&gt;; else goto &lt;D.1244&gt;;
+&lt;D.1244&gt;:
+_0 = i;
 i = i + 1;
-  
-  &lt;D.1239&gt;:
-  if (i &lt; 10) goto &lt;D.1240&gt;; else goto &lt;D.1241&gt;;
-  &lt;D.1241&gt;:
-  i = 0;
-  
-  goto &lt;D.1243&gt;;
-  &lt;D.1244&gt;:
-  goto &lt;D.1244&gt;;
-  
-  _0 = i;
+&lt;D.1239&gt;:
+if (i &lt; 10) goto &lt;D.1240&gt;; else goto &lt;D.1241&gt;;
+&lt;D.1241&gt;:
+i = 0;
+goto &lt;D.1243&gt;;
+&lt;D.1244&gt;:
+goto &lt;D.1244&gt;;
+_0 = i;
 i = i + 1;
-  
-  &lt;D.1243&gt;:
-  if (i &lt; 10) goto &lt;D.1244&gt;; else goto &lt;D.1245&gt;;
-  &lt;D.1245&gt;:
-  i = 0;
-  
-  goto &lt;D.1247&gt;;
-  &lt;D.1248&gt;:
-  i = 0;
-  
-  goto &lt;D.1250&gt;;
-  &lt;D.1251&gt;:
-  goto &lt;D.1251&gt;;
-  
-  _0 = i;
+&lt;D.1243&gt;:
+if (i &lt; 10) goto &lt;D.1244&gt;; else goto &lt;D.1245&gt;;
+&lt;D.1245&gt;:
+i = 0;
+goto &lt;D.1247&gt;;
+&lt;D.1248&gt;:
+i = 0;
+goto &lt;D.1250&gt;;
+&lt;D.1251&gt;:
+goto &lt;D.1251&gt;;
+_0 = i;
 i = i + 1;
-  
-  &lt;D.1250&gt;:
-  if (i &lt; 10) goto &lt;D.1251&gt;; else goto &lt;D.1252&gt;;
-  &lt;D.1252&gt;:
-  
-  _0 = i;
+&lt;D.1250&gt;:
+if (i &lt; 10) goto &lt;D.1251&gt;; else goto &lt;D.1252&gt;;
+&lt;D.1252&gt;:
+_0 = i;
 i = i + 1;
-  
-  &lt;D.1247&gt;:
-  if (i &lt; 10) goto &lt;D.1248&gt;; else goto &lt;D.1249&gt;;
-  &lt;D.1249&gt;:
-  {
-    int j;
-  
-    j = 0;
-  
-    goto &lt;D.1251&gt;;
-    &lt;D.1252&gt;:
-    goto &lt;D.1252&gt;;
-    
-    j = j;
-    
-    &lt;D.1251&gt;:
-    if (j == 0) goto &lt;D.1252&gt;; else goto &lt;D.1253&gt;;
-    &lt;D.1253&gt;:
-  }
-  &lt;D.1255&gt;:
-  goto &lt;D.1255&gt;;
-  
-  goto &lt;D.1255&gt;;
-  i = 0;
-  
-  &lt;D.1259&gt;:
-  goto &lt;D.1259&gt;;
-  
-  goto &lt;D.1259&gt;;
-  &lt;D.1263&gt;:
-  goto &lt;D.1263&gt;;
-  
-  goto &lt;D.1263&gt;;
-  &lt;D.1267&gt;:
-  goto &lt;D.1267&gt;;
-  
-  i = i;
-  
-  goto &lt;D.1267&gt;;
-  &lt;D.1271&gt;:
-  
-  goto &lt;D.1271&gt;;
-
+&lt;D.1247&gt;:
+if (i &lt; 10) goto &lt;D.1248&gt;; else goto &lt;D.1249&gt;;
+&lt;D.1249&gt;:
+{
+int j;
+j = 0;
+goto &lt;D.1251&gt;;
+&lt;D.1252&gt;:
+goto &lt;D.1252&gt;;
+j = j;
+&lt;D.1251&gt;:
+if (j == 0) goto &lt;D.1252&gt;; else goto &lt;D.1253&gt;;
+&lt;D.1253&gt;:
+}
+&lt;D.1255&gt;:
+goto &lt;D.1255&gt;;
+goto &lt;D.1255&gt;;
+i = 0;
+&lt;D.1259&gt;:
+goto &lt;D.1259&gt;;
+goto &lt;D.1259&gt;;
+&lt;D.1263&gt;:
+goto &lt;D.1263&gt;;
+goto &lt;D.1263&gt;;
+&lt;D.1267&gt;:
+goto &lt;D.1267&gt;;
+i = i;
+goto &lt;D.1267&gt;;
+&lt;D.1271&gt;:
+goto &lt;D.1271&gt;;
 }
 </pre>
              </div>
@@ -7285,16 +7100,13 @@ Unknown Symbols
 int D.1234;
 D.1234 = 1;
 return D.1234;
-
 }
 main ()
 {
 int D.1235;
-  int i;
-
-  _1 = return_strings("test", 1);
-  i = _1;
-
+int i;
+_1 = return_strings("test", 1);
+i = _1;
 }
 </pre>
              </div>
@@ -7427,12 +7239,10 @@ Unknown Symbols
               <pre style="overflow-x: auto;">main ()
 {
 int D.1234;
-  int random_var;
-
-goto label
-  random_var = 0;
+int random_var;
+goto label;
+random_var = 0;
 label:
-
 }
 </pre>
              </div>
@@ -7665,19 +7475,15 @@ Unknown Symbols
 int D.1234;
 D.1234 = 1;
 return D.1234;
-
 }
 main ()
 {
 int D.1235;
-  int x;
-
-  _1 = test_function(1, 1);
-  x = _1;
-
-  D.1235 = x;
-  return D.1235;
-
+int x;
+_1 = test_function(1, 1);
+x = _1;
+D.1235 = x;
+return D.1235;
 }
 </pre>
              </div>
@@ -8125,56 +7931,45 @@ Unknown Symbols
               <pre style="overflow-x: auto;">main ()
 {
 int D.1234;
-  int i;
-  int j;
-
-  i = 1;
-  j = 2;
-  if (i &gt; 0) goto &lt;D.1237&gt;; else goto &lt;D.1236&gt;;
-  &lt;D.1237&gt;:
-  if (j &lt; i) goto &lt;D.1235&gt;; else goto &lt;D.1236&gt;;
-  &lt;D.1235&gt;:
-  
-  goto &lt;D.1239&gt;;
-  &lt;D.1236&gt;:
-  &lt;D.1239&gt;:
-  if (1 != 0) goto &lt;D.1240&gt;; else goto &lt;D.1241&gt;;
-  &lt;D.1240&gt;:
-  
-  goto &lt;D.1242&gt;;
-  &lt;D.1241&gt;:
-  if (0 != 0) goto &lt;D.1243&gt;; else goto &lt;D.1244&gt;;
-  &lt;D.1243&gt;:
-  
-  goto &lt;D.1245&gt;;
-  &lt;D.1244&gt;:
-  if (1 != 0) goto &lt;D.1248&gt;; else goto &lt;D.1249&gt;;
-  &lt;D.1248&gt;:
-  
-  goto &lt;D.1250&gt;;
-  &lt;D.1249&gt;:
-  &lt;D.1250&gt;:
-  
-  &lt;D.1242&gt;:
-  &lt;D.1245&gt;:
-  if (1 != 0) goto &lt;D.1251&gt;; else goto &lt;D.1252&gt;;
-  &lt;D.1251&gt;:
-  {
-      int a;
-    
-      a = 0;
-    
-  }
-  goto &lt;D.1253&gt;;
-  &lt;D.1252&gt;:
-  {
-      int c;
-    
-      c = 2;
-    
-  }
-  &lt;D.1253&gt;:
-
+int i;
+int j;
+i = 1;
+j = 2;
+if (i &gt; 0) goto &lt;D.1237&gt;; else goto &lt;D.1236&gt;;
+&lt;D.1237&gt;:
+if (j &lt; i) goto &lt;D.1235&gt;; else goto &lt;D.1236&gt;;
+&lt;D.1235&gt;:
+goto &lt;D.1239&gt;;
+&lt;D.1236&gt;:
+&lt;D.1239&gt;:
+if (1 != 0) goto &lt;D.1240&gt;; else goto &lt;D.1241&gt;;
+&lt;D.1240&gt;:
+goto &lt;D.1242&gt;;
+&lt;D.1241&gt;:
+if (0 != 0) goto &lt;D.1243&gt;; else goto &lt;D.1244&gt;;
+&lt;D.1243&gt;:
+goto &lt;D.1245&gt;;
+&lt;D.1244&gt;:
+if (1 != 0) goto &lt;D.1248&gt;; else goto &lt;D.1249&gt;;
+&lt;D.1248&gt;:
+goto &lt;D.1250&gt;;
+&lt;D.1249&gt;:
+&lt;D.1250&gt;:
+&lt;D.1242&gt;:
+&lt;D.1245&gt;:
+if (1 != 0) goto &lt;D.1251&gt;; else goto &lt;D.1252&gt;;
+&lt;D.1251&gt;:
+{
+int a;
+a = 0;
+}
+goto &lt;D.1253&gt;;
+&lt;D.1252&gt;:
+{
+int c;
+c = 2;
+}
+&lt;D.1253&gt;:
 }
 </pre>
              </div>
@@ -8321,14 +8116,12 @@ Unknown Symbols
               <pre style="overflow-x: auto;">main ()
 {
 int D.1234;
-  char string;
-  char string_two;
-  char string_special;
-
-  string = "test string";
-  string_two = 'test string';
-  string_special = "\n\t\\\'\"\%\$%&amp;*$%&amp;%*$&amp;@@   __  +=-";
-
+char string;
+char string_two;
+char string_special;
+string = "test string";
+string_two = 'test string';
+string_special = "\n\t\\\'\"\%\$%&amp;*$%&amp;%*$&amp;@@   __  +=-";
 }
 </pre>
              </div>
@@ -8617,27 +8410,24 @@ Unknown Symbols
 unsigned int D.1234;
 D.1234 = 10;
 return D.1234;
-
 }
 main ()
 {
 int D.1235;
-  register int x;
-  signed short t;
-  const long rrr;
-  volatile float qqq;
-  static double aaa;
-  unsigned int y;
-  extern int q;
-
-  x = NULL;
-  t = NULL;
-  rrr = NULL;
-  qqq = NULL;
-  aaa = NULL;
-  y = NULL;
-  q = NULL;
-
+register int x;
+signed short t;
+const long rrr;
+volatile float qqq;
+static double aaa;
+unsigned int y;
+extern int q;
+x = NULL;
+t = NULL;
+rrr = NULL;
+qqq = NULL;
+aaa = NULL;
+y = NULL;
+q = NULL;
 }
 </pre>
              </div>
@@ -8788,7 +8578,6 @@ Unknown Symbols
 int D.1234;
 D.1234 = 500;
 return D.1234;
-
 }
 </pre>
              </div>
@@ -9078,29 +8867,25 @@ Unknown Symbols
 {
 int D.1234;
 return;
-
 }
 main ()
 {
 int D.1235;
-  int a;
-
-  a = NULL;
-  D.1235 = 1;
-  return D.1235;
-  _0 = function();
-  D.1235 = _0;
-  return D.1235;
-  _0 = 1 + 1;
-  D.1235 = _0;
-  return D.1235;
-  _0 = 1 + 2;
-  D.1235 = _0;
-  return D.1235;
-
-  D.1235 = a;
-  return D.1235;
-
+int a;
+a = NULL;
+D.1235 = 1;
+return D.1235;
+_0 = function();
+D.1235 = _0;
+return D.1235;
+_0 = 1 + 1;
+D.1235 = _0;
+return D.1235;
+_0 = 1 + 2;
+D.1235 = _0;
+return D.1235;
+D.1235 = a;
+return D.1235;
 }
 </pre>
              </div>
@@ -9464,68 +9249,57 @@ Unknown Symbols
               <pre style="overflow-x: auto;">main ()
 {
 int D.1234;
-  int i;
-
-  i = 10;
-  if (i == 12) goto &lt;D.1235&gt;; else goto &lt;D.1236&gt;;
-  &lt;D.1235&gt;:
-  _0 = i;
+int i;
+i = 10;
+if (i == 12) goto &lt;D.1235&gt;; else goto &lt;D.1236&gt;;
+&lt;D.1235&gt;:
+_0 = i;
 i = i - 1;
-  goto &lt;D.1236&gt;;
-  
-  goto &lt;D.1237&gt;;
-  &lt;D.1236&gt;:
-  if (i == 11) goto &lt;D.1238&gt;; else goto &lt;D.1239&gt;;
-  &lt;D.1238&gt;:
-  {
-      int k;
-    
-      _0 = i;
-  i = i + 1;
-      _0 = i;
-  i = i + 1;
-      k = NULL;
-      goto &lt;D.1239&gt;;
-    
-  }
-  goto &lt;D.1240&gt;;
-  &lt;D.1239&gt;:
-  if (i == 10) goto &lt;D.1241&gt;; else goto &lt;D.1242&gt;;
-  &lt;D.1241&gt;:
-  {
-      int k;
-    
-      _0 = i;
-  i = i + 1;
-      k = NULL;
-      goto &lt;D.1242&gt;;
-    
-  }
-  goto &lt;D.1243&gt;;
-  &lt;D.1242&gt;:
-  if (i == 9) goto &lt;D.1244&gt;; else goto &lt;D.1245&gt;;
-  &lt;D.1244&gt;:
-  {
-      int k;
-    
-      _0 = i;
-  i = i + 1;
-      k = NULL;
-      goto &lt;D.1245&gt;;
-    
-  }
-  goto &lt;D.1246&gt;;
-  &lt;D.1245&gt;:
-  goto &lt;D.1248&gt;;
-  
-  &lt;D.1237&gt;:
-  &lt;D.1240&gt;:
-  &lt;D.1243&gt;:
-  &lt;D.1246&gt;:
-
-  D.1234 = i;
-  return D.1234;
-
+goto &lt;D.1236&gt;;
+goto &lt;D.1237&gt;;
+&lt;D.1236&gt;:
+if (i == 11) goto &lt;D.1238&gt;; else goto &lt;D.1239&gt;;
+&lt;D.1238&gt;:
+{
+int k;
+_0 = i;
+i = i + 1;
+_0 = i;
+i = i + 1;
+k = NULL;
+goto &lt;D.1239&gt;;
+}
+goto &lt;D.1240&gt;;
+&lt;D.1239&gt;:
+if (i == 10) goto &lt;D.1241&gt;; else goto &lt;D.1242&gt;;
+&lt;D.1241&gt;:
+{
+int k;
+_0 = i;
+i = i + 1;
+k = NULL;
+goto &lt;D.1242&gt;;
+}
+goto &lt;D.1243&gt;;
+&lt;D.1242&gt;:
+if (i == 9) goto &lt;D.1244&gt;; else goto &lt;D.1245&gt;;
+&lt;D.1244&gt;:
+{
+int k;
+_0 = i;
+i = i + 1;
+k = NULL;
+goto &lt;D.1245&gt;;
+}
+goto &lt;D.1246&gt;;
+&lt;D.1245&gt;:
+goto &lt;D.1248&gt;;
+&lt;D.1237&gt;:
+&lt;D.1240&gt;:
+&lt;D.1243&gt;:
+&lt;D.1246&gt;:
+D.1234 = i;
+return D.1234;
 }
 </pre>
              </div>
@@ -9798,31 +9572,27 @@ Unknown Symbols
               <pre style="overflow-x: auto;">main ()
 {
 int D.1234;
-  int a;
-  int b;
-  int c;
-
-  _1 = -10;
-  a = _1;
-  _1 = -a;
-  b = _1;
-  _1 = +a;
-  c = _1;
-  _0 = !2;
-  if (_0 != 0) goto &lt;D.1235&gt;; else goto &lt;D.1236&gt;;
-  &lt;D.1235&gt;:
-  
-  goto &lt;D.1237&gt;;
-  &lt;D.1236&gt;:
-  &lt;D.1237&gt;:
-  _0 = ~2;
-  if (_0 != 0) goto &lt;D.1238&gt;; else goto &lt;D.1239&gt;;
-  &lt;D.1238&gt;:
-  
-  goto &lt;D.1240&gt;;
-  &lt;D.1239&gt;:
-  &lt;D.1240&gt;:
-
+int a;
+int b;
+int c;
+_1 = -10;
+a = _1;
+_1 = -a;
+b = _1;
+_1 = +a;
+c = _1;
+_0 = !2;
+if (_0 != 0) goto &lt;D.1235&gt;; else goto &lt;D.1236&gt;;
+&lt;D.1235&gt;:
+goto &lt;D.1237&gt;;
+&lt;D.1236&gt;:
+&lt;D.1237&gt;:
+_0 = ~2;
+if (_0 != 0) goto &lt;D.1238&gt;; else goto &lt;D.1239&gt;;
+&lt;D.1238&gt;:
+goto &lt;D.1240&gt;;
+&lt;D.1239&gt;:
+&lt;D.1240&gt;:
 }
 </pre>
              </div>
@@ -10035,20 +9805,16 @@ int D.1234;
 goto &lt;D.1235&gt;;
 &lt;D.1236&gt;:
 {
-    int k;
-  
-    k = NULL;
-  
+int k;
+k = NULL;
 }
 &lt;D.1235&gt;:
 if (1 != 0) goto &lt;D.1236&gt;; else goto &lt;D.1237&gt;;
 &lt;D.1237&gt;:
 &lt;D.1240&gt;:
 {
-    int j;
-  
-    j = NULL;
-  
+int j;
+j = NULL;
 }
 &lt;D.1239&gt;:
 if (1 != 0) goto &lt;D.1240&gt;; else goto &lt;D.1241&gt;;
@@ -10056,11 +9822,9 @@ if (1 != 0) goto &lt;D.1240&gt;; else goto &lt;D.1241&gt;;
 goto &lt;D.1243&gt;;
 &lt;D.1244&gt;:
 goto &lt;D.1245&gt;;
-
 &lt;D.1243&gt;:
 if (2 != 0) goto &lt;D.1244&gt;; else goto &lt;D.1245&gt;;
 &lt;D.1245&gt;:
-
 }
 </pre>
              </div>

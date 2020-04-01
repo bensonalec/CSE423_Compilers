@@ -29,8 +29,11 @@
 This module abstracts the necessary lines for the linear IR to allow for easier optimization methods like constant propagation, constant folding, unused references ect.
 &#34;&#34;&#34;
 import importlib
+import os
+from inspect import getsourcefile
+from importlib.machinery import SourceFileLoader
 
-ast = importlib.import_module(&#34;AST_builder&#34;, __name__)
+ast = SourceFileLoader(&#34;AST_builder&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/../frontend/AST_builder.py&#34;).load_module()
 
 class IRLine():
     &#34;&#34;&#34;
@@ -61,11 +64,17 @@ class IRLine():
         self.id_ops = [&#34;var&#34;, &#34;call&#34;]
 
         # Based on the node construct the needed intermediate trees in order
+        if node == None:
+            # There was no AST node passed in. This is the case when there 
+            # are no complex IR instructions that need to be broken down.
+            # IRNode will be added manually to self.treeList.
+            pass
 
-        if node.name in self.log_ops:
+        elif node.name in self.log_ops:
             self.boolean_breakdown(self.astNode, success, failure)
         else:
             self.expression_breakdown(self.astNode, success, failure)
+            
 
     def retrieve(self):
         &#34;&#34;&#34;
@@ -195,7 +204,7 @@ class IRLine():
 
                     params = [self.tvs.pop() for x in range(len(node.children[0].children)) if x in complexP]
                     self.treeList.append(
-                        IRFunction(
+                        IRFunctionAssign(
                             node,
                             [params.pop() if x in complexP else node.children[0].children[x].name for x in range(len(node.children[0].children))],
                             self.tvs
@@ -277,7 +286,21 @@ class IRLine():
 
 
     def __str__(self):
-        return &#34;\n&#34;.join([f&#34;{self.prefix}{x}&#34; for x in self.treeList])
+        return &#34;\n&#34;.join([str(x) for x in self.treeList])
+
+    @staticmethod
+    def singleEntry(irNode, labelDigit=None, prefix=&#34;&#34;):
+        &#34;&#34;&#34;
+        Creates a new instance of an IRLine but with only one entry.
+
+        Args:
+            irNode: The given &#39;IRNode&#39; entry for this new IRLine.
+            labelList: The list of used label names.
+            prefix: The output prefix.
+        &#34;&#34;&#34;
+        entry = IRLine(node=None, tvs=[], labelList=[labelDigit], prefix=prefix)
+        entry.treeList.append(irNode)
+        return entry
 
 class IRNode():
     &#34;&#34;&#34;
@@ -291,6 +314,7 @@ class IRNode():
 
     def __repr__():
         pass
+
 
 class IRJump(IRNode):
     &#34;&#34;&#34;
@@ -460,7 +484,7 @@ class IRAssignment(IRNode):
     def __str__(self):
         return f&#34;{self.lhs} = {self.rhs};&#34;
 
-class IRFunction(IRNode):
+class IRFunctionAssign(IRNode):
     &#34;&#34;&#34;
     Intermediate representation node for a function call assignment.
     &#34;&#34;&#34;
@@ -479,7 +503,94 @@ class IRFunction(IRNode):
         if self.var:
             return f&#34;{self.var} = {self.node.children[0].name}({&#39;, &#39;.join(self.params)});&#34;
         else:
-            return f&#34;{self.node.children[0].name}({&#39;, &#39;.join(self.params)});&#34;</code></pre>
+            return f&#34;{self.node.children[0].name}({&#39;, &#39;.join(self.params)});&#34;
+
+class IRFunctionCall(IRNode):
+    &#34;&#34;&#34;
+    Intermediate representation node for function call.
+    &#34;&#34;&#34;
+    def __init__(self, name, params):
+        &#34;&#34;&#34;
+        Args:
+            name: Name of function call.
+            params: The function params. Can be &#39;None&#39; for no parameters.
+        &#34;&#34;&#34;
+        self.name = name
+        self.params = params
+
+class IRFunctionDecl(IRNode):
+    &#34;&#34;&#34;
+    Intermediate representation node for a function declaration.
+    &#34;&#34;&#34;
+    def __init__(self, name, params):
+        &#34;&#34;&#34;
+        Args:
+            name: Name of function call.
+            params: The function params as a string
+        &#34;&#34;&#34;
+        self.name = name
+        self.params = params
+
+    def __str__(self):
+            return f&#34;{self.name} ({self.params})&#34;
+
+class IRReturn(IRNode):
+    &#34;&#34;&#34;
+    Intermediate representation node for a return.
+    &#34;&#34;&#34;
+    def __init__(self, value):
+        &#34;&#34;&#34;
+        Args:
+            value: The return value. Can be &#39;None&#39; for void functions.
+        &#34;&#34;&#34;
+        self.value = value
+
+    def __str__(self):
+        if self.value:
+            return f&#34;return {self.value};&#34;
+        else:
+            return f&#34;return;&#34;
+
+class IRBracket(IRNode):
+    &#34;&#34;&#34;
+    Intermediate representation node for a bracket
+    &#34;&#34;&#34;
+    def __init__(self, opening):
+        &#34;&#34;&#34;
+        Args:
+            opening: Either True or False depending on if bracket is open/close
+        &#34;&#34;&#34;
+        self.opening = opening
+
+    def __str__(self):
+        if self.opening == True:
+            return &#34;{&#34;
+        else:
+            return &#34;}&#34;
+
+class IRVariableInit(IRNode):
+    &#34;&#34;&#34;
+    Intermediate representation node for a variable initialization.
+    &#34;&#34;&#34;
+    def __init__(self, modifiers, typ, var):
+        &#34;&#34;&#34;
+        Args:
+            modifiers: 
+            type: 
+            var: 
+        &#34;&#34;&#34;
+        self.modifiers = modifiers
+
+        self.typ = typ
+        
+        self.var = var
+
+    def __str__(self):
+        return f&#34;{self.modifiers}{self.typ} {self.var};&#34;
+                
+
+    
+    </code></pre>
 </details>
 </section>
 <section>
@@ -604,8 +715,45 @@ class IRFunction(IRNode):
 <li><a title="src.optimizer.IRLine.IRNode" href="#src.optimizer.IRLine.IRNode">IRNode</a></li>
 </ul>
 </dd>
-<dt id="src.optimizer.IRLine.IRFunction"><code class="flex name class">
-<span>class <span class="ident">IRFunction</span></span>
+<dt id="src.optimizer.IRLine.IRBracket"><code class="flex name class">
+<span>class <span class="ident">IRBracket</span></span>
+<span>(</span><span>opening)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Intermediate representation node for a bracket</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>opening</code></strong></dt>
+<dd>Either True or False depending on if bracket is open/close</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class IRBracket(IRNode):
+    &#34;&#34;&#34;
+    Intermediate representation node for a bracket
+    &#34;&#34;&#34;
+    def __init__(self, opening):
+        &#34;&#34;&#34;
+        Args:
+            opening: Either True or False depending on if bracket is open/close
+        &#34;&#34;&#34;
+        self.opening = opening
+
+    def __str__(self):
+        if self.opening == True:
+            return &#34;{&#34;
+        else:
+            return &#34;}&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="src.optimizer.IRLine.IRNode" href="#src.optimizer.IRLine.IRNode">IRNode</a></li>
+</ul>
+</dd>
+<dt id="src.optimizer.IRLine.IRFunctionAssign"><code class="flex name class">
+<span>class <span class="ident">IRFunctionAssign</span></span>
 <span>(</span><span>node, params, tvs)</span>
 </code></dt>
 <dd>
@@ -623,7 +771,7 @@ class IRFunction(IRNode):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class IRFunction(IRNode):
+<pre><code class="python">class IRFunctionAssign(IRNode):
     &#34;&#34;&#34;
     Intermediate representation node for a function call assignment.
     &#34;&#34;&#34;
@@ -643,6 +791,79 @@ class IRFunction(IRNode):
             return f&#34;{self.var} = {self.node.children[0].name}({&#39;, &#39;.join(self.params)});&#34;
         else:
             return f&#34;{self.node.children[0].name}({&#39;, &#39;.join(self.params)});&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="src.optimizer.IRLine.IRNode" href="#src.optimizer.IRLine.IRNode">IRNode</a></li>
+</ul>
+</dd>
+<dt id="src.optimizer.IRLine.IRFunctionCall"><code class="flex name class">
+<span>class <span class="ident">IRFunctionCall</span></span>
+<span>(</span><span>name, params)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Intermediate representation node for function call.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>Name of function call.</dd>
+<dt><strong><code>params</code></strong></dt>
+<dd>The function params. Can be 'None' for no parameters.</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class IRFunctionCall(IRNode):
+    &#34;&#34;&#34;
+    Intermediate representation node for function call.
+    &#34;&#34;&#34;
+    def __init__(self, name, params):
+        &#34;&#34;&#34;
+        Args:
+            name: Name of function call.
+            params: The function params. Can be &#39;None&#39; for no parameters.
+        &#34;&#34;&#34;
+        self.name = name
+        self.params = params</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="src.optimizer.IRLine.IRNode" href="#src.optimizer.IRLine.IRNode">IRNode</a></li>
+</ul>
+</dd>
+<dt id="src.optimizer.IRLine.IRFunctionDecl"><code class="flex name class">
+<span>class <span class="ident">IRFunctionDecl</span></span>
+<span>(</span><span>name, params)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Intermediate representation node for a function declaration.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>Name of function call.</dd>
+<dt><strong><code>params</code></strong></dt>
+<dd>The function params as a string</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class IRFunctionDecl(IRNode):
+    &#34;&#34;&#34;
+    Intermediate representation node for a function declaration.
+    &#34;&#34;&#34;
+    def __init__(self, name, params):
+        &#34;&#34;&#34;
+        Args:
+            name: Name of function call.
+            params: The function params as a string
+        &#34;&#34;&#34;
+        self.name = name
+        self.params = params
+
+    def __str__(self):
+            return f&#34;{self.name} ({self.params})&#34;</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -854,11 +1075,17 @@ class IRFunction(IRNode):
         self.id_ops = [&#34;var&#34;, &#34;call&#34;]
 
         # Based on the node construct the needed intermediate trees in order
+        if node == None:
+            # There was no AST node passed in. This is the case when there 
+            # are no complex IR instructions that need to be broken down.
+            # IRNode will be added manually to self.treeList.
+            pass
 
-        if node.name in self.log_ops:
+        elif node.name in self.log_ops:
             self.boolean_breakdown(self.astNode, success, failure)
         else:
             self.expression_breakdown(self.astNode, success, failure)
+            
 
     def retrieve(self):
         &#34;&#34;&#34;
@@ -988,7 +1215,7 @@ class IRFunction(IRNode):
 
                     params = [self.tvs.pop() for x in range(len(node.children[0].children)) if x in complexP]
                     self.treeList.append(
-                        IRFunction(
+                        IRFunctionAssign(
                             node,
                             [params.pop() if x in complexP else node.children[0].children[x].name for x in range(len(node.children[0].children))],
                             self.tvs
@@ -1070,8 +1297,58 @@ class IRFunction(IRNode):
 
 
     def __str__(self):
-        return &#34;\n&#34;.join([f&#34;{self.prefix}{x}&#34; for x in self.treeList])</code></pre>
+        return &#34;\n&#34;.join([str(x) for x in self.treeList])
+
+    @staticmethod
+    def singleEntry(irNode, labelDigit=None, prefix=&#34;&#34;):
+        &#34;&#34;&#34;
+        Creates a new instance of an IRLine but with only one entry.
+
+        Args:
+            irNode: The given &#39;IRNode&#39; entry for this new IRLine.
+            labelList: The list of used label names.
+            prefix: The output prefix.
+        &#34;&#34;&#34;
+        entry = IRLine(node=None, tvs=[], labelList=[labelDigit], prefix=prefix)
+        entry.treeList.append(irNode)
+        return entry</code></pre>
 </details>
+<h3>Static methods</h3>
+<dl>
+<dt id="src.optimizer.IRLine.IRLine.singleEntry"><code class="name flex">
+<span>def <span class="ident">singleEntry</span></span>(<span>irNode, labelDigit=None, prefix='')</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Creates a new instance of an IRLine but with only one entry.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>irNode</code></strong></dt>
+<dd>The given 'IRNode' entry for this new IRLine.</dd>
+<dt><strong><code>labelList</code></strong></dt>
+<dd>The list of used label names.</dd>
+<dt><strong><code>prefix</code></strong></dt>
+<dd>The output prefix.</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def singleEntry(irNode, labelDigit=None, prefix=&#34;&#34;):
+    &#34;&#34;&#34;
+    Creates a new instance of an IRLine but with only one entry.
+
+    Args:
+        irNode: The given &#39;IRNode&#39; entry for this new IRLine.
+        labelList: The list of used label names.
+        prefix: The output prefix.
+    &#34;&#34;&#34;
+    entry = IRLine(node=None, tvs=[], labelList=[labelDigit], prefix=prefix)
+    entry.treeList.append(irNode)
+    return entry</code></pre>
+</details>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="src.optimizer.IRLine.IRLine.boolean_breakdown"><code class="name flex">
@@ -1300,7 +1577,7 @@ class IRFunction(IRNode):
 
                 params = [self.tvs.pop() for x in range(len(node.children[0].children)) if x in complexP]
                 self.treeList.append(
-                    IRFunction(
+                    IRFunctionAssign(
                         node,
                         [params.pop() if x in complexP else node.children[0].children[x].name for x in range(len(node.children[0].children))],
                         self.tvs
@@ -1365,11 +1642,53 @@ class IRFunction(IRNode):
 <ul class="hlist">
 <li><a title="src.optimizer.IRLine.IRArth" href="#src.optimizer.IRLine.IRArth">IRArth</a></li>
 <li><a title="src.optimizer.IRLine.IRAssignment" href="#src.optimizer.IRLine.IRAssignment">IRAssignment</a></li>
-<li><a title="src.optimizer.IRLine.IRFunction" href="#src.optimizer.IRLine.IRFunction">IRFunction</a></li>
+<li><a title="src.optimizer.IRLine.IRBracket" href="#src.optimizer.IRLine.IRBracket">IRBracket</a></li>
+<li><a title="src.optimizer.IRLine.IRFunctionAssign" href="#src.optimizer.IRLine.IRFunctionAssign">IRFunctionAssign</a></li>
+<li><a title="src.optimizer.IRLine.IRFunctionCall" href="#src.optimizer.IRLine.IRFunctionCall">IRFunctionCall</a></li>
+<li><a title="src.optimizer.IRLine.IRFunctionDecl" href="#src.optimizer.IRLine.IRFunctionDecl">IRFunctionDecl</a></li>
 <li><a title="src.optimizer.IRLine.IRGoTo" href="#src.optimizer.IRLine.IRGoTo">IRGoTo</a></li>
 <li><a title="src.optimizer.IRLine.IRIf" href="#src.optimizer.IRLine.IRIf">IRIf</a></li>
 <li><a title="src.optimizer.IRLine.IRJump" href="#src.optimizer.IRLine.IRJump">IRJump</a></li>
+<li><a title="src.optimizer.IRLine.IRReturn" href="#src.optimizer.IRLine.IRReturn">IRReturn</a></li>
 <li><a title="src.optimizer.IRLine.IRSpecial" href="#src.optimizer.IRLine.IRSpecial">IRSpecial</a></li>
+<li><a title="src.optimizer.IRLine.IRVariableInit" href="#src.optimizer.IRLine.IRVariableInit">IRVariableInit</a></li>
+</ul>
+</dd>
+<dt id="src.optimizer.IRLine.IRReturn"><code class="flex name class">
+<span>class <span class="ident">IRReturn</span></span>
+<span>(</span><span>value)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Intermediate representation node for a return.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>value</code></strong></dt>
+<dd>The return value. Can be 'None' for void functions.</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class IRReturn(IRNode):
+    &#34;&#34;&#34;
+    Intermediate representation node for a return.
+    &#34;&#34;&#34;
+    def __init__(self, value):
+        &#34;&#34;&#34;
+        Args:
+            value: The return value. Can be &#39;None&#39; for void functions.
+        &#34;&#34;&#34;
+        self.value = value
+
+    def __str__(self):
+        if self.value:
+            return f&#34;return {self.value};&#34;
+        else:
+            return f&#34;return;&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="src.optimizer.IRLine.IRNode" href="#src.optimizer.IRLine.IRNode">IRNode</a></li>
 </ul>
 </dd>
 <dt id="src.optimizer.IRLine.IRSpecial"><code class="flex name class">
@@ -1410,6 +1729,49 @@ class IRFunction(IRNode):
 <li><a title="src.optimizer.IRLine.IRNode" href="#src.optimizer.IRLine.IRNode">IRNode</a></li>
 </ul>
 </dd>
+<dt id="src.optimizer.IRLine.IRVariableInit"><code class="flex name class">
+<span>class <span class="ident">IRVariableInit</span></span>
+<span>(</span><span>modifiers, typ, var)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Intermediate representation node for a variable initialization.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>modifiers</code></strong></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>type</code></strong></dt>
+<dd>&nbsp;</dd>
+</dl>
+<p>var:</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class IRVariableInit(IRNode):
+    &#34;&#34;&#34;
+    Intermediate representation node for a variable initialization.
+    &#34;&#34;&#34;
+    def __init__(self, modifiers, typ, var):
+        &#34;&#34;&#34;
+        Args:
+            modifiers: 
+            type: 
+            var: 
+        &#34;&#34;&#34;
+        self.modifiers = modifiers
+
+        self.typ = typ
+        
+        self.var = var
+
+    def __str__(self):
+        return f&#34;{self.modifiers}{self.typ} {self.var};&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="src.optimizer.IRLine.IRNode" href="#src.optimizer.IRLine.IRNode">IRNode</a></li>
+</ul>
+</dd>
 </dl>
 </section>
 </article>
@@ -1433,7 +1795,16 @@ class IRFunction(IRNode):
 <h4><code><a title="src.optimizer.IRLine.IRAssignment" href="#src.optimizer.IRLine.IRAssignment">IRAssignment</a></code></h4>
 </li>
 <li>
-<h4><code><a title="src.optimizer.IRLine.IRFunction" href="#src.optimizer.IRLine.IRFunction">IRFunction</a></code></h4>
+<h4><code><a title="src.optimizer.IRLine.IRBracket" href="#src.optimizer.IRLine.IRBracket">IRBracket</a></code></h4>
+</li>
+<li>
+<h4><code><a title="src.optimizer.IRLine.IRFunctionAssign" href="#src.optimizer.IRLine.IRFunctionAssign">IRFunctionAssign</a></code></h4>
+</li>
+<li>
+<h4><code><a title="src.optimizer.IRLine.IRFunctionCall" href="#src.optimizer.IRLine.IRFunctionCall">IRFunctionCall</a></code></h4>
+</li>
+<li>
+<h4><code><a title="src.optimizer.IRLine.IRFunctionDecl" href="#src.optimizer.IRLine.IRFunctionDecl">IRFunctionDecl</a></code></h4>
 </li>
 <li>
 <h4><code><a title="src.optimizer.IRLine.IRGoTo" href="#src.optimizer.IRLine.IRGoTo">IRGoTo</a></code></h4>
@@ -1450,13 +1821,20 @@ class IRFunction(IRNode):
 <li><code><a title="src.optimizer.IRLine.IRLine.boolean_breakdown" href="#src.optimizer.IRLine.IRLine.boolean_breakdown">boolean_breakdown</a></code></li>
 <li><code><a title="src.optimizer.IRLine.IRLine.expression_breakdown" href="#src.optimizer.IRLine.IRLine.expression_breakdown">expression_breakdown</a></code></li>
 <li><code><a title="src.optimizer.IRLine.IRLine.retrieve" href="#src.optimizer.IRLine.IRLine.retrieve">retrieve</a></code></li>
+<li><code><a title="src.optimizer.IRLine.IRLine.singleEntry" href="#src.optimizer.IRLine.IRLine.singleEntry">singleEntry</a></code></li>
 </ul>
 </li>
 <li>
 <h4><code><a title="src.optimizer.IRLine.IRNode" href="#src.optimizer.IRLine.IRNode">IRNode</a></code></h4>
 </li>
 <li>
+<h4><code><a title="src.optimizer.IRLine.IRReturn" href="#src.optimizer.IRLine.IRReturn">IRReturn</a></code></h4>
+</li>
+<li>
 <h4><code><a title="src.optimizer.IRLine.IRSpecial" href="#src.optimizer.IRLine.IRSpecial">IRSpecial</a></code></h4>
+</li>
+<li>
+<h4><code><a title="src.optimizer.IRLine.IRVariableInit" href="#src.optimizer.IRLine.IRVariableInit">IRVariableInit</a></code></h4>
 </li>
 </ul>
 </li>
