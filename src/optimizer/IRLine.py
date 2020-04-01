@@ -9,7 +9,7 @@ class IRLine():
     """
     A class that contains all the intermediate representations for a given AST node. Will produce a linear representation when converted to a string
     """
-    def __init__(self, node, tvs = [], success = None, failure = None, labelList = [], prefix = ""):
+    def __init__(self, node, tvs = [], success = None, failure = None, labelList = [], prefix = "", varval = {}):
         """
         Args:
             node: The AST node corresponding to the collection of lines
@@ -32,6 +32,7 @@ class IRLine():
         self.spec_ops = ["++", "--"]
         self.ass_ops = ["=", "+=", "-=", "*=", "/=", "%=", "<<=", ">>=", "|=", "&=", "^="]
         self.id_ops = ["var", "call"]
+        self.var_val = varval
 
         # Based on the node construct the needed intermediate trees in order
 
@@ -39,7 +40,6 @@ class IRLine():
             self.boolean_breakdown(self.astNode, success, failure)
         else:
             self.expression_breakdown(self.astNode, success, failure)
-        self.constantFolding()
 
     def retrieve(self):
         """
@@ -49,7 +49,7 @@ class IRLine():
             tvs: The current tempoary variable storage
             labelList: The list of used label names
         """
-        return self.tvs, self.labelList
+        return self.tvs, self.labelList, self.var_val
 
     def expression_breakdown(self, root, success, failure):
         """
@@ -255,7 +255,7 @@ class IRLine():
         #On the following types:
         #   int,float
         #TODO: Maybe ++, --?
-        print("Folding")
+        # print("Folding")
         for it,x in enumerate(self.treeList):
             #check that it's arithmetic
             if "operator" in x.__dict__:
@@ -336,7 +336,31 @@ class IRLine():
                             pass
 
 
-        pass
+    def constant_propagation(self):
+        for i, line in enumerate(self.treeList):
+            if isinstance(line, IRIf):
+                if line.lhs in self.var_val:
+                    line.lhs = self.var_val[line.lhs]
+                if line.rhs in self.var_val:
+                    line.rhs = self.var_val[line.rhs]
+            elif isinstance(line, IRArth):
+                if line.lhs in self.var_val:
+                    line.lhs = self.var_val[line.lhs]
+                if line.rhs in self.var_val:
+                    line.rhs = self.var_val[line.rhs]
+            elif isinstance(line, IRSpecial):
+                pass
+                # Assigning a value for a post and pre increment is extremly difficult due to the fact that it regularly occurs in loops and constants arent useful there.
+            elif isinstance(line, IRAssignment):
+                if line.rhs in self.var_val:
+                    line.rhs = self.var_val[line.rhs]
+                    self.var_val[line.lhs] = line.rhs
+                elif line.rhs.isnumeric():
+                    self.var_val[line.lhs] = line.rhs
+            elif isinstance(line, IRFunction):
+                for j, param in enumerate(line.params):
+                    if param in self.var_val:
+                        line.params[j] = self.var_val[param]
 
     def __str__(self):
         return "\n".join([f"{self.prefix}{x}" for x in self.treeList])

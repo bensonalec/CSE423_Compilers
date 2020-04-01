@@ -5,6 +5,7 @@ import os
 import re
 import sys
 from importlib.machinery import SourceFileLoader
+from itertools import chain
 
 irl = SourceFileLoader("IRLine", f"{os.path.dirname(__file__)}/IRLine.py").load_module()
 ast = SourceFileLoader("AST_builder", f"{os.path.dirname(__file__)}/../frontend/AST_builder.py").load_module()
@@ -28,7 +29,7 @@ class LevelOneIR():
         Constructs the linear representation for the object.
 
         Returns:
-            IR: A collection of strings and IRLine objects which can be optimized and/or transformed into assembly.
+            IR: A collection of strings and IRLine objects which can be optimized and/or transformed into assembly, varval=var_val.
         """
         sym = self.symTable
         ntv = self.astHead
@@ -47,13 +48,25 @@ class LevelOneIR():
         labelDigit = returnDigit + 1
         lines = []
 
-        for i in bodyList:
+        # A dictionary to store the values of global variables.
+        var_val = {x.name : 0 for x in self.symTable.symbols if x.entry_type == 0 and x.scope == "/"}
 
+        for i in bodyList:
             # Beginning of fuction wrapper
             lines.extend(beginWrapper(i, returnDigit))
 
+            # Retrieve the scope to store the values of all the relevant variables
+            scope = [x.scope for x in self.symTable.symbols if x.entry_type == 1 and x.name == i[0].children[1].name][0]
+            vals = {x.name : 0 for x in self.symTable.symbols if x.entry_type == 0 and x.scope.startswith(scope)}
+
+            for d in var_val:
+                vals.update(d)
+
             # Body of function
-            tmp_lines , labelDigit = returnLines(i[1], returnDigit, labelDigit)
+            tmp_lines , labelDigit, vals = returnLines(i[1], returnDigit, labelDigit, var_val=vals)
+            for v in vals:
+                if v in var_val:
+                    var_val.update(v)
             lines.extend(tmp_lines)
 
             # End of function wrapper
@@ -111,7 +124,7 @@ def beginWrapper(function_tuple, returnDigit):
 
     return lines
 
-def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None, prefix=""):
+def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None, prefix="", var_val = {}):
     """
     Produces a linear representation of the content nested within `node`.
 
@@ -145,8 +158,11 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
             ind = ind[0]
             if ind == 0:
 
-                line = irl.IRLine(element, tvs=[], labelList=[labelDigit], prefix=prefix)
-                tvs, labelList = line.retrieve()
+                line = irl.IRLine(element, tvs=[], labelList=[labelDigit], prefix=prefix, varval=var_val)
+                tvs, labelList, vals = line.retrieve()
+                for d in vals:
+                    if d in var_val:
+                        var_val.update(d)
                 # tmp, tvs, labelList = simp.breakdownExpression(element, tvs=[], labelList=[labelDigit])
                 # for x in tmp: lines.append(f"{prefix}{x}")
                 if labelList != []:
@@ -162,7 +178,10 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                     if [x.children[0] for x in initNode.children if x.name == "=" and x.children[0].children[0].name in ["auto", "long double", "double", "float", "long long", "long long int", "long", "int", "short", "char"]]:
                         lines.append(f"{prefix}{{")
                         ns = True
-                    tmp, labelDigit = returnLines(initNode, returnDigit, labelDigit, prefix=prefix[:-2])
+                    tmp, labelDigit, vals = returnLines(initNode, returnDigit, labelDigit, prefix=prefix[:-2], var_val=var_val)
+                    for v in vals:
+                        if v in var_val:
+                            var_val.update(v)
                     for x in tmp: lines.append(f"{prefix}{x}")
 
                 if ns:
@@ -184,14 +203,20 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                 labelDigit += 2
 
                 # recursivly deal with the body of the loop
-                tmp, labelDigit = returnLines(element.children[3], returnDigit, labelDigit, loopStart, loopEnd)
+                tmp, labelDigit, vals = returnLines(element.children[3], returnDigit, labelDigit, loopStart, loopEnd, var_val=var_val)
+                for v in vals:
+                    if v in var_val:
+                        var_val.update(v)
                 for x in tmp: lines.append(f"{prefix}{x}")
 
                 # Add the "end-of-loop" assignment/arithmetic
                 if element.children[2].children != []:
                     initNode = ast.ASTNode("tmp", None)
                     initNode.children.append(element.children[2])
-                    tmp, labelDigit = returnLines(initNode, returnDigit, labelDigit)
+                    tmp, labelDigit, vals = returnLines(initNode, returnDigit, labelDigit, var_val=var_val)
+                    for v in vals:
+                        if v in var_val:
+                            var_val.update(v)
                     for x in tmp: lines.append(f"{prefix}{x}")
 
                 # Start of conditionals for the loop
@@ -203,8 +228,11 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                         tmpNode.children.append(element.children[1])
                         tmpNode.children.append(ast.ASTNode("0", tmpNode))
 
-                    line = irl.IRLine(tmpNode, tvs=[], success=loopStart, failure=loopEnd, labelList=[labelDigit], prefix=prefix)
-                    tvs, labelList = line.retrieve()
+                    line = irl.IRLine(tmpNode, tvs=[], success=loopStart, failure=loopEnd, labelList=[labelDigit], prefix=prefix, varval=var_val)
+                    tvs, labelList, vals = line.retrieve()
+                    for d in vals:
+                        if d in var_val:
+                            var_val.update(d)
                     if labelList != []:
                         labelDigit = labelList[-1]
                     lines.append(line)
@@ -225,7 +253,10 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                     lines.append(f"{prefix}}}")
                 pass
             elif ind == 2:
-                tmp, labelDigit = returnLines(element, returnDigit, labelDigit, successDigit, failureDigit, prefix)
+                tmp, labelDigit, vals = returnLines(element, returnDigit, labelDigit, successDigit, failureDigit, prefix, var_val=var_val)
+                for v in vals:
+                    if v in var_val:
+                        var_val.update(v)
                 lines.append(f"{prefix}{{")
                 for x in tmp: lines.append(f"{prefix}{x}")
                 lines.append(f"{prefix}}}")
@@ -252,7 +283,10 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                             ns = True
 
                         #Get lines for the body and assign new labeldigit
-                        tmp, labelDigit = returnLines(case.children[0], returnDigit, labelDigit, success_label, failure_label)
+                        tmp, labelDigit, vals = returnLines(case.children[0], returnDigit, labelDigit, success_label, failure_label, var_val=var_val)
+                        for v in vals:
+                            if v in var_val:
+                                var_val.update(v)
                         for x in tmp: lines.append(f"{prefix}{x}")
 
                         if ns:
@@ -267,8 +301,11 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                         tmpNode.children.append(ast.ASTNode("0", tmpNode))
 
                     #break down argument for if statement into smaller if statements
-                    line = irl.IRLine(tmpNode, tvs=[], success=success_label, failure=failure_label, labelList=[labelDigit], prefix=prefix)
-                    tvs, labelList = line.retrieve()
+                    line = irl.IRLine(tmpNode, tvs=[], success=success_label, failure=failure_label, labelList=[labelDigit], prefix=prefix, varval=var_val)
+                    tvs, labelList, vals = line.retrieve()
+                    for d in vals:
+                        if d in var_val:
+                            var_val.update(d)
                     lines.append(line)
                     # temp_lines, tvs, labelList = simp.breakdownExpression(tmpNode, tvs=[], success=success_label, failure=failure_label, labelList=[labelDigit])
 
@@ -285,7 +322,10 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                         prefix += "  "
                         ns = True
                     #Get lines for the if body and assign new labeldigit
-                    tmp, labelDigit = returnLines(case.children[1], returnDigit,  labelDigit, success_label, failure_label)
+                    tmp, labelDigit, vals = returnLines(case.children[1], returnDigit,  labelDigit, success_label, failure_label, var_val=var_val)
+                    for v in vals:
+                        if v in var_val:
+                            var_val.update(v)
 
                     for x in tmp: lines.append(f"{prefix}{x}")
 
@@ -308,8 +348,11 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
 
                 # If returns some type of arithmetic expression, breaks it down.
                 if len(element.children) > 0 and element.children[0].children != []:
-                    line = irl.IRLine(element.children[0], tvs=[], labelList=[labelDigit], prefix=prefix)
-                    tvs, labelList = line.retrieve()
+                    line = irl.IRLine(element.children[0], tvs=[], labelList=[labelDigit], prefix=prefix, varval=var_val)
+                    tvs, labelList, vals = line.retrieve()
+                    for d in vals:
+                        if d in var_val:
+                            var_val.update(d)
                     lines.append(line)
                     # tmp, tvs, labelList = simp.breakdownExpression(element.children[0], tvs=[], labelList=[labelDigit])
                     # for x in tmp: lines.append(f"{prefix}{x}")
@@ -332,8 +375,11 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
 
                 # function call has parameters
                 if element.children[0] != []:
-                    line = irl.IRLine(element.children[0], tvs=[], labelList=[labelDigit], prefix=prefix)
-                    tvs, labelList = line.retrieve()
+                    line = irl.IRLine(element.children[0], tvs=[], labelList=[labelDigit], prefix=prefix, varval=var_val)
+                    tvs, labelList, vals = line.retrieve()
+                    for d in vals:
+                        if d in var_val:
+                            var_val.update(d)
                     lines.append(line)
                     # tmp, tvs, labelList = simp.breakdownExpression(element, tvs=[], labelList=[labelDigit])
                     # tmp[-1] = tmp[-1].split(' = ')[1]
@@ -372,7 +418,10 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                 labelDigit += 2
 
                 # recursivly deal with the body of the loop
-                tmp, labelDigit = returnLines(element.children[1], returnDigit, labelDigit, loopStart, loopEnd)
+                tmp, labelDigit, vals = returnLines(element.children[1], returnDigit, labelDigit, loopStart, loopEnd, var_val=var_val)
+                for v in vals:
+                    if v in var_val:
+                        var_val.update(v)
                 for x in tmp: lines.append(f"{prefix}{x}")
 
                 if ns:
@@ -387,8 +436,11 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
                         tmpNode.children.append(element.children[0])
                         tmpNode.children.append(ast.ASTNode("0", tmpNode))
 
-                line = irl.IRLine(tmpNode, tvs=[], success=loopStart, failure=loopEnd, labelList=[labelDigit], prefix=prefix)
-                tvs, labelList = line.retrieve()
+                line = irl.IRLine(tmpNode, tvs=[], success=loopStart, failure=loopEnd, labelList=[labelDigit], prefix=prefix, varval=var_val)
+                tvs, labelList, vals = line.retrieve()
+                for d in vals:
+                    if d in var_val:
+                        var_val.update(d)
                 lines.append(line)
                 # tmp, tvs, labelList = simp.breakdownExpression(tmpNode, tvs=[], success=loopStart, failure=loopEnd, labelList=[labelDigit])
 
@@ -413,13 +465,19 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
             elif ind == 10:
                 lines.append(f"{element.children[0].name}:")
                 if (len(element.children) > 1):
-                    temp_lines, labelDigit = returnLines(element.children[1], returnDigit, labelDigit)
+                    temp_lines, labelDigit, vals = returnLines(element.children[1], returnDigit, labelDigit, var_val=var_val)
+                    for v in vals:
+                        if v in var_val:
+                            var_val.update(v)
                     lines.extend(temp_lines)
 
             elif ind == 11:
                 # prefix += "  "
-                line = irl.IRLine(element, tvs=[], prefix=prefix)
-                tvs, labelList = line.retrieve()
+                line = irl.IRLine(element, tvs=[], prefix=prefix, varval=var_val)
+                tvs, labelList, vals = line.retrieve()
+                for d in vals:
+                    if d in var_val:
+                        var_val.update(d)
                 lines.append(line)
                 # tmp, tvs, labelList_ = simp.breakdownExpression(element, tvs=[])
                 # for x in tmp: lines.append(f"{prefix}{x}")
@@ -432,4 +490,4 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
             pass
 
     lines.append("")
-    return lines, labelDigit
+    return lines, labelDigit, var_val

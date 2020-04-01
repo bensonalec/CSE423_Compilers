@@ -8,6 +8,7 @@ from importlib.machinery import SourceFileLoader
 
 ir1 = SourceFileLoader("IR_Lv1_Builder", f"{os.path.dirname(__file__)}/IR_Lv1_Builder.py").load_module()
 import_ir = SourceFileLoader("import_ir", f"{os.path.dirname(__file__)}/import_ir.py").load_module()
+irl = SourceFileLoader("IRLine", f"{os.path.dirname(__file__)}/IRLine.py").load_module()
 
 def mainAST(args,astHead,symbolTable):
     """
@@ -29,6 +30,11 @@ def mainAST(args,astHead,symbolTable):
     else:
         ir = ir1.LevelOneIR(astHead,symbolTable)
         l1ir = ir.construct()
+
+    if args.opt > 1:
+        for line in l1ir:
+            if isinstance(line, irl.IRLine):
+                line.constant_propagation()
 
     if args.IR1 or args.all:
         for x in l1ir: print (x)
