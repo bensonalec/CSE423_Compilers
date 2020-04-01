@@ -2,8 +2,11 @@
 This module abstracts the necessary lines for the linear IR to allow for easier optimization methods like constant propagation, constant folding, unused references ect.
 """
 import importlib
+import os
+from inspect import getsourcefile
+from importlib.machinery import SourceFileLoader
 
-ast = importlib.import_module("AST_builder", __name__)
+ast = SourceFileLoader("AST_builder", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/../frontend/AST_builder.py").load_module()
 
 class IRLine():
     """
@@ -256,7 +259,7 @@ class IRLine():
 
 
     def __str__(self):
-        return "\n".join([f"{self.prefix}{x}" for x in self.treeList])
+        return "\n".join([str(x) for x in self.treeList])
 
     @staticmethod
     def singleEntry(irNode, labelDigit=None, prefix=""):

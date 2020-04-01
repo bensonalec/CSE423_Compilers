@@ -5,18 +5,19 @@ for command line arguments that can be used to determine which portion is run.
 import os
 import argparse
 from importlib.machinery import SourceFileLoader
+from inspect import getsourcefile
 import traceback
 import sys
 
 from rply.errors import LexingError
 from copy import deepcopy
 
-lex = SourceFileLoader("lexer", f"{os.path.dirname(__file__)}/lexer.py").load_module()
-par = SourceFileLoader("parser", f"{os.path.dirname(__file__)}/parser.py").load_module()
-btp = SourceFileLoader("bnfToParser", f"{os.path.dirname(__file__)}/bnfToParser.py").load_module()
-ast = SourceFileLoader("AST_builder", f"{os.path.dirname(__file__)}/AST_builder.py").load_module()
-sem = SourceFileLoader("semantics", f"{os.path.dirname(__file__)}/semantics.py").load_module()
-pre = SourceFileLoader("preprocessor", f"{os.path.dirname(__file__)}/preprocessor.py").load_module()
+lex = SourceFileLoader("lexer", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/lexer.py").load_module()
+par = SourceFileLoader("parser", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/parser.py").load_module()
+btp = SourceFileLoader("bnfToParser", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/bnfToParser.py").load_module()
+ast = SourceFileLoader("AST_builder", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/AST_builder.py").load_module()
+sem = SourceFileLoader("semantics", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/semantics.py").load_module()
+pre = SourceFileLoader("preprocessor", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/preprocessor.py").load_module()
 
 
 def getTree(head,level):
