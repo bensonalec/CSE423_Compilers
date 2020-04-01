@@ -34,11 +34,17 @@ class IRLine():
         self.id_ops = ["var", "call"]
 
         # Based on the node construct the needed intermediate trees in order
+        if node == None:
+            # There was no AST node passed in. This is the case when there 
+            # are no complex IR instructions that need to be broken down.
+            # IRNode will be added manually to self.treeList.
+            pass
 
-        if node.name in self.log_ops:
+        elif node.name in self.log_ops:
             self.boolean_breakdown(self.astNode, success, failure)
         else:
             self.expression_breakdown(self.astNode, success, failure)
+            
 
     def retrieve(self):
         """
@@ -168,7 +174,7 @@ class IRLine():
 
                     params = [self.tvs.pop() for x in range(len(node.children[0].children)) if x in complexP]
                     self.treeList.append(
-                        IRFunction(
+                        IRFunctionAssign(
                             node,
                             [params.pop() if x in complexP else node.children[0].children[x].name for x in range(len(node.children[0].children))],
                             self.tvs
@@ -433,7 +439,7 @@ class IRAssignment(IRNode):
     def __str__(self):
         return f"{self.lhs} = {self.rhs};"
 
-class IRFunction(IRNode):
+class IRFunctionAssign(IRNode):
     """
     Intermediate representation node for a function call assignment.
     """
@@ -453,3 +459,40 @@ class IRFunction(IRNode):
             return f"{self.var} = {self.node.children[0].name}({', '.join(self.params)});"
         else:
             return f"{self.node.children[0].name}({', '.join(self.params)});"
+
+class IRFunctionCall(IRNode):
+    """
+    Intermediate representation node for function call.
+    """
+    def __init__(self, name, params):
+        """
+        Args:
+            name: Name of function call.
+            params: The function params. Can be 'None' for no parameters.
+        """
+        self.name = name
+        self.params = params
+
+    def __str__(self):
+        if self.params:
+            return f"{self.name}({self.params});"
+        else:
+            return f"{self.name}();"
+
+class IRReturn(IRNode):
+    """
+    Intermediate representation node for a return.
+    """
+    def __init__(self, value):
+        """
+        Args:
+            value: The return value. Can be 'None' for void functions.
+        """
+        self.value = value
+
+    def __str__(self):
+        if self.value:
+            return f"return {self.value};"
+        else:
+            return f"return;"
+
