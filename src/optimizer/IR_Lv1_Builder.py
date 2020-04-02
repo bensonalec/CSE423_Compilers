@@ -158,85 +158,37 @@ class LevelOneIR():
         for line in self.IR:
             for it,x in enumerate(line.treeList):
                         if "operator" in x.__dict__:
+                            notFound = True
+                            #get the operator being used
                             if(x.operator == "+"):
-                                try:
-                                    if(int(x.lhs) and int(x.rhs)):
-                                        newValue = str((int(x.lhs) + int(x.rhs)))
-                                        # self.treeList = [newValue]
-                                        newAss = irl.IRAssignment(x.var,newValue)
-                                        line.treeList[it] = newAss
-                                except ValueError:
-                                    try:
-                                        if(float(x.lhs) and float(x.rhs)):
-                                            newValue = str((float(x.lhs) + float(x.rhs)))
-                                            # self.treeList = [newValue]
-                                            newAss = irl.IRAssignment(x.var,newValue)
-                                            line.treeList[it] = newAss
-                                    except ValueError:
-                                        pass
-                            # newValue = lambda rhs lhs op : rhs op lhs
+                                op = lambda rhs, lhs : rhs + lhs
                             elif(x.operator == "-"):
-                                try:
-                                    if(int(x.lhs) and int(x.rhs)):
-                                        newValue = str((int(x.lhs) - int(x.rhs)))
-                                        # self.treeList = [newValue]
-                                        newAss = irl.IRAssignment(x.var,newValue)
-                                        line.treeList[it] = newAss
-                                except ValueError:
-                                    try:
-                                        if(float(x.lhs) and float(x.rhs)):
-                                            newValue = str((float(x.lhs) - float(x.rhs)))
-                                            newAss = irl.IRAssignment(x.var,newValue)
-                                            line.treeList[it] = newAss
-                                    except ValueError:
-                                        pass
+                                op = lambda rhs, lhs : rhs - lhs
                             elif(x.operator == "*"):
-                                try:
-                                    if(int(x.lhs) and int(x.rhs)):
-                                        newValue = str((int(x.lhs) * int(x.rhs)))
-                                        newAss = irl.IRAssignment(x.var,newValue)
-                                        line.treeList[it] = newAss
-                                except ValueError:
-                                    try:
-                                        if(float(x.lhs) and float(x.rhs)):
-                                            newValue = str((float(x.lhs) * float(x.rhs)))
-                                            newAss = irl.IRAssignment(x.var,newValue)
-                                            line.treeList[it] = newAss
-                                    except ValueError:
-                                        pass
-
-                                    pass
+                                op = lambda rhs, lhs : rhs * lhs
                             elif(x.operator == "/"):
-                                try:
-                                    if(int(x.lhs) and int(x.rhs)):
-                                        newValue = str((int(x.lhs) / int(x.rhs)))
-                                        # self.treeList = [newValue]
-                                        newAss = irl.IRAssignment(x.var,newValue)
-                                        line.treeList[it] = newAss
-                                except ValueError:
-                                    try:
-                                        if(float(x.lhs) and float(x.rhs)):
-                                            newValue = str((float(x.lhs) / float(x.rhs)))
-                                            newAss = irl.IRAssignment(x.var,newValue)
-                                            line.treeList[it] = newAss
-                                    except ValueError:
-                                        pass
-
-                                    pass
+                                op = lambda rhs, lhs : rhs / lhs
                             elif(x.operator == "%"):
+                                op = lambda rhs, lhs : rhs % lhs
+                            #get the left hand side and the right hand side
+                            try:
+                                
+                                lhs = int(x.lhs)
+                                rhs = int(x.rhs)
+                            except ValueError:
                                 try:
-                                    if(int(x.lhs) and int(x.rhs)):
-                                        newValue = str((int(x.lhs) % int(x.rhs)))
-                                        newAss = irl.IRAssignment(x.var,newValue)
-                                        line.treeList[it] = newAss
+                                    lhs = float(x.lhs)
+                                    rhs = float(x.rhs)
                                 except ValueError:
-                                    try:
-                                        if(float(x.lhs) and float(x.rhs)):
-                                            newValue = str((float(x.lhs) % float(x.rhs)))
-                                            newAss = irl.IRAssignment(x.var,newValue)
-                                            line.treeList[it] = newAss
-                                    except ValueError:
-                                        pass
+                                    notFound = True
+                            
+                            #if we found all components, replace the node
+                            if(not notFound):
+                                newValue = lambda rhs, lhs, op : op(rhs,lhs)
+                                newAss = irl.IRAssignment(x.var,newValue(rhs,lhs,op))
+                                line.treeList[it] = newAss
+
+
 
         return False
 
