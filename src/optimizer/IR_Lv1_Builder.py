@@ -77,7 +77,7 @@ class LevelOneIR():
             self.remove_unused_vars()
 
         if opt > 1:
-            while self.constant_propagation():
+            while self.constant_folding() or self.constant_propagation():
                 pass
 
     def remove_unused_vars(self):
@@ -154,47 +154,56 @@ class LevelOneIR():
 
         self.IR = ir
 
-    def constant_propagation(self):
-        changed = False
-        var_val = {}
-        for line in self.lines:
-            if isinstance(line, irl.IRFunctionDecl):
-                scope = f"/{line.name}"
-                var_val = {x.name : 0 for x in self.symTable.symbols if x.scope.startswith(scope)}
+    def constant_folding(self):
+        return False
 
-            if isinstance(line, irl.IRLine):
-                for i, node in enumerate(line.treeList):
-                    if isinstance(node, irl.IRIf):
-                        if node.lhs in var_val:
-                            node.lhs = var_val[node.lhs]
+    def constant_propagation(self, index, var_val):
+
+        # NOTE: The current issue is that the propogation is goint to have to exit and re enter the function every time to achieve the following:
+        # Clear the tempoary variables per line as they are re used
+        # Avoid propogating too far so that assignments in the future that may happen after certain other computations and assignments propogate the correct value
+
+        # TODO: Satisfy the requirements above
+
+        for major, line in enumerate(self.IR[index[0]:], index[0]):
+            changed = False
+            for minor, node in enumerate(line.treeList[index[1]:], index[1]):
+                if isinstance(node, irl.IRFunctionDecl):
+                    scope = f"/{node.name}"
+                    var_val = {x.name : 0 for x in self.symTable.symbols if x.scope.startswith(scope)}
+                elif isinstance(node, irl.IRIf):
+                    if node.lhs in var_val:
+                        node.lhs = var_val[node.lhs]
+                        changed = True
+                    if node.rhs in var_val:
+                        node.rhs = var_val[node.rhs]
+                        changed = True
+
+                elif isinstance(node, irl.IRArth):
+                    if node.lhs in var_val:
+                        node.lhs = var_val[node.lhs]
+                        changed = True
+                    if node.rhs in var_val:
+                        node.rhs = var_val[node.rhs]
+                        changed = True
+
+                elif isinstance(node, irl.IRSpecial):
+                    pass
+                    # Assigning a value for a post and pre increment is extremly difficult due to the fact that it regularly occurs in loops and constants arent useful there.
+                elif isinstance(node, irl.IRAssignment):
+                    if node.rhs in var_val:
+                        node.rhs = var_val[node.rhs]
+                        var_val[node.lhs] = node.rhs
+                        changed = True
+                    elif node.rhs.isnumeric():
+                        var_val[node.lhs] = node.rhs
+                elif isinstance(node, irl.IRFunctionCall):
+                    for j, param in enumerate(node.params):
+                        if param in var_val:
+                            node.params[j] = var_val[param]
                             changed = True
-                        if node.rhs in var_val:
-                            node.rhs = var_val[node.rhs]
-                            changed = True
-                    elif isinstance(node, irl.IRArth):
-                        if node.lhs in var_val:
-                            node.lhs = var_val[node.lhs]
-                            changed = True
-                        if node.rhs in var_val:
-                            node.rhs = var_val[node.rhs]
-                            changed = True
-                    elif isinstance(node, irl.IRSpecial):
-                        pass
-                        # Assigning a value for a post and pre increment is extremly difficult due to the fact that it regularly occurs in loops and constants arent useful there.
-                    elif isinstance(node, irl.IRAssignment):
-                        if node.rhs in var_val:
-                            node.rhs = var_val[node.rhs]
-                            var_val[node.lhs] = node.rhs
-                            changed = True
-                        elif node.rhs.isnumeric():
-                            var_val[node.lhs] = node.rhs
-                            changed = True
-                    elif isinstance(node, irl.IRFunction):
-                        for j, param in enumerate(node.params):
-                            if param in var_val:
-                                node.params[j] = var_val[param]
-                                changed = True
-            return changed
+
+            return False
 
 def buildBoilerPlate(symTable):
     namesandparams = []

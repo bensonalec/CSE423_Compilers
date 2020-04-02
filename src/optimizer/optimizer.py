@@ -10,7 +10,7 @@ from importlib.machinery import SourceFileLoader
 ir1 = SourceFileLoader("IR_Lv1_Builder", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/IR_Lv1_Builder.py").load_module()
 import_ir = SourceFileLoader("import_ir", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/import_ir.py").load_module()
 
-def mainAST(args,astHead,symbolTable):
+def mainAST(args, astHead = None, symbolTable = None):
     """
     This is the function that when given an AST and a symbol table will produce linear intermediate representations for teh inputted program.
 
@@ -47,4 +47,4 @@ if __name__ == "__main__":
 
     print(args.input)
 
-    mainAST(args,astHead,symbolTable)
+    mainAST(args)

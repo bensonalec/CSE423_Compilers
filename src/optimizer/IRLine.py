@@ -393,7 +393,7 @@ class IRNode():
     def __str__(self):
         pass
 
-    def __repr__():
+    def __repr__(self):
         pass
 
 
@@ -411,7 +411,7 @@ class IRJump(IRNode):
     def __str__(self):
         return f"{self.name}:"
 
-    def __repr__():
+    def __repr__(self):
         pass
 
 class IRGoTo(IRNode):
@@ -428,7 +428,7 @@ class IRGoTo(IRNode):
     def __str__(self):
         return f"goto {self.name};"
 
-    def __repr__():
+    def __repr__(self):
         pass
 
 class IRIf(IRNode):
@@ -479,7 +479,7 @@ class IRIf(IRNode):
     def __str__(self):
         return f"if ({self.lhs} {self.comp} {self.rhs}) goto <D.{self.success}>; else goto <D.{self.failure}>;"
 
-    def __repr__():
+    def __repr__(self):
         pass
 
 class IRArth(IRNode):
@@ -530,7 +530,7 @@ class IRArth(IRNode):
         else:
             return f"{self.var} = {self.operator}{self.lhs};"
 
-    def __repr__():
+    def __repr__(self):
         pass
 
 class IRSpecial(IRNode):
