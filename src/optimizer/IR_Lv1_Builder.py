@@ -157,8 +157,9 @@ class LevelOneIR():
     def constant_folding(self):
         for line in self.IR:
             for it,x in enumerate(line.treeList):
-                        if "operator" in x.__dict__:
+                        if isinstance(x,irl.IRArth):
                             notFound = True
+                            op = False
                             #get the operator being used
                             if(x.operator == "+"):
                                 op = lambda rhs, lhs : rhs + lhs
@@ -172,7 +173,6 @@ class LevelOneIR():
                                 op = lambda rhs, lhs : rhs % lhs
                             #get the left hand side and the right hand side
                             try:
-                                
                                 lhs = int(x.lhs)
                                 rhs = int(x.rhs)
                             except ValueError:
@@ -183,7 +183,7 @@ class LevelOneIR():
                                     notFound = True
                             
                             #if we found all components, replace the node
-                            if(not notFound):
+                            if(not notFound and op):
                                 newValue = lambda rhs, lhs, op : op(rhs,lhs)
                                 newAss = irl.IRAssignment(x.var,newValue(rhs,lhs,op))
                                 line.treeList[it] = newAss
