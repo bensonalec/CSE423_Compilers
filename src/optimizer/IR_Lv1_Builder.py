@@ -77,7 +77,7 @@ class LevelOneIR():
             self.remove_unused_vars()
 
         if opt > 1:
-            while self.constant_folding() or self.constant_propagation():
+            while self.constant_folding():
                 pass
 
     def remove_unused_vars(self):
@@ -155,6 +155,89 @@ class LevelOneIR():
         self.IR = ir
 
     def constant_folding(self):
+        for line in self.IR:
+            for it,x in enumerate(line.treeList):
+                        if "operator" in x.__dict__:
+                            if(x.operator == "+"):
+                                try:
+                                    if(int(x.lhs) and int(x.rhs)):
+                                        newValue = str((int(x.lhs) + int(x.rhs)))
+                                        # self.treeList = [newValue]
+                                        newAss = irl.IRAssignment(x.var,newValue)
+                                        line.treeList[it] = newAss
+                                except ValueError:
+                                    try:
+                                        if(float(x.lhs) and float(x.rhs)):
+                                            newValue = str((float(x.lhs) + float(x.rhs)))
+                                            # self.treeList = [newValue]
+                                            newAss = irl.IRAssignment(x.var,newValue)
+                                            line.treeList[it] = newAss
+                                    except ValueError:
+                                        pass
+                            # newValue = lambda rhs lhs op : rhs op lhs
+                            elif(x.operator == "-"):
+                                try:
+                                    if(int(x.lhs) and int(x.rhs)):
+                                        newValue = str((int(x.lhs) - int(x.rhs)))
+                                        # self.treeList = [newValue]
+                                        newAss = irl.IRAssignment(x.var,newValue)
+                                        line.treeList[it] = newAss
+                                except ValueError:
+                                    try:
+                                        if(float(x.lhs) and float(x.rhs)):
+                                            newValue = str((float(x.lhs) - float(x.rhs)))
+                                            newAss = irl.IRAssignment(x.var,newValue)
+                                            line.treeList[it] = newAss
+                                    except ValueError:
+                                        pass
+                            elif(x.operator == "*"):
+                                try:
+                                    if(int(x.lhs) and int(x.rhs)):
+                                        newValue = str((int(x.lhs) * int(x.rhs)))
+                                        newAss = irl.IRAssignment(x.var,newValue)
+                                        line.treeList[it] = newAss
+                                except ValueError:
+                                    try:
+                                        if(float(x.lhs) and float(x.rhs)):
+                                            newValue = str((float(x.lhs) * float(x.rhs)))
+                                            newAss = irl.IRAssignment(x.var,newValue)
+                                            line.treeList[it] = newAss
+                                    except ValueError:
+                                        pass
+
+                                    pass
+                            elif(x.operator == "/"):
+                                try:
+                                    if(int(x.lhs) and int(x.rhs)):
+                                        newValue = str((int(x.lhs) / int(x.rhs)))
+                                        # self.treeList = [newValue]
+                                        newAss = irl.IRAssignment(x.var,newValue)
+                                        line.treeList[it] = newAss
+                                except ValueError:
+                                    try:
+                                        if(float(x.lhs) and float(x.rhs)):
+                                            newValue = str((float(x.lhs) / float(x.rhs)))
+                                            newAss = irl.IRAssignment(x.var,newValue)
+                                            line.treeList[it] = newAss
+                                    except ValueError:
+                                        pass
+
+                                    pass
+                            elif(x.operator == "%"):
+                                try:
+                                    if(int(x.lhs) and int(x.rhs)):
+                                        newValue = str((int(x.lhs) % int(x.rhs)))
+                                        newAss = irl.IRAssignment(x.var,newValue)
+                                        line.treeList[it] = newAss
+                                except ValueError:
+                                    try:
+                                        if(float(x.lhs) and float(x.rhs)):
+                                            newValue = str((float(x.lhs) % float(x.rhs)))
+                                            newAss = irl.IRAssignment(x.var,newValue)
+                                            line.treeList[it] = newAss
+                                    except ValueError:
+                                        pass
+
         return False
 
     def constant_propagation(self, index, var_val):
