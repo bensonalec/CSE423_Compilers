@@ -3,19 +3,16 @@ function ()
 int D.1234;
 D.1234 = 1;
 return D.1234;
-
 }
 main ()
 {
 int D.1235;
-  int a;
-  int b;
-  int c;
-
-  a = 1;
-  _1 = 1 + 1;
-  b = _1;
-  _1 = function();
-  c = _1;
-
+int a;
+int b;
+int c;
+a = 1;
+_1 = 1 + 1;
+b = _1;
+_1 = function();
+c = _1;
 }

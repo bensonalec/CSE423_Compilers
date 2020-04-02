@@ -32,9 +32,10 @@ import os
 import re
 from importlib.machinery import SourceFileLoader
 from collections import namedtuple
+from inspect import getsourcefile
 
-lex = SourceFileLoader(&#34;lexer&#34;, f&#34;{os.path.dirname(__file__)}/lexer.py&#34;).load_module()
-ast = SourceFileLoader(&#34;AST_builder&#34;, f&#34;{os.path.dirname(__file__)}/AST_builder.py&#34;).load_module()
+lex = SourceFileLoader(&#34;lexer&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/lexer.py&#34;).load_module()
+ast = SourceFileLoader(&#34;AST_builder&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/AST_builder.py&#34;).load_module()
 
 en_map = {
     0 : &#34;Variable&#34;,
@@ -130,7 +131,11 @@ class symbol_table():
                     if [x for x in self.symbols if x.entry_type == {value: key for key, value in en_map.items()}[&#34;Function&#34;] and x.name == cur.Node.children[0].name] == []:
                         # print(f&#39;Function Undefined {cur.Node.children[0].name}&#39;)
                         self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Function&#34;],cur.Node.children[0].name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
-                    pass
+                    else:
+                        ref = [x for x in self.symbols if en_map[x.entry_type] == &#34;Function&#34; and x.name == cur.Node.children[0].name]
+                        for i in ref:
+                            i.references.append(i)
+
                 # Initialization and Usage
                 elif index == 3:
 
@@ -158,8 +163,11 @@ class symbol_table():
                         if ([x for x in self.symbols if x.name == cur.Node.children[0].name and x.scope in cur.Scope] == []):
                             print(f&#39;Variable Undeclared {cur.Node.children[0].name}&#39;)
                             self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;],  cur.Node.children[0].name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
-
-                        pass
+                        else:
+                            ref = [x for x in self.symbols if x.name == cur.Node.children[0].name and x.scope in cur.Scope]
+                            for i in ref:
+                                i.references.append(i)
+                        
                 elif index == 4:
                     cur = cur._replace(Scope = f&#34;{cur.Scope}{scopenum}/&#34;)
                     scopenum += 1
@@ -605,7 +613,11 @@ class symbol_table():
                     if [x for x in self.symbols if x.entry_type == {value: key for key, value in en_map.items()}[&#34;Function&#34;] and x.name == cur.Node.children[0].name] == []:
                         # print(f&#39;Function Undefined {cur.Node.children[0].name}&#39;)
                         self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Function&#34;],cur.Node.children[0].name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
-                    pass
+                    else:
+                        ref = [x for x in self.symbols if en_map[x.entry_type] == &#34;Function&#34; and x.name == cur.Node.children[0].name]
+                        for i in ref:
+                            i.references.append(i)
+
                 # Initialization and Usage
                 elif index == 3:
 
@@ -633,8 +645,11 @@ class symbol_table():
                         if ([x for x in self.symbols if x.name == cur.Node.children[0].name and x.scope in cur.Scope] == []):
                             print(f&#39;Variable Undeclared {cur.Node.children[0].name}&#39;)
                             self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;],  cur.Node.children[0].name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
-
-                        pass
+                        else:
+                            ref = [x for x in self.symbols if x.name == cur.Node.children[0].name and x.scope in cur.Scope]
+                            for i in ref:
+                                i.references.append(i)
+                        
                 elif index == 4:
                     cur = cur._replace(Scope = f&#34;{cur.Scope}{scopenum}/&#34;)
                     scopenum += 1
@@ -985,7 +1000,11 @@ class symbol_table():
                 if [x for x in self.symbols if x.entry_type == {value: key for key, value in en_map.items()}[&#34;Function&#34;] and x.name == cur.Node.children[0].name] == []:
                     # print(f&#39;Function Undefined {cur.Node.children[0].name}&#39;)
                     self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Function&#34;],cur.Node.children[0].name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
-                pass
+                else:
+                    ref = [x for x in self.symbols if en_map[x.entry_type] == &#34;Function&#34; and x.name == cur.Node.children[0].name]
+                    for i in ref:
+                        i.references.append(i)
+
             # Initialization and Usage
             elif index == 3:
 
@@ -1013,8 +1032,11 @@ class symbol_table():
                     if ([x for x in self.symbols if x.name == cur.Node.children[0].name and x.scope in cur.Scope] == []):
                         print(f&#39;Variable Undeclared {cur.Node.children[0].name}&#39;)
                         self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;],  cur.Node.children[0].name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
-
-                    pass
+                    else:
+                        ref = [x for x in self.symbols if x.name == cur.Node.children[0].name and x.scope in cur.Scope]
+                        for i in ref:
+                            i.references.append(i)
+                    
             elif index == 4:
                 cur = cur._replace(Scope = f&#34;{cur.Scope}{scopenum}/&#34;)
                 scopenum += 1
