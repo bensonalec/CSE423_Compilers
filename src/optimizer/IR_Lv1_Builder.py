@@ -67,33 +67,44 @@ class LevelOneIR():
         return self.IR
 
     def optimize(self):
-        pass
+        var_val = {}
 
-    def constant_propagation(self):
-        for i, line in enumerate(self.treeList):
-            if isinstance(line, irl.IRIf):
-                if line.lhs in self.var_val:
-                    line.lhs = self.var_val[line.lhs]
-                if line.rhs in self.var_val:
-                    line.rhs = self.var_val[line.rhs]
-            elif isinstance(line, irl.IRArth):
-                if line.lhs in self.var_val:
-                    line.lhs = self.var_val[line.lhs]
-                if line.rhs in self.var_val:
-                    line.rhs = self.var_val[line.rhs]
-            elif isinstance(line, irl.IRSpecial):
-                pass
-                # Assigning a value for a post and pre increment is extremly difficult due to the fact that it regularly occurs in loops and constants arent useful there.
-            elif isinstance(line, irl.IRAssignment):
-                if line.rhs in self.var_val:
-                    line.rhs = self.var_val[line.rhs]
-                    self.var_val[line.lhs] = line.rhs
-                elif line.rhs.isnumeric():
-                    self.var_val[line.lhs] = line.rhs
-            elif isinstance(line, irl.IRFunction):
-                for j, param in enumerate(line.params):
-                    if param in self.var_val:
-                        line.params[j] = self.var_val[param]
+    def constant_propagation(self, var_val):
+        changed = False
+        for line in self.lines:
+            if isinstance(line, irl.IRLine):
+                for i, node in enumerate(line.treeList):
+                    if isinstance(node, irl.IRIf):
+                        if node.lhs in var_val:
+                            node.lhs = var_val[node.lhs]
+                            changed = True
+                        if node.rhs in var_val:
+                            node.rhs = var_val[node.rhs]
+                            changed = True
+                    elif isinstance(node, irl.IRArth):
+                        if node.lhs in var_val:
+                            node.lhs = var_val[node.lhs]
+                            changed = True
+                        if node.rhs in var_val:
+                            node.rhs = var_val[node.rhs]
+                            changed = True
+                    elif isinstance(node, irl.IRSpecial):
+                        pass
+                        # Assigning a value for a post and pre increment is extremly difficult due to the fact that it regularly occurs in loops and constants arent useful there.
+                    elif isinstance(node, irl.IRAssignment):
+                        if node.rhs in var_val:
+                            node.rhs = var_val[node.rhs]
+                            var_val[node.lhs] = node.rhs
+                            changed = True
+                        elif node.rhs.isnumeric():
+                            var_val[node.lhs] = node.rhs
+                            changed = True
+                    elif isinstance(node, irl.IRFunction):
+                        for j, param in enumerate(node.params):
+                            if param in var_val:
+                                node.params[j] = var_val[param]
+                                changed = True
+        return changed
 
     def __str__(self):
         return "\n".join([str(x) for x in self.IR]) + "\n"
