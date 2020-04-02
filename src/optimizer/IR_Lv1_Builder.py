@@ -175,12 +175,14 @@ class LevelOneIR():
                             try:
                                 lhs = int(x.lhs)
                                 rhs = int(x.rhs)
+                                notFound = False
                             except ValueError:
                                 try:
                                     lhs = float(x.lhs)
                                     rhs = float(x.rhs)
+                                    notFound = False
                                 except ValueError:
-                                    notFound = True
+                                    pass
                             
                             #if we found all components, replace the node
                             if(not notFound and op):
