@@ -3,17 +3,13 @@ test_function (int x,int y)
 int D.1234;
 D.1234 = 1;
 return D.1234;
-
 }
 main ()
 {
 int D.1235;
-  int x;
-
-  _1 = test_function(1, 1);
-  x = _1;
-
-  D.1235 = x;
-  return D.1235;
-
+int x;
+_1 = test_function(1, 1);
+x = _1;
+D.1235 = x;
+return D.1235;
 }

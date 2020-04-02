@@ -2,8 +2,11 @@
 This module abstracts the necessary lines for the linear IR to allow for easier optimization methods like constant propagation, constant folding, unused references ect.
 """
 import importlib
+import os
+from inspect import getsourcefile
+from importlib.machinery import SourceFileLoader
 
-ast = importlib.import_module("AST_builder", __name__)
+ast = SourceFileLoader("AST_builder", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/../frontend/AST_builder.py").load_module()
 
 class IRLine():
     """
@@ -34,11 +37,17 @@ class IRLine():
         self.id_ops = ["var", "call"]
 
         # Based on the node construct the needed intermediate trees in order
+        if node == None:
+            # There was no AST node passed in. This is the case when there 
+            # are no complex IR instructions that need to be broken down.
+            # IRNode will be added manually to self.treeList.
+            pass
 
-        if node.name in self.log_ops:
+        elif node.name in self.log_ops:
             self.boolean_breakdown(self.astNode, success, failure)
         else:
             self.expression_breakdown(self.astNode, success, failure)
+            
 
     def retrieve(self):
         """
@@ -168,7 +177,7 @@ class IRLine():
 
                     params = [self.tvs.pop() for x in range(len(node.children[0].children)) if x in complexP]
                     self.treeList.append(
-                        IRFunction(
+                        IRFunctionAssign(
                             node,
                             [params.pop() if x in complexP else node.children[0].children[x].name for x in range(len(node.children[0].children))],
                             self.tvs
@@ -250,7 +259,21 @@ class IRLine():
 
 
     def __str__(self):
-        return "\n".join([f"{self.prefix}{x}" for x in self.treeList])
+        return "\n".join([str(x) for x in self.treeList])
+
+    @staticmethod
+    def singleEntry(irNode, labelDigit=None, prefix=""):
+        """
+        Creates a new instance of an IRLine but with only one entry.
+
+        Args:
+            irNode: The given 'IRNode' entry for this new IRLine.
+            labelList: The list of used label names.
+            prefix: The output prefix.
+        """
+        entry = IRLine(node=None, tvs=[], labelList=[labelDigit], prefix=prefix)
+        entry.treeList.append(irNode)
+        return entry
 
 class IRNode():
     """
@@ -264,6 +287,7 @@ class IRNode():
 
     def __repr__():
         pass
+
 
 class IRJump(IRNode):
     """
@@ -433,7 +457,7 @@ class IRAssignment(IRNode):
     def __str__(self):
         return f"{self.lhs} = {self.rhs};"
 
-class IRFunction(IRNode):
+class IRFunctionAssign(IRNode):
     """
     Intermediate representation node for a function call assignment.
     """
@@ -453,3 +477,91 @@ class IRFunction(IRNode):
             return f"{self.var} = {self.node.children[0].name}({', '.join(self.params)});"
         else:
             return f"{self.node.children[0].name}({', '.join(self.params)});"
+
+class IRFunctionCall(IRNode):
+    """
+    Intermediate representation node for function call.
+    """
+    def __init__(self, name, params):
+        """
+        Args:
+            name: Name of function call.
+            params: The function params. Can be 'None' for no parameters.
+        """
+        self.name = name
+        self.params = params
+
+class IRFunctionDecl(IRNode):
+    """
+    Intermediate representation node for a function declaration.
+    """
+    def __init__(self, name, params):
+        """
+        Args:
+            name: Name of function call.
+            params: The function params as a string
+        """
+        self.name = name
+        self.params = params
+
+    def __str__(self):
+            return f"{self.name} ({self.params})"
+
+class IRReturn(IRNode):
+    """
+    Intermediate representation node for a return.
+    """
+    def __init__(self, value):
+        """
+        Args:
+            value: The return value. Can be 'None' for void functions.
+        """
+        self.value = value
+
+    def __str__(self):
+        if self.value:
+            return f"return {self.value};"
+        else:
+            return f"return;"
+
+class IRBracket(IRNode):
+    """
+    Intermediate representation node for a bracket
+    """
+    def __init__(self, opening):
+        """
+        Args:
+            opening: Either True or False depending on if bracket is open/close
+        """
+        self.opening = opening
+
+    def __str__(self):
+        if self.opening == True:
+            return "{"
+        else:
+            return "}"
+
+class IRVariableInit(IRNode):
+    """
+    Intermediate representation node for a variable initialization.
+    """
+    def __init__(self, modifiers, typ, var):
+        """
+        Args:
+            modifiers: 
+            type: 
+            var: 
+        """
+        self.modifiers = modifiers
+
+        self.typ = typ
+        
+        self.var = var
+
+    def __str__(self):
+        return f"{self.modifiers}{self.typ} {self.var};"
+                
+
+    
+    
+

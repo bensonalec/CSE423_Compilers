@@ -29,12 +29,13 @@
 This module serves as the main interface to the optimization process in order to streamline the compiler.
 &#34;&#34;&#34;
 
+from inspect import getsourcefile
 import os
 import argparse
 from importlib.machinery import SourceFileLoader
 
-ir1 = SourceFileLoader(&#34;IR_Lv1_Builder&#34;, f&#34;{os.path.dirname(__file__)}/IR_Lv1_Builder.py&#34;).load_module()
-import_ir = SourceFileLoader(&#34;import_ir&#34;, f&#34;{os.path.dirname(__file__)}/import_ir.py&#34;).load_module()
+ir1 = SourceFileLoader(&#34;IR_Lv1_Builder&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/IR_Lv1_Builder.py&#34;).load_module()
+import_ir = SourceFileLoader(&#34;import_ir&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/import_ir.py&#34;).load_module()
 
 def mainAST(args,astHead,symbolTable):
     &#34;&#34;&#34;
@@ -56,9 +57,10 @@ def mainAST(args,astHead,symbolTable):
     else:
         ir = ir1.LevelOneIR(astHead,symbolTable)
         l1ir = ir.construct()
+        ir.optimize()
 
     if args.IR1 or args.all:
-        for x in l1ir: print (x)
+        print(str(ir))
     pass
 
 
@@ -66,8 +68,7 @@ if __name__ == &#34;__main__&#34;:
     cmd_options = argparse.ArgumentParser(description=&#39;Optimizer of the compiler. Can take in an AST and Symbol Table or a File with an IR&#39;)
 
     cmd_options.add_argument(&#39;--all&#39;,help=&#39;Prints out all intermediate representations as they are encountered in the compilation process&#39;, action=&#34;store_true&#34;)
-    cmd_options.add_argument(&#39;-O0&#39;,help=&#39;Does no optimization&#39;)
-    cmd_options.add_argument(&#39;-O1&#39;,help=&#39;Optimize the symbol table and AST&#39;)
+    cmd_options.add_argument(&#39;-O&#39;, &#39;--opt&#39;, type=int, choices=range(3), default=0, help=&#39;Determines the optimization level&#39;)
     cmd_options.add_argument(&#39;-i&#39;, action=&#39;store&#39;, dest=&#34;input&#34;, type=str, help=&#34;Used to input IR from file&#34;)
     args = cmd_options.parse_args()
 
@@ -123,9 +124,10 @@ if __name__ == &#34;__main__&#34;:
     else:
         ir = ir1.LevelOneIR(astHead,symbolTable)
         l1ir = ir.construct()
+        ir.optimize()
 
     if args.IR1 or args.all:
-        for x in l1ir: print (x)
+        print(str(ir))
     pass</code></pre>
 </details>
 </dd>

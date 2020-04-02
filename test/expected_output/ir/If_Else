@@ -1,54 +1,43 @@
 main ()
 {
 int D.1234;
-  int i;
-  int j;
-
-  i = 1;
-  j = 2;
-  if (i > 0) goto <D.1237>; else goto <D.1236>;
-  <D.1237>:
-  if (j < i) goto <D.1235>; else goto <D.1236>;
-  <D.1235>:
-  
-  goto <D.1239>;
-  <D.1236>:
-  <D.1239>:
-  if (1 != 0) goto <D.1240>; else goto <D.1241>;
-  <D.1240>:
-  
-  goto <D.1242>;
-  <D.1241>:
-  if (0 != 0) goto <D.1243>; else goto <D.1244>;
-  <D.1243>:
-  
-  goto <D.1245>;
-  <D.1244>:
-  if (1 != 0) goto <D.1248>; else goto <D.1249>;
-  <D.1248>:
-  
-  goto <D.1250>;
-  <D.1249>:
-  <D.1250>:
-  
-  <D.1242>:
-  <D.1245>:
-  if (1 != 0) goto <D.1251>; else goto <D.1252>;
-  <D.1251>:
-  {
-      int a;
-    
-      a = 0;
-    
-  }
-  goto <D.1253>;
-  <D.1252>:
-  {
-      int c;
-    
-      c = 2;
-    
-  }
-  <D.1253>:
-
+int i;
+int j;
+i = 1;
+j = 2;
+if (i > 0) goto <D.1237>; else goto <D.1236>;
+<D.1237>:
+if (j < i) goto <D.1235>; else goto <D.1236>;
+<D.1235>:
+goto <D.1239>;
+<D.1236>:
+<D.1239>:
+if (1 != 0) goto <D.1240>; else goto <D.1241>;
+<D.1240>:
+goto <D.1242>;
+<D.1241>:
+if (0 != 0) goto <D.1243>; else goto <D.1244>;
+<D.1243>:
+goto <D.1245>;
+<D.1244>:
+if (1 != 0) goto <D.1248>; else goto <D.1249>;
+<D.1248>:
+goto <D.1250>;
+<D.1249>:
+<D.1250>:
+<D.1242>:
+<D.1245>:
+if (1 != 0) goto <D.1251>; else goto <D.1252>;
+<D.1251>:
+{
+int a;
+a = 0;
+}
+goto <D.1253>;
+<D.1252>:
+{
+int c;
+c = 2;
+}
+<D.1253>:
 }

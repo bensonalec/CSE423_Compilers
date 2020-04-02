@@ -2,12 +2,13 @@
 This module serves as the main interface to the optimization process in order to streamline the compiler.
 """
 
+from inspect import getsourcefile
 import os
 import argparse
 from importlib.machinery import SourceFileLoader
 
-ir1 = SourceFileLoader("IR_Lv1_Builder", f"{os.path.dirname(__file__)}/IR_Lv1_Builder.py").load_module()
-import_ir = SourceFileLoader("import_ir", f"{os.path.dirname(__file__)}/import_ir.py").load_module()
+ir1 = SourceFileLoader("IR_Lv1_Builder", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/IR_Lv1_Builder.py").load_module()
+import_ir = SourceFileLoader("import_ir", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/import_ir.py").load_module()
 
 def mainAST(args,astHead,symbolTable):
     """
@@ -29,9 +30,10 @@ def mainAST(args,astHead,symbolTable):
     else:
         ir = ir1.LevelOneIR(astHead,symbolTable)
         l1ir = ir.construct()
+        ir.optimize()
 
     if args.IR1 or args.all:
-        for x in l1ir: print (x)
+        print(str(ir))
     pass
 
 

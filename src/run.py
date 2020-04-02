@@ -1,13 +1,13 @@
 """
 This module serves as the main interface to the compiler. It connects all the parts of the compiler in such a way that all representations are handed off to the next step.
 """
+from inspect import getsourcefile
 import os
 import argparse
 from importlib.machinery import SourceFileLoader
 
-frontend = SourceFileLoader("frontend.frontend", f"{os.path.dirname(__file__)}/frontend/frontend.py").load_module()
-optimizer = SourceFileLoader("optimizer.optimizer", f"{os.path.dirname(__file__)}/optimizer/optimizer.py").load_module()
-#backend = importlib.import_module("backend.backend", package="backend")
+frontend = SourceFileLoader("frontend.frontend", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/frontend/frontend.py").load_module()
+optimizer = SourceFileLoader("optimizer.optimizer", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/optimizer/optimizer.py").load_module()
 
 def main(args):
 

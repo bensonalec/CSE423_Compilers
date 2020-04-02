@@ -5,9 +5,10 @@ import os
 import re
 from importlib.machinery import SourceFileLoader
 from collections import namedtuple
+from inspect import getsourcefile
 
-lex = SourceFileLoader("lexer", f"{os.path.dirname(__file__)}/lexer.py").load_module()
-ast = SourceFileLoader("AST_builder", f"{os.path.dirname(__file__)}/AST_builder.py").load_module()
+lex = SourceFileLoader("lexer", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/lexer.py").load_module()
+ast = SourceFileLoader("AST_builder", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/AST_builder.py").load_module()
 
 en_map = {
     0 : "Variable",
@@ -103,7 +104,11 @@ class symbol_table():
                     if [x for x in self.symbols if x.entry_type == {value: key for key, value in en_map.items()}["Function"] and x.name == cur.Node.children[0].name] == []:
                         # print(f'Function Undefined {cur.Node.children[0].name}')
                         self.undefined.append(Entry({value: key for key, value in en_map.items()}["Function"],cur.Node.children[0].name, "None", cur.Scope, [x.name for x in cur.Node.children[0].children]))
-                    pass
+                    else:
+                        ref = [x for x in self.symbols if en_map[x.entry_type] == "Function" and x.name == cur.Node.children[0].name]
+                        for i in ref:
+                            i.references.append(i)
+
                 # Initialization and Usage
                 elif index == 3:
 
@@ -131,8 +136,11 @@ class symbol_table():
                         if ([x for x in self.symbols if x.name == cur.Node.children[0].name and x.scope in cur.Scope] == []):
                             print(f'Variable Undeclared {cur.Node.children[0].name}')
                             self.undefined.append(Entry({value: key for key, value in en_map.items()}["Variable"],  cur.Node.children[0].name, "None", cur.Scope, [x.name for x in cur.Node.children[0].children]))
-
-                        pass
+                        else:
+                            ref = [x for x in self.symbols if x.name == cur.Node.children[0].name and x.scope in cur.Scope]
+                            for i in ref:
+                                i.references.append(i)
+                        
                 elif index == 4:
                     cur = cur._replace(Scope = f"{cur.Scope}{scopenum}/")
                     scopenum += 1
