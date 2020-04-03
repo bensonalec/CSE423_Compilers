@@ -176,6 +176,7 @@ class LevelOneIR():
 
     def constant_folding(self):
         notFound = True
+        changed = False
         for line in self.IR:
             for it,x in enumerate(line.treeList):
                 if isinstance(x,irl.IRArth):
@@ -228,7 +229,8 @@ class LevelOneIR():
                         newValue = lambda rhs, lhs, op : op(rhs,lhs)
                         newAss = irl.IRAssignment(x.var,newValue(rhs,lhs,op))
                         line.treeList[it] = newAss
-        return not notFound
+                        changed = True
+        return changed
 
     def constant_propagation(self, index, var_val):
 
