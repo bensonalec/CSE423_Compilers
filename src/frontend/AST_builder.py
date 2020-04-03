@@ -1,3 +1,4 @@
+import re
 """
 This module takes in the parse tree, and produces an Abstract Syntax Tree.This is done using a Depth First Traversal. By taking the Concrete Syntax Tree (Parse Tree)and converting it to an Abstract Syntax Tree we can begin to move towards an intermediate form.
 """
@@ -52,7 +53,20 @@ def buildAST(parseHead):
             expansion = [(x, ASTcurrent) for x in c[0].content[1:] if 'content' in x.__dict__]
 
         elif typ == "value":
-            ASTcurrent.children.append(ASTNode(f"{c[0].content[0].value}", ASTcurrent))
+
+            value = str(c[0].content[0].value)
+
+            if re.match(r"0b[01]+", value):
+                # Convert to Binary
+                value = str(int(value, 2))
+            elif re.match(r"0x[\dA-Fa-f]+", value):
+                # Convert to Hex
+                value = str(int(value, 16))
+            elif re.match(r"0[0-7]{1,3}", value):
+                # Convert to Octal
+                value = str(int(value, 8))
+
+            ASTcurrent.children.append(ASTNode(value, ASTcurrent))
 
         elif typ == "function definition":
             ASTcurrent.children.append(ASTNode("func", ASTcurrent))
