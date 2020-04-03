@@ -4,9 +4,10 @@ This module serves to construct the first linear intermediate representation in 
 import os
 import re
 import sys
+
 from inspect import getsourcefile
 from importlib.machinery import SourceFileLoader
-from itertools import chain
+from copy import deepcopy, copy
 
 irl = SourceFileLoader("IRLine", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/IRLine.py").load_module()
 ast = SourceFileLoader("AST_builder", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/../frontend/AST_builder.py").load_module()
@@ -77,8 +78,27 @@ class LevelOneIR():
             self.remove_unused_vars()
 
         if opt > 1:
-            while self.constant_folding():
-                pass
+            self.var_values = {func.name : {var.name : 0 for var in self.symTable.symbols if var.entry_type == 0 and var.scope.startswith(f"/{func.name}")} for func in [sym for sym in self.symTable.symbols if sym.entry_type == 1]}
+            while 1:
+                cf = False
+                cp = False
+                cur_scope = ""
+                for i in range(len(self.IR)):
+                    if isinstance(self.IR[i].treeList[0], irl.IRFunctionDecl):
+                        cur_scope = self.IR[i].treeList[0].name
+                    tmp = self.constant_folding()
+                    cf |= tmp
+
+                    tmp, vals = self.constant_propagation(i, copy(self.var_values[cur_scope]))
+
+                    for val in vals.items():
+                        if val[0] in self.var_values[cur_scope]:
+                            self.var_values[cur_scope][val[0]] = val[1]
+
+                    cp |= tmp
+
+                if not (cp and cf):
+                    break
 
     def remove_unused_vars(self):
         ir = self.IR
@@ -157,41 +177,39 @@ class LevelOneIR():
     def constant_folding(self):
         for line in self.IR:
             for it,x in enumerate(line.treeList):
-                        if isinstance(x,irl.IRArth):
-                            notFound = True
-                            op = False
-                            #get the operator being used
-                            if(x.operator == "+"):
-                                op = lambda rhs, lhs : rhs + lhs
-                            elif(x.operator == "-"):
-                                op = lambda rhs, lhs : rhs - lhs
-                            elif(x.operator == "*"):
-                                op = lambda rhs, lhs : rhs * lhs
-                            elif(x.operator == "/"):
-                                op = lambda rhs, lhs : rhs / lhs
-                            elif(x.operator == "%"):
-                                op = lambda rhs, lhs : rhs % lhs
-                            #get the left hand side and the right hand side
-                            try:
-                                lhs = int(x.lhs)
-                                rhs = int(x.rhs)
-                                notFound = False
-                            except ValueError:
-                                try:
-                                    lhs = float(x.lhs)
-                                    rhs = float(x.rhs)
-                                    notFound = False
-                                except ValueError:
-                                    pass
-                            
-                            #if we found all components, replace the node
-                            if(not notFound and op):
-                                newValue = lambda rhs, lhs, op : op(rhs,lhs)
-                                newAss = irl.IRAssignment(x.var,newValue(rhs,lhs,op))
-                                line.treeList[it] = newAss
+                if isinstance(x,irl.IRArth):
+                    notFound = True
+                    op = False
+                    #get the operator being used
+                    if(x.operator == "+"):
+                        op = lambda rhs, lhs : str(rhs + lhs)
+                    elif(x.operator == "-"):
+                        op = lambda rhs, lhs : str(rhs - lhs)
+                    elif(x.operator == "*"):
+                        op = lambda rhs, lhs : str(rhs * lhs)
+                    elif(x.operator == "/"):
+                        op = lambda rhs, lhs : str(rhs / lhs)
+                    elif(x.operator == "%"):
+                        op = lambda rhs, lhs : str(rhs % lhs)
+                    #get the left hand side and the right hand side
+                    try:
+                        lhs = int(x.lhs)
+                        rhs = int(x.rhs)
+                        notFound = False
+                    except ValueError:
+                        try:
+                            lhs = float(x.lhs)
+                            rhs = float(x.rhs)
+                            notFound = False
+                        except ValueError:
+                            pass
 
-
-
+                    #if we found all components, replace the node
+                    if(not notFound and op):
+                        newValue = lambda rhs, lhs, op : op(rhs,lhs)
+                        newAss = irl.IRAssignment(x.var,newValue(rhs,lhs,op))
+                        line.treeList[it] = newAss
+                        return True
         return False
 
     def constant_propagation(self, index, var_val):
@@ -200,47 +218,46 @@ class LevelOneIR():
         # Clear the tempoary variables per line as they are re used
         # Avoid propogating too far so that assignments in the future that may happen after certain other computations and assignments propogate the correct value
 
-        # TODO: Satisfy the requirements above
+        # TODO: Fix to detect whether the reference is necessary or not. Eg, comparisons in loops compared to simple ifs
+        # TODO: Ensure that when comming across a value that is not computable or propogatable such as after some control flow, the dictionary value becomes something distinguisable so that the expression is left alone
 
-        for major, line in enumerate(self.IR[index[0]:], index[0]):
-            changed = False
-            for minor, node in enumerate(line.treeList[index[1]:], index[1]):
-                if isinstance(node, irl.IRFunctionDecl):
-                    scope = f"/{node.name}"
-                    var_val = {x.name : 0 for x in self.symTable.symbols if x.scope.startswith(scope)}
-                elif isinstance(node, irl.IRIf):
-                    if node.lhs in var_val:
-                        node.lhs = var_val[node.lhs]
-                        changed = True
-                    if node.rhs in var_val:
-                        node.rhs = var_val[node.rhs]
+        changed = False
+        for node in self.IR[index].treeList:
+            if isinstance(node, irl.IRIf):
+                if node.lhs in var_val:
+                    node.lhs = var_val[node.lhs]
+                    changed = True
+                if node.rhs in var_val:
+                    node.rhs = var_val[node.rhs]
+                    changed = True
+
+            elif isinstance(node, irl.IRArth):
+                if node.lhs in var_val:
+                    node.lhs = var_val[node.lhs]
+                    changed = True
+                if node.rhs in var_val:
+                    node.rhs = var_val[node.rhs]
+                    changed = True
+
+            elif isinstance(node, irl.IRSpecial):
+                pass
+                # Assigning a value for a post and pre increment is extremly difficult due to the fact that it regularly occurs in loops and constants arent useful there.
+
+            elif isinstance(node, irl.IRAssignment):
+                if node.rhs in var_val:
+                    node.rhs = var_val[node.rhs]
+                    var_val[node.lhs] = node.rhs
+                    changed = True
+                elif node.rhs.isnumeric():
+                    var_val[node.lhs] = node.rhs
+
+            elif isinstance(node, irl.IRFunctionCall):
+                for j, param in enumerate(node.params):
+                    if param in var_val:
+                        node.params[j] = var_val[param]
                         changed = True
 
-                elif isinstance(node, irl.IRArth):
-                    if node.lhs in var_val:
-                        node.lhs = var_val[node.lhs]
-                        changed = True
-                    if node.rhs in var_val:
-                        node.rhs = var_val[node.rhs]
-                        changed = True
-
-                elif isinstance(node, irl.IRSpecial):
-                    pass
-                    # Assigning a value for a post and pre increment is extremly difficult due to the fact that it regularly occurs in loops and constants arent useful there.
-                elif isinstance(node, irl.IRAssignment):
-                    if node.rhs in var_val:
-                        node.rhs = var_val[node.rhs]
-                        var_val[node.lhs] = node.rhs
-                        changed = True
-                    elif node.rhs.isnumeric():
-                        var_val[node.lhs] = node.rhs
-                elif isinstance(node, irl.IRFunctionCall):
-                    for j, param in enumerate(node.params):
-                        if param in var_val:
-                            node.params[j] = var_val[param]
-                            changed = True
-
-            return False
+        return changed, var_val
 
 def buildBoilerPlate(symTable):
     namesandparams = []
