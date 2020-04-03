@@ -175,6 +175,7 @@ class LevelOneIR():
         self.IR = ir
 
     def constant_folding(self):
+        notFound = True
         for line in self.IR:
             for it,x in enumerate(line.treeList):
                 if isinstance(x,irl.IRArth):
@@ -191,15 +192,33 @@ class LevelOneIR():
                         op = lambda rhs, lhs : str(rhs / lhs)
                     elif(x.operator == "%"):
                         op = lambda rhs, lhs : str(rhs % lhs)
+                    elif(x.operator == "<<"):
+                        op = lambda rhs, lhs : str(rhs << lhs)
+                    elif(x.operator == ">>"):
+                        op = lambda rhs, lhs : str(rhs >> lhs)
+                    elif(x.operator == "|"):
+                        op = lambda rhs, lhs : str(rhs | lhs)
+                    elif(x.operator == "&"):
+                        op = lambda rhs, lhs : str(rhs & lhs)
+                    elif(x.operator == "^"):
+                        op = lambda rhs, lhs : str(rhs ^ lhs)
+                    elif(x.operator == "~"):
+                        op = lambda rhs, lhs : str(~lhs)
                     #get the left hand side and the right hand side
                     try:
                         lhs = int(x.lhs)
-                        rhs = int(x.rhs)
+                        if(not x.rhs == None):
+                            rhs = int(x.rhs)
+                        else:
+                            rhs = None
                         notFound = False
                     except ValueError:
                         try:
                             lhs = float(x.lhs)
-                            rhs = float(x.rhs)
+                            if(not x.rhs == None):
+                                rhs = float(x.rhs)
+                            else:
+                                rhs = None
                             notFound = False
                         except ValueError:
                             pass
@@ -209,8 +228,7 @@ class LevelOneIR():
                         newValue = lambda rhs, lhs, op : op(rhs,lhs)
                         newAss = irl.IRAssignment(x.var,newValue(rhs,lhs,op))
                         line.treeList[it] = newAss
-                        return True
-        return False
+        return not notFound
 
     def constant_propagation(self, index, var_val):
 
