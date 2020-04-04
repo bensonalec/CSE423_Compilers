@@ -80,12 +80,18 @@ class LevelOneIR():
 
         if opt > 1:
             # A dictionary containing all the values of variables that can at some point be reduced.
-            self.var_values = {func.name : {var.name : 0 for var in self.symTable.symbols if var.entry_type == 0 and var.scope.startswith(f"/{func.name}")} for func in [sym for sym in self.symTable.symbols if sym.entry_type == 1]}
+            self.var_values = {
+                func.name : {
+                    var.name : 0
+                    for var in self.symTable.symbols if var.entry_type == 0 and var.scope.startswith(f"/{func.name}")
+                }
+                for func in [sym for sym in self.symTable.symbols if sym.entry_type == 1]
+            }
 
 
             # NOTE: As a method of knowing whether it is safe to continue on to the next node in the list the following measures have been implemented:
             # Both constant folding and constant propagation only consider a singular value.
-            # They both return a boolead describing whether the node was altered as well as some descriptor of what it did.
+            # They both return a boolean describing whether the node was altered as well as some descriptor of what it did.
                 # In the case of constant folding, the descriptor is the new simplified node which then has to be assigned to the correct index.
                 # In the case of constant propagation, the descriptor is a dictionary containing the updated values relevant to the scope of the IRLine object meaning that tempoary variables are stored within the IRLine but now within the scope as a whole.
             # The idea is that while either of these methods can alter the node you keep executing them on the node so that if the loop terminates the program is sure that the node cannot be reduced further.
@@ -97,8 +103,6 @@ class LevelOneIR():
             cur_scope = ""
             tmp_vals = {}
             for major, minor, node in [(major, minor, node) for major, tl in enumerate(self.IR) for minor, node in enumerate(tl.treeList)]:
-                print (tmp_vals)
-                print(node)
                 if major != prev_maj:
                     tmp_vals = {}
 
@@ -117,16 +121,14 @@ class LevelOneIR():
                     if ncf:
                         self.IR[major].treeList[minor] = tmp
                         node = tmp
-
+                    # print (tmp_vals)
                     ncp, vals = self.constant_propagation(node, tmp_vals)
+                    # print (vals)
 
                     for val in vals.items():
                         if val[0] in self.var_values[cur_scope]:
                             self.var_values[cur_scope][val[0]] = val[1]
-                        else:
-                            tmp_vals[val[0]] = val[1]
-
-                    print (tmp_vals)
+                        tmp_vals[val[0]] = val[1]
 
                     if not (ncf or ncp):
                         break
@@ -222,10 +224,12 @@ class LevelOneIR():
                 elif(x.operator == "/"):
                     op = lambda lhs, rhs : lhs / rhs
                 elif(x.operator == "%"):
-                    op = lambda lhs, rhs : lhs % rhs
+                    op = lambda lhs, rhs : math.fmod(lhs, rhs)
                 elif(x.operator == "<<"):
+                    # There is an edge case around the changes of architectures so that values may differ depending on the architecture you are using. eg 10 << 31 compared to 10 << 20
                     op = lambda lhs, rhs : lhs << rhs
                 elif(x.operator == ">>"):
+                    # There is an edge case around the changes of architectures so that values may differ depending on the architecture you are using. eg 10 >> 31 compared to 10 >> 20
                     op = lambda lhs, rhs : lhs >> rhs
                 elif(x.operator == "|"):
                     op = lambda lhs, rhs : lhs | rhs
@@ -237,7 +241,9 @@ class LevelOneIR():
                 if(x.operator == "~"):
                     op = lambda lhs, rhs : ~lhs
                 elif(x.operator == "-"):
-                    op = lambda lhs, rhs : - lhs
+                    op = lambda lhs, rhs : 0 - lhs
+                elif(x.operator == "+"):
+                    op = lambda lhs, rhs : 0 + lhs
             #get the left hand side and the right hand side
             try:
                 lhs = int(x.lhs)
@@ -259,8 +265,12 @@ class LevelOneIR():
 
             #if we found all components, replace the node
             if(not notFound and op):
+                if rhs and rhs < 0:
+                    if x.operator == "<<" or x.operator == ">>":
+                        raise ValueError("shifting by negative number is undefined behavior.")
+
                 newValue = lambda lhs, rhs, op : op(lhs,rhs)
-                val = newValue(lhs,rhs,op) if isinstance(lhs, float) and isinstance(rhs, float) else math.floor(newValue(lhs,rhs,op))
+                val = newValue(lhs,rhs,op) if isinstance(lhs, float) or isinstance(rhs, float) else math.floor(newValue(lhs,rhs,op))
                 newAss = irl.IRAssignment(x.var, str(val))
                 changed = True
                 return changed,newAss
@@ -274,7 +284,7 @@ class LevelOneIR():
 
         # TODO: Fix to detect whether the reference is necessary or not. Eg, comparisons in loops compared to simple ifs
         # TODO: Ensure that when comming across a value that is not computable or propogatable such as after some control flow, the dictionary value becomes something distinguisable so that the expression is left alone
-
+        # print (node)
         changed = False
         if isinstance(node, irl.IRIf):
             if node.lhs in var_val:
@@ -301,8 +311,10 @@ class LevelOneIR():
                 node.rhs = var_val[node.rhs]
                 var_val[node.lhs] = node.rhs
                 changed = True
-            elif node.rhs.isnumeric():
-                var_val[node.lhs] = node.rhs
+            else:
+                tmp = node.rhs.lstrip('-+').replace('.', '', 1)
+                if tmp.isnumeric():
+                    var_val[node.lhs] = node.rhs
 
         elif isinstance(node, irl.IRFunctionCall):
             for j, param in enumerate(node.params):
@@ -675,11 +687,12 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                 lines.append(line)
 
             else:
-                print("Unsupported at this time")
+                pass
+                # print("Unsupported at this time")
 
         except Warning:
             exc_type, exc_obj, exc_tb = sys.exc_info()
-            print(exc_type, exc_tb.tb_lineno)
+            # print(exc_type, exc_tb.tb_lineno)
             pass
 
     return lines, labelDigit
