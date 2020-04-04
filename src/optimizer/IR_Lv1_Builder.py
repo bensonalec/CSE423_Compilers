@@ -82,7 +82,7 @@ class LevelOneIR():
             # A dictionary containing all the values of variables that can at some point be reduced.
             self.var_values = {
                 func.name : {
-                    var.name : 0
+                    var.name : "Undef"
                     for var in self.symTable.symbols if var.entry_type == 0 and var.scope.startswith(f"/{func.name}")
                 }
                 for func in [sym for sym in self.symTable.symbols if sym.entry_type == 1]
@@ -106,24 +106,32 @@ class LevelOneIR():
                 if major != prev_maj:
                     tmp_vals = {}
 
+                # print(type(node), node)
+
                 if isinstance(node, irl.IRFunctionDecl):
                     cur_scope = node.name
-
-                for val in self.var_values[cur_scope].items():
-                    tmp_vals[val[0]] = val[1]
+                elif isinstance(node, irl.IRGoTo) or isinstance(node, irl.IRJump) or isinstance(node, irl.IRIf):
+                    for val in tmp_vals.items():
+                        if val[0] in self.var_values[cur_scope]:
+                            self.var_values[cur_scope][val[0]] = "Undef"
+                        tmp_vals[val[0]] = "Undef"
+                else:
+                    for val in self.var_values[cur_scope].items():
+                        tmp_vals[val[0]] = val[1]
 
                 ncf = False
                 ncp = False
 
                 while 1:
+                    # print (type(node), tmp_vals)
                     ncf, tmp = self.constant_folding(node)
 
                     if ncf:
                         self.IR[major].treeList[minor] = tmp
                         node = tmp
-                    # print (tmp_vals)
+
                     ncp, vals = self.constant_propagation(node, tmp_vals)
-                    # print (vals)
+                    # print (type(node), vals)
 
                     for val in vals.items():
                         if val[0] in self.var_values[cur_scope]:
@@ -244,6 +252,8 @@ class LevelOneIR():
                     op = lambda lhs, rhs : 0 - lhs
                 elif(x.operator == "+"):
                     op = lambda lhs, rhs : 0 + lhs
+                elif(x.operator == "!"):
+                    op = lambda lhs, rhs : not lhs
             #get the left hand side and the right hand side
             try:
                 lhs = int(x.lhs)
@@ -284,21 +294,20 @@ class LevelOneIR():
 
         # TODO: Fix to detect whether the reference is necessary or not. Eg, comparisons in loops compared to simple ifs
         # TODO: Ensure that when comming across a value that is not computable or propogatable such as after some control flow, the dictionary value becomes something distinguisable so that the expression is left alone
-        # print (node)
         changed = False
         if isinstance(node, irl.IRIf):
-            if node.lhs in var_val:
+            if node.lhs in var_val and var_val[node.lhs] != "Undef":
                 node.lhs = var_val[node.lhs]
                 changed = True
-            if node.rhs in var_val:
+            if node.rhs in var_val and var_val[node.rhs] != "Undef":
                 node.rhs = var_val[node.rhs]
                 changed = True
 
         elif isinstance(node, irl.IRArth):
-            if node.lhs in var_val:
+            if node.lhs in var_val and var_val[node.lhs] != "Undef":
                 node.lhs = var_val[node.lhs]
                 changed = True
-            if node.rhs in var_val:
+            if node.rhs in var_val and var_val[node.rhs] != "Undef":
                 node.rhs = var_val[node.rhs]
                 changed = True
 
@@ -307,7 +316,7 @@ class LevelOneIR():
             # Assigning a value for a post and pre increment is extremly difficult due to the fact that it regularly occurs in loops and constants arent useful there.
 
         elif isinstance(node, irl.IRAssignment):
-            if node.rhs in var_val:
+            if node.rhs in var_val and var_val[node.rhs] != "Undef":
                 node.rhs = var_val[node.rhs]
                 var_val[node.lhs] = node.rhs
                 changed = True
@@ -318,7 +327,7 @@ class LevelOneIR():
 
         elif isinstance(node, irl.IRFunctionCall):
             for j, param in enumerate(node.params):
-                if param in var_val:
+                if param in var_val and var_val[param] != None:
                     node.params[j] = var_val[param]
                     changed = True
 
