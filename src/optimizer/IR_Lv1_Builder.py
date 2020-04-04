@@ -106,8 +106,6 @@ class LevelOneIR():
                 if major != prev_maj:
                     tmp_vals = {}
 
-                # print(type(node), node)
-
                 if isinstance(node, irl.IRFunctionDecl):
                     cur_scope = node.name
                 elif isinstance(node, irl.IRGoTo) or isinstance(node, irl.IRJump) or isinstance(node, irl.IRIf):
@@ -123,7 +121,6 @@ class LevelOneIR():
                 ncp = False
 
                 while 1:
-                    # print (type(node), tmp_vals)
                     ncf, tmp = self.constant_folding(node)
 
                     if ncf:
@@ -131,7 +128,6 @@ class LevelOneIR():
                         node = tmp
 
                     ncp, vals = self.constant_propagation(node, tmp_vals)
-                    # print (type(node), vals)
 
                     for val in vals.items():
                         if val[0] in self.var_values[cur_scope]:
