@@ -174,64 +174,61 @@ class LevelOneIR():
 
         self.IR = ir
 
-    def constant_folding(self):
-        notFound = True
+    def constant_folding(self,x):
         changed = False
-        for line in self.IR:
-            for it,x in enumerate(line.treeList):
-                if isinstance(x,irl.IRArth):
-                    notFound = True
-                    op = False
-                    #get the operator being used
-                    if(x.rhs != None and x.lhs != None):
-                        if(x.operator == "+"):
-                            op = lambda rhs, lhs : str(rhs + lhs)
-                        elif(x.operator == "-"):
-                            op = lambda rhs, lhs : str(rhs - lhs)
-                        elif(x.operator == "*"):
-                            op = lambda rhs, lhs : str(rhs * lhs)
-                        elif(x.operator == "/"):
-                            op = lambda rhs, lhs : str(rhs / lhs)
-                        elif(x.operator == "%"):
-                            op = lambda rhs, lhs : str(rhs % lhs)
-                        elif(x.operator == "<<"):
-                            op = lambda rhs, lhs : str(rhs << lhs)
-                        elif(x.operator == ">>"):
-                            op = lambda rhs, lhs : str(rhs >> lhs)
-                        elif(x.operator == "|"):
-                            op = lambda rhs, lhs : str(rhs | lhs)
-                        elif(x.operator == "&"):
-                            op = lambda rhs, lhs : str(rhs & lhs)
-                        elif(x.operator == "^"):
-                            op = lambda rhs, lhs : str(rhs ^ lhs)
+        if isinstance(x,irl.IRArth):
+            notFound = True
+            op = False
+            #get the operator being used
+            if(x.rhs != None and x.lhs != None):
+                if(x.operator == "+"):
+                    op = lambda rhs, lhs : str(rhs + lhs)
+                elif(x.operator == "-"):
+                    op = lambda rhs, lhs : str(rhs - lhs)
+                elif(x.operator == "*"):
+                    op = lambda rhs, lhs : str(rhs * lhs)
+                elif(x.operator == "/"):
+                    op = lambda rhs, lhs : str(rhs / lhs)
+                elif(x.operator == "%"):
+                    op = lambda rhs, lhs : str(rhs % lhs)
+                elif(x.operator == "<<"):
+                    op = lambda rhs, lhs : str(rhs << lhs)
+                elif(x.operator == ">>"):
+                    op = lambda rhs, lhs : str(rhs >> lhs)
+                elif(x.operator == "|"):
+                    op = lambda rhs, lhs : str(rhs | lhs)
+                elif(x.operator == "&"):
+                    op = lambda rhs, lhs : str(rhs & lhs)
+                elif(x.operator == "^"):
+                    op = lambda rhs, lhs : str(rhs ^ lhs)
+            else:
+                if(x.operator == "~"):
+                    op = lambda rhs, lhs : str(~lhs)
+            #get the left hand side and the right hand side
+            try:
+                lhs = int(x.lhs)
+                if(not x.rhs == None):
+                    rhs = int(x.rhs)
+                else:
+                    rhs = None
+                notFound = False
+            except ValueError:
+                try:
+                    lhs = float(x.lhs)
+                    if(not x.rhs == None):
+                        rhs = float(x.rhs)
                     else:
-                        if(x.operator == "~"):
-                            op = lambda rhs, lhs : str(~lhs)
-                    #get the left hand side and the right hand side
-                    try:
-                        lhs = int(x.lhs)
-                        if(not x.rhs == None):
-                            rhs = int(x.rhs)
-                        else:
-                            rhs = None
-                        notFound = False
-                    except ValueError:
-                        try:
-                            lhs = float(x.lhs)
-                            if(not x.rhs == None):
-                                rhs = float(x.rhs)
-                            else:
-                                rhs = None
-                            notFound = False
-                        except ValueError:
-                            pass
+                        rhs = None
+                    notFound = False
+                except ValueError:
+                    pass
 
-                    #if we found all components, replace the node
-                    if(not notFound and op):
-                        newValue = lambda rhs, lhs, op : op(rhs,lhs)
-                        newAss = irl.IRAssignment(x.var,newValue(rhs,lhs,op))
-                        line.treeList[it] = newAss
-                        changed = True
+            #if we found all components, replace the node
+            if(not notFound and op):
+                newValue = lambda rhs, lhs, op : op(rhs,lhs)
+                newAss = irl.IRAssignment(x.var,newValue(rhs,lhs,op))
+                line.treeList[it] = newAss
+                changed = True
         return changed
 
     def constant_propagation(self, index, var_val):
