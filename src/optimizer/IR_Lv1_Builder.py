@@ -238,9 +238,9 @@ class LevelOneIR():
             if(not notFound and op):
                 newValue = lambda rhs, lhs, op : op(rhs,lhs)
                 newAss = irl.IRAssignment(x.var,newValue(rhs,lhs,op))
-                line.treeList[it] = newAss
                 changed = True
-        return changed
+                return changed,newAss
+        return changed,x
 
     def constant_propagation(self, node, var_val):
 
