@@ -4,6 +4,7 @@ This module serves to construct the first linear intermediate representation in 
 import os
 import re
 import sys
+import math
 
 from inspect import getsourcefile
 from importlib.machinery import SourceFileLoader
@@ -81,35 +82,55 @@ class LevelOneIR():
             # A dictionary containing all the values of variables that can at some point be reduced.
             self.var_values = {func.name : {var.name : 0 for var in self.symTable.symbols if var.entry_type == 0 and var.scope.startswith(f"/{func.name}")} for func in [sym for sym in self.symTable.symbols if sym.entry_type == 1]}
 
-            while 1:
-                cf = False
-                cp = False
-                cur_scope = ""
 
-                for node in [node for tl in self.IR for node in tl.treeList]:
-                    if isinstance(node, irl.IRFunctionDecl):
-                        cur_scope = node.name
+            # NOTE: As a method of knowing whether it is safe to continue on to the next node in the list the following measures have been implemented:
+            # Both constant folding and constant propagation only consider a singular value.
+            # They both return a boolead describing whether the node was altered as well as some descriptor of what it did.
+                # In the case of constant folding, the descriptor is the new simplified node which then has to be assigned to the correct index.
+                # In the case of constant propagation, the descriptor is a dictionary containing the updated values relevant to the scope of the IRLine object meaning that tempoary variables are stored within the IRLine but now within the scope as a whole.
+            # The idea is that while either of these methods can alter the node you keep executing them on the node so that if the loop terminates the program is sure that the node cannot be reduced further.
+            # Another final optimization that can be done would be to check if all the nodes in an IRLine object are `IRAssignment`, if so the last one is the only `IRAssignment` node needed, and the others can be removed.
 
-                    ncf = False
-                    ncp = False
+            # TODO: The current issue lies with the fact that at some point tempoary variables are removed for some reason even through they are still needed.
 
-                    while 1:
-                        ncf = self.constant_folding(node)
+            prev_maj = 0
+            cur_scope = ""
+            tmp_vals = {}
+            for major, minor, node in [(major, minor, node) for major, tl in enumerate(self.IR) for minor, node in enumerate(tl.treeList)]:
+                print (tmp_vals)
+                print(node)
+                if major != prev_maj:
+                    tmp_vals = {}
 
-                        ncp, vals = self.constant_propagation(node, copy(self.var_values[cur_scope]))
+                if isinstance(node, irl.IRFunctionDecl):
+                    cur_scope = node.name
 
-                        for val in vals.items():
-                            if val[0] in self.var_values[cur_scope]:
-                                self.var_values[cur_scope][val[0]] = val[1]
+                for val in self.var_values[cur_scope].items():
+                    tmp_vals[val[0]] = val[1]
 
-                        cf |= ncf
-                        cp |= ncp
+                ncf = False
+                ncp = False
 
-                        if not (ncf and ncp):
-                            break
+                while 1:
+                    ncf, tmp = self.constant_folding(node)
 
-                if not (cp and cf):
-                    break
+                    if ncf:
+                        self.IR[major].treeList[minor] = tmp
+                        node = tmp
+
+                    ncp, vals = self.constant_propagation(node, tmp_vals)
+
+                    for val in vals.items():
+                        if val[0] in self.var_values[cur_scope]:
+                            self.var_values[cur_scope][val[0]] = val[1]
+                        else:
+                            tmp_vals[val[0]] = val[1]
+
+                    print (tmp_vals)
+
+                    if not (ncf or ncp):
+                        break
+                prev_maj = major
 
     def remove_unused_vars(self):
         ir = self.IR
@@ -193,28 +214,30 @@ class LevelOneIR():
             #get the operator being used
             if(x.rhs != None and x.lhs != None):
                 if(x.operator == "+"):
-                    op = lambda rhs, lhs : str(rhs + lhs)
+                    op = lambda lhs, rhs : lhs + rhs
                 elif(x.operator == "-"):
-                    op = lambda rhs, lhs : str(rhs - lhs)
+                    op = lambda lhs, rhs : lhs - rhs
                 elif(x.operator == "*"):
-                    op = lambda rhs, lhs : str(rhs * lhs)
+                    op = lambda lhs, rhs : lhs * rhs
                 elif(x.operator == "/"):
-                    op = lambda rhs, lhs : str(rhs / lhs)
+                    op = lambda lhs, rhs : lhs / rhs
                 elif(x.operator == "%"):
-                    op = lambda rhs, lhs : str(rhs % lhs)
+                    op = lambda lhs, rhs : lhs % rhs
                 elif(x.operator == "<<"):
-                    op = lambda rhs, lhs : str(rhs << lhs)
+                    op = lambda lhs, rhs : lhs << rhs
                 elif(x.operator == ">>"):
-                    op = lambda rhs, lhs : str(rhs >> lhs)
+                    op = lambda lhs, rhs : lhs >> rhs
                 elif(x.operator == "|"):
-                    op = lambda rhs, lhs : str(rhs | lhs)
+                    op = lambda lhs, rhs : lhs | rhs
                 elif(x.operator == "&"):
-                    op = lambda rhs, lhs : str(rhs & lhs)
+                    op = lambda lhs, rhs : lhs & rhs
                 elif(x.operator == "^"):
-                    op = lambda rhs, lhs : str(rhs ^ lhs)
+                    op = lambda lhs, rhs : lhs ^ rhs
             else:
                 if(x.operator == "~"):
-                    op = lambda rhs, lhs : str(~lhs)
+                    op = lambda lhs, rhs : ~lhs
+                elif(x.operator == "-"):
+                    op = lambda lhs, rhs : - lhs
             #get the left hand side and the right hand side
             try:
                 lhs = int(x.lhs)
@@ -236,8 +259,9 @@ class LevelOneIR():
 
             #if we found all components, replace the node
             if(not notFound and op):
-                newValue = lambda rhs, lhs, op : op(rhs,lhs)
-                newAss = irl.IRAssignment(x.var,newValue(rhs,lhs,op))
+                newValue = lambda lhs, rhs, op : op(lhs,rhs)
+                val = newValue(lhs,rhs,op) if isinstance(lhs, float) and isinstance(rhs, float) else math.floor(newValue(lhs,rhs,op))
+                newAss = irl.IRAssignment(x.var, str(val))
                 changed = True
                 return changed,newAss
         return changed,x

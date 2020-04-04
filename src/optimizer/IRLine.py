@@ -397,8 +397,8 @@ class IRArth(IRNode):
             self.rhs = node.children[1].name
         # Case 2: two elem in ops
         elif len(ops) == 2:
-            self.lhs = ops[0]
-            self.rhs = ops[1]
+            self.lhs = ops[1]
+            self.rhs = ops[0]
         else:
             pos = [node.children.index(x) for x in node.children if len(x.children) != 0 and len(node.children) > 1]
 
