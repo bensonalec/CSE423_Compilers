@@ -183,28 +183,30 @@ class LevelOneIR():
                     notFound = True
                     op = False
                     #get the operator being used
-                    if(x.operator == "+"):
-                        op = lambda rhs, lhs : str(rhs + lhs)
-                    elif(x.operator == "-"):
-                        op = lambda rhs, lhs : str(rhs - lhs)
-                    elif(x.operator == "*"):
-                        op = lambda rhs, lhs : str(rhs * lhs)
-                    elif(x.operator == "/"):
-                        op = lambda rhs, lhs : str(rhs / lhs)
-                    elif(x.operator == "%"):
-                        op = lambda rhs, lhs : str(rhs % lhs)
-                    elif(x.operator == "<<"):
-                        op = lambda rhs, lhs : str(rhs << lhs)
-                    elif(x.operator == ">>"):
-                        op = lambda rhs, lhs : str(rhs >> lhs)
-                    elif(x.operator == "|"):
-                        op = lambda rhs, lhs : str(rhs | lhs)
-                    elif(x.operator == "&"):
-                        op = lambda rhs, lhs : str(rhs & lhs)
-                    elif(x.operator == "^"):
-                        op = lambda rhs, lhs : str(rhs ^ lhs)
-                    elif(x.operator == "~"):
-                        op = lambda rhs, lhs : str(~lhs)
+                    if(x.rhs != None and x.lhs != None):
+                        if(x.operator == "+"):
+                            op = lambda rhs, lhs : str(rhs + lhs)
+                        elif(x.operator == "-"):
+                            op = lambda rhs, lhs : str(rhs - lhs)
+                        elif(x.operator == "*"):
+                            op = lambda rhs, lhs : str(rhs * lhs)
+                        elif(x.operator == "/"):
+                            op = lambda rhs, lhs : str(rhs / lhs)
+                        elif(x.operator == "%"):
+                            op = lambda rhs, lhs : str(rhs % lhs)
+                        elif(x.operator == "<<"):
+                            op = lambda rhs, lhs : str(rhs << lhs)
+                        elif(x.operator == ">>"):
+                            op = lambda rhs, lhs : str(rhs >> lhs)
+                        elif(x.operator == "|"):
+                            op = lambda rhs, lhs : str(rhs | lhs)
+                        elif(x.operator == "&"):
+                            op = lambda rhs, lhs : str(rhs & lhs)
+                        elif(x.operator == "^"):
+                            op = lambda rhs, lhs : str(rhs ^ lhs)
+                    else:
+                        if(x.operator == "~"):
+                            op = lambda rhs, lhs : str(~lhs)
                     #get the left hand side and the right hand side
                     try:
                         lhs = int(x.lhs)
