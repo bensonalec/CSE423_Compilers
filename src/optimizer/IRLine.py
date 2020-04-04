@@ -38,7 +38,7 @@ class IRLine():
 
         # Based on the node construct the needed intermediate trees in order
         if node == None:
-            # There was no AST node passed in. This is the case when there 
+            # There was no AST node passed in. This is the case when there
             # are no complex IR instructions that need to be broken down.
             # IRNode will be added manually to self.treeList.
             pass
@@ -47,7 +47,7 @@ class IRLine():
             self.boolean_breakdown(self.astNode, success, failure)
         else:
             self.expression_breakdown(self.astNode, success, failure)
-            
+
 
     def retrieve(self):
         """
@@ -257,7 +257,6 @@ class IRLine():
             else:
                 self.expression_breakdown(tmpNode, success, failure)
 
-
     def __str__(self):
         return "\n".join([str(x) for x in self.treeList])
 
@@ -285,7 +284,7 @@ class IRNode():
     def __str__(self):
         pass
 
-    def __repr__():
+    def __repr__(self):
         pass
 
 
@@ -303,7 +302,7 @@ class IRJump(IRNode):
     def __str__(self):
         return f"{self.name}:"
 
-    def __repr__():
+    def __repr__(self):
         pass
 
 class IRGoTo(IRNode):
@@ -320,7 +319,7 @@ class IRGoTo(IRNode):
     def __str__(self):
         return f"goto {self.name};"
 
-    def __repr__():
+    def __repr__(self):
         pass
 
 class IRIf(IRNode):
@@ -330,7 +329,7 @@ class IRIf(IRNode):
     def __init__(self, node, success, failure, ops):
         """
         Args:
-            node: `AST-node` for the given 
+            node: `AST-node` for the given
             success: Success label digit
             failure: Failure label digit
             ops: The potential complex operands for the left/right hand side of the comparison
@@ -371,7 +370,7 @@ class IRIf(IRNode):
     def __str__(self):
         return f"if ({self.lhs} {self.comp} {self.rhs}) goto <D.{self.success}>; else goto <D.{self.failure}>;"
 
-    def __repr__():
+    def __repr__(self):
         pass
 
 class IRArth(IRNode):
@@ -398,8 +397,8 @@ class IRArth(IRNode):
             self.rhs = node.children[1].name
         # Case 2: two elem in ops
         elif len(ops) == 2:
-            self.lhs = ops[0]
-            self.rhs = ops[1]
+            self.lhs = ops[1]
+            self.rhs = ops[0]
         else:
             pos = [node.children.index(x) for x in node.children if len(x.children) != 0 and len(node.children) > 1]
 
@@ -422,7 +421,7 @@ class IRArth(IRNode):
         else:
             return f"{self.var} = {self.operator}{self.lhs};"
 
-    def __repr__():
+    def __repr__(self):
         pass
 
 class IRSpecial(IRNode):
@@ -548,20 +547,20 @@ class IRVariableInit(IRNode):
     def __init__(self, modifiers, typ, var):
         """
         Args:
-            modifiers: 
-            type: 
-            var: 
+            modifiers:
+            type:
+            var:
         """
         self.modifiers = modifiers
 
         self.typ = typ
-        
+
         self.var = var
 
     def __str__(self):
         return f"{self.modifiers}{self.typ} {self.var};"
-                
 
-    
-    
+
+
+
 
