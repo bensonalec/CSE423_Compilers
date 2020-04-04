@@ -78,24 +78,35 @@ class LevelOneIR():
             self.remove_unused_vars()
 
         if opt > 1:
+            # A dictionary containing all the values of variables that can at some point be reduced.
             self.var_values = {func.name : {var.name : 0 for var in self.symTable.symbols if var.entry_type == 0 and var.scope.startswith(f"/{func.name}")} for func in [sym for sym in self.symTable.symbols if sym.entry_type == 1]}
+
             while 1:
                 cf = False
                 cp = False
                 cur_scope = ""
-                for i in range(len(self.IR)):
-                    if isinstance(self.IR[i].treeList[0], irl.IRFunctionDecl):
-                        cur_scope = self.IR[i].treeList[0].name
-                    tmp = self.constant_folding()
-                    cf |= tmp
 
-                    tmp, vals = self.constant_propagation(i, copy(self.var_values[cur_scope]))
+                for node in [node for tl in self.IR for node in tl.treeList]:
+                    if isinstance(node, irl.IRFunctionDecl):
+                        cur_scope = node.name
 
-                    for val in vals.items():
-                        if val[0] in self.var_values[cur_scope]:
-                            self.var_values[cur_scope][val[0]] = val[1]
+                    ncf = False
+                    ncp = False
 
-                    cp |= tmp
+                    while 1:
+                        ncf = self.constant_folding(node)
+
+                        ncp, vals = self.constant_propagation(node, copy(self.var_values[cur_scope]))
+
+                        for val in vals.items():
+                            if val[0] in self.var_values[cur_scope]:
+                                self.var_values[cur_scope][val[0]] = val[1]
+
+                        cf |= ncf
+                        cp |= ncp
+
+                        if not (ncf and ncp):
+                            break
 
                 if not (cp and cf):
                     break
@@ -231,7 +242,7 @@ class LevelOneIR():
                 changed = True
         return changed
 
-    def constant_propagation(self, index, var_val):
+    def constant_propagation(self, node, var_val):
 
         # NOTE: The current issue is that the propogation is goint to have to exit and re enter the function every time to achieve the following:
         # Clear the tempoary variables per line as they are re used
@@ -241,40 +252,39 @@ class LevelOneIR():
         # TODO: Ensure that when comming across a value that is not computable or propogatable such as after some control flow, the dictionary value becomes something distinguisable so that the expression is left alone
 
         changed = False
-        for node in self.IR[index].treeList:
-            if isinstance(node, irl.IRIf):
-                if node.lhs in var_val:
-                    node.lhs = var_val[node.lhs]
-                    changed = True
-                if node.rhs in var_val:
-                    node.rhs = var_val[node.rhs]
-                    changed = True
+        if isinstance(node, irl.IRIf):
+            if node.lhs in var_val:
+                node.lhs = var_val[node.lhs]
+                changed = True
+            if node.rhs in var_val:
+                node.rhs = var_val[node.rhs]
+                changed = True
 
-            elif isinstance(node, irl.IRArth):
-                if node.lhs in var_val:
-                    node.lhs = var_val[node.lhs]
-                    changed = True
-                if node.rhs in var_val:
-                    node.rhs = var_val[node.rhs]
-                    changed = True
+        elif isinstance(node, irl.IRArth):
+            if node.lhs in var_val:
+                node.lhs = var_val[node.lhs]
+                changed = True
+            if node.rhs in var_val:
+                node.rhs = var_val[node.rhs]
+                changed = True
 
-            elif isinstance(node, irl.IRSpecial):
-                pass
-                # Assigning a value for a post and pre increment is extremly difficult due to the fact that it regularly occurs in loops and constants arent useful there.
+        elif isinstance(node, irl.IRSpecial):
+            pass
+            # Assigning a value for a post and pre increment is extremly difficult due to the fact that it regularly occurs in loops and constants arent useful there.
 
-            elif isinstance(node, irl.IRAssignment):
-                if node.rhs in var_val:
-                    node.rhs = var_val[node.rhs]
-                    var_val[node.lhs] = node.rhs
+        elif isinstance(node, irl.IRAssignment):
+            if node.rhs in var_val:
+                node.rhs = var_val[node.rhs]
+                var_val[node.lhs] = node.rhs
+                changed = True
+            elif node.rhs.isnumeric():
+                var_val[node.lhs] = node.rhs
+
+        elif isinstance(node, irl.IRFunctionCall):
+            for j, param in enumerate(node.params):
+                if param in var_val:
+                    node.params[j] = var_val[param]
                     changed = True
-                elif node.rhs.isnumeric():
-                    var_val[node.lhs] = node.rhs
-
-            elif isinstance(node, irl.IRFunctionCall):
-                for j, param in enumerate(node.params):
-                    if param in var_val:
-                        node.params[j] = var_val[param]
-                        changed = True
 
         return changed, var_val
 
