@@ -5,7 +5,7 @@ from rply import LexerGenerator
 from rply.errors import LexingError
 from copy import deepcopy
 import re
-
+#TODO: ADD TOKEN FOR KEYWORDS, MAKE THE PARSING ACTUALLY PARSE INTO IRNODES
 
 
 class import_ir():
@@ -26,7 +26,7 @@ class import_ir():
         lexer = IR_Lexer().get_lexer()
         tokens = lexer.lex(text_input)
         self.tokens = tokens
-        # print(tokensToString(tokens))
+        print(tokensToString(deepcopy(tokens)))
 
     def parse(self):
         pg = Parser()
@@ -63,7 +63,7 @@ class IR_Lexer():
         """
         Adds tokens to the rply lexer object
         """
-        self.lexer.add("D_NUM", r"D\.[1-9]*")
+        self.lexer.add("D_NUM", r"D\.[0-9]*")
         self.lexer.add("INT",r"([1-9]\d*|\d)")
         self.lexer.add("FLOAT",r"(\d|[1-9]\d+)\.\d*")
         self.lexer.add("CHAR",r"\'\\?[\w\;\\ \%\"\']\'")
@@ -75,6 +75,7 @@ class IR_Lexer():
         self.lexer.add("MODULUS",r"%")
         self.lexer.add("LEFT_SHIFT",r"<<")
         self.lexer.add("RIGHT_SHIFT",r">>")
+        self.lexer.add("NOT_EQUAL_TO",r"!=")
         self.lexer.add("NOT",r"!")
         self.lexer.add("XOR",r"\^")
         self.lexer.add("NEGATE",r"~")
@@ -87,7 +88,6 @@ class IR_Lexer():
         self.lexer.add("LEQ",r"<=")
         self.lexer.add("GREATER_THAN",r">")
         self.lexer.add("LESS_THAN",r"<")
-        self.lexer.add("NOT_EQUAL_TO",r"!=")
         self.lexer.add("EQUAL_TO",r"={2}")
         self.lexer.add("EQUALS",r"=")
         self.lexer.add("NULL",r"\bNULL\b")
@@ -98,8 +98,8 @@ class IR_Lexer():
         self.lexer.add("OR",r"\|{2}")
         self.lexer.add("BW_AND",r"&")
         self.lexer.add("BW_OR",r"\|")
-        self.lexer.add("VAR_NAME",r"[a-zA-Z_]\w*")
         self.lexer.add("TYPE",r"\b(auto|long double|double|float|long long( int)?|long|int|short|char|void)\b")
+        self.lexer.add("VAR_NAME",r"[a-zA-Z_]\w*")
         self.lexer.add("OPEN_PAREN",r"\(")
         self.lexer.add("CLOSE_PAREN",r"\)")
         self.lexer.add("OPEN_BRACK",r"\{")
@@ -128,6 +128,7 @@ def print_error(token):
         token: The token object that is returned from the lexer.
     """
     print(f"LexingError: Invalid Token \'{token.value}\' at, {token.source_pos}\n")
+
 
 
 
@@ -239,7 +240,7 @@ class Parser():
         """
 
         self.pg = ParserGenerator(
-            ['VAR_NAME','OPEN_PAREN','CLOSE_PAREN','OPEN_BRACK','CLOSE_BRACK','FUNCTION_DEF','TYPE','COMMA','PARAMATERS','PARAMETERS','CONTENT','D_NUM','SEMICOLON','LINE','EQUALS','STRING','CHAR','MINUS','PLUS','NEGATE','NULL','RETURN','IF','GOTO','LESS_THAN','GREATER_THAN','ELSE','COLON','KEWORD','CONDITION','FUNC_CALL','FUNC_INPUT','COMP','EQUAL_TO','LEQ','GEQ','NOT_EQUAL_TO','OP','DIVIDE','TIMES','MODULUS','BW_AND','BW_OR','LEFT_SHIFT','RIGHT_SHIFT','XOR','INT','DIG','FLOAT'] ,
+            ['PROGRAM','VAR_NAME','OPEN_PAREN','CLOSE_PAREN','OPEN_BRACK','CLOSE_BRACK','FUNCTION_DEF','TYPE','COMMA','PARAMATERS','PARAMETERS','CONTENT','D_NUM','SEMICOLON','LINE','EQUALS','STRING','CHAR','MINUS','PLUS','NEGATE','NOT','NULL','RETURN','IF','GOTO','LESS_THAN','GREATER_THAN','ELSE','COLON','KEWORD','CONDITION','FUNC_CALL','FUNC_INPUT','COMP','EQUAL_TO','LEQ','GEQ','NOT_EQUAL_TO','OP','DIVIDE','TIMES','MODULUS','BW_AND','BW_OR','LEFT_SHIFT','RIGHT_SHIFT','XOR','INT','DIG','FLOAT'] ,
         )
         #initialzie head and current node
         self.Head = None
@@ -250,6 +251,24 @@ class Parser():
         The list of BNF functions and their behavior
         """
         
+        @self.pg.production('program : function_def ')
+        def program___function_def_(p):
+            newNode = ParseTree("PROGRAM",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('program : function_def program ')
+        def program___function_def_program_(p):
+            newNode = ParseTree("PROGRAM",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('program :  ')
+        def program____(p):
+            newNode = ParseTree("PROGRAM",p)
+            self.Head = newNode
+            return newNode
+
         @self.pg.production('function_def : VAR_NAME OPEN_PAREN parameters CLOSE_PAREN OPEN_BRACK content CLOSE_BRACK ')
         def function_def___VAR_NAME_OPEN_PAREN_parameters_CLOSE_PAREN_OPEN_BRACK_content_CLOSE_BRACK_(p):
             newNode = ParseTree("FUNCTION_DEF",p)
@@ -259,6 +278,12 @@ class Parser():
         @self.pg.production('parameters : TYPE VAR_NAME COMMA parameters ')
         def parameters___TYPE_VAR_NAME_COMMA_parameters_(p):
             newNode = ParseTree("PARAMATERS",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('parameters : TYPE VAR_NAME ')
+        def parameters___TYPE_VAR_NAME_(p):
+            newNode = ParseTree("PARAMETERS",p)
             self.Head = newNode
             return newNode
 
@@ -274,14 +299,20 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production('content : line line ')
-        def content___line_line_(p):
+        @self.pg.production('content : content content ')
+        def content___content_content_(p):
             newNode = ParseTree("CONTENT",p)
             self.Head = newNode
             return newNode
 
         @self.pg.production('content : ')
         def content___(p):
+            newNode = ParseTree("CONTENT",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('content : OPEN_BRACK content CLOSE_BRACK ')
+        def content___OPEN_BRACK_content_CLOSE_BRACK_(p):
             newNode = ParseTree("CONTENT",p)
             self.Head = newNode
             return newNode
@@ -376,14 +407,26 @@ class Parser():
             self.Head = newNode
             return newNode
 
+        @self.pg.production('line : VAR_NAME EQUALS NOT dig SEMICOLON ')
+        def line___VAR_NAME_EQUALS_NOT_dig_SEMICOLON_(p):
+            newNode = ParseTree("LINE",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('line : VAR_NAME EQUALS NOT VAR_NAME SEMICOLON ')
+        def line___VAR_NAME_EQUALS_NOT_VAR_NAME_SEMICOLON_(p):
+            newNode = ParseTree("LINE",p)
+            self.Head = newNode
+            return newNode
+
         @self.pg.production('line : VAR_NAME EQUALS NEGATE VAR_NAME SEMICOLON ')
         def line___VAR_NAME_EQUALS_NEGATE_VAR_NAME_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
             return newNode
 
-        @self.pg.production('line : VAR_NAME EQUALS NULL ')
-        def line___VAR_NAME_EQUALS_NULL_(p):
+        @self.pg.production('line : VAR_NAME EQUALS NULL SEMICOLON ')
+        def line___VAR_NAME_EQUALS_NULL_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
             return newNode
@@ -412,26 +455,8 @@ class Parser():
             self.Head = newNode
             return newNode
 
-        @self.pg.production('line : RETURN VAR_NAME SEMICOLON ')
-        def line___RETURN_VAR_NAME_SEMICOLON_(p):
-            newNode = ParseTree("LINE",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('line : RETURN STRING SEMICOLON ')
-        def line___RETURN_STRING_SEMICOLON_(p):
-            newNode = ParseTree("LINE",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('line : RETURN dig SEMICOLON ')
-        def line___RETURN_dig_SEMICOLON_(p):
-            newNode = ParseTree("LINE",p)
-            self.Head = newNode
-            return newNode
-
-        @self.pg.production('line : RETURN CHAR SEMICOLON ')
-        def line___RETURN_CHAR_SEMICOLON_(p):
+        @self.pg.production('line : RETURN D_NUM SEMICOLON ')
+        def line___RETURN_D_NUM_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
             return newNode
@@ -466,8 +491,26 @@ class Parser():
             self.Head = newNode
             return newNode
 
+        @self.pg.production('line : GOTO VAR_NAME SEMICOLON ')
+        def line___GOTO_VAR_NAME_SEMICOLON_(p):
+            newNode = ParseTree("LINE",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('line : VAR_NAME COLON ')
+        def line___VAR_NAME_COLON_(p):
+            newNode = ParseTree("LINE",p)
+            self.Head = newNode
+            return newNode
+
         @self.pg.production('line : KEWORD TYPE VAR_NAME SEMICOLON ')
         def line___KEWORD_TYPE_VAR_NAME_SEMICOLON_(p):
+            newNode = ParseTree("LINE",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('line : RETURN SEMICOLON ')
+        def line___RETURN_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
             return newNode
@@ -480,6 +523,18 @@ class Parser():
 
         @self.pg.production('condition : VAR_NAME comp dig ')
         def condition___VAR_NAME_comp_dig_(p):
+            newNode = ParseTree("CONDITION",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('condition : dig comp dig ')
+        def condition___dig_comp_dig_(p):
+            newNode = ParseTree("CONDITION",p)
+            self.Head = newNode
+            return newNode
+
+        @self.pg.production('condition : dig comp VAR_NAME ')
+        def condition___dig_comp_VAR_NAME_(p):
             newNode = ParseTree("CONDITION",p)
             self.Head = newNode
             return newNode
