@@ -25,7 +25,9 @@ def mainAST(args, astHead = None, symbolTable = None):
     if args.input:
 
         inp = import_ir.import_ir(args.input)
-        l1ir = inp.verify()
+        inp.tokenize()
+        # inp.parse()
+        
 
     else:
         ir = ir1.LevelOneIR(astHead, symbolTable)
