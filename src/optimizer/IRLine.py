@@ -384,35 +384,38 @@ class IRArth(IRNode):
             ops: The potential complex operands for the expression
             tvs: The tempoary variable stack
         """
-        self.node = node
-        self.var = f"_{len(tvs)}"
-
-        self.operator = node.name
-        self.lhs = None
-        self.rhs = None
-
-        # Case 1: ops is empty
-        if ops == [] and len(node.children) > 1:
-            self.lhs = node.children[0].name
-            self.rhs = node.children[1].name
-        # Case 2: two elem in ops
-        elif len(ops) == 2:
-            self.lhs = ops[1]
-            self.rhs = ops[0]
+        if(node == None and ops == None and tvs == None):
+            pass
         else:
-            pos = [node.children.index(x) for x in node.children if len(x.children) != 0 and len(node.children) > 1]
+            self.node = node
+            self.var = f"_{len(tvs)}"
 
-            # Case 3: one elem in ops but its the left element in the operation
-            if pos == [0]:
-                self.lhs = ops[0]
-                self.rhs = node.children[1].name
-            # Case 4: one elem in ops but its the right element in the operation
-            elif pos == [1]:
+            self.operator = node.name
+            self.lhs = None
+            self.rhs = None
+
+            # Case 1: ops is empty
+            if ops == [] and len(node.children) > 1:
                 self.lhs = node.children[0].name
+                self.rhs = node.children[1].name
+            # Case 2: two elem in ops
+            elif len(ops) == 2:
+                self.lhs = ops[1]
                 self.rhs = ops[0]
-            # Case 5: Its a unary operator
-            elif pos == []:
-                self.lhs = ops[0] if ops != [] else node.children[0].name
+            else:
+                pos = [node.children.index(x) for x in node.children if len(x.children) != 0 and len(node.children) > 1]
+
+                # Case 3: one elem in ops but its the left element in the operation
+                if pos == [0]:
+                    self.lhs = ops[0]
+                    self.rhs = node.children[1].name
+                # Case 4: one elem in ops but its the right element in the operation
+                elif pos == [1]:
+                    self.lhs = node.children[0].name
+                    self.rhs = ops[0]
+                # Case 5: Its a unary operator
+                elif pos == []:
+                    self.lhs = ops[0] if ops != [] else node.children[0].name
 
 
     def __str__(self):
@@ -423,6 +426,12 @@ class IRArth(IRNode):
 
     def __repr__(self):
         pass
+
+    def fileInit(self,leftHand,op,rightHand,varName):
+        self.lhs = leftHand
+        self.rhs = rightHand
+        self.operator = op
+        self.var = varName
 
 class IRSpecial(IRNode):
     """
