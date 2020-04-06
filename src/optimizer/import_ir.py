@@ -342,6 +342,11 @@ class Parser():
         def line___TYPE_D_NUM_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
+            typ = p[0]
+            name = p[1]
+            IRNodeToReturn = IRLine.IRVariableInit("",typ.value, name.value)
+            self.ls.append(IRNodeToReturn)
+
             return newNode
 
         @self.pg.production('line : TYPE VAR_NAME SEMICOLON ')
@@ -360,6 +365,14 @@ class Parser():
         def line___VAR_NAME_EQUALS_dig_op_dig_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
+            IRNodeToBeReturned = IRLine.IRArth(None,None,None)
+            varName = p[0].value
+            lhs = p[2].content[0].value
+            rhs = p[4].content[0].value
+            op = p[3].content[0].value
+           
+            IRNodeToBeReturned.fileInit(lhs,op,rhs,varName)
+            self.ls.append(IRNodeToBeReturned)
             return newNode
 
         @self.pg.production('line : VAR_NAME EQUALS VAR_NAME SEMICOLON ')
@@ -390,66 +403,164 @@ class Parser():
         def line___VAR_NAME_EQUALS_VAR_NAME_op_dig_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
+            IRNodeToBeReturned = IRLine.IRArth(None,None,None)
+            varName = p[0].value
+            lhs = p[2].value
+            rhs = p[4].content[0].value
+            op = p[3].content[0].value
+           
+            IRNodeToBeReturned.fileInit(lhs,op,rhs,varName)
+            self.ls.append(IRNodeToBeReturned)
+
             return newNode
 
         @self.pg.production('line : VAR_NAME EQUALS dig op VAR_NAME SEMICOLON ')
         def line___VAR_NAME_EQUALS_dig_op_VAR_NAME_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
+            IRNodeToBeReturned = IRLine.IRArth(None,None,None)
+            varName = p[0].value
+            lhs = p[2].content[0].value
+            rhs = p[4].value
+            op = p[3].content[0].value
+           
+            IRNodeToBeReturned.fileInit(lhs,op,rhs,varName)
+            self.ls.append(IRNodeToBeReturned)
+
             return newNode
 
         @self.pg.production('line : VAR_NAME EQUALS VAR_NAME op VAR_NAME SEMICOLON ')
         def line___VAR_NAME_EQUALS_VAR_NAME_op_VAR_NAME_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
+            IRNodeToBeReturned = IRLine.IRArth(None,None,None)
+            varName = p[0].value
+            lhs = p[2].value
+            rhs = p[4].value
+            op = p[3].content[0].value
+           
+            IRNodeToBeReturned.fileInit(lhs,op,rhs,varName)
+            self.ls.append(IRNodeToBeReturned)
+
             return newNode
 
         @self.pg.production('line : VAR_NAME EQUALS MINUS dig SEMICOLON ')
         def line___VAR_NAME_EQUALS_MINUS_dig_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
+            IRNodeToBeReturned = IRLine.IRArth(None,None,None)
+            varName = p[0].value
+            lhs = 0
+            rhs = p[3].content[0].value
+            op = p[2].value
+           
+            IRNodeToBeReturned.fileInit(lhs,op,rhs,varName)
+            self.ls.append(IRNodeToBeReturned)
+
             return newNode
 
         @self.pg.production('line : VAR_NAME EQUALS MINUS VAR_NAME SEMICOLON ')
         def line___VAR_NAME_EQUALS_MINUS_VAR_NAME_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
+
+            IRNodeToBeReturned = IRLine.IRArth(None,None,None)
+            varName = p[0].value
+            lhs = 0
+            rhs = p[3].value
+            op = p[2].value
+           
+            IRNodeToBeReturned.fileInit(lhs,op,rhs,varName)
+            self.ls.append(IRNodeToBeReturned)
+
             return newNode
 
         @self.pg.production('line : VAR_NAME EQUALS PLUS dig SEMICOLON ')
         def line___VAR_NAME_EQUALS_PLUS_dig_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
+
+            IRNodeToBeReturned = IRLine.IRArth(None,None,None)
+            varName = p[0].value
+            lhs = 0
+            rhs = p[3].content[0].value
+            op = p[2].value
+           
+            IRNodeToBeReturned.fileInit(lhs,op,rhs,varName)
+            self.ls.append(IRNodeToBeReturned)
+
             return newNode
 
         @self.pg.production('line : VAR_NAME EQUALS PLUS VAR_NAME SEMICOLON ')
         def line___VAR_NAME_EQUALS_PLUS_VAR_NAME_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
+            IRNodeToBeReturned = IRLine.IRArth(None,None,None)
+            varName = p[0].value
+            lhs = 0
+            rhs = p[3].value
+            op = p[2].value
+           
+            IRNodeToBeReturned.fileInit(lhs,op,rhs,varName)
+            self.ls.append(IRNodeToBeReturned)
             return newNode
 
         @self.pg.production('line : VAR_NAME EQUALS NEGATE dig SEMICOLON ')
         def line___VAR_NAME_EQUALS_NEGATE_dig_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
+            IRNodeToBeReturned = IRLine.IRArth(None,None,None)
+            varName = p[0].value
+            lhs = ""
+            rhs = p[3].content[0].value
+            op = p[2].value
+           
+            IRNodeToBeReturned.fileInit(lhs,op,rhs,varName)
+            self.ls.append(IRNodeToBeReturned)
             return newNode
 
         @self.pg.production('line : VAR_NAME EQUALS NOT dig SEMICOLON ')
         def line___VAR_NAME_EQUALS_NOT_dig_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
+
+            IRNodeToBeReturned = IRLine.IRArth(None,None,None)
+            varName = p[0].value
+            lhs = ""
+            rhs = p[3].content[0].value
+            op = p[2].value
+           
+            IRNodeToBeReturned.fileInit(lhs,op,rhs,varName)
+            self.ls.append(IRNodeToBeReturned)
             return newNode
 
         @self.pg.production('line : VAR_NAME EQUALS NOT VAR_NAME SEMICOLON ')
         def line___VAR_NAME_EQUALS_NOT_VAR_NAME_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
+
+            IRNodeToBeReturned = IRLine.IRArth(None,None,None)
+            varName = p[0].value
+            lhs = ""
+            rhs = p[3].value
+            op = p[2].value
+           
+            IRNodeToBeReturned.fileInit(lhs,op,rhs,varName)
+            self.ls.append(IRNodeToBeReturned)
             return newNode
 
         @self.pg.production('line : VAR_NAME EQUALS NEGATE VAR_NAME SEMICOLON ')
         def line___VAR_NAME_EQUALS_NEGATE_VAR_NAME_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
+            IRNodeToBeReturned = IRLine.IRArth(None,None,None)
+            varName = p[0].value
+            lhs = ""
+            rhs = p[3].value
+            op = p[2].value
+           
+            IRNodeToBeReturned.fileInit(lhs,op,rhs,varName)
+            self.ls.append(IRNodeToBeReturned)
             return newNode
 
         @self.pg.production('line : VAR_NAME EQUALS NULL SEMICOLON ')
