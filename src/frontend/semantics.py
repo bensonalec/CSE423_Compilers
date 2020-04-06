@@ -18,12 +18,24 @@ en_map = {
 class semantic():
     def __init__(self):
         self.errors = []
-        pass
+
     def semanticAnalysis(self,AST,symbols):
         ntv = [Node(AST, "/")]
 
         typ = None
         b = False
+
+        #regexes to do type checks on the fly
+        isDigit = r"\-?([1-9]\d*|\d)"
+        isOp = r'\+|\-|\/|\*|\||\&|\^|\~'
+        isPrec = r"\-?(\d\.\d+|[1-9]\d*\.\d+)"
+        isChar = r"(\'[\w\;\\ \%\"\']\')"
+        isString = r"(\"[\w+\;\\ \%\"\']*\")"
+        precCheck = re.compile(isPrec)
+        digCheck = re.compile(isDigit)
+        opCheck = re.compile(isOp)
+        charCheck = re.compile(isChar)
+        stringCheck = re.compile(isString)
 
         # Simple implementation of a DFS
         funcname = ""
@@ -39,23 +51,12 @@ class semantic():
                 if cur.Node.children == []:
                     ntv = [Node(x, cur.Scope) for x in cur.Node.children if 'children' in x.__dict__] + ntv[1:]
                     continue
-
+                
                 # Function Declaration
                 if index == 0:
                     children = cur.Node.children
                     expectedType = ""
                     topVar = ""
-                    #regexes to do type checks on the fly
-                    isDigit = r"\-?([1-9]\d*|\d)"
-                    isOp = r'\+|\-|\/|\*|\||\&|\^|\~'
-                    isPrec = r"\-?(\d\.\d+|[1-9]\d*\.\d+)"
-                    isChar = r"(\'[\w\;\\ \%\"\']\')"
-                    isString = r"(\"[\w+\;\\ \%\"\']*\")"
-                    precCheck = re.compile(isPrec)
-                    digCheck = re.compile(isDigit)
-                    opCheck = re.compile(isOp)
-                    charCheck = re.compile(isChar)
-                    stringCheck = re.compile(isString)
 
                     for x in children:
                         #get the expected type, or variable in assignment
@@ -122,7 +123,7 @@ class semantic():
                                 ntvTemp = [Node(z, curTemp.Scope) for z in curTemp.Node.children if 'children' in z.__dict__] + ntvTemp[1:]
 
                             pass
-
+                #function call
                 elif index == 1:
                     #iterate through the children, get the name of the function, look up how many parameters it expects
                     func = cur.Node.children[0]
@@ -157,6 +158,7 @@ class semantic():
                             pass
                     #then iterate through the children of this and check the types of the parameters
                     pass
+                #function definition
                 elif index == 2:
                     funcname = cur.Node.children[1].name
 
@@ -169,6 +171,7 @@ class semantic():
                     expected = ([(x.type) for x in symbols if x.entry_type == {value: key for key, value in en_map.items()}["Parameter"] and f"/{funcname}/" == x.scope])
                     if expected != params:
                         self.errors.append("Parameters in function prototype do not match function definition in " + funcname)
+                #goto labels
                 elif index == 3:
                     label = cur.Node.children[0]
                     labelName = label.name
@@ -187,6 +190,7 @@ class semantic():
 
             # fetches the relevant children of the current node and appends the already known children to the list of residual nodes
             ntv = [Node(x, cur.Scope) for x in cur.Node.children if 'children' in x.__dict__] + ntv[1:]
+
     def printSemanticErrors(self):
         """
         Prints the semantic errors to stdout
