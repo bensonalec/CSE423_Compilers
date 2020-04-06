@@ -6,14 +6,10 @@ from rply.errors import LexingError
 from copy import deepcopy
 import IRLine
 import re
-#TODO: ADD TOKEN FOR KEYWORDS, MAKE THE PARSING ACTUALLY PARSE INTO IRNODES
+#TODO: ADD TOKEN FOR KEYWORDS, ADD PARSE INTO FUNCTIONCALL, ADD PARSE INTO KEWORDS ASSIGNMENT
 
 
 class import_ir():
-
-        
-
-        
     def __init__(self, filename):
         with open(filename,"r") as fd:
             self.data = fd.read()
@@ -696,24 +692,39 @@ class Parser():
         def line___LESS_THAN_D_NUM_GREATER_THAN_COLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
+            #name of the label
+            nameLabel = p[1].value
+            IRNodeToBeReturned = IRLine.IRJump(nameLabel)
+            self.ls.append(IRNodeToBeReturned)
             return newNode
 
         @self.pg.production('line : GOTO LESS_THAN D_NUM GREATER_THAN SEMICOLON ')
         def line___GOTO_LESS_THAN_D_NUM_GREATER_THAN_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
+            name = "".join([p[1].value, p[2].value, p[3].value])
+            IRNodeToBeReturned = IRLine.IRGoTo(name)
+            self.ls.append(IRNodeToBeReturned)
             return newNode
 
         @self.pg.production('line : GOTO VAR_NAME SEMICOLON ')
         def line___GOTO_VAR_NAME_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
+            #needs name of label
+            name = p[1].value
+            IRNodeToBeReturned = IRLine.IRGoTo(name)
+            self.ls.append(IRNodeToBeReturned)
             return newNode
 
         @self.pg.production('line : VAR_NAME COLON ')
         def line___VAR_NAME_COLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
+            nameLabel = p[0].value
+            IRNodeToBeReturned = IRLine.IRJump(nameLabel)
+            self.ls.append(IRNodeToBeReturned)
+
             return newNode
 
         @self.pg.production('line : KEWORD TYPE VAR_NAME SEMICOLON ')
