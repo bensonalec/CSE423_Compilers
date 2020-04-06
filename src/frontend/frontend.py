@@ -136,8 +136,8 @@ def main(args):
 
             print (sym)
 
-        semAnal = semantic.semantic()
-        semAnal.semanticAnalysis(astree,symTab.symbols)
+        semAnal = semantic.semantic(astree,symTab.symbols)
+        semAnal.semanticAnalysis()
 
         if args.errors or args.all:
             semAnal.printSemanticErrors()

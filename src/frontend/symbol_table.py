@@ -44,7 +44,7 @@ A simple namedtuple to allow for better readability when performing the depth fi
 """
 class symbol_table():
     """
-    A class that stores all the known and unknown symbols, as well as the semantic errors that may be discovered.
+    A class that stores all the known and unknown symbols.
     """
     def __init__(self,AST):
         """
@@ -59,7 +59,7 @@ class symbol_table():
 
     def analyze(self):
         """
-        Analyses the abstract syntax tree to determine whether there are any undeclared references, and semantic errors.
+        Analyses the abstract syntax tree to determine whether there are any undeclared references.
         """
         ntv = [Node(self.AST, "/")]
         scopenum = 0

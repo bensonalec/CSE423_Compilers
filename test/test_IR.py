@@ -60,8 +60,8 @@ class IRTest(unittest.TestCase):
 
                 sym = symbol_table(astree)
                 sym.analyze()
-                semAnal = semantic()
-                semAnal.semanticAnalysis(astree,sym.symbols)
+                semAnal = semantic(astree,sym.symbols)
+                semAnal.semanticAnalysis()
 
 
                 ir = ir1.LevelOneIR(astree,sym)

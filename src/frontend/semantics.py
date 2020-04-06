@@ -16,10 +16,19 @@ en_map = {
 
 
 class semantic():
-    def __init__(self):
-        self.errors = []
+    """
+    A class that stores any semantic errors that occur.
+    """
 
-    def semanticAnalysis(self,AST,symbols):
+    def __init__(self,AST,symbols):
+        self.errors = []
+        self.AST = AST
+        self.symbols = symbols
+
+    def semanticAnalysis(self):
+        AST = self.AST
+        symbols = self.symbols
+        
         ntv = [Node(AST, "/")]
 
         typ = None
