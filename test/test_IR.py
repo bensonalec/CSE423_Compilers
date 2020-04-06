@@ -9,7 +9,8 @@ from parser import Parser
 from frontend import *
 from preprocessor import run
 from AST_builder import buildAST, ASTNode
-from semantics import symbol_table
+from symbol_table import symbol_table
+from semantics import semantic
 import IR_Lv1_Builder as ir1
 
 
@@ -59,6 +60,10 @@ class IRTest(unittest.TestCase):
 
                 sym = symbol_table(astree)
                 sym.analyze()
+                semAnal = semantic(astree,sym.symbols)
+                semAnal.semanticAnalysis()
+
+
                 ir = ir1.LevelOneIR(astree,sym)
                 ir.construct()
                 result = str(ir)

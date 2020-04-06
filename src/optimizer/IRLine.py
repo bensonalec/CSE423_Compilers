@@ -184,7 +184,7 @@ class IRLine():
                         )
                     )
 
-                    self.tvs.append(self.treeList[-1].var)
+                    self.tvs.append(self.treeList[-1].lhs)
 
     def boolean_breakdown(self, root, success, failure):
         """
@@ -468,27 +468,13 @@ class IRFunctionAssign(IRNode):
             tvs: The tempoary variable stack
         """
         self.node = node
+        self.name = self.node.children[0].name
         self.params = params
-        self.var = f"_{len(tvs)}"
+        self.lhs = f"_{len(tvs)}"
 
     def __str__(self):
-        if self.var:
-            return f"{self.var} = {self.node.children[0].name}({', '.join(self.params)});"
-        else:
-            return f"{self.node.children[0].name}({', '.join(self.params)});"
+        return f"{self.lhs} = {self.name}({', '.join(self.params)});"
 
-class IRFunctionCall(IRNode):
-    """
-    Intermediate representation node for function call.
-    """
-    def __init__(self, name, params):
-        """
-        Args:
-            name: Name of function call.
-            params: The function params. Can be 'None' for no parameters.
-        """
-        self.name = name
-        self.params = params
 
 class IRFunctionDecl(IRNode):
     """
