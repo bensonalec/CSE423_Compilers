@@ -27,7 +27,7 @@ class import_ir():
         lexer = IR_Lexer().get_lexer()
         tokens = lexer.lex(text_input)
         self.tokens = tokens
-        print(tokensToString(deepcopy(tokens)))
+        # print(tokensToString(deepcopy(tokens)))
 
     def parse(self):
         pg = Parser()
@@ -37,8 +37,10 @@ class import_ir():
 
         # Retrieve the head of the parse tree
         head = pg.getTree()
-
-        print(head.__repr__)
+        for i in pg.ls:
+            print(str(i))
+        #print(str(pg.ls))
+        # print(head.__repr__)
 
 def tokensToString(tokens):
     """
@@ -245,6 +247,7 @@ class Parser():
         )
         #initialzie head and current node
         self.Head = None
+        self.ls = []
 
 
     def parse(self):
@@ -290,7 +293,7 @@ class Parser():
             functioName = p[0].value
             params = " ".join(tokens)
             IRNodeToReturn = IRLine.IRFunctionDecl(functioName,params)
-            
+            self.ls.append(IRNodeToReturn)
             return newNode
 
         @self.pg.production('parameters : TYPE VAR_NAME COMMA parameters ')
@@ -345,6 +348,12 @@ class Parser():
         def line___TYPE_VAR_NAME_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
+            #needs modifiers, type, and varname
+            #modifiers is none
+            typ = p[0]
+            name = p[1]
+            IRNodeToReturn = IRLine.IRVariableInit("",typ.value, name.value)
+            self.ls.append(IRNodeToReturn)
             return newNode
 
         @self.pg.production('line : VAR_NAME EQUALS dig op dig SEMICOLON ')
