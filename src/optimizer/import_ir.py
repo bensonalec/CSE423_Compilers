@@ -584,36 +584,61 @@ class Parser():
         def line___VAR_NAME_EQUALS_NULL_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
+            lhs = p[0].value
+            rhs = p[2].value
+            NodeToBeReturned = IRLine.IRAssignment(lhs,rhs)
+            self.ls.append(NodeToBeReturned)
+
             return newNode
 
         @self.pg.production('line : D_NUM EQUALS VAR_NAME SEMICOLON ')
         def line___D_NUM_EQUALS_VAR_NAME_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
+            lhs = p[0].value
+            rhs = p[2].value
+            NodeToBeReturned = IRLine.IRAssignment(lhs,rhs)
+            self.ls.append(NodeToBeReturned)
             return newNode
 
         @self.pg.production('line : D_NUM EQUALS dig SEMICOLON ')
         def line___D_NUM_EQUALS_dig_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
+            lhs = p[0].value
+            rhs = p[2].content[0].value
+            NodeToBeReturned = IRLine.IRAssignment(lhs,rhs)
+            self.ls.append(NodeToBeReturned)
             return newNode
 
         @self.pg.production('line : D_NUM EQUALS STRING SEMICOLON ')
         def line___D_NUM_EQUALS_STRING_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
+            lhs = p[0].value
+            rhs = p[2].value
+            NodeToBeReturned = IRLine.IRAssignment(lhs,rhs)
+            self.ls.append(NodeToBeReturned)
             return newNode
 
         @self.pg.production('line : D_NUM EQUALS CHAR SEMICOLON ')
         def line___D_NUM_EQUALS_CHAR_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
+            lhs = p[0].value
+            rhs = p[2].value
+            NodeToBeReturned = IRLine.IRAssignment(lhs,rhs)
+            self.ls.append(NodeToBeReturned)
             return newNode
 
         @self.pg.production('line : RETURN D_NUM SEMICOLON ')
         def line___RETURN_D_NUM_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
+            #just needs value, should be p[1]
+            value = p[1].value
+            NodeToBeReturned = IRLine.IRReturn(value)
+            self.ls.append(NodeToBeReturned)
             return newNode
 
         @self.pg.production('line : func_call SEMICOLON ')
@@ -668,6 +693,9 @@ class Parser():
         def line___RETURN_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
+            value = ""
+            NodeToBeReturned = IRLine.IRReturn(value)
+            self.ls.append(NodeToBeReturned)
             return newNode
 
         @self.pg.production('condition : VAR_NAME comp VAR_NAME ')
