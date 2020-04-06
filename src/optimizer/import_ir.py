@@ -4,6 +4,7 @@ This module handle ir input from a file
 from rply import LexerGenerator
 from rply.errors import LexingError
 from copy import deepcopy
+import IRLine
 import re
 #TODO: ADD TOKEN FOR KEYWORDS, MAKE THE PARSING ACTUALLY PARSE INTO IRNODES
 
@@ -271,8 +272,25 @@ class Parser():
 
         @self.pg.production('function_def : VAR_NAME OPEN_PAREN parameters CLOSE_PAREN OPEN_BRACK content CLOSE_BRACK ')
         def function_def___VAR_NAME_OPEN_PAREN_parameters_CLOSE_PAREN_OPEN_BRACK_content_CLOSE_BRACK_(p):
+
             newNode = ParseTree("FUNCTION_DEF",p)
             self.Head = newNode
+            #first, convert parameters to a string form
+            #also, get the string representation of VAR_NAME
+            
+            tokens = []
+            tokens += [x.value for x in p[2].content if isinstance(x,Token)]
+            tokenSets = [x for x in p[2].content if isinstance(x,ParseTree)]
+            while tokenSets != []:
+                for i in tokenSets:
+                    tokens += [x.value for x in i.content if isinstance(x,Token)]
+                    tokenSets = [x for x in i.content if isinstance(x,ParseTree)]
+            
+            
+            functioName = p[0].value
+            params = " ".join(tokens)
+            IRNodeToReturn = IRLine.IRFunctionDecl(functioName,params)
+            
             return newNode
 
         @self.pg.production('parameters : TYPE VAR_NAME COMMA parameters ')
