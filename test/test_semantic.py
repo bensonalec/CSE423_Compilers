@@ -8,8 +8,8 @@ from parser import Parser
 from frontend import *
 from preprocessor import run
 from AST_builder import buildAST, ASTNode
-from semantics import symbol_table
-
+from symbol_table import symbol_table
+from semantics import semantic
 
 path_to_C_files = "./programs/"
 path_to_output_files = "./expected_output/semantic/"
@@ -53,9 +53,11 @@ class SemanticAnalysisTest(unittest.TestCase):
                 sym = symbol_table(astree)
 
                 sym.analyze()
+                semAnal = semantic()
+                semAnal.semanticAnalysis(astree,sym.symbols)
 
                 with self.subTest():
-                    self.assertEqual(sym.lineSemanticErrors(), expected)
+                    self.assertEqual(semAnal.lineSemanticErrors(), expected)
                     status = "ok"
 
                 print(f"{'Semantic Analysis for '+c_filename:65}", end="")
