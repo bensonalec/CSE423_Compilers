@@ -77,6 +77,7 @@ class LevelOneIR():
         if opt > 0:
             self.remove_unused_funcs()
             self.remove_unused_vars()
+            pass
 
         if opt > 1:
             # A dictionary containing all the values of variables that can at some point be reduced.
@@ -88,7 +89,6 @@ class LevelOneIR():
                 for func in [sym for sym in self.symTable.symbols if sym.entry_type == 1]
             }
 
-
             # NOTE: As a method of knowing whether it is safe to continue on to the next node in the list the following measures have been implemented:
             # Both constant folding and constant propagation only consider a singular value.
             # They both return a boolean describing whether the node was altered as well as some descriptor of what it did.
@@ -96,8 +96,6 @@ class LevelOneIR():
                 # In the case of constant propagation, the descriptor is a dictionary containing the updated values relevant to the scope of the IRLine object meaning that tempoary variables are stored within the IRLine but now within the scope as a whole.
             # The idea is that while either of these methods can alter the node you keep executing them on the node so that if the loop terminates the program is sure that the node cannot be reduced further.
             # Another final optimization that can be done would be to check if all the nodes in an IRLine object are `IRAssignment`, if so the last one is the only `IRAssignment` node needed, and the others can be removed.
-
-            # TODO: The current issue lies with the fact that at some point tempoary variables are removed for some reason even through they are still needed.
 
             prev_maj = 0
             cur_scope = ""
@@ -138,6 +136,8 @@ class LevelOneIR():
                         break
                 prev_maj = major
 
+            self.cleanup()
+
     def remove_unused_vars(self):
         ir = self.IR
         scope = ""
@@ -175,6 +175,136 @@ class LevelOneIR():
 
 
         self.IR = final_ir
+
+    def cleanup(self):
+
+        class ref():
+            def __init__(self, init_index, init_ref_type, side):
+                self.refs = [init_index]
+                self.ref_types = [init_ref_type]
+                self.side = [side]
+
+            def add(self, index, ref_type, side):
+                self.refs.append(index)
+                self.ref_types.append(ref_type)
+                self.side.append(side)
+
+            def __str__(self):
+                return f"\t{self.refs}\t{self.ref_types}\t{self.side}"
+
+            def __repr__(self):
+                return self.__str__()
+
+        gr = {}
+        for line in self.IR:
+            lr = {}
+
+            for i, node in enumerate(line.treeList):
+                if isinstance(node, irl.IRAssignment):
+                    if node.lhs in lr:
+                        lr[node.lhs].add(i, "assignment", 0)
+                    else:
+                        lr[node.lhs] = ref(i, "assignment", 0)
+
+                    tmp = node.rhs.lstrip('-+').replace('.', '', 1)
+                    if node.rhs in lr and not tmp.isnumeric():
+                        lr[node.rhs].add(i, "assignment", 1)
+                    elif not tmp.isnumeric():
+                        lr[node.rhs] = ref(i, "assignment", 1)
+                elif isinstance(node, irl.IRArth):
+                    if node.var in lr:
+                        lr[node.var].add(i, "assignment", 0)
+                    else:
+                        lr[node.var] = ref(i, "assignment", 0)
+
+                    tmp = node.lhs.lstrip('-+').replace('.', '', 1)
+                    if node.lhs in lr and not tmp.isnumeric():
+                        lr[node.lhs].add(i, "arithmetic", 1)
+                    elif not tmp.isnumeric():
+                        lr[node.lhs] = ref(i, "arithmetic", 1)
+
+                    if node.rhs:
+                        tmp = node.rhs.lstrip('-+').replace('.', '', 1)
+                        if node.rhs in lr and not tmp.isnumeric():
+                            lr[node.rhs].add(i, "arithmetic", 2)
+                        elif not tmp.isnumeric():
+                            lr[node.rhs] = ref(i, "arithmetic", 2)
+                elif isinstance(node, irl.IRFunctionAssign):
+                    if node.lhs in lr:
+                        lr[node.lhs].add(i, "assignment", 0)
+                    else:
+                        lr[node.lhs] = ref(i, "assignment", 0)
+
+                    for param in node.params:
+                        tmp = node.lhs.lstrip('-+').replace('.', '', 1)
+                        if param in lr and not tmp.isnumeric():
+                            lr[node.lhs].add(i, "param", 1)
+                        elif not tmp.isnumeric():
+                            lr[node.lhs] = ref(i, "param", 1)
+                elif isinstance(node, irl.IRIf):
+                    tmp = node.lhs.lstrip('-+').replace('.', '', 1)
+                    if node.lhs in lr and not tmp.isnumeric():
+                        lr[node.lhs].add(i, "collation", 1)
+                    elif not tmp.isnumeric():
+                        lr[node.lhs] = ref(i, "collation", 1)
+
+                    tmp = node.rhs.lstrip('-+').replace('.', '', 1)
+                    if node.rhs in lr and not tmp.isnumeric():
+                        lr[node.rhs].add(i, "collation", 2)
+                    elif not tmp.isnumeric():
+                        lr[node.rhs] = ref(i, "collation", 2)
+                elif isinstance(node, irl.IRSpecial):
+                    if node.var in lr:
+                        lr[node.var].add(i, "assignment", 0)
+                        lr[node.var].add(i, "assignment", 1)
+                    else:
+                        lr[node.var] = ref(i, "assignment", 0)
+                        lr[node.var].add(i, "assignment", 1)
+                elif isinstance(node, irl.IRReturn):
+                    if node.value:
+                        tmp = node.value.lstrip('-+').replace('.', '', 1)
+                        if node.value in lr:
+                            lr[node.value].add(i, "return", 0)
+                        elif not tmp.isnumeric():
+                            lr[node.value] = ref(i, "return", 0)
+            rem_list = []
+
+            for var in lr.items():
+                # print(var)
+                for i, typ in enumerate(var[1].ref_types):
+                    if (
+                        i+1 < len(var[1].ref_types)
+                        and
+                        typ == "assignment"
+                        and
+                        var[1].side[i] == 0
+                        and
+                        var[1].side[i+1] == 0
+                        and
+                        var[1].ref_types[i+1] == "assignment"
+                        ):
+                        rem_list.append(var[1].refs[i])
+                    elif (
+                        i+1 == len(var[1].ref_types)
+                        and
+                        typ == "assignment"
+                        and
+                        var[1].side[i] == 0
+                        # and
+                        # var[1].side[i+1] == 0
+                        and
+                        (
+                            var[1].refs[i]+1 != len(line.treeList)
+                            or
+                            len(var[1].ref_types) > 1)
+                        ):
+                        rem_list.append(var[1].refs[i])
+
+                # iterate over reference types and see if there are two assignments after each other.
+
+
+            for node in reversed(sorted(rem_list)):
+                line.treeList.pop(node)
 
     def remove_unused_funcs(self):
         ir = self.IR
@@ -321,7 +451,7 @@ class LevelOneIR():
                 if tmp.isnumeric():
                     var_val[node.lhs] = node.rhs
 
-        elif isinstance(node, irl.IRFunctionCall):
+        elif isinstance(node, irl.IRFunctionAssign):
             for j, param in enumerate(node.params):
                 if param in var_val and var_val[param] != None:
                     node.params[j] = var_val[param]
@@ -578,8 +708,11 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                     tvs, labelList = line.retrieve()
                     if line.treeList != []:
                         lines.append(line)
+                        lines[-1].treeList.append(irl.IRAssignment(f"D.{returnDigit}", f"{tvs[-1]}"))
 
-                    lines.append(irl.IRLine.singleEntry(irl.IRAssignment(f"D.{returnDigit}", f"{tvs[-1]}"), [labelDigit]))
+                    else:
+                        lines.append(irl.IRLine.singleEntry(irl.IRAssignment(f"D.{returnDigit}", f"{tvs[-1]}"), [labelDigit]))
+                    
                     lines.append(irl.IRLine.singleEntry(irl.IRReturn(f"D.{returnDigit}"), [labelDigit]))
 
                     if labelList != []:
