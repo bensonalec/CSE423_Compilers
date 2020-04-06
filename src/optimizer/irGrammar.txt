@@ -1,0 +1,69 @@
+grammar:
+
+function_def : VAR_NAME OPEN_PAREN parameters CLOSE_PAREN OPEN_BRACK content CLOSE_BRACK
+parameters : TYPE VAR_NAME COMMA parameters
+parameters : 
+content : line
+content : line line
+content : 
+line : TYPE D_NUM SEMICOLON
+line : TYPE VAR_NAME SEMICOLON
+line : VAR_NAME EQUALS dig op dig SEMICOLON
+line : VAR_NAME EQUALS VAR_NAME SEMICOLON
+line : VAR_NAME EQUALS dig SEMICOLON
+line : VAR_NAME EQUALS STRING SEMICOLON
+line : VAR_NAME EQUALS CHAR SEMICOLON
+line : VAR_NAME EQUALS VAR_NAME op dig SEMICOLON
+line : VAR_NAME EQUALS dig op VAR_NAME SEMICOLON
+line : VAR_NAME EQUALS MINUS dig SEMICOLON
+line : VAR_NAME EQUALS MINUS VAR_NAME SEMICOLON
+line : VAR_NAME EQUALS PLUS dig SEMICOLON
+line : VAR_NAME EQUALS PLUS VAR_NAME SEMICOLON
+line : VAR_NAME EQUALS NEGATE dig SEMICOLON
+line : VAR_NAME EQUALS NEGATE VAR_NAME SEMICOLON
+line : VAR_NAME EQUALS NULL
+line : D_NUM EQUALS varName SEMICOLON
+line : D_NUM EQUALS dig SEMICOLON
+line : D_NUM EQUALS STRING SEMICOLON
+line : D_NUM EQUALS CHAR SEMICOLON
+line : return VAR_NAME SEMICOLON
+line : return STRING SEMICOLON
+line : return dig SEMICOLON
+line : return CHAR SEMICOLON
+line : func_call SEMICOLON
+line : VAR_NAME EQUALS func_call SEMICOLON
+line : IF OPEN_PAREN condition CLOSE_PAREN GOTO LESS_THAN D_NUM GREATER_THAN SEMICOLON ELSE GOTO LESS_THAN D_NUM GREATER_THAN SEMICOLON
+line : LESS_THAN D_NUM GREATER_THAN COLON
+line : GOTO LESS_THAN D_NUM GREATER_THAN SEMICOLON
+line : KEWORD TYPE VAR_NAME SEMICOLON
+condition : VAR_NAME comp VAR_NAME
+condition : VAR_NAME comp dig
+func_call : VAR_NAME OPEN_PAREN func_input CLOSE_PAREN
+func_input : 
+func_input : STRING COMMA func_input
+func_input : CHAR COMMA func_input
+func_input : dig COMMA func_input
+func_input : VAR_NAME COMMA func_input
+func_input : STRING  
+func_input : CHAR  
+func_input : dig  
+func_input : VAR_NAME  
+comp : LESS_THAN
+comp : GREATER_THAN
+comp : EQUAL_TO
+comp : LEQ
+comp : GEQ
+comp : NOT_EQUAL_TO
+op : PLUS
+op : MINUS
+op : DIVIDE
+op : TIMES
+op : MODULUS
+op : BW_AND
+op : BW_OR
+op : NEGATE
+op : LEFT_SHIFT
+op : RIGHT_SHIFT
+op : XOR
+dig : INT
+dig : FLOAT
