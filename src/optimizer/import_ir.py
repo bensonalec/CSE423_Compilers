@@ -645,12 +645,36 @@ class Parser():
         def line___func_call_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
+            func_name = p[0].content[0].value
+            contentList = p[0].content[2]
+            params = []
+            while contentList != []:
+                # print("SJSD")
+                params.append(contentList.content[0].value)
+                if(len(contentList.content) == 3):
+                    contentList = contentList.content[2]
+                else:
+                    contentList =[]
+            #NEED TO IDENTIF WHAT IR NODE THIS BECOMES, WE HAVE THE PARAMS AND THE NAME
             return newNode
 
         @self.pg.production('line : VAR_NAME EQUALS func_call SEMICOLON ')
         def line___VAR_NAME_EQUALS_func_call_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
+            func_name = p[2].content[0].value
+            contentList = p[2].content[2]
+            params = []
+            lhs = p[0].value
+            while contentList != []:
+                params.append(contentList.content[0].value)
+                if(len(contentList.content) == 3):
+                    contentList = contentList.content[2]
+                else:
+                    contentList =[]
+            IRNodeToBeReturned = IRLine.IRFunctionAssign(None,None,None)
+            IRNodeToBeReturned.LineFromFile(lhs,func_name,params)
+            self.ls.append(IRNodeToBeReturned)
             return newNode
 
         @self.pg.production('line : IF OPEN_PAREN condition CLOSE_PAREN GOTO LESS_THAN D_NUM GREATER_THAN SEMICOLON ELSE GOTO LESS_THAN D_NUM GREATER_THAN SEMICOLON ')

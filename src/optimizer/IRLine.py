@@ -476,13 +476,21 @@ class IRFunctionAssign(IRNode):
             params: A list of parameters for the function call
             tvs: The tempoary variable stack
         """
-        self.node = node
-        self.name = self.node.children[0].name
-        self.params = params
-        self.lhs = f"_{len(tvs)}"
+        if(node == None and params == None and tvs == None):
+            pass
+        else:
+            self.node = node
+            self.name = self.node.children[0].name
+            self.params = params
+            self.lhs = f"_{len(tvs)}"
 
     def __str__(self):
         return f"{self.lhs} = {self.name}({', '.join(self.params)});"
+    
+    def LineFromFile(self,lhs,func_name,params):
+        self.lhs = lhs
+        self.name = func_name
+        self.params = params
 
 
 class IRFunctionDecl(IRNode):
