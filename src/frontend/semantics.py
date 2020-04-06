@@ -21,11 +21,21 @@ class semantic():
     """
 
     def __init__(self,AST,symbols):
+        """
+        Args:
+            AST: The head node of the abstract syntax tree.
+            symbols: The symbol table
+        """
+
         self.errors = []
         self.AST = AST
         self.symbols = symbols
 
     def semanticAnalysis(self):
+        """
+        Runs semantic analysis
+        """
+
         AST = self.AST
         symbols = self.symbols
         
