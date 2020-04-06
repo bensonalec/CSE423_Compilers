@@ -681,6 +681,15 @@ class Parser():
         def line___IF_OPEN_PAREN_condition_CLOSE_PAREN_GOTO_LESS_THAN_D_NUM_GREATER_THAN_SEMICOLON_ELSE_GOTO_LESS_THAN_D_NUM_GREATER_THAN_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
+            print(p)
+            lhs = p[2].content[0].value
+            rhs = p[2].content[2].value
+            compOp = p[2].content[1].content[0].value
+            succ = p[6].value.split(".")[1]
+            fail = p[12].value.split(".")[1]
+            IRNodeToBeReturned = IRLine.IRIf(None,None,None,None)
+            IRNodeToBeReturned.fileInit(lhs,rhs,compOp,succ,fail)
+            self.ls.append(IRNodeToBeReturned)
             return newNode
 
         @self.pg.production('line : LESS_THAN D_NUM GREATER_THAN COLON ')
