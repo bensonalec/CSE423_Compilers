@@ -65,7 +65,7 @@ class IRLine():
 
         # Based on the node construct the needed intermediate trees in order
         if node == None:
-            # There was no AST node passed in. This is the case when there 
+            # There was no AST node passed in. This is the case when there
             # are no complex IR instructions that need to be broken down.
             # IRNode will be added manually to self.treeList.
             pass
@@ -74,7 +74,7 @@ class IRLine():
             self.boolean_breakdown(self.astNode, success, failure)
         else:
             self.expression_breakdown(self.astNode, success, failure)
-            
+
 
     def retrieve(self):
         &#34;&#34;&#34;
@@ -211,7 +211,7 @@ class IRLine():
                         )
                     )
 
-                    self.tvs.append(self.treeList[-1].var)
+                    self.tvs.append(self.treeList[-1].lhs)
 
     def boolean_breakdown(self, root, success, failure):
         &#34;&#34;&#34;
@@ -284,7 +284,6 @@ class IRLine():
             else:
                 self.expression_breakdown(tmpNode, success, failure)
 
-
     def __str__(self):
         return &#34;\n&#34;.join([str(x) for x in self.treeList])
 
@@ -312,7 +311,7 @@ class IRNode():
     def __str__(self):
         pass
 
-    def __repr__():
+    def __repr__(self):
         pass
 
 
@@ -330,7 +329,7 @@ class IRJump(IRNode):
     def __str__(self):
         return f&#34;{self.name}:&#34;
 
-    def __repr__():
+    def __repr__(self):
         pass
 
 class IRGoTo(IRNode):
@@ -347,7 +346,7 @@ class IRGoTo(IRNode):
     def __str__(self):
         return f&#34;goto {self.name};&#34;
 
-    def __repr__():
+    def __repr__(self):
         pass
 
 class IRIf(IRNode):
@@ -357,7 +356,7 @@ class IRIf(IRNode):
     def __init__(self, node, success, failure, ops):
         &#34;&#34;&#34;
         Args:
-            node: `AST-node` for the given 
+            node: `AST-node` for the given
             success: Success label digit
             failure: Failure label digit
             ops: The potential complex operands for the left/right hand side of the comparison
@@ -398,7 +397,7 @@ class IRIf(IRNode):
     def __str__(self):
         return f&#34;if ({self.lhs} {self.comp} {self.rhs}) goto &lt;D.{self.success}&gt;; else goto &lt;D.{self.failure}&gt;;&#34;
 
-    def __repr__():
+    def __repr__(self):
         pass
 
 class IRArth(IRNode):
@@ -425,8 +424,8 @@ class IRArth(IRNode):
             self.rhs = node.children[1].name
         # Case 2: two elem in ops
         elif len(ops) == 2:
-            self.lhs = ops[0]
-            self.rhs = ops[1]
+            self.lhs = ops[1]
+            self.rhs = ops[0]
         else:
             pos = [node.children.index(x) for x in node.children if len(x.children) != 0 and len(node.children) &gt; 1]
 
@@ -449,7 +448,7 @@ class IRArth(IRNode):
         else:
             return f&#34;{self.var} = {self.operator}{self.lhs};&#34;
 
-    def __repr__():
+    def __repr__(self):
         pass
 
 class IRSpecial(IRNode):
@@ -496,27 +495,13 @@ class IRFunctionAssign(IRNode):
             tvs: The tempoary variable stack
         &#34;&#34;&#34;
         self.node = node
+        self.name = self.node.children[0].name
         self.params = params
-        self.var = f&#34;_{len(tvs)}&#34;
+        self.lhs = f&#34;_{len(tvs)}&#34;
 
     def __str__(self):
-        if self.var:
-            return f&#34;{self.var} = {self.node.children[0].name}({&#39;, &#39;.join(self.params)});&#34;
-        else:
-            return f&#34;{self.node.children[0].name}({&#39;, &#39;.join(self.params)});&#34;
+        return f&#34;{self.lhs} = {self.name}({&#39;, &#39;.join(self.params)});&#34;
 
-class IRFunctionCall(IRNode):
-    &#34;&#34;&#34;
-    Intermediate representation node for function call.
-    &#34;&#34;&#34;
-    def __init__(self, name, params):
-        &#34;&#34;&#34;
-        Args:
-            name: Name of function call.
-            params: The function params. Can be &#39;None&#39; for no parameters.
-        &#34;&#34;&#34;
-        self.name = name
-        self.params = params
 
 class IRFunctionDecl(IRNode):
     &#34;&#34;&#34;
@@ -575,22 +560,18 @@ class IRVariableInit(IRNode):
     def __init__(self, modifiers, typ, var):
         &#34;&#34;&#34;
         Args:
-            modifiers: 
-            type: 
-            var: 
+            modifiers:
+            type:
+            var:
         &#34;&#34;&#34;
         self.modifiers = modifiers
 
         self.typ = typ
-        
+
         self.var = var
 
     def __str__(self):
-        return f&#34;{self.modifiers}{self.typ} {self.var};&#34;
-                
-
-    
-    </code></pre>
+        return f&#34;{self.modifiers}{self.typ} {self.var};&#34;</code></pre>
 </details>
 </section>
 <section>
@@ -645,8 +626,8 @@ class IRVariableInit(IRNode):
             self.rhs = node.children[1].name
         # Case 2: two elem in ops
         elif len(ops) == 2:
-            self.lhs = ops[0]
-            self.rhs = ops[1]
+            self.lhs = ops[1]
+            self.rhs = ops[0]
         else:
             pos = [node.children.index(x) for x in node.children if len(x.children) != 0 and len(node.children) &gt; 1]
 
@@ -669,7 +650,7 @@ class IRVariableInit(IRNode):
         else:
             return f&#34;{self.var} = {self.operator}{self.lhs};&#34;
 
-    def __repr__():
+    def __repr__(self):
         pass</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -783,49 +764,12 @@ class IRVariableInit(IRNode):
             tvs: The tempoary variable stack
         &#34;&#34;&#34;
         self.node = node
+        self.name = self.node.children[0].name
         self.params = params
-        self.var = f&#34;_{len(tvs)}&#34;
+        self.lhs = f&#34;_{len(tvs)}&#34;
 
     def __str__(self):
-        if self.var:
-            return f&#34;{self.var} = {self.node.children[0].name}({&#39;, &#39;.join(self.params)});&#34;
-        else:
-            return f&#34;{self.node.children[0].name}({&#39;, &#39;.join(self.params)});&#34;</code></pre>
-</details>
-<h3>Ancestors</h3>
-<ul class="hlist">
-<li><a title="src.optimizer.IRLine.IRNode" href="#src.optimizer.IRLine.IRNode">IRNode</a></li>
-</ul>
-</dd>
-<dt id="src.optimizer.IRLine.IRFunctionCall"><code class="flex name class">
-<span>class <span class="ident">IRFunctionCall</span></span>
-<span>(</span><span>name, params)</span>
-</code></dt>
-<dd>
-<section class="desc"><p>Intermediate representation node for function call.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>name</code></strong></dt>
-<dd>Name of function call.</dd>
-<dt><strong><code>params</code></strong></dt>
-<dd>The function params. Can be 'None' for no parameters.</dd>
-</dl></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class IRFunctionCall(IRNode):
-    &#34;&#34;&#34;
-    Intermediate representation node for function call.
-    &#34;&#34;&#34;
-    def __init__(self, name, params):
-        &#34;&#34;&#34;
-        Args:
-            name: Name of function call.
-            params: The function params. Can be &#39;None&#39; for no parameters.
-        &#34;&#34;&#34;
-        self.name = name
-        self.params = params</code></pre>
+        return f&#34;{self.lhs} = {self.name}({&#39;, &#39;.join(self.params)});&#34;</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -899,7 +843,7 @@ class IRVariableInit(IRNode):
     def __str__(self):
         return f&#34;goto {self.name};&#34;
 
-    def __repr__():
+    def __repr__(self):
         pass</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -916,7 +860,7 @@ class IRVariableInit(IRNode):
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>node</code></strong></dt>
-<dd><code>AST-node</code> for the given </dd>
+<dd><code>AST-node</code> for the given</dd>
 <dt><strong><code>success</code></strong></dt>
 <dd>Success label digit</dd>
 <dt><strong><code>failure</code></strong></dt>
@@ -935,7 +879,7 @@ class IRVariableInit(IRNode):
     def __init__(self, node, success, failure, ops):
         &#34;&#34;&#34;
         Args:
-            node: `AST-node` for the given 
+            node: `AST-node` for the given
             success: Success label digit
             failure: Failure label digit
             ops: The potential complex operands for the left/right hand side of the comparison
@@ -976,7 +920,7 @@ class IRVariableInit(IRNode):
     def __str__(self):
         return f&#34;if ({self.lhs} {self.comp} {self.rhs}) goto &lt;D.{self.success}&gt;; else goto &lt;D.{self.failure}&gt;;&#34;
 
-    def __repr__():
+    def __repr__(self):
         pass</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -1013,7 +957,7 @@ class IRVariableInit(IRNode):
     def __str__(self):
         return f&#34;{self.name}:&#34;
 
-    def __repr__():
+    def __repr__(self):
         pass</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -1076,7 +1020,7 @@ class IRVariableInit(IRNode):
 
         # Based on the node construct the needed intermediate trees in order
         if node == None:
-            # There was no AST node passed in. This is the case when there 
+            # There was no AST node passed in. This is the case when there
             # are no complex IR instructions that need to be broken down.
             # IRNode will be added manually to self.treeList.
             pass
@@ -1085,7 +1029,7 @@ class IRVariableInit(IRNode):
             self.boolean_breakdown(self.astNode, success, failure)
         else:
             self.expression_breakdown(self.astNode, success, failure)
-            
+
 
     def retrieve(self):
         &#34;&#34;&#34;
@@ -1222,7 +1166,7 @@ class IRVariableInit(IRNode):
                         )
                     )
 
-                    self.tvs.append(self.treeList[-1].var)
+                    self.tvs.append(self.treeList[-1].lhs)
 
     def boolean_breakdown(self, root, success, failure):
         &#34;&#34;&#34;
@@ -1294,7 +1238,6 @@ class IRVariableInit(IRNode):
                 self.boolean_breakdown(tmpNode, success, failure)
             else:
                 self.expression_breakdown(tmpNode, success, failure)
-
 
     def __str__(self):
         return &#34;\n&#34;.join([str(x) for x in self.treeList])
@@ -1584,7 +1527,7 @@ def singleEntry(irNode, labelDigit=None, prefix=&#34;&#34;):
                     )
                 )
 
-                self.tvs.append(self.treeList[-1].var)</code></pre>
+                self.tvs.append(self.treeList[-1].lhs)</code></pre>
 </details>
 </dd>
 <dt id="src.optimizer.IRLine.IRLine.retrieve"><code class="name flex">
@@ -1635,7 +1578,7 @@ def singleEntry(irNode, labelDigit=None, prefix=&#34;&#34;):
     def __str__(self):
         pass
 
-    def __repr__():
+    def __repr__(self):
         pass</code></pre>
 </details>
 <h3>Subclasses</h3>
@@ -1644,7 +1587,6 @@ def singleEntry(irNode, labelDigit=None, prefix=&#34;&#34;):
 <li><a title="src.optimizer.IRLine.IRAssignment" href="#src.optimizer.IRLine.IRAssignment">IRAssignment</a></li>
 <li><a title="src.optimizer.IRLine.IRBracket" href="#src.optimizer.IRLine.IRBracket">IRBracket</a></li>
 <li><a title="src.optimizer.IRLine.IRFunctionAssign" href="#src.optimizer.IRLine.IRFunctionAssign">IRFunctionAssign</a></li>
-<li><a title="src.optimizer.IRLine.IRFunctionCall" href="#src.optimizer.IRLine.IRFunctionCall">IRFunctionCall</a></li>
 <li><a title="src.optimizer.IRLine.IRFunctionDecl" href="#src.optimizer.IRLine.IRFunctionDecl">IRFunctionDecl</a></li>
 <li><a title="src.optimizer.IRLine.IRGoTo" href="#src.optimizer.IRLine.IRGoTo">IRGoTo</a></li>
 <li><a title="src.optimizer.IRLine.IRIf" href="#src.optimizer.IRLine.IRIf">IRIf</a></li>
@@ -1736,13 +1678,9 @@ def singleEntry(irNode, labelDigit=None, prefix=&#34;&#34;):
 <dd>
 <section class="desc"><p>Intermediate representation node for a variable initialization.</p>
 <h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>modifiers</code></strong></dt>
-<dd>&nbsp;</dd>
-<dt><strong><code>type</code></strong></dt>
-<dd>&nbsp;</dd>
-</dl>
-<p>var:</p></section>
+<p>modifiers:
+type:
+var:</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1754,14 +1692,14 @@ def singleEntry(irNode, labelDigit=None, prefix=&#34;&#34;):
     def __init__(self, modifiers, typ, var):
         &#34;&#34;&#34;
         Args:
-            modifiers: 
-            type: 
-            var: 
+            modifiers:
+            type:
+            var:
         &#34;&#34;&#34;
         self.modifiers = modifiers
 
         self.typ = typ
-        
+
         self.var = var
 
     def __str__(self):
@@ -1799,9 +1737,6 @@ def singleEntry(irNode, labelDigit=None, prefix=&#34;&#34;):
 </li>
 <li>
 <h4><code><a title="src.optimizer.IRLine.IRFunctionAssign" href="#src.optimizer.IRLine.IRFunctionAssign">IRFunctionAssign</a></code></h4>
-</li>
-<li>
-<h4><code><a title="src.optimizer.IRLine.IRFunctionCall" href="#src.optimizer.IRLine.IRFunctionCall">IRFunctionCall</a></code></h4>
 </li>
 <li>
 <h4><code><a title="src.optimizer.IRLine.IRFunctionDecl" href="#src.optimizer.IRLine.IRFunctionDecl">IRFunctionDecl</a></code></h4>

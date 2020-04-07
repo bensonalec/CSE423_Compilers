@@ -45,9 +45,9 @@ lex = SourceFileLoader(&#34;lexer&#34;, f&#34;{os.path.dirname(os.path.abspath(g
 par = SourceFileLoader(&#34;parser&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/parser.py&#34;).load_module()
 btp = SourceFileLoader(&#34;bnfToParser&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/bnfToParser.py&#34;).load_module()
 ast = SourceFileLoader(&#34;AST_builder&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/AST_builder.py&#34;).load_module()
-sem = SourceFileLoader(&#34;semantics&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/semantics.py&#34;).load_module()
+sym = SourceFileLoader(&#34;symbol_table&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/symbol_table.py&#34;).load_module()
 pre = SourceFileLoader(&#34;preprocessor&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/preprocessor.py&#34;).load_module()
-
+semantic = SourceFileLoader(&#34;semantics&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/semantics.py&#34;).load_module()
 
 def getTree(head,level):
     &#34;&#34;&#34;
@@ -156,18 +156,17 @@ def main(args):
             print(astree)
 
         # Initialize symbol table and begin semantic analysis
-        sym = sem.symbol_table(astree)
-        sym.analyze()
+        symTab = sym.symbol_table(astree)
+        symTab.analyze()
 
         if args.symbol_table or args.all:
-            # sym.print_symbol_table()
-            # sym.print_unknown_symbols()
+            print (symTab)
 
-            print (sym)
+        semAnal = semantic.semantic(astree,symTab.symbols)
+        semAnal.semanticAnalysis()
 
         if args.errors or args.all:
-            sym.printSemanticErrors()
-
+            semAnal.printSemanticErrors()
     except LexingError as err:
         print(&#34;Received error(s) from token validation. Exiting...&#34;)
         exit()
@@ -182,7 +181,7 @@ def main(args):
         print(f&#34;Unrecoverable exception occured. Exiting...&#34;)
         exit()
 
-    return astree, sym
+    return astree, symTab
 
 if __name__ == &#34;__main__&#34;:
     #command line arguements
@@ -364,18 +363,17 @@ if __name__ == &#34;__main__&#34;:
             print(astree)
 
         # Initialize symbol table and begin semantic analysis
-        sym = sem.symbol_table(astree)
-        sym.analyze()
+        symTab = sym.symbol_table(astree)
+        symTab.analyze()
 
         if args.symbol_table or args.all:
-            # sym.print_symbol_table()
-            # sym.print_unknown_symbols()
+            print (symTab)
 
-            print (sym)
+        semAnal = semantic.semantic(astree,symTab.symbols)
+        semAnal.semanticAnalysis()
 
         if args.errors or args.all:
-            sym.printSemanticErrors()
-
+            semAnal.printSemanticErrors()
     except LexingError as err:
         print(&#34;Received error(s) from token validation. Exiting...&#34;)
         exit()
@@ -390,7 +388,7 @@ if __name__ == &#34;__main__&#34;:
         print(f&#34;Unrecoverable exception occured. Exiting...&#34;)
         exit()
 
-    return astree, sym</code></pre>
+    return astree, symTab</code></pre>
 </details>
 </dd>
 <dt id="src.frontend.frontend.print_tokens"><code class="name flex">

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.4" />
 <title>src.frontend.AST_builder API documentation</title>
-<meta name="description" content="This module takes in the parse tree, and produces an Abstract Syntax Tree.This is done using a Depth First Traversal. By taking the Concrete Syntax …" />
+<meta name="description" content="" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,12 +20,12 @@
 <h1 class="title">Module <code>src.frontend.AST_builder</code></h1>
 </header>
 <section id="section-intro">
-<p>This module takes in the parse tree, and produces an Abstract Syntax Tree.This is done using a Depth First Traversal. By taking the Concrete Syntax Tree (Parse Tree)and converting it to an Abstract Syntax Tree we can begin to move towards an intermediate form.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">&#34;&#34;&#34;
+<pre><code class="python">import re
+&#34;&#34;&#34;
 This module takes in the parse tree, and produces an Abstract Syntax Tree.This is done using a Depth First Traversal. By taking the Concrete Syntax Tree (Parse Tree)and converting it to an Abstract Syntax Tree we can begin to move towards an intermediate form.
 &#34;&#34;&#34;
 def buildAST(parseHead):
@@ -79,7 +79,20 @@ def buildAST(parseHead):
             expansion = [(x, ASTcurrent) for x in c[0].content[1:] if &#39;content&#39; in x.__dict__]
 
         elif typ == &#34;value&#34;:
-            ASTcurrent.children.append(ASTNode(f&#34;{c[0].content[0].value}&#34;, ASTcurrent))
+
+            value = str(c[0].content[0].value)
+
+            if re.match(r&#34;0b[01]+&#34;, value):
+                # Convert to Binary
+                value = str(int(value, 2))
+            elif re.match(r&#34;0x[\dA-Fa-f]+&#34;, value):
+                # Convert to Hex
+                value = str(int(value, 16))
+            elif re.match(r&#34;0[0-7]{1,3}&#34;, value):
+                # Convert to Octal
+                value = str(int(value, 8))
+
+            ASTcurrent.children.append(ASTNode(value, ASTcurrent))
 
         elif typ == &#34;function definition&#34;:
             ASTcurrent.children.append(ASTNode(&#34;func&#34;, ASTcurrent))
@@ -592,7 +605,20 @@ class ASTNode():
             expansion = [(x, ASTcurrent) for x in c[0].content[1:] if &#39;content&#39; in x.__dict__]
 
         elif typ == &#34;value&#34;:
-            ASTcurrent.children.append(ASTNode(f&#34;{c[0].content[0].value}&#34;, ASTcurrent))
+
+            value = str(c[0].content[0].value)
+
+            if re.match(r&#34;0b[01]+&#34;, value):
+                # Convert to Binary
+                value = str(int(value, 2))
+            elif re.match(r&#34;0x[\dA-Fa-f]+&#34;, value):
+                # Convert to Hex
+                value = str(int(value, 16))
+            elif re.match(r&#34;0[0-7]{1,3}&#34;, value):
+                # Convert to Octal
+                value = str(int(value, 8))
+
+            ASTcurrent.children.append(ASTNode(value, ASTcurrent))
 
         elif typ == &#34;function definition&#34;:
             ASTcurrent.children.append(ASTNode(&#34;func&#34;, ASTcurrent))

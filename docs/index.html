@@ -687,6 +687,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
            <dd>
             Used to input IR from file. When this option is used, there is no need for a C file to be inputted as well. The output is not optimized.
            </dd>
+           <dt>
+            <code>
+             --IRout
+            </code>
+            <code>
+             [OUTPUT FILE]
+            </code>
+           </dt>
+           <dd>
+            Ouput the final optimized IR to a file. Filename must be given.
+           </dd>
           </dl>
          </dd>
          <dt>
@@ -3308,15 +3319,15 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
 
     a =   (j |  a) -  97;
     b +=  (i +  g) +  40;
-    c -=  (b +  g) &gt;&gt; 76;
+    c -=  (b +  g) &gt;&gt; 12;
     d *=  (j +  c) -  25;
-    e /=  (c &lt;&lt; i) |  37;
+    e /=  (c &lt;&lt; -i) |  37;
     f %=  (b |  a) *  42;
-    g &lt;&lt;= (a &gt;&gt; b) ^  19;
+    g &lt;&lt;= (-a &gt;&gt; b) ^  19;
     h &gt;&gt;= (c /  g) +  19;
     i |=  (d ^  b) /  20;
     j &amp;=  (c +  a) &gt;&gt; 12;
-    k ^=  (a %  f) &lt;&lt; 31;
+    k ^=  (a %  f) &lt;&lt; 20;
 }</code></pre>
              </div>
              <div class="representation_0" style="display: none;">
@@ -3437,7 +3448,7 @@ Token('ADD', '+')
 Token('SELF_DEFINED', 'g')
 Token('CLOSE_PAREN', ')')
 Token('RSH', '&gt;&gt;')
-Token('INTEGER', '76')
+Token('INTEGER', '12')
 Token('SEMICOLON', ';')
 Token('SELF_DEFINED', 'd')
 Token('MEQ', '*=')
@@ -3454,6 +3465,7 @@ Token('DEQ', '/=')
 Token('OPEN_PAREN', '(')
 Token('SELF_DEFINED', 'c')
 Token('LSH', '&lt;&lt;')
+Token('SUB', '-')
 Token('SELF_DEFINED', 'i')
 Token('CLOSE_PAREN', ')')
 Token('BOR', '|')
@@ -3472,6 +3484,7 @@ Token('SEMICOLON', ';')
 Token('SELF_DEFINED', 'g')
 Token('LSEQ', '&lt;&lt;=')
 Token('OPEN_PAREN', '(')
+Token('SUB', '-')
 Token('SELF_DEFINED', 'a')
 Token('RSH', '&gt;&gt;')
 Token('SELF_DEFINED', 'b')
@@ -3517,7 +3530,7 @@ Token('MOD', '%')
 Token('SELF_DEFINED', 'f')
 Token('CLOSE_PAREN', ')')
 Token('LSH', '&lt;&lt;')
-Token('INTEGER', '31')
+Token('INTEGER', '20')
 Token('SEMICOLON', ';')
 Token('CLOSE_BRACE', '}')</pre>
              </div>
@@ -4043,7 +4056,7 @@ Token('CLOSE_BRACE', '}')</pre>
 35 : ['arithmetic_unary']
 36 : ['arithmetic_post']
 37 : ['value']
-38 : [Token('INTEGER', '76')]
+38 : [Token('INTEGER', '12')]
 20 : ['content_terminal', 'content']
 21 : ['single_line']
 22 : ['designation', Token('SEMICOLON', ';')]
@@ -4135,9 +4148,12 @@ Token('CLOSE_BRACE', '}')</pre>
 51 : ['arithmetic_mul']
 52 : ['arithmetic_cast']
 53 : ['arithmetic_unary']
-54 : ['arithmetic_post']
-55 : ['var_access']
-56 : [Token('SELF_DEFINED', 'i')]
+54 : ['unary_op', 'arithmetic_cast']
+55 : [Token('SUB', '-')]
+55 : ['arithmetic_unary']
+56 : ['arithmetic_post']
+57 : ['var_access']
+58 : [Token('SELF_DEFINED', 'i')]
 29 : ['collation_band']
 30 : ['collation_eq']
 31 : ['collation_rel']
@@ -4241,9 +4257,12 @@ Token('CLOSE_BRACE', '}')</pre>
 54 : ['arithmetic_mul']
 55 : ['arithmetic_cast']
 56 : ['arithmetic_unary']
-57 : ['arithmetic_post']
-58 : ['var_access']
-59 : [Token('SELF_DEFINED', 'a')]
+57 : ['unary_op', 'arithmetic_cast']
+58 : [Token('SUB', '-')]
+58 : ['arithmetic_unary']
+59 : ['arithmetic_post']
+60 : ['var_access']
+61 : [Token('SELF_DEFINED', 'a')]
 53 : ['arithmetic_mul']
 54 : ['arithmetic_cast']
 55 : ['arithmetic_unary']
@@ -4461,7 +4480,7 @@ Token('CLOSE_BRACE', '}')</pre>
 43 : ['arithmetic_unary']
 44 : ['arithmetic_post']
 45 : ['value']
-46 : [Token('INTEGER', '31')]</pre>
+46 : [Token('INTEGER', '20')]</pre>
              </div>
              <div class="representation_0" style="display: none;">
               <pre style="overflow-x: auto;">`-- program
@@ -4589,7 +4608,7 @@ Token('CLOSE_BRACE', '}')</pre>
             |       |   |   `-- b
             |       |   `-- var
             |       |       `-- g
-            |       `-- 76
+            |       `-- 12
             |-- *=
             |   |-- var
             |   |   `-- d
@@ -4607,8 +4626,9 @@ Token('CLOSE_BRACE', '}')</pre>
             |       |-- &lt;&lt;
             |       |   |-- var
             |       |   |   `-- c
-            |       |   `-- var
-            |       |       `-- i
+            |       |   `-- -
+            |       |       `-- var
+            |       |           `-- i
             |       `-- 37
             |-- %=
             |   |-- var
@@ -4625,8 +4645,9 @@ Token('CLOSE_BRACE', '}')</pre>
             |   |   `-- g
             |   `-- ^
             |       |-- &gt;&gt;
-            |       |   |-- var
-            |       |   |   `-- a
+            |       |   |-- -
+            |       |   |   `-- var
+            |       |   |       `-- a
             |       |   `-- var
             |       |       `-- b
             |       `-- 19
@@ -4669,7 +4690,7 @@ Token('CLOSE_BRACE', '}')</pre>
                     |   |   `-- a
                     |   `-- var
                     |       `-- f
-                    `-- 31
+                    `-- 20
 </pre>
              </div>
              <div class="representation_0" style="display: none;">
@@ -4721,11 +4742,11 @@ _1 = 56 % 2;
 c = _1;
 _1 = -10;
 d = _1;
-_1 = b &amp; a;
+_1 = a &amp; b;
 e = _1;
-_1 = b | a;
+_1 = a | b;
 f = _1;
-_1 = b ^ a;
+_1 = a ^ b;
 g = _1;
 _1 = ~a;
 h = _1;
@@ -4735,68 +4756,72 @@ _1 = ~c;
 j = _1;
 _1 = ~d;
 k = _1;
-_1 = a | j;
+_1 = j | a;
 _1 = _1 - 97;
 a = _1;
-_1 = g + i;
+_1 = i + g;
 _1 = _1 + 40;
-_4 = g + i;
+_4 = i + g;
 _4 = _4 + 40;
-_3 = _4 + b;
+_3 = b + _4;
 b = _3;
-_1 = g + b;
-_1 = _1 &gt;&gt; 76;
-_4 = g + b;
-_4 = _4 &gt;&gt; 76;
-_3 = _4 - c;
-c = _3;
-_1 = c + j;
-_1 = _1 - 25;
-_4 = c + j;
-_4 = _4 - 25;
-_3 = _4 * d;
-d = _3;
-_1 = i &lt;&lt; c;
-_1 = _1 | 37;
-_4 = i &lt;&lt; c;
-_4 = _4 | 37;
-_3 = _4 / e;
-e = _3;
-_1 = a | b;
-_1 = _1 * 42;
-_4 = a | b;
-_4 = _4 * 42;
-_3 = _4 % f;
-f = _3;
-_1 = b &gt;&gt; a;
-_1 = _1 ^ 19;
-_4 = b &gt;&gt; a;
-_4 = _4 ^ 19;
-_3 = _4 &lt;&lt; g;
-g = _3;
-_1 = g / c;
-_1 = _1 + 19;
-_4 = g / c;
-_4 = _4 + 19;
-_3 = _4 &gt;&gt; h;
-h = _3;
-_1 = b ^ d;
-_1 = _1 / 20;
-_4 = b ^ d;
-_4 = _4 / 20;
-_3 = _4 | i;
-i = _3;
-_1 = a + c;
+_1 = b + g;
 _1 = _1 &gt;&gt; 12;
-_4 = a + c;
+_4 = b + g;
 _4 = _4 &gt;&gt; 12;
-_3 = _4 &amp; j;
+_3 = c - _4;
+c = _3;
+_1 = j + c;
+_1 = _1 - 25;
+_4 = j + c;
+_4 = _4 - 25;
+_3 = d * _4;
+d = _3;
+_2 = -i;
+_1 = c &lt;&lt; _2;
+_1 = _1 | 37;
+_5 = -i;
+_4 = c &lt;&lt; _5;
+_4 = _4 | 37;
+_3 = e / _4;
+e = _3;
+_1 = b | a;
+_1 = _1 * 42;
+_4 = b | a;
+_4 = _4 * 42;
+_3 = f % _4;
+f = _3;
+_1 = -a;
+_1 = _1 &gt;&gt; b;
+_1 = _1 ^ 19;
+_4 = -a;
+_4 = _4 &gt;&gt; b;
+_4 = _4 ^ 19;
+_3 = g &lt;&lt; _4;
+g = _3;
+_1 = c / g;
+_1 = _1 + 19;
+_4 = c / g;
+_4 = _4 + 19;
+_3 = h &gt;&gt; _4;
+h = _3;
+_1 = d ^ b;
+_1 = _1 / 20;
+_4 = d ^ b;
+_4 = _4 / 20;
+_3 = i | _4;
+i = _3;
+_1 = c + a;
+_1 = _1 &gt;&gt; 12;
+_4 = c + a;
+_4 = _4 &gt;&gt; 12;
+_3 = j &amp; _4;
 j = _3;
-_1 = f % a;
-_1 = _1 &lt;&lt; 31;
-_4 = f % a;
-_4 = _4 &lt;&lt; 31;
-_3 = _4 ^ k;
+_1 = a % f;
+_1 = _1 &lt;&lt; 20;
+_4 = a % f;
+_4 = _4 &lt;&lt; 20;
+_3 = k ^ _4;
 k = _3;
 }
 </pre>
