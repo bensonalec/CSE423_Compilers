@@ -32,20 +32,21 @@ class import_ir():
 
         # Retrieve the head of the parse tree
         head = pg.getTree()
-        #now, need to sort pg.ls
-        #go through, and index all nodes that aren't 
         finalLs = []
         tempLs = []
         for i in pg.ls:
             if(isinstance(i,IRLine.IRFunctionDecl)):
                 tempLs.insert(0,i)
+                tempLs.insert(1,IRLine.IRBracket(True))
                 finalLs += tempLs
+            
+                finalLs.append(IRLine.IRBracket(False))
                 tempLs = []
             else:
                 tempLs.append(i)
+        for i in finalLs:
+            print(str(i))
         return finalLs
-        #print(str(pg.ls))
-        # print(head.__repr__)
 
 def tokensToString(tokens):
     """
