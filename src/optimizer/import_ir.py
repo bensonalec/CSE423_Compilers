@@ -6,8 +6,7 @@ from rply.errors import LexingError
 from copy import deepcopy
 import IRLine
 import re
-#TODO: ADD TOKEN FOR KEYWORDS, ADD PARSE INTO FUNCTIONCALL, ADD PARSE INTO KEWORDS ASSIGNMENT
-
+#TODO: ADD TOKEN FOR KEYWORDS, ADD PARSE INTO KEWORDS ASSIGNMENT
 
 class import_ir():
     def __init__(self, filename):
@@ -33,8 +32,18 @@ class import_ir():
 
         # Retrieve the head of the parse tree
         head = pg.getTree()
+        #now, need to sort pg.ls
+        #go through, and index all nodes that aren't 
+        finalLs = []
+        tempLs = []
         for i in pg.ls:
-            print(str(i))
+            if(isinstance(i,IRLine.IRFunctionDecl)):
+                tempLs.insert(0,i)
+                finalLs += tempLs
+                tempLs = []
+            else:
+                tempLs.append(i)
+        return finalLs
         #print(str(pg.ls))
         # print(head.__repr__)
 
@@ -677,7 +686,6 @@ class Parser():
         def line___IF_OPEN_PAREN_condition_CLOSE_PAREN_GOTO_LESS_THAN_D_NUM_GREATER_THAN_SEMICOLON_ELSE_GOTO_LESS_THAN_D_NUM_GREATER_THAN_SEMICOLON_(p):
             newNode = ParseTree("LINE",p)
             self.Head = newNode
-            print(p)
             lhs = p[2].content[0].value
             rhs = p[2].content[2].value
             compOp = p[2].content[1].content[0].value
