@@ -22,21 +22,36 @@ def mainAST(args, astHead = None, symbolTable = None):
     Returns:
         The lowest level of IR produced.
     """
-    if args.input:
 
+    # Import IR from file
+    if args.input:
         inp = import_ir.import_ir(args.input)
         inp.tokenize()
         inp.parse()
         
 
+    # Generate IR from AST and Symbol-Table
     else:
         ir = ir1.LevelOneIR(astHead, symbolTable)
         l1ir = ir.construct()
         ir.optimize(args.opt)
 
+    # Output IR to a file
+    if args.IRout:
+        write_IR_to_file(args.IRout, ir.IR)
+
+    # Output IR (first lvl optimization) to stdout 
     if args.IR1 or args.all:
         print(str(ir))
+
     pass
+
+
+def write_IR_to_file(filename, ir):
+    with open(filename, 'w') as f:
+        for irLine in ir:
+            for irNode in irLine.treeList:
+                f.write(str(irNode) + '\n')
 
 
 if __name__ == "__main__":
@@ -45,6 +60,7 @@ if __name__ == "__main__":
     cmd_options.add_argument('--all',help='Prints out all intermediate representations as they are encountered in the compilation process', action="store_true")
     cmd_options.add_argument('-O', '--opt', type=int, choices=range(3), default=0, help='Determines the optimization level')
     cmd_options.add_argument('-i', action='store', dest="input", type=str, help="Used to input IR from file")
+    cmd_options.add_argument('--IRout', metavar='<output-filename>', type=str, default=None, help="Used to output the final generated IR to a file")
     args = cmd_options.parse_args()
 
     print(args.input)

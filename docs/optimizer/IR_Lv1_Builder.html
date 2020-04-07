@@ -31,8 +31,11 @@ This module serves to construct the first linear intermediate representation in 
 import os
 import re
 import sys
+import math
+
 from inspect import getsourcefile
 from importlib.machinery import SourceFileLoader
+from copy import deepcopy, copy
 
 irl = SourceFileLoader(&#34;IRLine&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/IRLine.py&#34;).load_module()
 ast = SourceFileLoader(&#34;AST_builder&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/../frontend/AST_builder.py&#34;).load_module()
@@ -76,7 +79,6 @@ class LevelOneIR():
         lines = []
 
         for i in bodyList:
-
             # Beginning of fuction wrapper
             lines.extend(beginWrapper(i, returnDigit))
 
@@ -94,24 +96,86 @@ class LevelOneIR():
 
         return self.IR
 
-    def __str__(self):            
+
+    def __str__(self):
         return &#34;\n&#34;.join([str(x) for x in self.IR]) + &#34;\n&#34;
 
-    def optimize(self): 
-        self.remove_unused_funcs()
-        self.remove_unused_vars()
+    def optimize(self, opt):
+        if opt &gt; 0:
+            self.remove_unused_funcs()
+            self.remove_unused_vars()
+            pass
+
+        if opt &gt; 1:
+            # A dictionary containing all the values of variables that can at some point be reduced.
+            self.var_values = {
+                func.name : {
+                    var.name : &#34;Undef&#34;
+                    for var in self.symTable.symbols if var.entry_type == 0 and var.scope.startswith(f&#34;/{func.name}&#34;)
+                }
+                for func in [sym for sym in self.symTable.symbols if sym.entry_type == 1]
+            }
+
+            # NOTE: As a method of knowing whether it is safe to continue on to the next node in the list the following measures have been implemented:
+            # Both constant folding and constant propagation only consider a singular value.
+            # They both return a boolean describing whether the node was altered as well as some descriptor of what it did.
+                # In the case of constant folding, the descriptor is the new simplified node which then has to be assigned to the correct index.
+                # In the case of constant propagation, the descriptor is a dictionary containing the updated values relevant to the scope of the IRLine object meaning that tempoary variables are stored within the IRLine but now within the scope as a whole.
+            # The idea is that while either of these methods can alter the node you keep executing them on the node so that if the loop terminates the program is sure that the node cannot be reduced further.
+            # Another final optimization that can be done would be to check if all the nodes in an IRLine object are `IRAssignment`, if so the last one is the only `IRAssignment` node needed, and the others can be removed.
+
+            prev_maj = 0
+            cur_scope = &#34;&#34;
+            tmp_vals = {}
+            for major, minor, node in [(major, minor, node) for major, tl in enumerate(self.IR) for minor, node in enumerate(tl.treeList)]:
+                if major != prev_maj:
+                    tmp_vals = {}
+
+                if isinstance(node, irl.IRFunctionDecl):
+                    cur_scope = node.name
+                elif isinstance(node, irl.IRGoTo) or isinstance(node, irl.IRJump) or isinstance(node, irl.IRIf):
+                    for val in tmp_vals.items():
+                        if val[0] in self.var_values[cur_scope]:
+                            self.var_values[cur_scope][val[0]] = &#34;Undef&#34;
+                        tmp_vals[val[0]] = &#34;Undef&#34;
+                else:
+                    for val in self.var_values[cur_scope].items():
+                        tmp_vals[val[0]] = val[1]
+
+                ncf = False
+                ncp = False
+
+                while 1:
+                    ncf, tmp = self.constant_folding(node)
+
+                    if ncf:
+                        self.IR[major].treeList[minor] = tmp
+                        node = tmp
+
+                    ncp, vals = self.constant_propagation(node, tmp_vals)
+
+                    for val in vals.items():
+                        if val[0] in self.var_values[cur_scope]:
+                            self.var_values[cur_scope][val[0]] = val[1]
+                        tmp_vals[val[0]] = val[1]
+
+                    if not (ncf or ncp):
+                        break
+                prev_maj = major
+
+            self.cleanup()
 
     def remove_unused_vars(self):
         ir = self.IR
         scope = &#34;&#34;
-        
+
         #get variables to remove
         vars_temp = [[x.name, x.scope] for x in self.symTable.symbols if x.entry_type != 2 and x.entry_type != 1 and x.entry_type != 3 and len(x.references) == 0]
         #get function from symbol table.
         funcs = [x.name for x in self.symTable.symbols if x.entry_type == 1]
 
         final_ir = []
-        
+
         for irLine in ir:
 
             for idx, irNode in enumerate(irLine.treeList):
@@ -124,7 +188,7 @@ class LevelOneIR():
                     #check if variable needs to be skippped
                     if [x for x in vars_temp if x[0] == irNode.var and scope in x[1]] != []:
                         del irLine.treeList[idx]
-            
+
                 #check if usage
                 elif(isinstance(irNode, irl.IRAssignment)):
                     if [x for x in vars_temp if x[0] == irNode.lhs and scope in x[1]] != []:
@@ -135,12 +199,142 @@ class LevelOneIR():
                 pass
             else:
                 final_ir.append(irLine)
-            
-            
+
+
         self.IR = final_ir
 
+    def cleanup(self):
+
+        class ref():
+            def __init__(self, init_index, init_ref_type, side):
+                self.refs = [init_index]
+                self.ref_types = [init_ref_type]
+                self.side = [side]
+
+            def add(self, index, ref_type, side):
+                self.refs.append(index)
+                self.ref_types.append(ref_type)
+                self.side.append(side)
+
+            def __str__(self):
+                return f&#34;\t{self.refs}\t{self.ref_types}\t{self.side}&#34;
+
+            def __repr__(self):
+                return self.__str__()
+
+        gr = {}
+        for line in self.IR:
+            lr = {}
+
+            for i, node in enumerate(line.treeList):
+                if isinstance(node, irl.IRAssignment):
+                    if node.lhs in lr:
+                        lr[node.lhs].add(i, &#34;assignment&#34;, 0)
+                    else:
+                        lr[node.lhs] = ref(i, &#34;assignment&#34;, 0)
+
+                    tmp = node.rhs.lstrip(&#39;-+&#39;).replace(&#39;.&#39;, &#39;&#39;, 1)
+                    if node.rhs in lr and not tmp.isnumeric():
+                        lr[node.rhs].add(i, &#34;assignment&#34;, 1)
+                    elif not tmp.isnumeric():
+                        lr[node.rhs] = ref(i, &#34;assignment&#34;, 1)
+                elif isinstance(node, irl.IRArth):
+                    if node.var in lr:
+                        lr[node.var].add(i, &#34;assignment&#34;, 0)
+                    else:
+                        lr[node.var] = ref(i, &#34;assignment&#34;, 0)
+
+                    tmp = node.lhs.lstrip(&#39;-+&#39;).replace(&#39;.&#39;, &#39;&#39;, 1)
+                    if node.lhs in lr and not tmp.isnumeric():
+                        lr[node.lhs].add(i, &#34;arithmetic&#34;, 1)
+                    elif not tmp.isnumeric():
+                        lr[node.lhs] = ref(i, &#34;arithmetic&#34;, 1)
+
+                    if node.rhs:
+                        tmp = node.rhs.lstrip(&#39;-+&#39;).replace(&#39;.&#39;, &#39;&#39;, 1)
+                        if node.rhs in lr and not tmp.isnumeric():
+                            lr[node.rhs].add(i, &#34;arithmetic&#34;, 2)
+                        elif not tmp.isnumeric():
+                            lr[node.rhs] = ref(i, &#34;arithmetic&#34;, 2)
+                elif isinstance(node, irl.IRFunctionAssign):
+                    if node.lhs in lr:
+                        lr[node.lhs].add(i, &#34;assignment&#34;, 0)
+                    else:
+                        lr[node.lhs] = ref(i, &#34;assignment&#34;, 0)
+
+                    for param in node.params:
+                        tmp = node.lhs.lstrip(&#39;-+&#39;).replace(&#39;.&#39;, &#39;&#39;, 1)
+                        if param in lr and not tmp.isnumeric():
+                            lr[node.lhs].add(i, &#34;param&#34;, 1)
+                        elif not tmp.isnumeric():
+                            lr[node.lhs] = ref(i, &#34;param&#34;, 1)
+                elif isinstance(node, irl.IRIf):
+                    tmp = node.lhs.lstrip(&#39;-+&#39;).replace(&#39;.&#39;, &#39;&#39;, 1)
+                    if node.lhs in lr and not tmp.isnumeric():
+                        lr[node.lhs].add(i, &#34;collation&#34;, 1)
+                    elif not tmp.isnumeric():
+                        lr[node.lhs] = ref(i, &#34;collation&#34;, 1)
+
+                    tmp = node.rhs.lstrip(&#39;-+&#39;).replace(&#39;.&#39;, &#39;&#39;, 1)
+                    if node.rhs in lr and not tmp.isnumeric():
+                        lr[node.rhs].add(i, &#34;collation&#34;, 2)
+                    elif not tmp.isnumeric():
+                        lr[node.rhs] = ref(i, &#34;collation&#34;, 2)
+                elif isinstance(node, irl.IRSpecial):
+                    if node.var in lr:
+                        lr[node.var].add(i, &#34;assignment&#34;, 0)
+                        lr[node.var].add(i, &#34;assignment&#34;, 1)
+                    else:
+                        lr[node.var] = ref(i, &#34;assignment&#34;, 0)
+                        lr[node.var].add(i, &#34;assignment&#34;, 1)
+                elif isinstance(node, irl.IRReturn):
+                    if node.value:
+                        tmp = node.value.lstrip(&#39;-+&#39;).replace(&#39;.&#39;, &#39;&#39;, 1)
+                        if node.value in lr:
+                            lr[node.value].add(i, &#34;return&#34;, 0)
+                        elif not tmp.isnumeric():
+                            lr[node.value] = ref(i, &#34;return&#34;, 0)
+            rem_list = []
+
+            for var in lr.items():
+                # print(var)
+                for i, typ in enumerate(var[1].ref_types):
+                    if (
+                        i+1 &lt; len(var[1].ref_types)
+                        and
+                        typ == &#34;assignment&#34;
+                        and
+                        var[1].side[i] == 0
+                        and
+                        var[1].side[i+1] == 0
+                        and
+                        var[1].ref_types[i+1] == &#34;assignment&#34;
+                        ):
+                        rem_list.append(var[1].refs[i])
+                    elif (
+                        i+1 == len(var[1].ref_types)
+                        and
+                        typ == &#34;assignment&#34;
+                        and
+                        var[1].side[i] == 0
+                        # and
+                        # var[1].side[i+1] == 0
+                        and
+                        (
+                            var[1].refs[i]+1 != len(line.treeList)
+                            or
+                            len(var[1].ref_types) &gt; 1)
+                        ):
+                        rem_list.append(var[1].refs[i])
+
+                # iterate over reference types and see if there are two assignments after each other.
+
+
+            for node in reversed(sorted(rem_list)):
+                line.treeList.pop(node)
+
     def remove_unused_funcs(self):
-        ir = self.IR        
+        ir = self.IR
         inFunction = False
         to_remove = []
 
@@ -154,7 +348,7 @@ class LevelOneIR():
             if inFunction == True:
                 if isinstance(ir_firstNode, irl.IRFunctionDecl):
                     inFunction = False
-                else:    
+                else:
                     to_remove.append(idx)
                     continue
 
@@ -162,8 +356,8 @@ class LevelOneIR():
             if isinstance(ir_firstNode, irl.IRFunctionDecl):
                 func_name = ir_firstNode.name
                 referenceNum = len([x.references for x in self.symTable.symbols if func_name == x.name and x.entry_type == 1][0])
-                
-                # If reference is 0, it is unused 
+
+                # If reference is 0, it is unused
                 if referenceNum == 0 and func_name != &#34;main&#34;:
                     to_remove.append(idx)
                     inFunction = True
@@ -171,9 +365,126 @@ class LevelOneIR():
         # Actually delete unused function IRLine&#39;s
         for i in to_remove[::-1]:
             del ir[i]
-                
+
 
         self.IR = ir
+
+    def constant_folding(self,x):
+        changed = False
+        if isinstance(x,irl.IRArth):
+            notFound = True
+            op = False
+            #get the operator being used
+            if(x.rhs != None and x.lhs != None):
+                if(x.operator == &#34;+&#34;):
+                    op = lambda lhs, rhs : lhs + rhs
+                elif(x.operator == &#34;-&#34;):
+                    op = lambda lhs, rhs : lhs - rhs
+                elif(x.operator == &#34;*&#34;):
+                    op = lambda lhs, rhs : lhs * rhs
+                elif(x.operator == &#34;/&#34;):
+                    op = lambda lhs, rhs : lhs / rhs
+                elif(x.operator == &#34;%&#34;):
+                    op = lambda lhs, rhs : math.fmod(lhs, rhs)
+                elif(x.operator == &#34;&lt;&lt;&#34;):
+                    # There is an edge case around the changes of architectures so that values may differ depending on the architecture you are using. eg 10 &lt;&lt; 31 compared to 10 &lt;&lt; 20
+                    op = lambda lhs, rhs : lhs &lt;&lt; rhs
+                elif(x.operator == &#34;&gt;&gt;&#34;):
+                    # There is an edge case around the changes of architectures so that values may differ depending on the architecture you are using. eg 10 &gt;&gt; 31 compared to 10 &gt;&gt; 20
+                    op = lambda lhs, rhs : lhs &gt;&gt; rhs
+                elif(x.operator == &#34;|&#34;):
+                    op = lambda lhs, rhs : lhs | rhs
+                elif(x.operator == &#34;&amp;&#34;):
+                    op = lambda lhs, rhs : lhs &amp; rhs
+                elif(x.operator == &#34;^&#34;):
+                    op = lambda lhs, rhs : lhs ^ rhs
+            else:
+                if(x.operator == &#34;~&#34;):
+                    op = lambda lhs, rhs : ~lhs
+                elif(x.operator == &#34;-&#34;):
+                    op = lambda lhs, rhs : 0 - lhs
+                elif(x.operator == &#34;+&#34;):
+                    op = lambda lhs, rhs : 0 + lhs
+                elif(x.operator == &#34;!&#34;):
+                    op = lambda lhs, rhs : not lhs
+            #get the left hand side and the right hand side
+            try:
+                lhs = int(x.lhs)
+                if(not x.rhs == None):
+                    rhs = int(x.rhs)
+                else:
+                    rhs = None
+                notFound = False
+            except ValueError:
+                try:
+                    lhs = float(x.lhs)
+                    if(not x.rhs == None):
+                        rhs = float(x.rhs)
+                    else:
+                        rhs = None
+                    notFound = False
+                except ValueError:
+                    pass
+
+            #if we found all components, replace the node
+            if(not notFound and op):
+                if rhs and rhs &lt; 0:
+                    if x.operator == &#34;&lt;&lt;&#34; or x.operator == &#34;&gt;&gt;&#34;:
+                        raise ValueError(&#34;shifting by negative number is undefined behavior.&#34;)
+
+                newValue = lambda lhs, rhs, op : op(lhs,rhs)
+                val = newValue(lhs,rhs,op) if isinstance(lhs, float) or isinstance(rhs, float) else math.floor(newValue(lhs,rhs,op))
+                newAss = irl.IRAssignment(x.var, str(val))
+                changed = True
+                return changed,newAss
+        return changed,x
+
+    def constant_propagation(self, node, var_val):
+
+        # NOTE: The current issue is that the propogation is goint to have to exit and re enter the function every time to achieve the following:
+        # Clear the tempoary variables per line as they are re used
+        # Avoid propogating too far so that assignments in the future that may happen after certain other computations and assignments propogate the correct value
+
+        # TODO: Fix to detect whether the reference is necessary or not. Eg, comparisons in loops compared to simple ifs
+        # TODO: Ensure that when comming across a value that is not computable or propogatable such as after some control flow, the dictionary value becomes something distinguisable so that the expression is left alone
+        changed = False
+        if isinstance(node, irl.IRIf):
+            if node.lhs in var_val and var_val[node.lhs] != &#34;Undef&#34;:
+                node.lhs = var_val[node.lhs]
+                changed = True
+            if node.rhs in var_val and var_val[node.rhs] != &#34;Undef&#34;:
+                node.rhs = var_val[node.rhs]
+                changed = True
+
+        elif isinstance(node, irl.IRArth):
+            if node.lhs in var_val and var_val[node.lhs] != &#34;Undef&#34;:
+                node.lhs = var_val[node.lhs]
+                changed = True
+            if node.rhs in var_val and var_val[node.rhs] != &#34;Undef&#34;:
+                node.rhs = var_val[node.rhs]
+                changed = True
+
+        elif isinstance(node, irl.IRSpecial):
+            pass
+            # Assigning a value for a post and pre increment is extremly difficult due to the fact that it regularly occurs in loops and constants arent useful there.
+
+        elif isinstance(node, irl.IRAssignment):
+            if node.rhs in var_val and var_val[node.rhs] != &#34;Undef&#34;:
+                node.rhs = var_val[node.rhs]
+                var_val[node.lhs] = node.rhs
+                changed = True
+            else:
+                tmp = node.rhs.lstrip(&#39;-+&#39;).replace(&#39;.&#39;, &#39;&#39;, 1)
+                if tmp.isnumeric():
+                    var_val[node.lhs] = node.rhs
+
+        elif isinstance(node, irl.IRFunctionAssign):
+            for j, param in enumerate(node.params):
+                if param in var_val and var_val[param] != None:
+                    node.params[j] = var_val[param]
+                    changed = True
+
+        return changed, var_val
 
 def buildBoilerPlate(symTable):
     namesandparams = []
@@ -212,11 +523,11 @@ def beginWrapper(function_tuple, returnDigit):
 
     lines.append(irl.IRLine.singleEntry(irl.IRFunctionDecl(func_name, params[:-1])))
     lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=True)))
-    
+
     if func_type != &#34;void&#34;:
         modifiers = f&#34;{&#39;&#39;.join([x.name for x in function_tuple[0].children[0].children if x.name in [&#39;signed&#39;, &#39;unsigned&#39;]])}{&#39; &#39; if [x.name for x in function_tuple[0].children[0].children if x.name in [&#39;signed&#39;, &#39;unsigned&#39;]] else &#39;&#39;}&#34;
         lines.append(irl.IRLine.singleEntry(irl.IRVariableInit(modifiers, func_type, f&#34;D.{returnDigit}&#34;)))
-    
+
     return lines
 
 def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None):
@@ -244,7 +555,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
             for x in il:
                 modifiers = f&#34;{&#39; &#39;.join([y.name for y in x.children[0].children])}{&#39; &#39; if [y.name for y in x.children[0].children] else &#39;&#39;}&#34;
                 lines.append(irl.IRLine.singleEntry(irl.IRVariableInit(modifiers, x.children[0].name, x.children[1].name), [labelDigit]))
-    
+
     for element in node.children:
         try:
             splits = [[&#34;+=&#34;, &#34;-=&#34;, &#34;*=&#34;, &#34;/=&#34;, &#34;%=&#34;, &#34;&lt;&lt;=&#34;, &#34;&gt;&gt;=&#34;, &#34;|=&#34;, &#34;&amp;=&#34;, &#34;^=&#34;, &#34;&lt;=&#34;, &#34;&gt;=&#34;, &#34;=&#34;],[&#34;for&#34;],[&#34;body&#34;],[&#34;branch&#34;],[&#34;return&#34;],[&#34;call&#34;],[&#34;while&#34;, &#34;do_while&#34;],[&#34;break&#34;],[&#34;continue&#34;],[&#34;goto&#34;],[&#34;label&#34;], [&#34;++&#34;, &#34;--&#34;]]
@@ -332,7 +643,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                     lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=False), [labelDigit]))
 
             elif ind == 2:
-                # Append an IRBracket node 
+                # Append an IRBracket node
                 lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=True), [labelDigit]))
 
                 tmp, labelDigit = returnLines(element, returnDigit, labelDigit, successDigit, failureDigit)
@@ -370,7 +681,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                         if ns:
                             # Append an IRBracket node
                             lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=False), [labelDigit]))
-                        
+
                         break
 
                     tmpNode = case.children[0]
@@ -390,12 +701,12 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 
                     #Add goto for body statement
                     lines.append(irl.IRLine.singleEntry(irl.IRJump(f&#34;&lt;D.{success_label}&gt;&#34;), [labelDigit]))
-                    
+
                     if [x.children[0] for x in case.children[1].children if x.name == &#34;=&#34; and x.children[0].children[0].name in [&#34;auto&#34;, &#34;long double&#34;, &#34;double&#34;, &#34;float&#34;, &#34;long long&#34;, &#34;long long int&#34;, &#34;long&#34;, &#34;int&#34;, &#34;short&#34;, &#34;char&#34;]]:
                         # Append an IRBracket node
                         lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=True), [labelDigit]))
                         ns = True
-                    
+
                     #Get lines for the if body and assign new labeldigit
                     tmp, labelDigit = returnLines(case.children[1], returnDigit,  labelDigit, success_label, failure_label)
                     lines.extend(tmp)
@@ -414,7 +725,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 
                 for i in end_if:
                     lines.append(irl.IRLine.singleEntry(irl.IRJump(f&#34;&lt;D.{i}&gt;&#34;), [labelDigit]))
-                    
+
             elif ind == 4:
                 #Return
 
@@ -424,8 +735,11 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                     tvs, labelList = line.retrieve()
                     if line.treeList != []:
                         lines.append(line)
+                        lines[-1].treeList.append(irl.IRAssignment(f&#34;D.{returnDigit}&#34;, f&#34;{tvs[-1]}&#34;))
 
-                    lines.append(irl.IRLine.singleEntry(irl.IRAssignment(f&#34;D.{returnDigit}&#34;, f&#34;{tvs[-1]}&#34;), [labelDigit]))
+                    else:
+                        lines.append(irl.IRLine.singleEntry(irl.IRAssignment(f&#34;D.{returnDigit}&#34;, f&#34;{tvs[-1]}&#34;), [labelDigit]))
+                    
                     lines.append(irl.IRLine.singleEntry(irl.IRReturn(f&#34;D.{returnDigit}&#34;), [labelDigit]))
 
                     if labelList != []:
@@ -436,7 +750,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                     lines.append(irl.IRLine.singleEntry(irl.IRReturn(f&#34;D.{returnDigit}&#34;), [labelDigit]))
 
                 # Returns nothing
-                else:             
+                else:
                     lines.append(irl.IRLine.singleEntry(irl.IRReturn(None), [labelDigit]))
 
             elif ind == 5:
@@ -454,7 +768,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 
                 # no parameters
                 else:
-                    # Append Empty function call node             
+                    # Append Empty function call node
                     lines.append(irl.IRLine.singleEntry(irl.IRFunctionCall(func_call, None), [labelDigit]))
 
             elif ind == 6:
@@ -525,9 +839,10 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
             elif ind == 10:
                 # Jump Label
                 lines.append(irl.IRLine.singleEntry(irl.IRJump(f&#34;{element.children[0].name}&#34;), [labelDigit]))
-                
+
                 if (len(element.children) &gt; 1):
                     temp_lines, labelDigit = returnLines(element.children[1], returnDigit, labelDigit)
+
                     lines.extend(temp_lines)
 
             elif ind == 11:
@@ -537,11 +852,12 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                 lines.append(line)
 
             else:
-                print(&#34;Unsupported at this time&#34;)
+                pass
+                # print(&#34;Unsupported at this time&#34;)
 
         except Warning:
             exc_type, exc_obj, exc_tb = sys.exc_info()
-            print(exc_type, exc_tb.tb_lineno)
+            # print(exc_type, exc_tb.tb_lineno)
             pass
 
     return lines, labelDigit</code></pre>
@@ -586,11 +902,11 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 
     lines.append(irl.IRLine.singleEntry(irl.IRFunctionDecl(func_name, params[:-1])))
     lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=True)))
-    
+
     if func_type != &#34;void&#34;:
         modifiers = f&#34;{&#39;&#39;.join([x.name for x in function_tuple[0].children[0].children if x.name in [&#39;signed&#39;, &#39;unsigned&#39;]])}{&#39; &#39; if [x.name for x in function_tuple[0].children[0].children if x.name in [&#39;signed&#39;, &#39;unsigned&#39;]] else &#39;&#39;}&#34;
         lines.append(irl.IRLine.singleEntry(irl.IRVariableInit(modifiers, func_type, f&#34;D.{returnDigit}&#34;)))
-    
+
     return lines</code></pre>
 </details>
 </dd>
@@ -679,7 +995,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
             for x in il:
                 modifiers = f&#34;{&#39; &#39;.join([y.name for y in x.children[0].children])}{&#39; &#39; if [y.name for y in x.children[0].children] else &#39;&#39;}&#34;
                 lines.append(irl.IRLine.singleEntry(irl.IRVariableInit(modifiers, x.children[0].name, x.children[1].name), [labelDigit]))
-    
+
     for element in node.children:
         try:
             splits = [[&#34;+=&#34;, &#34;-=&#34;, &#34;*=&#34;, &#34;/=&#34;, &#34;%=&#34;, &#34;&lt;&lt;=&#34;, &#34;&gt;&gt;=&#34;, &#34;|=&#34;, &#34;&amp;=&#34;, &#34;^=&#34;, &#34;&lt;=&#34;, &#34;&gt;=&#34;, &#34;=&#34;],[&#34;for&#34;],[&#34;body&#34;],[&#34;branch&#34;],[&#34;return&#34;],[&#34;call&#34;],[&#34;while&#34;, &#34;do_while&#34;],[&#34;break&#34;],[&#34;continue&#34;],[&#34;goto&#34;],[&#34;label&#34;], [&#34;++&#34;, &#34;--&#34;]]
@@ -767,7 +1083,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                     lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=False), [labelDigit]))
 
             elif ind == 2:
-                # Append an IRBracket node 
+                # Append an IRBracket node
                 lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=True), [labelDigit]))
 
                 tmp, labelDigit = returnLines(element, returnDigit, labelDigit, successDigit, failureDigit)
@@ -805,7 +1121,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                         if ns:
                             # Append an IRBracket node
                             lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=False), [labelDigit]))
-                        
+
                         break
 
                     tmpNode = case.children[0]
@@ -825,12 +1141,12 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 
                     #Add goto for body statement
                     lines.append(irl.IRLine.singleEntry(irl.IRJump(f&#34;&lt;D.{success_label}&gt;&#34;), [labelDigit]))
-                    
+
                     if [x.children[0] for x in case.children[1].children if x.name == &#34;=&#34; and x.children[0].children[0].name in [&#34;auto&#34;, &#34;long double&#34;, &#34;double&#34;, &#34;float&#34;, &#34;long long&#34;, &#34;long long int&#34;, &#34;long&#34;, &#34;int&#34;, &#34;short&#34;, &#34;char&#34;]]:
                         # Append an IRBracket node
                         lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=True), [labelDigit]))
                         ns = True
-                    
+
                     #Get lines for the if body and assign new labeldigit
                     tmp, labelDigit = returnLines(case.children[1], returnDigit,  labelDigit, success_label, failure_label)
                     lines.extend(tmp)
@@ -849,7 +1165,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 
                 for i in end_if:
                     lines.append(irl.IRLine.singleEntry(irl.IRJump(f&#34;&lt;D.{i}&gt;&#34;), [labelDigit]))
-                    
+
             elif ind == 4:
                 #Return
 
@@ -859,8 +1175,11 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                     tvs, labelList = line.retrieve()
                     if line.treeList != []:
                         lines.append(line)
+                        lines[-1].treeList.append(irl.IRAssignment(f&#34;D.{returnDigit}&#34;, f&#34;{tvs[-1]}&#34;))
 
-                    lines.append(irl.IRLine.singleEntry(irl.IRAssignment(f&#34;D.{returnDigit}&#34;, f&#34;{tvs[-1]}&#34;), [labelDigit]))
+                    else:
+                        lines.append(irl.IRLine.singleEntry(irl.IRAssignment(f&#34;D.{returnDigit}&#34;, f&#34;{tvs[-1]}&#34;), [labelDigit]))
+                    
                     lines.append(irl.IRLine.singleEntry(irl.IRReturn(f&#34;D.{returnDigit}&#34;), [labelDigit]))
 
                     if labelList != []:
@@ -871,7 +1190,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                     lines.append(irl.IRLine.singleEntry(irl.IRReturn(f&#34;D.{returnDigit}&#34;), [labelDigit]))
 
                 # Returns nothing
-                else:             
+                else:
                     lines.append(irl.IRLine.singleEntry(irl.IRReturn(None), [labelDigit]))
 
             elif ind == 5:
@@ -889,7 +1208,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 
                 # no parameters
                 else:
-                    # Append Empty function call node             
+                    # Append Empty function call node
                     lines.append(irl.IRLine.singleEntry(irl.IRFunctionCall(func_call, None), [labelDigit]))
 
             elif ind == 6:
@@ -960,9 +1279,10 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
             elif ind == 10:
                 # Jump Label
                 lines.append(irl.IRLine.singleEntry(irl.IRJump(f&#34;{element.children[0].name}&#34;), [labelDigit]))
-                
+
                 if (len(element.children) &gt; 1):
                     temp_lines, labelDigit = returnLines(element.children[1], returnDigit, labelDigit)
+
                     lines.extend(temp_lines)
 
             elif ind == 11:
@@ -972,11 +1292,12 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                 lines.append(line)
 
             else:
-                print(&#34;Unsupported at this time&#34;)
+                pass
+                # print(&#34;Unsupported at this time&#34;)
 
         except Warning:
             exc_type, exc_obj, exc_tb = sys.exc_info()
-            print(exc_type, exc_tb.tb_lineno)
+            # print(exc_type, exc_tb.tb_lineno)
             pass
 
     return lines, labelDigit</code></pre>
@@ -1043,7 +1364,6 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
         lines = []
 
         for i in bodyList:
-
             # Beginning of fuction wrapper
             lines.extend(beginWrapper(i, returnDigit))
 
@@ -1061,24 +1381,86 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 
         return self.IR
 
-    def __str__(self):            
+
+    def __str__(self):
         return &#34;\n&#34;.join([str(x) for x in self.IR]) + &#34;\n&#34;
 
-    def optimize(self): 
-        self.remove_unused_funcs()
-        self.remove_unused_vars()
+    def optimize(self, opt):
+        if opt &gt; 0:
+            self.remove_unused_funcs()
+            self.remove_unused_vars()
+            pass
+
+        if opt &gt; 1:
+            # A dictionary containing all the values of variables that can at some point be reduced.
+            self.var_values = {
+                func.name : {
+                    var.name : &#34;Undef&#34;
+                    for var in self.symTable.symbols if var.entry_type == 0 and var.scope.startswith(f&#34;/{func.name}&#34;)
+                }
+                for func in [sym for sym in self.symTable.symbols if sym.entry_type == 1]
+            }
+
+            # NOTE: As a method of knowing whether it is safe to continue on to the next node in the list the following measures have been implemented:
+            # Both constant folding and constant propagation only consider a singular value.
+            # They both return a boolean describing whether the node was altered as well as some descriptor of what it did.
+                # In the case of constant folding, the descriptor is the new simplified node which then has to be assigned to the correct index.
+                # In the case of constant propagation, the descriptor is a dictionary containing the updated values relevant to the scope of the IRLine object meaning that tempoary variables are stored within the IRLine but now within the scope as a whole.
+            # The idea is that while either of these methods can alter the node you keep executing them on the node so that if the loop terminates the program is sure that the node cannot be reduced further.
+            # Another final optimization that can be done would be to check if all the nodes in an IRLine object are `IRAssignment`, if so the last one is the only `IRAssignment` node needed, and the others can be removed.
+
+            prev_maj = 0
+            cur_scope = &#34;&#34;
+            tmp_vals = {}
+            for major, minor, node in [(major, minor, node) for major, tl in enumerate(self.IR) for minor, node in enumerate(tl.treeList)]:
+                if major != prev_maj:
+                    tmp_vals = {}
+
+                if isinstance(node, irl.IRFunctionDecl):
+                    cur_scope = node.name
+                elif isinstance(node, irl.IRGoTo) or isinstance(node, irl.IRJump) or isinstance(node, irl.IRIf):
+                    for val in tmp_vals.items():
+                        if val[0] in self.var_values[cur_scope]:
+                            self.var_values[cur_scope][val[0]] = &#34;Undef&#34;
+                        tmp_vals[val[0]] = &#34;Undef&#34;
+                else:
+                    for val in self.var_values[cur_scope].items():
+                        tmp_vals[val[0]] = val[1]
+
+                ncf = False
+                ncp = False
+
+                while 1:
+                    ncf, tmp = self.constant_folding(node)
+
+                    if ncf:
+                        self.IR[major].treeList[minor] = tmp
+                        node = tmp
+
+                    ncp, vals = self.constant_propagation(node, tmp_vals)
+
+                    for val in vals.items():
+                        if val[0] in self.var_values[cur_scope]:
+                            self.var_values[cur_scope][val[0]] = val[1]
+                        tmp_vals[val[0]] = val[1]
+
+                    if not (ncf or ncp):
+                        break
+                prev_maj = major
+
+            self.cleanup()
 
     def remove_unused_vars(self):
         ir = self.IR
         scope = &#34;&#34;
-        
+
         #get variables to remove
         vars_temp = [[x.name, x.scope] for x in self.symTable.symbols if x.entry_type != 2 and x.entry_type != 1 and x.entry_type != 3 and len(x.references) == 0]
         #get function from symbol table.
         funcs = [x.name for x in self.symTable.symbols if x.entry_type == 1]
 
         final_ir = []
-        
+
         for irLine in ir:
 
             for idx, irNode in enumerate(irLine.treeList):
@@ -1091,7 +1473,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                     #check if variable needs to be skippped
                     if [x for x in vars_temp if x[0] == irNode.var and scope in x[1]] != []:
                         del irLine.treeList[idx]
-            
+
                 #check if usage
                 elif(isinstance(irNode, irl.IRAssignment)):
                     if [x for x in vars_temp if x[0] == irNode.lhs and scope in x[1]] != []:
@@ -1102,12 +1484,142 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                 pass
             else:
                 final_ir.append(irLine)
-            
-            
+
+
         self.IR = final_ir
 
+    def cleanup(self):
+
+        class ref():
+            def __init__(self, init_index, init_ref_type, side):
+                self.refs = [init_index]
+                self.ref_types = [init_ref_type]
+                self.side = [side]
+
+            def add(self, index, ref_type, side):
+                self.refs.append(index)
+                self.ref_types.append(ref_type)
+                self.side.append(side)
+
+            def __str__(self):
+                return f&#34;\t{self.refs}\t{self.ref_types}\t{self.side}&#34;
+
+            def __repr__(self):
+                return self.__str__()
+
+        gr = {}
+        for line in self.IR:
+            lr = {}
+
+            for i, node in enumerate(line.treeList):
+                if isinstance(node, irl.IRAssignment):
+                    if node.lhs in lr:
+                        lr[node.lhs].add(i, &#34;assignment&#34;, 0)
+                    else:
+                        lr[node.lhs] = ref(i, &#34;assignment&#34;, 0)
+
+                    tmp = node.rhs.lstrip(&#39;-+&#39;).replace(&#39;.&#39;, &#39;&#39;, 1)
+                    if node.rhs in lr and not tmp.isnumeric():
+                        lr[node.rhs].add(i, &#34;assignment&#34;, 1)
+                    elif not tmp.isnumeric():
+                        lr[node.rhs] = ref(i, &#34;assignment&#34;, 1)
+                elif isinstance(node, irl.IRArth):
+                    if node.var in lr:
+                        lr[node.var].add(i, &#34;assignment&#34;, 0)
+                    else:
+                        lr[node.var] = ref(i, &#34;assignment&#34;, 0)
+
+                    tmp = node.lhs.lstrip(&#39;-+&#39;).replace(&#39;.&#39;, &#39;&#39;, 1)
+                    if node.lhs in lr and not tmp.isnumeric():
+                        lr[node.lhs].add(i, &#34;arithmetic&#34;, 1)
+                    elif not tmp.isnumeric():
+                        lr[node.lhs] = ref(i, &#34;arithmetic&#34;, 1)
+
+                    if node.rhs:
+                        tmp = node.rhs.lstrip(&#39;-+&#39;).replace(&#39;.&#39;, &#39;&#39;, 1)
+                        if node.rhs in lr and not tmp.isnumeric():
+                            lr[node.rhs].add(i, &#34;arithmetic&#34;, 2)
+                        elif not tmp.isnumeric():
+                            lr[node.rhs] = ref(i, &#34;arithmetic&#34;, 2)
+                elif isinstance(node, irl.IRFunctionAssign):
+                    if node.lhs in lr:
+                        lr[node.lhs].add(i, &#34;assignment&#34;, 0)
+                    else:
+                        lr[node.lhs] = ref(i, &#34;assignment&#34;, 0)
+
+                    for param in node.params:
+                        tmp = node.lhs.lstrip(&#39;-+&#39;).replace(&#39;.&#39;, &#39;&#39;, 1)
+                        if param in lr and not tmp.isnumeric():
+                            lr[node.lhs].add(i, &#34;param&#34;, 1)
+                        elif not tmp.isnumeric():
+                            lr[node.lhs] = ref(i, &#34;param&#34;, 1)
+                elif isinstance(node, irl.IRIf):
+                    tmp = node.lhs.lstrip(&#39;-+&#39;).replace(&#39;.&#39;, &#39;&#39;, 1)
+                    if node.lhs in lr and not tmp.isnumeric():
+                        lr[node.lhs].add(i, &#34;collation&#34;, 1)
+                    elif not tmp.isnumeric():
+                        lr[node.lhs] = ref(i, &#34;collation&#34;, 1)
+
+                    tmp = node.rhs.lstrip(&#39;-+&#39;).replace(&#39;.&#39;, &#39;&#39;, 1)
+                    if node.rhs in lr and not tmp.isnumeric():
+                        lr[node.rhs].add(i, &#34;collation&#34;, 2)
+                    elif not tmp.isnumeric():
+                        lr[node.rhs] = ref(i, &#34;collation&#34;, 2)
+                elif isinstance(node, irl.IRSpecial):
+                    if node.var in lr:
+                        lr[node.var].add(i, &#34;assignment&#34;, 0)
+                        lr[node.var].add(i, &#34;assignment&#34;, 1)
+                    else:
+                        lr[node.var] = ref(i, &#34;assignment&#34;, 0)
+                        lr[node.var].add(i, &#34;assignment&#34;, 1)
+                elif isinstance(node, irl.IRReturn):
+                    if node.value:
+                        tmp = node.value.lstrip(&#39;-+&#39;).replace(&#39;.&#39;, &#39;&#39;, 1)
+                        if node.value in lr:
+                            lr[node.value].add(i, &#34;return&#34;, 0)
+                        elif not tmp.isnumeric():
+                            lr[node.value] = ref(i, &#34;return&#34;, 0)
+            rem_list = []
+
+            for var in lr.items():
+                # print(var)
+                for i, typ in enumerate(var[1].ref_types):
+                    if (
+                        i+1 &lt; len(var[1].ref_types)
+                        and
+                        typ == &#34;assignment&#34;
+                        and
+                        var[1].side[i] == 0
+                        and
+                        var[1].side[i+1] == 0
+                        and
+                        var[1].ref_types[i+1] == &#34;assignment&#34;
+                        ):
+                        rem_list.append(var[1].refs[i])
+                    elif (
+                        i+1 == len(var[1].ref_types)
+                        and
+                        typ == &#34;assignment&#34;
+                        and
+                        var[1].side[i] == 0
+                        # and
+                        # var[1].side[i+1] == 0
+                        and
+                        (
+                            var[1].refs[i]+1 != len(line.treeList)
+                            or
+                            len(var[1].ref_types) &gt; 1)
+                        ):
+                        rem_list.append(var[1].refs[i])
+
+                # iterate over reference types and see if there are two assignments after each other.
+
+
+            for node in reversed(sorted(rem_list)):
+                line.treeList.pop(node)
+
     def remove_unused_funcs(self):
-        ir = self.IR        
+        ir = self.IR
         inFunction = False
         to_remove = []
 
@@ -1121,7 +1633,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
             if inFunction == True:
                 if isinstance(ir_firstNode, irl.IRFunctionDecl):
                     inFunction = False
-                else:    
+                else:
                     to_remove.append(idx)
                     continue
 
@@ -1129,8 +1641,8 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
             if isinstance(ir_firstNode, irl.IRFunctionDecl):
                 func_name = ir_firstNode.name
                 referenceNum = len([x.references for x in self.symTable.symbols if func_name == x.name and x.entry_type == 1][0])
-                
-                # If reference is 0, it is unused 
+
+                # If reference is 0, it is unused
                 if referenceNum == 0 and func_name != &#34;main&#34;:
                     to_remove.append(idx)
                     inFunction = True
@@ -1138,12 +1650,406 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
         # Actually delete unused function IRLine&#39;s
         for i in to_remove[::-1]:
             del ir[i]
-                
 
-        self.IR = ir</code></pre>
+
+        self.IR = ir
+
+    def constant_folding(self,x):
+        changed = False
+        if isinstance(x,irl.IRArth):
+            notFound = True
+            op = False
+            #get the operator being used
+            if(x.rhs != None and x.lhs != None):
+                if(x.operator == &#34;+&#34;):
+                    op = lambda lhs, rhs : lhs + rhs
+                elif(x.operator == &#34;-&#34;):
+                    op = lambda lhs, rhs : lhs - rhs
+                elif(x.operator == &#34;*&#34;):
+                    op = lambda lhs, rhs : lhs * rhs
+                elif(x.operator == &#34;/&#34;):
+                    op = lambda lhs, rhs : lhs / rhs
+                elif(x.operator == &#34;%&#34;):
+                    op = lambda lhs, rhs : math.fmod(lhs, rhs)
+                elif(x.operator == &#34;&lt;&lt;&#34;):
+                    # There is an edge case around the changes of architectures so that values may differ depending on the architecture you are using. eg 10 &lt;&lt; 31 compared to 10 &lt;&lt; 20
+                    op = lambda lhs, rhs : lhs &lt;&lt; rhs
+                elif(x.operator == &#34;&gt;&gt;&#34;):
+                    # There is an edge case around the changes of architectures so that values may differ depending on the architecture you are using. eg 10 &gt;&gt; 31 compared to 10 &gt;&gt; 20
+                    op = lambda lhs, rhs : lhs &gt;&gt; rhs
+                elif(x.operator == &#34;|&#34;):
+                    op = lambda lhs, rhs : lhs | rhs
+                elif(x.operator == &#34;&amp;&#34;):
+                    op = lambda lhs, rhs : lhs &amp; rhs
+                elif(x.operator == &#34;^&#34;):
+                    op = lambda lhs, rhs : lhs ^ rhs
+            else:
+                if(x.operator == &#34;~&#34;):
+                    op = lambda lhs, rhs : ~lhs
+                elif(x.operator == &#34;-&#34;):
+                    op = lambda lhs, rhs : 0 - lhs
+                elif(x.operator == &#34;+&#34;):
+                    op = lambda lhs, rhs : 0 + lhs
+                elif(x.operator == &#34;!&#34;):
+                    op = lambda lhs, rhs : not lhs
+            #get the left hand side and the right hand side
+            try:
+                lhs = int(x.lhs)
+                if(not x.rhs == None):
+                    rhs = int(x.rhs)
+                else:
+                    rhs = None
+                notFound = False
+            except ValueError:
+                try:
+                    lhs = float(x.lhs)
+                    if(not x.rhs == None):
+                        rhs = float(x.rhs)
+                    else:
+                        rhs = None
+                    notFound = False
+                except ValueError:
+                    pass
+
+            #if we found all components, replace the node
+            if(not notFound and op):
+                if rhs and rhs &lt; 0:
+                    if x.operator == &#34;&lt;&lt;&#34; or x.operator == &#34;&gt;&gt;&#34;:
+                        raise ValueError(&#34;shifting by negative number is undefined behavior.&#34;)
+
+                newValue = lambda lhs, rhs, op : op(lhs,rhs)
+                val = newValue(lhs,rhs,op) if isinstance(lhs, float) or isinstance(rhs, float) else math.floor(newValue(lhs,rhs,op))
+                newAss = irl.IRAssignment(x.var, str(val))
+                changed = True
+                return changed,newAss
+        return changed,x
+
+    def constant_propagation(self, node, var_val):
+
+        # NOTE: The current issue is that the propogation is goint to have to exit and re enter the function every time to achieve the following:
+        # Clear the tempoary variables per line as they are re used
+        # Avoid propogating too far so that assignments in the future that may happen after certain other computations and assignments propogate the correct value
+
+        # TODO: Fix to detect whether the reference is necessary or not. Eg, comparisons in loops compared to simple ifs
+        # TODO: Ensure that when comming across a value that is not computable or propogatable such as after some control flow, the dictionary value becomes something distinguisable so that the expression is left alone
+        changed = False
+        if isinstance(node, irl.IRIf):
+            if node.lhs in var_val and var_val[node.lhs] != &#34;Undef&#34;:
+                node.lhs = var_val[node.lhs]
+                changed = True
+            if node.rhs in var_val and var_val[node.rhs] != &#34;Undef&#34;:
+                node.rhs = var_val[node.rhs]
+                changed = True
+
+        elif isinstance(node, irl.IRArth):
+            if node.lhs in var_val and var_val[node.lhs] != &#34;Undef&#34;:
+                node.lhs = var_val[node.lhs]
+                changed = True
+            if node.rhs in var_val and var_val[node.rhs] != &#34;Undef&#34;:
+                node.rhs = var_val[node.rhs]
+                changed = True
+
+        elif isinstance(node, irl.IRSpecial):
+            pass
+            # Assigning a value for a post and pre increment is extremly difficult due to the fact that it regularly occurs in loops and constants arent useful there.
+
+        elif isinstance(node, irl.IRAssignment):
+            if node.rhs in var_val and var_val[node.rhs] != &#34;Undef&#34;:
+                node.rhs = var_val[node.rhs]
+                var_val[node.lhs] = node.rhs
+                changed = True
+            else:
+                tmp = node.rhs.lstrip(&#39;-+&#39;).replace(&#39;.&#39;, &#39;&#39;, 1)
+                if tmp.isnumeric():
+                    var_val[node.lhs] = node.rhs
+
+        elif isinstance(node, irl.IRFunctionAssign):
+            for j, param in enumerate(node.params):
+                if param in var_val and var_val[param] != None:
+                    node.params[j] = var_val[param]
+                    changed = True
+
+        return changed, var_val</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
+<dt id="src.optimizer.IR_Lv1_Builder.LevelOneIR.cleanup"><code class="name flex">
+<span>def <span class="ident">cleanup</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def cleanup(self):
+
+    class ref():
+        def __init__(self, init_index, init_ref_type, side):
+            self.refs = [init_index]
+            self.ref_types = [init_ref_type]
+            self.side = [side]
+
+        def add(self, index, ref_type, side):
+            self.refs.append(index)
+            self.ref_types.append(ref_type)
+            self.side.append(side)
+
+        def __str__(self):
+            return f&#34;\t{self.refs}\t{self.ref_types}\t{self.side}&#34;
+
+        def __repr__(self):
+            return self.__str__()
+
+    gr = {}
+    for line in self.IR:
+        lr = {}
+
+        for i, node in enumerate(line.treeList):
+            if isinstance(node, irl.IRAssignment):
+                if node.lhs in lr:
+                    lr[node.lhs].add(i, &#34;assignment&#34;, 0)
+                else:
+                    lr[node.lhs] = ref(i, &#34;assignment&#34;, 0)
+
+                tmp = node.rhs.lstrip(&#39;-+&#39;).replace(&#39;.&#39;, &#39;&#39;, 1)
+                if node.rhs in lr and not tmp.isnumeric():
+                    lr[node.rhs].add(i, &#34;assignment&#34;, 1)
+                elif not tmp.isnumeric():
+                    lr[node.rhs] = ref(i, &#34;assignment&#34;, 1)
+            elif isinstance(node, irl.IRArth):
+                if node.var in lr:
+                    lr[node.var].add(i, &#34;assignment&#34;, 0)
+                else:
+                    lr[node.var] = ref(i, &#34;assignment&#34;, 0)
+
+                tmp = node.lhs.lstrip(&#39;-+&#39;).replace(&#39;.&#39;, &#39;&#39;, 1)
+                if node.lhs in lr and not tmp.isnumeric():
+                    lr[node.lhs].add(i, &#34;arithmetic&#34;, 1)
+                elif not tmp.isnumeric():
+                    lr[node.lhs] = ref(i, &#34;arithmetic&#34;, 1)
+
+                if node.rhs:
+                    tmp = node.rhs.lstrip(&#39;-+&#39;).replace(&#39;.&#39;, &#39;&#39;, 1)
+                    if node.rhs in lr and not tmp.isnumeric():
+                        lr[node.rhs].add(i, &#34;arithmetic&#34;, 2)
+                    elif not tmp.isnumeric():
+                        lr[node.rhs] = ref(i, &#34;arithmetic&#34;, 2)
+            elif isinstance(node, irl.IRFunctionAssign):
+                if node.lhs in lr:
+                    lr[node.lhs].add(i, &#34;assignment&#34;, 0)
+                else:
+                    lr[node.lhs] = ref(i, &#34;assignment&#34;, 0)
+
+                for param in node.params:
+                    tmp = node.lhs.lstrip(&#39;-+&#39;).replace(&#39;.&#39;, &#39;&#39;, 1)
+                    if param in lr and not tmp.isnumeric():
+                        lr[node.lhs].add(i, &#34;param&#34;, 1)
+                    elif not tmp.isnumeric():
+                        lr[node.lhs] = ref(i, &#34;param&#34;, 1)
+            elif isinstance(node, irl.IRIf):
+                tmp = node.lhs.lstrip(&#39;-+&#39;).replace(&#39;.&#39;, &#39;&#39;, 1)
+                if node.lhs in lr and not tmp.isnumeric():
+                    lr[node.lhs].add(i, &#34;collation&#34;, 1)
+                elif not tmp.isnumeric():
+                    lr[node.lhs] = ref(i, &#34;collation&#34;, 1)
+
+                tmp = node.rhs.lstrip(&#39;-+&#39;).replace(&#39;.&#39;, &#39;&#39;, 1)
+                if node.rhs in lr and not tmp.isnumeric():
+                    lr[node.rhs].add(i, &#34;collation&#34;, 2)
+                elif not tmp.isnumeric():
+                    lr[node.rhs] = ref(i, &#34;collation&#34;, 2)
+            elif isinstance(node, irl.IRSpecial):
+                if node.var in lr:
+                    lr[node.var].add(i, &#34;assignment&#34;, 0)
+                    lr[node.var].add(i, &#34;assignment&#34;, 1)
+                else:
+                    lr[node.var] = ref(i, &#34;assignment&#34;, 0)
+                    lr[node.var].add(i, &#34;assignment&#34;, 1)
+            elif isinstance(node, irl.IRReturn):
+                if node.value:
+                    tmp = node.value.lstrip(&#39;-+&#39;).replace(&#39;.&#39;, &#39;&#39;, 1)
+                    if node.value in lr:
+                        lr[node.value].add(i, &#34;return&#34;, 0)
+                    elif not tmp.isnumeric():
+                        lr[node.value] = ref(i, &#34;return&#34;, 0)
+        rem_list = []
+
+        for var in lr.items():
+            # print(var)
+            for i, typ in enumerate(var[1].ref_types):
+                if (
+                    i+1 &lt; len(var[1].ref_types)
+                    and
+                    typ == &#34;assignment&#34;
+                    and
+                    var[1].side[i] == 0
+                    and
+                    var[1].side[i+1] == 0
+                    and
+                    var[1].ref_types[i+1] == &#34;assignment&#34;
+                    ):
+                    rem_list.append(var[1].refs[i])
+                elif (
+                    i+1 == len(var[1].ref_types)
+                    and
+                    typ == &#34;assignment&#34;
+                    and
+                    var[1].side[i] == 0
+                    # and
+                    # var[1].side[i+1] == 0
+                    and
+                    (
+                        var[1].refs[i]+1 != len(line.treeList)
+                        or
+                        len(var[1].ref_types) &gt; 1)
+                    ):
+                    rem_list.append(var[1].refs[i])
+
+            # iterate over reference types and see if there are two assignments after each other.
+
+
+        for node in reversed(sorted(rem_list)):
+            line.treeList.pop(node)</code></pre>
+</details>
+</dd>
+<dt id="src.optimizer.IR_Lv1_Builder.LevelOneIR.constant_folding"><code class="name flex">
+<span>def <span class="ident">constant_folding</span></span>(<span>self, x)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def constant_folding(self,x):
+    changed = False
+    if isinstance(x,irl.IRArth):
+        notFound = True
+        op = False
+        #get the operator being used
+        if(x.rhs != None and x.lhs != None):
+            if(x.operator == &#34;+&#34;):
+                op = lambda lhs, rhs : lhs + rhs
+            elif(x.operator == &#34;-&#34;):
+                op = lambda lhs, rhs : lhs - rhs
+            elif(x.operator == &#34;*&#34;):
+                op = lambda lhs, rhs : lhs * rhs
+            elif(x.operator == &#34;/&#34;):
+                op = lambda lhs, rhs : lhs / rhs
+            elif(x.operator == &#34;%&#34;):
+                op = lambda lhs, rhs : math.fmod(lhs, rhs)
+            elif(x.operator == &#34;&lt;&lt;&#34;):
+                # There is an edge case around the changes of architectures so that values may differ depending on the architecture you are using. eg 10 &lt;&lt; 31 compared to 10 &lt;&lt; 20
+                op = lambda lhs, rhs : lhs &lt;&lt; rhs
+            elif(x.operator == &#34;&gt;&gt;&#34;):
+                # There is an edge case around the changes of architectures so that values may differ depending on the architecture you are using. eg 10 &gt;&gt; 31 compared to 10 &gt;&gt; 20
+                op = lambda lhs, rhs : lhs &gt;&gt; rhs
+            elif(x.operator == &#34;|&#34;):
+                op = lambda lhs, rhs : lhs | rhs
+            elif(x.operator == &#34;&amp;&#34;):
+                op = lambda lhs, rhs : lhs &amp; rhs
+            elif(x.operator == &#34;^&#34;):
+                op = lambda lhs, rhs : lhs ^ rhs
+        else:
+            if(x.operator == &#34;~&#34;):
+                op = lambda lhs, rhs : ~lhs
+            elif(x.operator == &#34;-&#34;):
+                op = lambda lhs, rhs : 0 - lhs
+            elif(x.operator == &#34;+&#34;):
+                op = lambda lhs, rhs : 0 + lhs
+            elif(x.operator == &#34;!&#34;):
+                op = lambda lhs, rhs : not lhs
+        #get the left hand side and the right hand side
+        try:
+            lhs = int(x.lhs)
+            if(not x.rhs == None):
+                rhs = int(x.rhs)
+            else:
+                rhs = None
+            notFound = False
+        except ValueError:
+            try:
+                lhs = float(x.lhs)
+                if(not x.rhs == None):
+                    rhs = float(x.rhs)
+                else:
+                    rhs = None
+                notFound = False
+            except ValueError:
+                pass
+
+        #if we found all components, replace the node
+        if(not notFound and op):
+            if rhs and rhs &lt; 0:
+                if x.operator == &#34;&lt;&lt;&#34; or x.operator == &#34;&gt;&gt;&#34;:
+                    raise ValueError(&#34;shifting by negative number is undefined behavior.&#34;)
+
+            newValue = lambda lhs, rhs, op : op(lhs,rhs)
+            val = newValue(lhs,rhs,op) if isinstance(lhs, float) or isinstance(rhs, float) else math.floor(newValue(lhs,rhs,op))
+            newAss = irl.IRAssignment(x.var, str(val))
+            changed = True
+            return changed,newAss
+    return changed,x</code></pre>
+</details>
+</dd>
+<dt id="src.optimizer.IR_Lv1_Builder.LevelOneIR.constant_propagation"><code class="name flex">
+<span>def <span class="ident">constant_propagation</span></span>(<span>self, node, var_val)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def constant_propagation(self, node, var_val):
+
+    # NOTE: The current issue is that the propogation is goint to have to exit and re enter the function every time to achieve the following:
+    # Clear the tempoary variables per line as they are re used
+    # Avoid propogating too far so that assignments in the future that may happen after certain other computations and assignments propogate the correct value
+
+    # TODO: Fix to detect whether the reference is necessary or not. Eg, comparisons in loops compared to simple ifs
+    # TODO: Ensure that when comming across a value that is not computable or propogatable such as after some control flow, the dictionary value becomes something distinguisable so that the expression is left alone
+    changed = False
+    if isinstance(node, irl.IRIf):
+        if node.lhs in var_val and var_val[node.lhs] != &#34;Undef&#34;:
+            node.lhs = var_val[node.lhs]
+            changed = True
+        if node.rhs in var_val and var_val[node.rhs] != &#34;Undef&#34;:
+            node.rhs = var_val[node.rhs]
+            changed = True
+
+    elif isinstance(node, irl.IRArth):
+        if node.lhs in var_val and var_val[node.lhs] != &#34;Undef&#34;:
+            node.lhs = var_val[node.lhs]
+            changed = True
+        if node.rhs in var_val and var_val[node.rhs] != &#34;Undef&#34;:
+            node.rhs = var_val[node.rhs]
+            changed = True
+
+    elif isinstance(node, irl.IRSpecial):
+        pass
+        # Assigning a value for a post and pre increment is extremly difficult due to the fact that it regularly occurs in loops and constants arent useful there.
+
+    elif isinstance(node, irl.IRAssignment):
+        if node.rhs in var_val and var_val[node.rhs] != &#34;Undef&#34;:
+            node.rhs = var_val[node.rhs]
+            var_val[node.lhs] = node.rhs
+            changed = True
+        else:
+            tmp = node.rhs.lstrip(&#39;-+&#39;).replace(&#39;.&#39;, &#39;&#39;, 1)
+            if tmp.isnumeric():
+                var_val[node.lhs] = node.rhs
+
+    elif isinstance(node, irl.IRFunctionAssign):
+        for j, param in enumerate(node.params):
+            if param in var_val and var_val[param] != None:
+                node.params[j] = var_val[param]
+                changed = True
+
+    return changed, var_val</code></pre>
+</details>
+</dd>
 <dt id="src.optimizer.IR_Lv1_Builder.LevelOneIR.construct"><code class="name flex">
 <span>def <span class="ident">construct</span></span>(<span>self)</span>
 </code></dt>
@@ -1183,7 +2089,6 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
     lines = []
 
     for i in bodyList:
-
         # Beginning of fuction wrapper
         lines.extend(beginWrapper(i, returnDigit))
 
@@ -1203,7 +2108,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 </details>
 </dd>
 <dt id="src.optimizer.IR_Lv1_Builder.LevelOneIR.optimize"><code class="name flex">
-<span>def <span class="ident">optimize</span></span>(<span>self)</span>
+<span>def <span class="ident">optimize</span></span>(<span>self, opt)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -1211,9 +2116,70 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def optimize(self): 
-    self.remove_unused_funcs()
-    self.remove_unused_vars()</code></pre>
+<pre><code class="python">def optimize(self, opt):
+    if opt &gt; 0:
+        self.remove_unused_funcs()
+        self.remove_unused_vars()
+        pass
+
+    if opt &gt; 1:
+        # A dictionary containing all the values of variables that can at some point be reduced.
+        self.var_values = {
+            func.name : {
+                var.name : &#34;Undef&#34;
+                for var in self.symTable.symbols if var.entry_type == 0 and var.scope.startswith(f&#34;/{func.name}&#34;)
+            }
+            for func in [sym for sym in self.symTable.symbols if sym.entry_type == 1]
+        }
+
+        # NOTE: As a method of knowing whether it is safe to continue on to the next node in the list the following measures have been implemented:
+        # Both constant folding and constant propagation only consider a singular value.
+        # They both return a boolean describing whether the node was altered as well as some descriptor of what it did.
+            # In the case of constant folding, the descriptor is the new simplified node which then has to be assigned to the correct index.
+            # In the case of constant propagation, the descriptor is a dictionary containing the updated values relevant to the scope of the IRLine object meaning that tempoary variables are stored within the IRLine but now within the scope as a whole.
+        # The idea is that while either of these methods can alter the node you keep executing them on the node so that if the loop terminates the program is sure that the node cannot be reduced further.
+        # Another final optimization that can be done would be to check if all the nodes in an IRLine object are `IRAssignment`, if so the last one is the only `IRAssignment` node needed, and the others can be removed.
+
+        prev_maj = 0
+        cur_scope = &#34;&#34;
+        tmp_vals = {}
+        for major, minor, node in [(major, minor, node) for major, tl in enumerate(self.IR) for minor, node in enumerate(tl.treeList)]:
+            if major != prev_maj:
+                tmp_vals = {}
+
+            if isinstance(node, irl.IRFunctionDecl):
+                cur_scope = node.name
+            elif isinstance(node, irl.IRGoTo) or isinstance(node, irl.IRJump) or isinstance(node, irl.IRIf):
+                for val in tmp_vals.items():
+                    if val[0] in self.var_values[cur_scope]:
+                        self.var_values[cur_scope][val[0]] = &#34;Undef&#34;
+                    tmp_vals[val[0]] = &#34;Undef&#34;
+            else:
+                for val in self.var_values[cur_scope].items():
+                    tmp_vals[val[0]] = val[1]
+
+            ncf = False
+            ncp = False
+
+            while 1:
+                ncf, tmp = self.constant_folding(node)
+
+                if ncf:
+                    self.IR[major].treeList[minor] = tmp
+                    node = tmp
+
+                ncp, vals = self.constant_propagation(node, tmp_vals)
+
+                for val in vals.items():
+                    if val[0] in self.var_values[cur_scope]:
+                        self.var_values[cur_scope][val[0]] = val[1]
+                    tmp_vals[val[0]] = val[1]
+
+                if not (ncf or ncp):
+                    break
+            prev_maj = major
+
+        self.cleanup()</code></pre>
 </details>
 </dd>
 <dt id="src.optimizer.IR_Lv1_Builder.LevelOneIR.remove_unused_funcs"><code class="name flex">
@@ -1226,7 +2192,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def remove_unused_funcs(self):
-    ir = self.IR        
+    ir = self.IR
     inFunction = False
     to_remove = []
 
@@ -1240,7 +2206,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
         if inFunction == True:
             if isinstance(ir_firstNode, irl.IRFunctionDecl):
                 inFunction = False
-            else:    
+            else:
                 to_remove.append(idx)
                 continue
 
@@ -1248,8 +2214,8 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
         if isinstance(ir_firstNode, irl.IRFunctionDecl):
             func_name = ir_firstNode.name
             referenceNum = len([x.references for x in self.symTable.symbols if func_name == x.name and x.entry_type == 1][0])
-            
-            # If reference is 0, it is unused 
+
+            # If reference is 0, it is unused
             if referenceNum == 0 and func_name != &#34;main&#34;:
                 to_remove.append(idx)
                 inFunction = True
@@ -1257,7 +2223,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
     # Actually delete unused function IRLine&#39;s
     for i in to_remove[::-1]:
         del ir[i]
-            
+
 
     self.IR = ir</code></pre>
 </details>
@@ -1274,14 +2240,14 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 <pre><code class="python">def remove_unused_vars(self):
     ir = self.IR
     scope = &#34;&#34;
-    
+
     #get variables to remove
     vars_temp = [[x.name, x.scope] for x in self.symTable.symbols if x.entry_type != 2 and x.entry_type != 1 and x.entry_type != 3 and len(x.references) == 0]
     #get function from symbol table.
     funcs = [x.name for x in self.symTable.symbols if x.entry_type == 1]
 
     final_ir = []
-    
+
     for irLine in ir:
 
         for idx, irNode in enumerate(irLine.treeList):
@@ -1294,7 +2260,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                 #check if variable needs to be skippped
                 if [x for x in vars_temp if x[0] == irNode.var and scope in x[1]] != []:
                     del irLine.treeList[idx]
-        
+
             #check if usage
             elif(isinstance(irNode, irl.IRAssignment)):
                 if [x for x in vars_temp if x[0] == irNode.lhs and scope in x[1]] != []:
@@ -1305,8 +2271,8 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
             pass
         else:
             final_ir.append(irLine)
-        
-        
+
+
     self.IR = final_ir</code></pre>
 </details>
 </dd>
@@ -1338,6 +2304,9 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 <li>
 <h4><code><a title="src.optimizer.IR_Lv1_Builder.LevelOneIR" href="#src.optimizer.IR_Lv1_Builder.LevelOneIR">LevelOneIR</a></code></h4>
 <ul class="">
+<li><code><a title="src.optimizer.IR_Lv1_Builder.LevelOneIR.cleanup" href="#src.optimizer.IR_Lv1_Builder.LevelOneIR.cleanup">cleanup</a></code></li>
+<li><code><a title="src.optimizer.IR_Lv1_Builder.LevelOneIR.constant_folding" href="#src.optimizer.IR_Lv1_Builder.LevelOneIR.constant_folding">constant_folding</a></code></li>
+<li><code><a title="src.optimizer.IR_Lv1_Builder.LevelOneIR.constant_propagation" href="#src.optimizer.IR_Lv1_Builder.LevelOneIR.constant_propagation">constant_propagation</a></code></li>
 <li><code><a title="src.optimizer.IR_Lv1_Builder.LevelOneIR.construct" href="#src.optimizer.IR_Lv1_Builder.LevelOneIR.construct">construct</a></code></li>
 <li><code><a title="src.optimizer.IR_Lv1_Builder.LevelOneIR.optimize" href="#src.optimizer.IR_Lv1_Builder.LevelOneIR.optimize">optimize</a></code></li>
 <li><code><a title="src.optimizer.IR_Lv1_Builder.LevelOneIR.remove_unused_funcs" href="#src.optimizer.IR_Lv1_Builder.LevelOneIR.remove_unused_funcs">remove_unused_funcs</a></code></li>
