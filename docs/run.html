@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.4" />
-<title>src.optimizer.optimizer API documentation</title>
-<meta name="description" content="This module serves as the main interface to the optimization process in order to streamline the compiler." />
+<title>src.run API documentation</title>
+<meta name="description" content="This module serves as the main interface to the compiler. It connects all the parts of the compiler in such a way that all representations are handed …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -17,80 +17,96 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>src.optimizer.optimizer</code></h1>
+<h1 class="title">Module <code>src.run</code></h1>
 </header>
 <section id="section-intro">
-<p>This module serves as the main interface to the optimization process in order to streamline the compiler.</p>
+<p>This module serves as the main interface to the compiler. It connects all the parts of the compiler in such a way that all representations are handed off to the next step.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-This module serves as the main interface to the optimization process in order to streamline the compiler.
+This module serves as the main interface to the compiler. It connects all the parts of the compiler in such a way that all representations are handed off to the next step.
 &#34;&#34;&#34;
-
 from inspect import getsourcefile
 import os
 import argparse
 from importlib.machinery import SourceFileLoader
 
-ir1 = SourceFileLoader(&#34;IR_Lv1_Builder&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/IR_Lv1_Builder.py&#34;).load_module()
-import_ir = SourceFileLoader(&#34;import_ir&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/import_ir.py&#34;).load_module()
+frontend = SourceFileLoader(&#34;frontend.frontend&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/frontend/frontend.py&#34;).load_module()
+optimizer = SourceFileLoader(&#34;optimizer.optimizer&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/optimizer/optimizer.py&#34;).load_module()
 
-def mainAST(args, astHead = None, symbolTable = None):
-    &#34;&#34;&#34;
-    This is the function that when given an AST and a symbol table will produce linear intermediate representations for teh inputted program.
+def main(args):
 
-    Args:
-        args: The commandline arguments that belong to the optimizer.
-        astHead: The root node of the AST.
-        symbolTable: The list of valid entries throughout the program.
-
-    Returns:
-        The lowest level of IR produced.
-    &#34;&#34;&#34;
-
-    # Import IR from file
-    if args.input:
-        inp = import_ir.import_ir(args.input)
-        l1ir = inp.verify()
-
-    # Generate IR from AST and Symbol-Table
+    # Execution of the Frontend.
+    # This returns the Abstract Syntax Tree and Symbol Table
+    if not args.input:
+        ast, sym = frontend.main(args)
     else:
-        ir = ir1.LevelOneIR(astHead, symbolTable)
-        l1ir = ir.construct()
-        ir.optimize(args.opt)
-
-    # Output IR to a file
-    if args.IRout:
-        write_IR_to_file(args.IRout, ir.IR)
-
-    # Output IR (first lvl optimization) to stdout 
-    if args.IR1 or args.all:
-        print(str(ir))
-
-    pass
+        ast = None
+        sym = None
 
 
-def write_IR_to_file(filename, ir):
-    with open(filename, &#39;w&#39;) as f:
-        for irLine in ir:
-            for irNode in irLine.treeList:
-                f.write(str(irNode) + &#39;\n&#39;)
+    # Execution of Optimization
+    optimizer.mainAST(args,ast,sym)
+
+    # Execution of Backend
+
+
+
 
 
 if __name__ == &#34;__main__&#34;:
-    cmd_options = argparse.ArgumentParser(description=&#39;Optimizer of the compiler. Can take in an AST and Symbol Table or a File with an IR&#39;)
+    #command line arguements
+
+    #decription of the compiler
+    cmd_options = argparse.ArgumentParser(description=&#39;Main execution of C compiler. Can produce different representations of inputed C code. (i.e. tokens, parse tree, abstract syntax tree, etc.)&#39;)
 
     cmd_options.add_argument(&#39;--all&#39;,help=&#39;Prints out all intermediate representations as they are encountered in the compilation process&#39;, action=&#34;store_true&#34;)
+
+    #input file option
+    cmd_options.add_argument(&#39;input_file&#39;, metavar=&#39;&lt;filename.c&gt;&#39;, type=str, help=&#39;Input c file.&#39;)
+
+    #Arguement to print tokens from lexer
+    cmd_options.add_argument(&#39;-l&#39;,&#39;--lex&#39;, help=&#39;Prints out tokens from lexer&#39;, action=&#39;store_true&#39;)
+
+    #Prints string representation of parse tree....
+    cmd_options.add_argument(&#39;-t&#39;,&#39;--tree&#39;, help=&#39;Prints string representation of parse tree.&#39;, action=&#34;store_true&#34;)
+
+    cmd_options.add_argument(&#39;-p&#39;,&#39;--pretty&#39;,help=&#39;Prints a pretty verision of the tree, and does not print the tokens&#39;, action=&#34;store_true&#34;)
+
+    #Print all output from lexer, parser, etc....
+    cmd_options.add_argument(&#39;-a&#39;,&#39;--ast&#39;, help=&#39;Prints out the abstract syntax tree.&#39;, action=&#34;store_true&#34;)
+
+    cmd_options.add_argument(&#39;-s&#39;,&#39;--symbol_table&#39;, help=&#39;Prints out the known and unknown symbols encountered during semantic analysis.&#39;, action=&#34;store_true&#34;)
+
+    cmd_options.add_argument(&#39;-e&#39;, &#39;--errors&#39;,help=&#39;Prints out the errors in the semantic analysis&#39;,action=&#34;store_true&#34;)
+
+    cmd_options.add_argument(&#39;-b&#39;, &#39;--bnf&#39;, nargs=&#39;?&#39;, const=os.path.abspath(os.path.dirname(__file__)) + &#34;/frontend/BNF_definition&#34;, type=str, help=&#39;Rebuilds the parser using the current BNF grammar&#39;)
+
     cmd_options.add_argument(&#39;-O&#39;, &#39;--opt&#39;, type=int, choices=range(3), default=0, help=&#39;Determines the optimization level&#39;)
-    cmd_options.add_argument(&#39;-i&#39;, action=&#39;store&#39;, dest=&#34;input&#34;, type=str, help=&#34;Used to input IR from file&#34;)
+
+    cmd_options.add_argument(&#39;-IR1&#39;,help=&#39;Output the first level of IR in the optimizer phase&#39;, action=&#34;store_true&#34;)
+
+    cmd_options.add_argument(&#39;-i&#39;, &#39;--input&#39;, action=&#39;store_true&#39;, help=&#34;Used to input IR from file&#34;)
+
     cmd_options.add_argument(&#39;--IRout&#39;, metavar=&#39;&lt;output-filename&gt;&#39;, type=str, default=None, help=&#34;Used to output the final generated IR to a file&#34;)
+
+    #generate arguements
     args = cmd_options.parse_args()
 
-    print(args.input)
-
-    mainAST(args)</code></pre>
+    #open file and pass into main.
+    if args.input_file and args.input_file.endswith(&#34;.c&#34;):
+        main(args)
+    elif args.input: #if we need to take input file in redirect input file
+        args.input = args.input_file
+        main(args)
+    else:
+        #if not c file.
+        if not args.input_file.endswith(&#34;.c&#34;):
+            print(&#34;Error file must end with .c&#34;)
+        cmd_options.print_help()
+        exit()</code></pre>
 </details>
 </section>
 <section>
@@ -100,63 +116,8 @@ if __name__ == &#34;__main__&#34;:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="src.optimizer.optimizer.mainAST"><code class="name flex">
-<span>def <span class="ident">mainAST</span></span>(<span>args, astHead=None, symbolTable=None)</span>
-</code></dt>
-<dd>
-<section class="desc"><p>This is the function that when given an AST and a symbol table will produce linear intermediate representations for teh inputted program.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>args</code></strong></dt>
-<dd>The commandline arguments that belong to the optimizer.</dd>
-<dt><strong><code>astHead</code></strong></dt>
-<dd>The root node of the AST.</dd>
-<dt><strong><code>symbolTable</code></strong></dt>
-<dd>The list of valid entries throughout the program.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<p>The lowest level of IR produced.</p></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def mainAST(args, astHead = None, symbolTable = None):
-    &#34;&#34;&#34;
-    This is the function that when given an AST and a symbol table will produce linear intermediate representations for teh inputted program.
-
-    Args:
-        args: The commandline arguments that belong to the optimizer.
-        astHead: The root node of the AST.
-        symbolTable: The list of valid entries throughout the program.
-
-    Returns:
-        The lowest level of IR produced.
-    &#34;&#34;&#34;
-
-    # Import IR from file
-    if args.input:
-        inp = import_ir.import_ir(args.input)
-        l1ir = inp.verify()
-
-    # Generate IR from AST and Symbol-Table
-    else:
-        ir = ir1.LevelOneIR(astHead, symbolTable)
-        l1ir = ir.construct()
-        ir.optimize(args.opt)
-
-    # Output IR to a file
-    if args.IRout:
-        write_IR_to_file(args.IRout, ir.IR)
-
-    # Output IR (first lvl optimization) to stdout 
-    if args.IR1 or args.all:
-        print(str(ir))
-
-    pass</code></pre>
-</details>
-</dd>
-<dt id="src.optimizer.optimizer.write_IR_to_file"><code class="name flex">
-<span>def <span class="ident">write_IR_to_file</span></span>(<span>filename, ir)</span>
+<dt id="src.run.main"><code class="name flex">
+<span>def <span class="ident">main</span></span>(<span>args)</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -164,11 +125,19 @@ if __name__ == &#34;__main__&#34;:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def write_IR_to_file(filename, ir):
-    with open(filename, &#39;w&#39;) as f:
-        for irLine in ir:
-            for irNode in irLine.treeList:
-                f.write(str(irNode) + &#39;\n&#39;)</code></pre>
+<pre><code class="python">def main(args):
+
+    # Execution of the Frontend.
+    # This returns the Abstract Syntax Tree and Symbol Table
+    if not args.input:
+        ast, sym = frontend.main(args)
+    else:
+        ast = None
+        sym = None
+
+
+    # Execution of Optimization
+    optimizer.mainAST(args,ast,sym)</code></pre>
 </details>
 </dd>
 </dl>
@@ -184,13 +153,12 @@ if __name__ == &#34;__main__&#34;:
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="src.optimizer" href="index.html">src.optimizer</a></code></li>
+<li><code><a title="src" href="index.html">src</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="src.optimizer.optimizer.mainAST" href="#src.optimizer.optimizer.mainAST">mainAST</a></code></li>
-<li><code><a title="src.optimizer.optimizer.write_IR_to_file" href="#src.optimizer.optimizer.write_IR_to_file">write_IR_to_file</a></code></li>
+<li><code><a title="src.run.main" href="#src.run.main">main</a></code></li>
 </ul>
 </li>
 </ul>

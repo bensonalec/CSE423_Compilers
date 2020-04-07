@@ -131,10 +131,7 @@ def main(args):
         symTab.analyze()
 
         if args.symbol_table or args.all:
-            # sym.print_symbol_table()
-            # sym.print_unknown_symbols()
-
-            print (sym)
+            print (symTab)
 
         semAnal = semantic.semantic(astree,symTab.symbols)
         semAnal.semanticAnalysis()
@@ -155,7 +152,7 @@ def main(args):
         print(f"Unrecoverable exception occured. Exiting...")
         exit()
 
-    return astree, sym
+    return astree, symTab
 
 if __name__ == "__main__":
     #command line arguements

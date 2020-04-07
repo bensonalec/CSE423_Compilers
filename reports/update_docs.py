@@ -19,6 +19,7 @@ lexe = SourceFileLoader("lexer", f"{pathlib.Path(__file__).parent}/../src/fronte
 pars = SourceFileLoader("parser", f"{pathlib.Path(__file__).parent}/../src/frontend/parser.py").load_module()
 astt = SourceFileLoader("AST_builder", f"{pathlib.Path(__file__).parent}/../src/frontend/AST_builder.py").load_module()
 sema = SourceFileLoader("semantics", f"{pathlib.Path(__file__).parent}/../src/frontend/semantics.py").load_module()
+symbol = SourceFileLoader("symbol_table", f"{pathlib.Path(__file__).parent}/../src/frontend/symbol_table.py").load_module()
 ir1 = SourceFileLoader("IR_Lv1_Builder", f"{pathlib.Path(__file__).parent}/../src/optimizer/IR_Lv1_Builder.py").load_module()
 
 def retrieve_lex(file):
@@ -47,7 +48,7 @@ def retrieve_ast(file):
 
 def retrieve_sym(file):
     tmp = retrieve_ast(file)
-    sym = sema.symbol_table(tmp[-1][0])
+    sym = symbol.symbol_table(tmp[-1][0])
     sym.analyze()
 
     return tmp + [(sym, str(sym))]
