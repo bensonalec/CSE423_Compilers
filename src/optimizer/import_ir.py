@@ -17,7 +17,7 @@ class import_ir():
             filename: The filename of the IR
 
         """
-
+        self.IR = []
         with open(filename,"r") as fd:
             self.data = fd.read()
             self.tokens = None
@@ -59,6 +59,10 @@ class import_ir():
                 tempLs = []
             else:
                 tempLs.append(i)
+        for i in finalLs:
+            toAdd = IRLine.IRLine(None)
+            toAdd.treeList = [i]
+            self.IR.append(toAdd)
         return finalLs
 
     def __str__(self):
