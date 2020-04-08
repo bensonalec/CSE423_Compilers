@@ -25,8 +25,10 @@ def mainAST(args, astHead = None, symbolTable = None):
 
     # Import IR from file
     if args.input:
-        inp = import_ir.import_ir(args.input)
-        l1ir = inp.verify()
+        ir = import_ir.import_ir(args.input)
+        ir.tokenize()
+        ir.parse()
+        
 
     # Generate IR from AST and Symbol-Table
     else:
