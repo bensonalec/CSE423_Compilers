@@ -1,0 +1,83 @@
+program : function_def #PROGRAM
+program : function_def program #PROGRAM
+program :  #PROGRAM
+
+	function_def : VAR_NAME OPEN_PAREN parameters CLOSE_PAREN OPEN_BRACK content CLOSE_BRACK #FUNCTION_DEF *IRFunctionDecl
+
+parameters : TYPE VAR_NAME COMMA parameters #PARAMATERS
+parameters : TYPE VAR_NAME #PARAMETERS
+parameters : #PARAMETERS
+content : line #CONTENT
+content : content content #CONTENT
+content : #CONTENT
+content : OPEN_BRACK content CLOSE_BRACK #CONTENT
+
+	line : TYPE D_NUM SEMICOLON #LINE *IRVariableInit 
+	line : TYPE VAR_NAME SEMICOLON #LINE *IRVariableInit
+
+	line : VAR_NAME EQUALS dig op dig SEMICOLON #LINE *IRArth
+	line : VAR_NAME EQUALS VAR_NAME SEMICOLON #LINE *IRAssignment
+	line : VAR_NAME EQUALS dig SEMICOLON #LINE *IRAssignment
+	line : VAR_NAME EQUALS STRING SEMICOLON #LINE *IRAssignment
+	line : VAR_NAME EQUALS CHAR SEMICOLON #LINE *IRAssignment
+	line : VAR_NAME EQUALS VAR_NAME op dig SEMICOLON #LINE *IRArth
+	line : VAR_NAME EQUALS dig op VAR_NAME SEMICOLON #LINE *IRArth
+	line : VAR_NAME EQUALS VAR_NAME op VAR_NAME SEMICOLON #LINE *IRArth
+	line : VAR_NAME EQUALS MINUS dig SEMICOLON #LINE #IRArth
+	line : VAR_NAME EQUALS MINUS VAR_NAME SEMICOLON #LINE *IRArth
+	line : VAR_NAME EQUALS PLUS dig SEMICOLON #LINE *IRArth
+	line : VAR_NAME EQUALS PLUS VAR_NAME SEMICOLON #LINE *IRArth
+		line : VAR_NAME EQUALS NEGATE dig SEMICOLON #LINE  *IRArth
+		line : VAR_NAME EQUALS NOT dig SEMICOLON #LINE *IRArth 
+		line : VAR_NAME EQUALS NOT VAR_NAME SEMICOLON #LINE *IRArth
+		line : VAR_NAME EQUALS NEGATE VAR_NAME SEMICOLON #LINE *IRArth
+	line : VAR_NAME EQUALS NULL SEMICOLON #LINE *IRAssignment
+    line : D_NUM EQUALS VAR_NAME SEMICOLON #LINE *IRAssignment
+    line : D_NUM EQUALS dig SEMICOLON #LINE *IRAssignment
+    line : D_NUM EQUALS STRING SEMICOLON #LINE *IRAssignment
+    line : D_NUM EQUALS CHAR SEMICOLON #LINE *IRAssignment
+	line : RETURN D_NUM SEMICOLON #LINE *IRreturn 
+		line : func_call SEMICOLON #LINE *IRFunctionCall
+	line : VAR_NAME EQUALS func_call SEMICOLON #LINE *IRFunctionAssign
+	line : IF OPEN_PAREN condition CLOSE_PAREN GOTO LESS_THAN D_NUM GREATER_THAN SEMICOLON ELSE GOTO LESS_THAN D_NUM GREATER_THAN SEMICOLON #LINE *IRIf
+	line : LESS_THAN D_NUM GREATER_THAN COLON #LINE *IRJump
+	line : GOTO LESS_THAN D_NUM GREATER_THAN SEMICOLON #LINE *IRGoto
+	line : GOTO VAR_NAME SEMICOLON #LINE *IRGoto
+	line : VAR_NAME COLON #LINE  *IRJump
+line : KEWORD TYPE VAR_NAME SEMICOLON #LINE *IRAssignment
+	line : RETURN SEMICOLON #LINE *IRreturn
+
+condition : VAR_NAME comp VAR_NAME #CONDITION
+condition : VAR_NAME comp dig #CONDITION
+condition : dig comp dig #CONDITION
+condition : dig comp VAR_NAME #CONDITION
+
+func_call : VAR_NAME OPEN_PAREN func_input CLOSE_PAREN #FUNC_CALL
+func_input : #FUNC_INPUT
+func_input : STRING COMMA func_input #FUNC_INPUT
+func_input : CHAR COMMA func_input #FUNC_INPUT
+func_input : dig COMMA func_input #FUNC_INPUT
+func_input : VAR_NAME COMMA func_input #FUNC_INPUT
+func_input : STRING  #FUNC_INPUT
+func_input : CHAR  #FUNC_INPUT
+func_input : dig  #FUNC_INPUT
+func_input : VAR_NAME #FUNC_INPUT 
+comp : LESS_THAN #COMP
+comp : GREATER_THAN #COMP
+comp : EQUAL_TO #COMP
+comp : LEQ #COMP
+comp : GEQ #COMP
+comp : NOT_EQUAL_TO #COMP
+op : PLUS #OP
+op : MINUS #OP
+op : DIVIDE #OP
+op : TIMES #OP
+op : MODULUS #OP
+op : BW_AND #OP
+op : BW_OR #OP
+op : NEGATE #OP
+op : LEFT_SHIFT #OP
+op : RIGHT_SHIFT #OP
+op : XOR #
+dig : INT #DIG
+dig : FLOAT #DIG

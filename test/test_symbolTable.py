@@ -11,7 +11,7 @@ from parser import Parser
 from frontend import *
 from preprocessor import run
 from AST_builder import buildAST, ASTNode
-from semantics import symbol_table
+from symbol_table import symbol_table
 
 
 path_to_C_files = "./programs/"

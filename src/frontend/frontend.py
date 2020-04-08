@@ -16,9 +16,9 @@ lex = SourceFileLoader("lexer", f"{os.path.dirname(os.path.abspath(getsourcefile
 par = SourceFileLoader("parser", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/parser.py").load_module()
 btp = SourceFileLoader("bnfToParser", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/bnfToParser.py").load_module()
 ast = SourceFileLoader("AST_builder", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/AST_builder.py").load_module()
-sem = SourceFileLoader("semantics", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/semantics.py").load_module()
+sym = SourceFileLoader("symbol_table", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/symbol_table.py").load_module()
 pre = SourceFileLoader("preprocessor", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/preprocessor.py").load_module()
-
+semantic = SourceFileLoader("semantics", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/semantics.py").load_module()
 
 def getTree(head,level):
     """
@@ -127,18 +127,17 @@ def main(args):
             print(astree)
 
         # Initialize symbol table and begin semantic analysis
-        sym = sem.symbol_table(astree)
-        sym.analyze()
+        symTab = sym.symbol_table(astree)
+        symTab.analyze()
 
         if args.symbol_table or args.all:
-            # sym.print_symbol_table()
-            # sym.print_unknown_symbols()
+            print (symTab)
 
-            print (sym)
+        semAnal = semantic.semantic(astree,symTab.symbols)
+        semAnal.semanticAnalysis()
 
         if args.errors or args.all:
-            sym.printSemanticErrors()
-
+            semAnal.printSemanticErrors()
     except LexingError as err:
         print("Received error(s) from token validation. Exiting...")
         exit()
@@ -153,7 +152,7 @@ def main(args):
         print(f"Unrecoverable exception occured. Exiting...")
         exit()
 
-    return astree, sym
+    return astree, symTab
 
 if __name__ == "__main__":
     #command line arguements
