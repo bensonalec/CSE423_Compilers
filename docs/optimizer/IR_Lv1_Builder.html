@@ -759,7 +759,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 
                     else:
                         lines.append(irl.IRLine.singleEntry(irl.IRAssignment(f&#34;D.{returnDigit}&#34;, f&#34;{tvs[-1]}&#34;), [labelDigit]))
-                    
+
                     lines.append(irl.IRLine.singleEntry(irl.IRReturn(f&#34;D.{returnDigit}&#34;), [labelDigit]))
 
                     if labelList != []:
@@ -1214,7 +1214,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 
                     else:
                         lines.append(irl.IRLine.singleEntry(irl.IRAssignment(f&#34;D.{returnDigit}&#34;, f&#34;{tvs[-1]}&#34;), [labelDigit]))
-                    
+
                     lines.append(irl.IRLine.singleEntry(irl.IRReturn(f&#34;D.{returnDigit}&#34;), [labelDigit]))
 
                     if labelList != []:

@@ -509,7 +509,7 @@ class IRFunctionAssign(IRNode):
 
     def __str__(self):
         return f"{self.lhs} = {self.name}({', '.join(self.params)});"
-    
+
     def LineFromFile(self,lhs,func_name,params):
         """
         Args:

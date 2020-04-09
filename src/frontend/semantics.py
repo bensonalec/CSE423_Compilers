@@ -11,6 +11,7 @@ Node.__doc__ = """
 A simple namedtuple to allow for better readability when performing the depth first search required for the semantic analysis.
 """
 
+Node = namedtuple("Node", ["Node", "Scope"])
 en_map = {
     0 : "Variable",
     1 : "Function",
@@ -42,7 +43,6 @@ class semantic():
 
         AST = self.AST
         symbols = self.symbols
-
         ntv = [Node(AST, "/")]
 
         typ = None
