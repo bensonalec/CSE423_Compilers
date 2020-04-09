@@ -470,7 +470,6 @@ class IRSpecial(IRNode):
         self.var = var
         self.operation = self.node.name[0]
 
-        print(self.toAssembly())
 
     def __str__(self):
         return f"{self.var} = {self.var} {operation} 1;"
