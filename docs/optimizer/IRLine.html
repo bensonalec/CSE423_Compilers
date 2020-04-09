@@ -78,7 +78,7 @@ class IRLine():
 
     def retrieve(self):
         &#34;&#34;&#34;
-        Retrieves the updated tempoary variable storage and list of unavialable label names for the future.
+        Retrieves the updated tempoary variable storage and list of unavailable label names for the future.
 
         Returns:
             tvs: The current tempoary variable storage
@@ -361,44 +361,60 @@ class IRIf(IRNode):
             failure: Failure label digit
             ops: The potential complex operands for the left/right hand side of the comparison
         &#34;&#34;&#34;
-
-        self.node = node
-        self.success = success
-        self.failure = failure
-        self.children = []
-
-        self.comp = node.name
-        self.lhs = None
-        self.rhs = None
-
-        # Case 1: ops is empty
-        if ops == [] and len(node.children) &gt; 1:
-            self.lhs = node.children[0].name
-            self.rhs = node.children[1].name
-
-        # Case 2: two elem in ops
-        elif len(ops) == 2:
-            self.lhs = ops[1]
-            self.rhs = ops[0]
-
+        if(node == None and success == None and failure == None and ops == None):
+            pass
         else:
-            pos = [node.children.index(x) for x in node.children if len(x.children) != 0 and len(node.children) &gt; 1]
+            self.node = node
+            self.success = success
+            self.failure = failure
+            self.children = []
 
-            # Case 3: one elem in ops but its the left element in the operation
-            if pos == [0]:
-                self.lhs = ops[0]
+            self.comp = node.name
+            self.lhs = None
+            self.rhs = None
+
+            # Case 1: ops is empty
+            if ops == [] and len(node.children) &gt; 1:
+                self.lhs = node.children[0].name
                 self.rhs = node.children[1].name
 
-            # Case 4: one elem in ops but its the right element in the operation
-            elif pos == [1]:
-                self.lhs = node.children[0].name
+            # Case 2: two elem in ops
+            elif len(ops) == 2:
+                self.lhs = ops[1]
                 self.rhs = ops[0]
+
+            else:
+                pos = [node.children.index(x) for x in node.children if len(x.children) != 0 and len(node.children) &gt; 1]
+
+                # Case 3: one elem in ops but its the left element in the operation
+                if pos == [0]:
+                    self.lhs = ops[0]
+                    self.rhs = node.children[1].name
+
+                # Case 4: one elem in ops but its the right element in the operation
+                elif pos == [1]:
+                    self.lhs = node.children[0].name
+                    self.rhs = ops[0]
 
     def __str__(self):
         return f&#34;if ({self.lhs} {self.comp} {self.rhs}) goto &lt;D.{self.success}&gt;; else goto &lt;D.{self.failure}&gt;;&#34;
 
     def __repr__(self):
         pass
+    def fileInit(self,lhs,rhs,compOp,succ,fail):
+        &#34;&#34;&#34;
+        Args:
+            lhs: left side of the comparison
+            rhs: right side of the comparison
+            compOp: comparison operator
+            succ: success label
+            fail: failure label
+        &#34;&#34;&#34;
+        self.lhs = lhs
+        self.rhs = rhs
+        self.comp = compOp
+        self.success = succ
+        self.failure = fail
 
 class IRArth(IRNode):
     &#34;&#34;&#34;
@@ -411,35 +427,38 @@ class IRArth(IRNode):
             ops: The potential complex operands for the expression
             tvs: The tempoary variable stack
         &#34;&#34;&#34;
-        self.node = node
-        self.var = f&#34;_{len(tvs)}&#34;
-
-        self.operator = node.name
-        self.lhs = None
-        self.rhs = None
-
-        # Case 1: ops is empty
-        if ops == [] and len(node.children) &gt; 1:
-            self.lhs = node.children[0].name
-            self.rhs = node.children[1].name
-        # Case 2: two elem in ops
-        elif len(ops) == 2:
-            self.lhs = ops[1]
-            self.rhs = ops[0]
+        if(node == None and ops == None and tvs == None):
+            pass
         else:
-            pos = [node.children.index(x) for x in node.children if len(x.children) != 0 and len(node.children) &gt; 1]
+            self.node = node
+            self.var = f&#34;_{len(tvs)}&#34;
 
-            # Case 3: one elem in ops but its the left element in the operation
-            if pos == [0]:
-                self.lhs = ops[0]
-                self.rhs = node.children[1].name
-            # Case 4: one elem in ops but its the right element in the operation
-            elif pos == [1]:
+            self.operator = node.name
+            self.lhs = None
+            self.rhs = None
+
+            # Case 1: ops is empty
+            if ops == [] and len(node.children) &gt; 1:
                 self.lhs = node.children[0].name
+                self.rhs = node.children[1].name
+            # Case 2: two elem in ops
+            elif len(ops) == 2:
+                self.lhs = ops[1]
                 self.rhs = ops[0]
-            # Case 5: Its a unary operator
-            elif pos == []:
-                self.lhs = ops[0] if ops != [] else node.children[0].name
+            else:
+                pos = [node.children.index(x) for x in node.children if len(x.children) != 0 and len(node.children) &gt; 1]
+
+                # Case 3: one elem in ops but its the left element in the operation
+                if pos == [0]:
+                    self.lhs = ops[0]
+                    self.rhs = node.children[1].name
+                # Case 4: one elem in ops but its the right element in the operation
+                elif pos == [1]:
+                    self.lhs = node.children[0].name
+                    self.rhs = ops[0]
+                # Case 5: Its a unary operator
+                elif pos == []:
+                    self.lhs = ops[0] if ops != [] else node.children[0].name
 
 
     def __str__(self):
@@ -450,6 +469,19 @@ class IRArth(IRNode):
 
     def __repr__(self):
         pass
+
+    def fileInit(self,leftHand,op,rightHand,varName):
+        &#34;&#34;&#34;
+        Args:
+            leftHand: Left hand side of the op.
+            op: The operator of the arithmatic function
+            rightHand: Right hand side of the op.
+            varname: Name of the variable
+        &#34;&#34;&#34;
+        self.lhs = leftHand
+        self.rhs = rightHand
+        self.operator = op
+        self.var = varName
 
 class IRSpecial(IRNode):
     &#34;&#34;&#34;
@@ -494,13 +526,27 @@ class IRFunctionAssign(IRNode):
             params: A list of parameters for the function call
             tvs: The tempoary variable stack
         &#34;&#34;&#34;
-        self.node = node
-        self.name = self.node.children[0].name
-        self.params = params
-        self.lhs = f&#34;_{len(tvs)}&#34;
+        if(node == None and params == None and tvs == None):
+            pass
+        else:
+            self.node = node
+            self.name = self.node.children[0].name
+            self.params = params
+            self.lhs = f&#34;_{len(tvs)}&#34;
 
     def __str__(self):
         return f&#34;{self.lhs} = {self.name}({&#39;, &#39;.join(self.params)});&#34;
+
+    def LineFromFile(self,lhs,func_name,params):
+        &#34;&#34;&#34;
+        Args:
+            lhs: left hand side of the assignment.
+            func_name: name of the function call.
+            params: parameters of the function call.
+        &#34;&#34;&#34;
+        self.lhs = lhs
+        self.name = func_name
+        self.params = params
 
 
 class IRFunctionDecl(IRNode):
@@ -613,35 +659,38 @@ class IRVariableInit(IRNode):
             ops: The potential complex operands for the expression
             tvs: The tempoary variable stack
         &#34;&#34;&#34;
-        self.node = node
-        self.var = f&#34;_{len(tvs)}&#34;
-
-        self.operator = node.name
-        self.lhs = None
-        self.rhs = None
-
-        # Case 1: ops is empty
-        if ops == [] and len(node.children) &gt; 1:
-            self.lhs = node.children[0].name
-            self.rhs = node.children[1].name
-        # Case 2: two elem in ops
-        elif len(ops) == 2:
-            self.lhs = ops[1]
-            self.rhs = ops[0]
+        if(node == None and ops == None and tvs == None):
+            pass
         else:
-            pos = [node.children.index(x) for x in node.children if len(x.children) != 0 and len(node.children) &gt; 1]
+            self.node = node
+            self.var = f&#34;_{len(tvs)}&#34;
 
-            # Case 3: one elem in ops but its the left element in the operation
-            if pos == [0]:
-                self.lhs = ops[0]
-                self.rhs = node.children[1].name
-            # Case 4: one elem in ops but its the right element in the operation
-            elif pos == [1]:
+            self.operator = node.name
+            self.lhs = None
+            self.rhs = None
+
+            # Case 1: ops is empty
+            if ops == [] and len(node.children) &gt; 1:
                 self.lhs = node.children[0].name
+                self.rhs = node.children[1].name
+            # Case 2: two elem in ops
+            elif len(ops) == 2:
+                self.lhs = ops[1]
                 self.rhs = ops[0]
-            # Case 5: Its a unary operator
-            elif pos == []:
-                self.lhs = ops[0] if ops != [] else node.children[0].name
+            else:
+                pos = [node.children.index(x) for x in node.children if len(x.children) != 0 and len(node.children) &gt; 1]
+
+                # Case 3: one elem in ops but its the left element in the operation
+                if pos == [0]:
+                    self.lhs = ops[0]
+                    self.rhs = node.children[1].name
+                # Case 4: one elem in ops but its the right element in the operation
+                elif pos == [1]:
+                    self.lhs = node.children[0].name
+                    self.rhs = ops[0]
+                # Case 5: Its a unary operator
+                elif pos == []:
+                    self.lhs = ops[0] if ops != [] else node.children[0].name
 
 
     def __str__(self):
@@ -651,12 +700,61 @@ class IRVariableInit(IRNode):
             return f&#34;{self.var} = {self.operator}{self.lhs};&#34;
 
     def __repr__(self):
-        pass</code></pre>
+        pass
+
+    def fileInit(self,leftHand,op,rightHand,varName):
+        &#34;&#34;&#34;
+        Args:
+            leftHand: Left hand side of the op.
+            op: The operator of the arithmatic function
+            rightHand: Right hand side of the op.
+            varname: Name of the variable
+        &#34;&#34;&#34;
+        self.lhs = leftHand
+        self.rhs = rightHand
+        self.operator = op
+        self.var = varName</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="src.optimizer.IRLine.IRNode" href="#src.optimizer.IRLine.IRNode">IRNode</a></li>
 </ul>
+<h3>Methods</h3>
+<dl>
+<dt id="src.optimizer.IRLine.IRArth.fileInit"><code class="name flex">
+<span>def <span class="ident">fileInit</span></span>(<span>self, leftHand, op, rightHand, varName)</span>
+</code></dt>
+<dd>
+<section class="desc"><h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>leftHand</code></strong></dt>
+<dd>Left hand side of the op.</dd>
+<dt><strong><code>op</code></strong></dt>
+<dd>The operator of the arithmatic function</dd>
+<dt><strong><code>rightHand</code></strong></dt>
+<dd>Right hand side of the op.</dd>
+<dt><strong><code>varname</code></strong></dt>
+<dd>Name of the variable</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def fileInit(self,leftHand,op,rightHand,varName):
+    &#34;&#34;&#34;
+    Args:
+        leftHand: Left hand side of the op.
+        op: The operator of the arithmatic function
+        rightHand: Right hand side of the op.
+        varname: Name of the variable
+    &#34;&#34;&#34;
+    self.lhs = leftHand
+    self.rhs = rightHand
+    self.operator = op
+    self.var = varName</code></pre>
+</details>
+</dd>
+</dl>
 </dd>
 <dt id="src.optimizer.IRLine.IRAssignment"><code class="flex name class">
 <span>class <span class="ident">IRAssignment</span></span>
@@ -763,18 +861,64 @@ class IRVariableInit(IRNode):
             params: A list of parameters for the function call
             tvs: The tempoary variable stack
         &#34;&#34;&#34;
-        self.node = node
-        self.name = self.node.children[0].name
-        self.params = params
-        self.lhs = f&#34;_{len(tvs)}&#34;
+        if(node == None and params == None and tvs == None):
+            pass
+        else:
+            self.node = node
+            self.name = self.node.children[0].name
+            self.params = params
+            self.lhs = f&#34;_{len(tvs)}&#34;
 
     def __str__(self):
-        return f&#34;{self.lhs} = {self.name}({&#39;, &#39;.join(self.params)});&#34;</code></pre>
+        return f&#34;{self.lhs} = {self.name}({&#39;, &#39;.join(self.params)});&#34;
+
+    def LineFromFile(self,lhs,func_name,params):
+        &#34;&#34;&#34;
+        Args:
+            lhs: left hand side of the assignment.
+            func_name: name of the function call.
+            params: parameters of the function call.
+        &#34;&#34;&#34;
+        self.lhs = lhs
+        self.name = func_name
+        self.params = params</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="src.optimizer.IRLine.IRNode" href="#src.optimizer.IRLine.IRNode">IRNode</a></li>
 </ul>
+<h3>Methods</h3>
+<dl>
+<dt id="src.optimizer.IRLine.IRFunctionAssign.LineFromFile"><code class="name flex">
+<span>def <span class="ident">LineFromFile</span></span>(<span>self, lhs, func_name, params)</span>
+</code></dt>
+<dd>
+<section class="desc"><h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>lhs</code></strong></dt>
+<dd>left hand side of the assignment.</dd>
+<dt><strong><code>func_name</code></strong></dt>
+<dd>name of the function call.</dd>
+<dt><strong><code>params</code></strong></dt>
+<dd>parameters of the function call.</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def LineFromFile(self,lhs,func_name,params):
+    &#34;&#34;&#34;
+    Args:
+        lhs: left hand side of the assignment.
+        func_name: name of the function call.
+        params: parameters of the function call.
+    &#34;&#34;&#34;
+    self.lhs = lhs
+    self.name = func_name
+    self.params = params</code></pre>
+</details>
+</dd>
+</dl>
 </dd>
 <dt id="src.optimizer.IRLine.IRFunctionDecl"><code class="flex name class">
 <span>class <span class="ident">IRFunctionDecl</span></span>
@@ -884,49 +1028,105 @@ class IRVariableInit(IRNode):
             failure: Failure label digit
             ops: The potential complex operands for the left/right hand side of the comparison
         &#34;&#34;&#34;
-
-        self.node = node
-        self.success = success
-        self.failure = failure
-        self.children = []
-
-        self.comp = node.name
-        self.lhs = None
-        self.rhs = None
-
-        # Case 1: ops is empty
-        if ops == [] and len(node.children) &gt; 1:
-            self.lhs = node.children[0].name
-            self.rhs = node.children[1].name
-
-        # Case 2: two elem in ops
-        elif len(ops) == 2:
-            self.lhs = ops[1]
-            self.rhs = ops[0]
-
+        if(node == None and success == None and failure == None and ops == None):
+            pass
         else:
-            pos = [node.children.index(x) for x in node.children if len(x.children) != 0 and len(node.children) &gt; 1]
+            self.node = node
+            self.success = success
+            self.failure = failure
+            self.children = []
 
-            # Case 3: one elem in ops but its the left element in the operation
-            if pos == [0]:
-                self.lhs = ops[0]
+            self.comp = node.name
+            self.lhs = None
+            self.rhs = None
+
+            # Case 1: ops is empty
+            if ops == [] and len(node.children) &gt; 1:
+                self.lhs = node.children[0].name
                 self.rhs = node.children[1].name
 
-            # Case 4: one elem in ops but its the right element in the operation
-            elif pos == [1]:
-                self.lhs = node.children[0].name
+            # Case 2: two elem in ops
+            elif len(ops) == 2:
+                self.lhs = ops[1]
                 self.rhs = ops[0]
+
+            else:
+                pos = [node.children.index(x) for x in node.children if len(x.children) != 0 and len(node.children) &gt; 1]
+
+                # Case 3: one elem in ops but its the left element in the operation
+                if pos == [0]:
+                    self.lhs = ops[0]
+                    self.rhs = node.children[1].name
+
+                # Case 4: one elem in ops but its the right element in the operation
+                elif pos == [1]:
+                    self.lhs = node.children[0].name
+                    self.rhs = ops[0]
 
     def __str__(self):
         return f&#34;if ({self.lhs} {self.comp} {self.rhs}) goto &lt;D.{self.success}&gt;; else goto &lt;D.{self.failure}&gt;;&#34;
 
     def __repr__(self):
-        pass</code></pre>
+        pass
+    def fileInit(self,lhs,rhs,compOp,succ,fail):
+        &#34;&#34;&#34;
+        Args:
+            lhs: left side of the comparison
+            rhs: right side of the comparison
+            compOp: comparison operator
+            succ: success label
+            fail: failure label
+        &#34;&#34;&#34;
+        self.lhs = lhs
+        self.rhs = rhs
+        self.comp = compOp
+        self.success = succ
+        self.failure = fail</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="src.optimizer.IRLine.IRNode" href="#src.optimizer.IRLine.IRNode">IRNode</a></li>
 </ul>
+<h3>Methods</h3>
+<dl>
+<dt id="src.optimizer.IRLine.IRIf.fileInit"><code class="name flex">
+<span>def <span class="ident">fileInit</span></span>(<span>self, lhs, rhs, compOp, succ, fail)</span>
+</code></dt>
+<dd>
+<section class="desc"><h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>lhs</code></strong></dt>
+<dd>left side of the comparison</dd>
+<dt><strong><code>rhs</code></strong></dt>
+<dd>right side of the comparison</dd>
+<dt><strong><code>compOp</code></strong></dt>
+<dd>comparison operator</dd>
+<dt><strong><code>succ</code></strong></dt>
+<dd>success label</dd>
+<dt><strong><code>fail</code></strong></dt>
+<dd>failure label</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def fileInit(self,lhs,rhs,compOp,succ,fail):
+    &#34;&#34;&#34;
+    Args:
+        lhs: left side of the comparison
+        rhs: right side of the comparison
+        compOp: comparison operator
+        succ: success label
+        fail: failure label
+    &#34;&#34;&#34;
+    self.lhs = lhs
+    self.rhs = rhs
+    self.comp = compOp
+    self.success = succ
+    self.failure = fail</code></pre>
+</details>
+</dd>
+</dl>
 </dd>
 <dt id="src.optimizer.IRLine.IRJump"><code class="flex name class">
 <span>class <span class="ident">IRJump</span></span>
@@ -1033,7 +1233,7 @@ class IRVariableInit(IRNode):
 
     def retrieve(self):
         &#34;&#34;&#34;
-        Retrieves the updated tempoary variable storage and list of unavialable label names for the future.
+        Retrieves the updated tempoary variable storage and list of unavailable label names for the future.
 
         Returns:
             tvs: The current tempoary variable storage
@@ -1534,7 +1734,7 @@ def singleEntry(irNode, labelDigit=None, prefix=&#34;&#34;):
 <span>def <span class="ident">retrieve</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Retrieves the updated tempoary variable storage and list of unavialable label names for the future.</p>
+<section class="desc"><p>Retrieves the updated tempoary variable storage and list of unavailable label names for the future.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><strong><code>tvs</code></strong></dt>
@@ -1548,7 +1748,7 @@ def singleEntry(irNode, labelDigit=None, prefix=&#34;&#34;):
 </summary>
 <pre><code class="python">def retrieve(self):
     &#34;&#34;&#34;
-    Retrieves the updated tempoary variable storage and list of unavialable label names for the future.
+    Retrieves the updated tempoary variable storage and list of unavailable label names for the future.
 
     Returns:
         tvs: The current tempoary variable storage
@@ -1728,6 +1928,9 @@ var:</p></section>
 <ul>
 <li>
 <h4><code><a title="src.optimizer.IRLine.IRArth" href="#src.optimizer.IRLine.IRArth">IRArth</a></code></h4>
+<ul class="">
+<li><code><a title="src.optimizer.IRLine.IRArth.fileInit" href="#src.optimizer.IRLine.IRArth.fileInit">fileInit</a></code></li>
+</ul>
 </li>
 <li>
 <h4><code><a title="src.optimizer.IRLine.IRAssignment" href="#src.optimizer.IRLine.IRAssignment">IRAssignment</a></code></h4>
@@ -1737,6 +1940,9 @@ var:</p></section>
 </li>
 <li>
 <h4><code><a title="src.optimizer.IRLine.IRFunctionAssign" href="#src.optimizer.IRLine.IRFunctionAssign">IRFunctionAssign</a></code></h4>
+<ul class="">
+<li><code><a title="src.optimizer.IRLine.IRFunctionAssign.LineFromFile" href="#src.optimizer.IRLine.IRFunctionAssign.LineFromFile">LineFromFile</a></code></li>
+</ul>
 </li>
 <li>
 <h4><code><a title="src.optimizer.IRLine.IRFunctionDecl" href="#src.optimizer.IRLine.IRFunctionDecl">IRFunctionDecl</a></code></h4>
@@ -1746,6 +1952,9 @@ var:</p></section>
 </li>
 <li>
 <h4><code><a title="src.optimizer.IRLine.IRIf" href="#src.optimizer.IRLine.IRIf">IRIf</a></code></h4>
+<ul class="">
+<li><code><a title="src.optimizer.IRLine.IRIf.fileInit" href="#src.optimizer.IRLine.IRIf.fileInit">fileInit</a></code></li>
+</ul>
 </li>
 <li>
 <h4><code><a title="src.optimizer.IRLine.IRJump" href="#src.optimizer.IRLine.IRJump">IRJump</a></code></h4>

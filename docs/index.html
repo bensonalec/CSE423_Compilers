@@ -115,7 +115,7 @@ sys.path.append(os.path.dirname(__file__))</code></pre>
            </li>
            <li>
             <a href="https://vallentin.dev/2016/11/29/pretty-print-tree">
-             Pretty printing the tree
+             Inspiration for pretty printing the tree
             </a>
            </li>
           </ul>
@@ -130,9 +130,9 @@ sys.path.append(os.path.dirname(__file__))</code></pre>
           </h3>
          </dt>
          <dd>
-          Our compiler can be split into three major stages that takes 
-                in a C program and converts this "High-Level" language into 
-                many different forms of Intermediate Representations (IR's) 
+          Our compiler can be split into three major stages that takes
+                in a C program and converts this "High-Level" language into
+                many different forms of Intermediate Representations (IR's)
                 until it reaches the point of assembly code.
          </dd>
          <img id="architecture_img" src="./architecture.png"/>
@@ -153,10 +153,10 @@ sys.path.append(os.path.dirname(__file__))</code></pre>
             </h4>
            </dt>
            <dd>
-            Responsible for scanning and assigning tokens to 
-                        different elements of our C program, this module was 
-                        designed using RPLY's lexer class. By simply adding in 
-                        tokens to our lexer we are able to give it a string version 
+            Responsible for scanning and assigning tokens to
+                        different elements of our C program, this module was
+                        designed using RPLY's lexer class. By simply adding in
+                        tokens to our lexer we are able to give it a string version
                         of our C program and get a list of all valid tokens.
             <dl>
              <dt>
@@ -166,11 +166,11 @@ sys.path.append(os.path.dirname(__file__))</code></pre>
              </dt>
              <dd>
               <pre style="overflow-x: auto;">Token("TOKEN_NAME", "ELEMENT")
-                                
+
 Token("INTEGER", "1")
-Token("COMPARISON", "&gt;")
+Token("GT", "&gt;")
 Token("SELF_DEFINED", "some-variable-name")
-Token("LOGICAL", "&amp;&amp;")
+Token("AND", "&amp;&amp;")
 Token("ACCESS", "-&gt;")</pre>
              </dd>
              <dt>
@@ -179,14 +179,14 @@ Token("ACCESS", "-&gt;")</pre>
               </h5>
              </dt>
              <dd>
-              Currently the only known errors we can experience 
-                                while using RPLY's lexer library is when we encounter 
+              Currently the only known errors we can experience
+                                while using RPLY's lexer library is when we encounter
                                 an element that isn't recognized. By adding an
               <code>
                INVALID
               </code>
-              token type, and having it match to any string combination, 
-                                we eliminate the possibility of the imported lexer code to 
+              token type, and having it match to any string combination,
+                                we eliminate the possibility of the imported lexer code to
                                 fail, and are able to report any invalid tokens to the user.
              </dd>
             </dl>
@@ -198,10 +198,10 @@ Token("ACCESS", "-&gt;")</pre>
            </dt>
            <dl>
             <dd>
-             This sub-module relies on RPLY's parser generator but still 
-                            requires a grammar. After defining a grammar in a separate 
-                            file we can construct a parser using RPLY syntax that will 
-                            take in the grammar and build our Parse Tree. Currently RPLY 
+             This sub-module relies on RPLY's parser generator but still
+                            requires a grammar. After defining a grammar in a separate
+                            file we can construct a parser using RPLY syntax that will
+                            take in the grammar and build our Parse Tree. Currently RPLY
                             has allowed us to impliment a "Bottom-up left-to-right" parser.
              <dl>
               <dt>
@@ -209,27 +209,24 @@ Token("ACCESS", "-&gt;")</pre>
                 Example of BNF grammar
                </h5>
                <dd>
-                <pre style="overflow-x: auto;">
-program : definitionList #program
+                <pre style="overflow-x: auto;">program : definitionList #program
 
-definitionList : functionDefinition definitionList #definitionList
-definitionList : functionDeclaration definitionList #definitionList
-definitionList : initialization SEMICOLON definitionList #definitionList
-definitionList : #definitionList
+definitionList : definition_terminal definitionList #definitionList
+definitionList : definition_terminal #definitionList
 
-functionDefinition : TYPE SELF_DEFINED OPEN_PAREN args CLOSE_PAREN block #function definition
-functionDefinition : TYPE SELF_DEFINED OPEN_PAREN CLOSE_PAREN block #function definition
+definition_terminal : functionDefinition #definition_terminal
+definition_terminal : functionDeclaration #definition_terminal
+definition_terminal : initialization #definition_terminal
+definition_terminal : COMMENT #definition_terminal
 
-functionDeclaration : TYPE SELF_DEFINED OPEN_PAREN args CLOSE_PAREN SEMICOLON #functionDeclaration
-functionDeclaration : TYPE SELF_DEFINED OPEN_PAREN CLOSE_PAREN SEMICOLON #functionDeclaration
+functionDefinition : func_type SELF_DEFINED OPEN_PAREN args CLOSE_PAREN block #function definition
+functionDefinition : func_type SELF_DEFINED OPEN_PAREN CLOSE_PAREN block #function definition
 
-args : TYPE SELF_DEFINED COMMA args #args
-args : TYPE SELF_DEFINED #args
-args : TYPE #args
-args : TYPE COMMA args #args
+functionDeclaration : func_type SELF_DEFINED OPEN_PAREN args CLOSE_PAREN SEMICOLON #functionDeclaration
+functionDeclaration : func_type SELF_DEFINED OPEN_PAREN CLOSE_PAREN SEMICOLON #functionDeclaration
 
-block : OPEN_BRACE block content CLOSE_BRACE #block
-block : OPEN_BRACE content block CLOSE_BRACE #block
+func_type : TYPE #func_type
+func_type : func_modif TYPE #func_type
 ...</pre>
                 <a href="https://github.com/bensonalec/CSE423_Compilers/blob/master/src/frontend/BNF_definition" target="_blank">
                  Our Full BNF
@@ -238,8 +235,8 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
                  TODO:
                  <ul class="todo">
                   <li>
-                   We are only reporting the last successful token parsed 
-                                        but not giving a detailed and more "useful" message. 
+                   We are only reporting the last successful token parsed
+                                        but not giving a detailed and more "useful" message.
                                         We should work on this.
                   </li>
                  </ul>
@@ -257,7 +254,7 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
            <dl>
             <dd>
              Using the initial Parse Tree, we are able to shorten it down and "abstract" it to have
-                            a more understandable and syntax-free way to represent a C program. We currently have a single 
+                            a more understandable and syntax-free way to represent a C program. We currently have a single
                             function,
              <code>
               buildAST(parseTreeHead)
@@ -279,17 +276,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
                <code>
                 program
                </code>
-               denoting the root 
+               denoting the root
                                         of the C program. Following this root, there could be a series of function prototypes,
                <code>
                 decl
                </code>
-               , 
+               ,
                                         and function declarations,
                <code>
                 func
                </code>
-               . Whether it be a prototype or declaration there will always be 3 
+               . Whether it be a prototype or declaration there will always be 3
                                         branches that describe the Type, Function-Name, and Function-Parameters. In the case of a declaration, an extra node marked
                <code>
                 body
@@ -302,12 +299,12 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
                <code>
                 call
                </code>
-               (function calls), and 
+               (function calls), and
                                         arithmetic operations (+, -, *, /, etc.) exist in the produced AST if such content exists in the original C program.
               </dd>
               <dd>
                Example AST representations can be found under:
-               <a href="#section_10">
+               <a href="#section_11">
                 Examples of C Programs and their Intermediate Representations
                </a>
                .
@@ -322,11 +319,11 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
            </dt>
            <dl>
             <dd>
-             Our semantic analysis include checks for Undeclared functions/variables, 
-                            type mismatch (for the possibility of types other than Int), 
+             Our semantic analysis include checks for Undeclared functions/variables,
+                            type mismatch (for the possibility of types other than Int),
                             correct number/types of function parameters.
              <p class="note">
-              NOTE: There is a possibility of more stages of semantic analysis being implimented 
+              NOTE: There is a possibility of more stages of semantic analysis being implimented
                                 in the future, but it would be a supplemental feature for this project.
              </p>
              <dl>
@@ -363,7 +360,7 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               </dd>
               <dd>
                Example symbol tables can be found under:
-               <a href="#section_10">
+               <a href="#section_11">
                 Examples of C Programs and their Intermediate Representations
                </a>
                .
@@ -375,20 +372,20 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
 
                         <dd>
                             DESCRIPTION
-                            
+
                             <dl>
                                 <dt><h5>SUB-TITLE</h5></dt>
                                     <dd>
                                         BODY
                                     </dd>
-                            
+
                                 <dt><h5>SUB-TITLE</h5></dt>
                                     <dd>
                                         BODY
                                     </dd>
                             </dl>
 
-                        </dd> 
+                        </dd>
                         </dl> -->
           </dl>
          </dd>
@@ -410,82 +407,210 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
            </dt>
            <dl>
             <dd>
-             The basis of our optimization compenent of the compiler is converting one IR to another 
-                                throughout the process of optimizing. The last IR is then used to construct the assembly code in the Backend.
-                                There are a few options that we need to consider with constructing the intermediate representations: Is it being built 
-                                from scratch, is it being imported, and how many optimizations are needed.
+             For our IR, we decided to closely mimic Gimple, the IR used by GCC. In designing it, we aimed to keep as close as possible, but with the design decisions that made out lives easier in the long run. The basis of our optimization compenent of the compiler is converting one IR, the abstract syntax tree, to another, linear, IR. The resultant IR is then used to construct the assembly code in the Backend. The compiler as a whole allows for a few methods of interaction that all result in the linear IR. Building it from the AST and the symbol table or importing it through the commandline. In addition to this, the compiler does allow for a flag to specify the level of optimization that will be performed on the input.
              <dl>
               <dt>
                <h5>
-                Building an IR (from AST)
+                IR structure
                </h5>
               </dt>
               <dd>
-               We construct an IR by grouping together IR instructions into IR Objects. 
-                                            These IR Objects can be either
+               The linear IR is structured in a way that all we have to do is to interact with the concept of a singular hypothetical line in the IR. This line may or may not boil down to multiple sub-lines called
                <code>
-                IRLine's
+                IRNode
                </code>
-               or
+               . Each
                <code>
-                IRNode's
+                IRNode
                </code>
-               .
-               <code>
-                IRLine's
-               </code>
-               contain smaller
-               <code>
-                IRNode's
-               </code>
-               such as assignments, arithmetic, goto jumps etc. 
-                                            Of course not all IR instructions need to be broken down into smaller
-               <code>
-                IRNodes
-               </code>
-               so they are stored as the IR objects themselves. 
-                                            These are defined and split up as such:
-               <ul>
-                <li>
-                 IRJump -- IR node for a jump label.
-                </li>
-                <li>
-                 IRGoTo -- IR node for a goto label.
-                </li>
-                <li>
-                 IRIf -- IR node for an if statement.
-                </li>
-                <li>
-                 IRArth -- IR node for an arithmetic/assignment operation.
-                </li>
-                <li>
-                 IRFunction -- IR node for a function call assignment.
-                </li>
-                <li>
-                 etc...
-                </li>
-               </ul>
-               The design decision to have different IR instructions as their individual data type (that inherit from same parent class), 
-                                            was to have a way of storing these instructions not as a String yet still having a way to be converted to a String for visual representation. Each IR node has its own
-                                            string representation (As close to
-               <strong>
-                Gimple
-               </strong>
-               as we could achieve). This also allows us to optimize different elements of 
-                                            the IR according to the type of instruction.
-               <dd>
-                All said and done, when an IR is constructed, we are left with a list of IR objects either representing single IR instructions (IRNode's) or multiple IR instructions (IRLine's).
-               </dd>
+               would represent close to one assembly instruction with a few exception. This allows us to generalize over the IR as a whole when it comes to converting it to assembly. The design decision to have different IR instructions as their individual data type (that inherit from same parent class), was to have a way of storing these instructions not as a String yet still having a way to be converted to a String for visual representation. The types of nodes that we have defined goes as follows:
+               <dl>
+                <dt>
+                 IRJump
+                </dt>
+                <dd>
+                 This node represents a label for a goto statement in the IR, for instance it’s string representation:
+                 <br/>
+                 <pre style="overflow-x: auto;"><code>label:</code></pre>
+                </dd>
+                <dt>
+                 IRGoto
+                </dt>
+                <dd>
+                 This node represents a goto statement in the IR, for instance it’s string representation:
+                 <br/>
+                 <pre style="overflow-x: auto;"><code>goto label;</code></pre>
+                </dd>
+                <dt>
+                 IRIf
+                </dt>
+                <dd>
+                 This node represents an if statement in the IR, for instance it’s string representation:
+                 <br/>
+                 <pre style="overflow-x: auto;"><code>if(a == b) goto &lt;D.1234&gt;; else goto &lt;D.1235&gt;;</code></pre>
+                 <p class="note">
+                  NOTE: If the condition contains conjunctive and disjunctive operations, the expression will be split up into its subsequent parts and consider the termination conditions that can be assumed through short circuiting. As such we also implement short circuiting at a higher level rather than having to deal with it at some other point.
+                 </p>
+                </dd>
+                <dt>
+                 IRArth
+                </dt>
+                <dd>
+                 This node represents arithmetic in the IR, for instance it’s string representation:
+                 <br/>
+                 <pre style="overflow-x: auto;"><code>i = 15 + 25;</code></pre>
+                 <p class="note">
+                  NOTE: Expressions that consist of multiple operations will result in a sequence of singular binary operations that will respect the order of operations as well as the results from each respective operation. This will result in multiple
+                  <code>
+                   IRNode
+                  </code>
+                  objects which each takes care of a singular operation.
+                 </p>
+                </dd>
+                <dt>
+                 IRSpecial
+                </dt>
+                <dd>
+                 This node represents “special” operations like incrementation and decrementation in the IR. Depending on whether it is a pre or post operation, the linear IR preserves the value in a tempoary variable so that the result stays true to that of the C language. If it is a post-incrementation, this is the IR produced:
+                 <br/>
+                 <pre style="overflow-x: auto;"><code>_0 = i;
+i = i + 1;</code></pre>
+                </dd>
+                <dt>
+                 IRAssignment
+                </dt>
+                <dd>
+                 This node represents variable assignment in the IR, for instance it’s string representation:
+                 <br/>
+                 <pre style="overflow-x: auto;"><code>x = 25;</code></pre>
+                </dd>
+                <dt>
+                 IRFunctionAssign
+                </dt>
+                <dd>
+                 This node represents a variable being assigned to the output of a function, for instance it’s string representation:
+                 <br/>
+                 <pre style="overflow-x: auto;"><code>x = sampleFunction(1, 2);</code></pre>
+                 Just as a note, all function calls in our IR are represented this way, even functions which do not return or return null are given a variable they “return” to.
+                </dd>
+                <dt>
+                 IRFunctionDecl
+                </dt>
+                <dd>
+                 This node represents declaration of function, and the body is defined after this IR node. For instance it’s string
+                                                representation:
+                 <br/>
+                 <pre style="overflow-x: auto;"><code>main (int a, int b)</code></pre>
+                 <p class="note">
+                  NOTE: Following this
+                  <code>
+                   IRLine
+                  </code>
+                  object, there will be an IRBracket object which represents the start of a scope.
+                 </p>
+                </dd>
+                <dt>
+                 IRReturn
+                </dt>
+                <dd>
+                 This object handles return statements. Returns can return nothing or a value. for instance it’s string representation:
+                 <br/>
+                 <pre style="overflow-x: auto;"><code>return D.1235;</code></pre>
+                </dd>
+                <dt>
+                 IRBracket
+                </dt>
+                <dd>
+                 This object just holds either an opening or closing bracket. for instance it’s string representation:
+                 <br/>
+                 <code>
+                  {
+                 </code>
+                 or
+                 <code>
+                  }
+                 </code>
+                </dd>
+                <dt>
+                 IRVariableInit
+                </dt>
+                <dd>
+                 This object handles lines of the IR involving variable initialization. for instance it’s string representation:
+                 <br/>
+                 <pre style="overflow-x: auto;"><code>int a;</code></pre>
+                 <p class="note">
+                  NOTE: Variable initializations are made for every variable and they cannot be done inline with assignment. When the inputted C program does do this inline, it is split up in our IR.
+                 </p>
+                </dd>
+               </dl>
               </dd>
-              <!-- <dt><h5>Importing an IR</h5></dt>
-                                        <dd>
-                                            BODY
-                                        </dd>
-
-                                    <dt><h5>Optimizing an IR</h5></dt>
-                                        <dd>
-                                            BODY
-                                        </dd> -->
+              <dt>
+               <h5>
+                Building an IR (from AST and Symbol Table)
+               </h5>
+              </dt>
+              <dd>
+               In order to derive a linear IR from the AST and symbol table, we instatniate several
+               <code>
+                IRLine
+               </code>
+               objects which each represents some required part of the program, and individually breaks down into lower level instructions/operations than what is presented to the user in the AST. Each of these smaller building blocks can be seen above. There are cases where each
+               <code>
+                IRLine
+               </code>
+               only contains a singular building block, but in those cases there are special circumstances that require that to happen such as closing and opening of scopes through the use of the
+               <code>
+                IRBracket
+               </code>
+               class.
+              </dd>
+              <dt>
+               <h5>
+                Importing an IR
+               </h5>
+              </dt>
+              <dd>
+               The importing of an IR works very much like how the lexing and parsing of a C file. We designed our own grammar and convert the output to the same format as something that was built through the use of a valid C file. This allows us to perform the same optimizations on the imported IR as the IR that is generated from a C file.
+              </dd>
+              <dt>
+               <h5>
+                Optimizing an IR
+               </h5>
+              </dt>
+              <dd>
+               As a group we decided to implement four different optimization mechanisms as a part of three total optimization
+                                            levels.
+               <code>
+                -O0
+               </code>
+               means that no optimization occurs during the compilation process.
+               <code>
+                -O1
+               </code>
+               means
+                                            that there are slight optimizations done during the compilation process.
+               <code>
+                -O2
+               </code>
+               means that there are more
+                                            advanced optimizations done during the compilaion process. Keep in mind that they are by no means agressive, and
+                                            there is no risk of altered behavior of the program when using these optimizations.
+               <br/>
+               The following are the diffrent optimizations that we support:
+               <dl>
+                <dd>
+                 Removing Unreferenced Variables
+                 <br/>
+                 Removing Unreferenced Functions
+                 <br/>
+                 Constant Folding
+                 <br/>
+                 Constant Propagation
+                 <br/>
+                 IR Cleanup
+                </dd>
+               </dl>
+              </dd>
              </dl>
             </dd>
            </dl>
@@ -506,6 +631,13 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
     .example_buttons a {
         flex-grow: 1;
         text-align: center;
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+    thead tr th {
+        text-align: center;
+        padding-left: 5px;
+        padding-right: 5px;
     }
     tbody th, tbody td {
         border-bottom: 1px solid rgb(150, 150, 150);
@@ -541,7 +673,11 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
           <code>
            ./src/frontend
           </code>
-          . Both of these files will accept the following arguments:
+          . Only
+          <code>
+           run.py
+          </code>
+          will accept the following arguments, the rest belong to their respective sections:
           <dl>
            <dt>
             <code>
@@ -685,7 +821,7 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
             </code>
            </dt>
            <dd>
-            Used to input IR from file. When this option is used, there is no need for a C file to be inputted as well. The output is not optimized.
+            Used to input IR from file. Optimizations will be applied if the optimization flag is passed in.
            </dd>
            <dt>
             <code>
@@ -710,34 +846,31 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
           <table style="overflow-x: auto;">
            <thead>
             <tr>
-             <th style="padding: 10px;">
+             <th>
               Feature
              </th>
-             <th style="padding: 10px;">
+             <th>
               Preprocessor
              </th>
-             <th style="padding: 10px;">
+             <th>
               Lexer
              </th>
-             <th style="padding: 10px;">
+             <th>
               Parser
              </th>
-             <th style="padding: 10px;">
+             <th>
               AST Building
              </th>
-             <th style="padding: 10px;">
+             <th>
               Semantic Analysis
              </th>
-             <th style="padding: 10px;">
+             <th>
               Intermediate Representation
-             </th>
-             <th style="padding: 10px;">
-              Optimization
              </th>
             </tr>
            </thead>
            <tfoot id="table_foot">
-            <td colspan="8" style="border: 0px 0px 50px 0px solid black;">
+            <td colspan="7" style="border: 0px 0px 50px 0px solid black;">
              <div>
               1: With and without arguments/parameters.
               <br/>
@@ -762,7 +895,7 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
            </tfoot>
            <tbody>
             <tr>
-             <th colspan="8" style="padding: 10px;">
+             <th colspan="7">
               Declaration, Definition, and Calling
              </th>
             </tr>
@@ -897,7 +1030,7 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              </td>
             </tr>
             <tr>
-             <th colspan="8" style="padding: 10px;">
+             <th colspan="7">
               Assignment
              </th>
             </tr>
@@ -1177,7 +1310,7 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              </td>
             </tr>
             <tr>
-             <th colspan="8" style="padding: 10px;">
+             <th colspan="7">
               Keywords
              </th>
             </tr>
@@ -1432,7 +1565,7 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              </td>
             </tr>
             <tr>
-             <th colspan="8" style="padding: 10px;">
+             <th colspan="7">
               Arithmetic Operations with Precedence
              </th>
             </tr>
@@ -1850,7 +1983,7 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              </td>
             </tr>
             <tr>
-             <th colspan="8" style="padding: 10px;">
+             <th colspan="7">
               Comperative Operations
              </th>
             </tr>
@@ -2005,7 +2138,7 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              </td>
             </tr>
             <tr>
-             <th colspan="8" style="padding: 10px;">
+             <th colspan="7">
               Branching
              </th>
             </tr>
@@ -2125,7 +2258,7 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              </td>
             </tr>
             <tr>
-             <th colspan="8" style="padding: 10px;">
+             <th colspan="7">
               Unary
              </th>
             </tr>
@@ -2338,7 +2471,7 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              </td>
             </tr>
             <tr>
-             <th colspan="8" style="padding: 10px;">
+             <th colspan="7">
               Loops
              </th>
             </tr>
@@ -2433,7 +2566,7 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              </td>
             </tr>
             <tr>
-             <th colspan="8" style="padding: 10px;">
+             <th colspan="7">
               Jumps
              </th>
             </tr>
@@ -2543,7 +2676,7 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              </td>
             </tr>
             <tr>
-             <th colspan="8" style="padding: 10px;">
+             <th colspan="7">
               Types
              </th>
             </tr>
@@ -2826,7 +2959,7 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              </td>
             </tr>
             <tr>
-             <th colspan="8" style="padding: 10px;">
+             <th colspan="7">
               Preprocessor Directives
              </th>
             </tr>
@@ -3210,21 +3343,28 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
           </h3>
          </dt>
          <dd>
-          As a group we decided to implement four different optimization mechanisms as a part of three total optimization levels.
+          There are three different optimization levels implemented.
           <code>
            -O0
           </code>
-          means that no optimization occurs during the compilation process.
+          (default),
           <code>
            -O1
           </code>
-          means that there are slight optimizations done during the compilation process.
+          , and
           <code>
            -O2
           </code>
-          means that there are more advanced optimizations done during the compilaion process. Keep in mind that they are by no means agressive, and there is no risk of altered behavior of the program when using these optimizations.
-          <br/>
+          .
           <dl>
+           <dt>
+            <code>
+             -O0
+            </code>
+           </dt>
+           <dd>
+            No optimization passes performed.
+           </dd>
            <dt>
             <code>
              -O1
@@ -3265,6 +3405,17 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
              <dd>
               Whenever a variable is referenced within the program, the compiler will try to replace the value of the variable with the known value of the variable wherever it deems it is safe to do so.
              </dd>
+             <dt>
+              IR Cleanup
+             </dt>
+             <dd>
+              Due to the nature of the IR, after the compiler iterates through the
+              <code>
+               IRLine
+              </code>
+              objects it will perform a
+                                local reference count of the variables within the operation and remove the ones that are deemed unnecessary.
+             </dd>
             </dl>
            </dd>
           </dl>
@@ -3299,7 +3450,13 @@ block : OPEN_BRACE content block CLOSE_BRACE #block
               Symbol Table
              </a>
              <a onclick='[...document.getElementsByClassName("representation_0")].forEach(function(elem, index) { if (index === 5) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Linear IR1 (-O0)
+              Linear IR (-O0)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_0")].forEach(function(elem, index) { if (index === 6) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O1)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_0")].forEach(function(elem, index) { if (index === 7) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O2)
              </a>
             </div>
             <div class="example_representations">
@@ -4826,6 +4983,157 @@ k = _3;
 }
 </pre>
              </div>
+             <div class="representation_0" style="display: none;">
+              <pre style="overflow-x: auto;">main ()
+{
+int D.1234;
+int a;
+int b;
+int c;
+int d;
+int e;
+int f;
+int g;
+int h;
+int i;
+int j;
+int k;
+_1 = 1 + 2;
+_1 = _1 + 3;
+a = _1;
+_1 = 56 * 78;
+_1 = _1 * 5;
+_1 = _1 / 20;
+_1 = _1 - 3;
+b = _1;
+_1 = 56 % 2;
+c = _1;
+_1 = -10;
+d = _1;
+_1 = a &amp; b;
+e = _1;
+_1 = a | b;
+f = _1;
+_1 = a ^ b;
+g = _1;
+_1 = ~a;
+h = _1;
+_1 = ~b;
+i = _1;
+_1 = ~c;
+j = _1;
+_1 = ~d;
+k = _1;
+_1 = j | a;
+_1 = _1 - 97;
+a = _1;
+_1 = i + g;
+_1 = _1 + 40;
+_4 = i + g;
+_4 = _4 + 40;
+_3 = b + _4;
+b = _3;
+_1 = b + g;
+_1 = _1 &gt;&gt; 12;
+_4 = b + g;
+_4 = _4 &gt;&gt; 12;
+_3 = c - _4;
+c = _3;
+_1 = j + c;
+_1 = _1 - 25;
+_4 = j + c;
+_4 = _4 - 25;
+_3 = d * _4;
+d = _3;
+_2 = -i;
+_1 = c &lt;&lt; _2;
+_1 = _1 | 37;
+_5 = -i;
+_4 = c &lt;&lt; _5;
+_4 = _4 | 37;
+_3 = e / _4;
+e = _3;
+_1 = b | a;
+_1 = _1 * 42;
+_4 = b | a;
+_4 = _4 * 42;
+_3 = f % _4;
+f = _3;
+_1 = -a;
+_1 = _1 &gt;&gt; b;
+_1 = _1 ^ 19;
+_4 = -a;
+_4 = _4 &gt;&gt; b;
+_4 = _4 ^ 19;
+_3 = g &lt;&lt; _4;
+g = _3;
+_1 = c / g;
+_1 = _1 + 19;
+_4 = c / g;
+_4 = _4 + 19;
+_3 = h &gt;&gt; _4;
+h = _3;
+_1 = d ^ b;
+_1 = _1 / 20;
+_4 = d ^ b;
+_4 = _4 / 20;
+_3 = i | _4;
+i = _3;
+_1 = c + a;
+_1 = _1 &gt;&gt; 12;
+_4 = c + a;
+_4 = _4 &gt;&gt; 12;
+_3 = j &amp; _4;
+j = _3;
+_1 = a % f;
+_1 = _1 &lt;&lt; 20;
+_4 = a % f;
+_4 = _4 &lt;&lt; 20;
+_3 = k ^ _4;
+k = _3;
+}
+</pre>
+             </div>
+             <div class="representation_0" style="display: none;">
+              <pre style="overflow-x: auto;">main ()
+{
+int D.1234;
+int a;
+int b;
+int c;
+int d;
+int e;
+int f;
+int g;
+int h;
+int i;
+int j;
+int k;
+a = 6;
+b = 1089;
+c = 0;
+d = -10;
+e = 0;
+f = 1095;
+g = 1095;
+h = -7;
+i = -1090;
+j = -1;
+k = 9;
+a = -98;
+b = 1134;
+c = 0;
+d = 260;
+e = 0;
+f = 3;
+g = 574095360;
+h = -1;
+i = -1025;
+j = -1;
+k = -2097143;
+}
+</pre>
+             </div>
             </div>
            </dd>
            <dt>
@@ -4851,7 +5159,13 @@ k = _3;
               Symbol Table
              </a>
              <a onclick='[...document.getElementsByClassName("representation_1")].forEach(function(elem, index) { if (index === 5) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Linear IR1 (-O0)
+              Linear IR (-O0)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_1")].forEach(function(elem, index) { if (index === 6) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O1)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_1")].forEach(function(elem, index) { if (index === 7) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O2)
              </a>
             </div>
             <div class="example_representations">
@@ -5018,6 +5332,34 @@ value_1 = _1;
 }
 </pre>
              </div>
+             <div class="representation_1" style="display: none;">
+              <pre style="overflow-x: auto;">function (int arithmetic_input)
+{
+int D.1234;
+D.1234 = arithmetic_input;
+return D.1234;
+}
+main ()
+{
+int D.1235;
+_1 = function(1);
+}
+</pre>
+             </div>
+             <div class="representation_1" style="display: none;">
+              <pre style="overflow-x: auto;">function (int arithmetic_input)
+{
+int D.1234;
+D.1234 = arithmetic_input;
+return D.1234;
+}
+main ()
+{
+int D.1235;
+_1 = function(1);
+}
+</pre>
+             </div>
             </div>
            </dd>
            <dt>
@@ -5043,7 +5385,13 @@ value_1 = _1;
               Symbol Table
              </a>
              <a onclick='[...document.getElementsByClassName("representation_2")].forEach(function(elem, index) { if (index === 5) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Linear IR1 (-O0)
+              Linear IR (-O0)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_2")].forEach(function(elem, index) { if (index === 6) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O1)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_2")].forEach(function(elem, index) { if (index === 7) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O2)
              </a>
             </div>
             <div class="example_representations">
@@ -5269,6 +5617,36 @@ c = _1;
 }
 </pre>
              </div>
+             <div class="representation_2" style="display: none;">
+              <pre style="overflow-x: auto;">function ()
+{
+int D.1234;
+D.1234 = 1;
+return D.1234;
+}
+main ()
+{
+int D.1235;
+_1 = 1 + 1;
+_1 = function();
+}
+</pre>
+             </div>
+             <div class="representation_2" style="display: none;">
+              <pre style="overflow-x: auto;">function ()
+{
+int D.1234;
+D.1234 = 1;
+return D.1234;
+}
+main ()
+{
+int D.1235;
+_1 = 2;
+_1 = function();
+}
+</pre>
+             </div>
             </div>
            </dd>
            <dt>
@@ -5294,7 +5672,13 @@ c = _1;
               Symbol Table
              </a>
              <a onclick='[...document.getElementsByClassName("representation_3")].forEach(function(elem, index) { if (index === 5) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Linear IR1 (-O0)
+              Linear IR (-O0)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_3")].forEach(function(elem, index) { if (index === 6) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O1)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_3")].forEach(function(elem, index) { if (index === 7) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O2)
              </a>
             </div>
             <div class="example_representations">
@@ -5740,6 +6124,94 @@ goto &lt;D.1255&gt;;
 }
 </pre>
              </div>
+             <div class="representation_3" style="display: none;">
+              <pre style="overflow-x: auto;">main ()
+{
+int D.1234;
+int one;
+one = 1;
+if (one != 0) goto &lt;D.1235&gt;; else goto &lt;D.1236&gt;;
+&lt;D.1235&gt;:
+goto &lt;D.1237&gt;;
+&lt;D.1236&gt;:
+&lt;D.1237&gt;:
+if (one &gt; one) goto &lt;D.1238&gt;; else goto &lt;D.1239&gt;;
+&lt;D.1238&gt;:
+goto &lt;D.1240&gt;;
+&lt;D.1239&gt;:
+&lt;D.1240&gt;:
+if (one &lt; one) goto &lt;D.1241&gt;; else goto &lt;D.1242&gt;;
+&lt;D.1241&gt;:
+goto &lt;D.1243&gt;;
+&lt;D.1242&gt;:
+&lt;D.1243&gt;:
+if (one == one) goto &lt;D.1244&gt;; else goto &lt;D.1245&gt;;
+&lt;D.1244&gt;:
+goto &lt;D.1246&gt;;
+&lt;D.1245&gt;:
+&lt;D.1246&gt;:
+if (one != one) goto &lt;D.1247&gt;; else goto &lt;D.1248&gt;;
+&lt;D.1247&gt;:
+goto &lt;D.1249&gt;;
+&lt;D.1248&gt;:
+&lt;D.1249&gt;:
+if (one &gt;= one) goto &lt;D.1250&gt;; else goto &lt;D.1251&gt;;
+&lt;D.1250&gt;:
+goto &lt;D.1252&gt;;
+&lt;D.1251&gt;:
+&lt;D.1252&gt;:
+if (one &lt;= one) goto &lt;D.1253&gt;; else goto &lt;D.1254&gt;;
+&lt;D.1253&gt;:
+goto &lt;D.1255&gt;;
+&lt;D.1254&gt;:
+&lt;D.1255&gt;:
+}
+</pre>
+             </div>
+             <div class="representation_3" style="display: none;">
+              <pre style="overflow-x: auto;">main ()
+{
+int D.1234;
+int one;
+one = 1;
+if (one != 0) goto &lt;D.1235&gt;; else goto &lt;D.1236&gt;;
+&lt;D.1235&gt;:
+goto &lt;D.1237&gt;;
+&lt;D.1236&gt;:
+&lt;D.1237&gt;:
+if (one &gt; one) goto &lt;D.1238&gt;; else goto &lt;D.1239&gt;;
+&lt;D.1238&gt;:
+goto &lt;D.1240&gt;;
+&lt;D.1239&gt;:
+&lt;D.1240&gt;:
+if (one &lt; one) goto &lt;D.1241&gt;; else goto &lt;D.1242&gt;;
+&lt;D.1241&gt;:
+goto &lt;D.1243&gt;;
+&lt;D.1242&gt;:
+&lt;D.1243&gt;:
+if (one == one) goto &lt;D.1244&gt;; else goto &lt;D.1245&gt;;
+&lt;D.1244&gt;:
+goto &lt;D.1246&gt;;
+&lt;D.1245&gt;:
+&lt;D.1246&gt;:
+if (one != one) goto &lt;D.1247&gt;; else goto &lt;D.1248&gt;;
+&lt;D.1247&gt;:
+goto &lt;D.1249&gt;;
+&lt;D.1248&gt;:
+&lt;D.1249&gt;:
+if (one &gt;= one) goto &lt;D.1250&gt;; else goto &lt;D.1251&gt;;
+&lt;D.1250&gt;:
+goto &lt;D.1252&gt;;
+&lt;D.1251&gt;:
+&lt;D.1252&gt;:
+if (one &lt;= one) goto &lt;D.1253&gt;; else goto &lt;D.1254&gt;;
+&lt;D.1253&gt;:
+goto &lt;D.1255&gt;;
+&lt;D.1254&gt;:
+&lt;D.1255&gt;:
+}
+</pre>
+             </div>
             </div>
            </dd>
            <dt>
@@ -5765,7 +6237,13 @@ goto &lt;D.1255&gt;;
               Symbol Table
              </a>
              <a onclick='[...document.getElementsByClassName("representation_4")].forEach(function(elem, index) { if (index === 5) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Linear IR1 (-O0)
+              Linear IR (-O0)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_4")].forEach(function(elem, index) { if (index === 6) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O1)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_4")].forEach(function(elem, index) { if (index === 7) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O2)
              </a>
             </div>
             <div class="example_representations">
@@ -5864,6 +6342,32 @@ if (1 != 0) goto &lt;D.1236&gt;; else goto &lt;D.1237&gt;;
 }
 </pre>
              </div>
+             <div class="representation_4" style="display: none;">
+              <pre style="overflow-x: auto;">main ()
+{
+int D.1234;
+goto &lt;D.1235&gt;;
+&lt;D.1236&gt;:
+goto &lt;D.1237&gt;;
+&lt;D.1235&gt;:
+if (1 != 0) goto &lt;D.1236&gt;; else goto &lt;D.1237&gt;;
+&lt;D.1237&gt;:
+}
+</pre>
+             </div>
+             <div class="representation_4" style="display: none;">
+              <pre style="overflow-x: auto;">main ()
+{
+int D.1234;
+goto &lt;D.1235&gt;;
+&lt;D.1236&gt;:
+goto &lt;D.1237&gt;;
+&lt;D.1235&gt;:
+if (1 != 0) goto &lt;D.1236&gt;; else goto &lt;D.1237&gt;;
+&lt;D.1237&gt;:
+}
+</pre>
+             </div>
             </div>
            </dd>
            <dt>
@@ -5889,7 +6393,13 @@ if (1 != 0) goto &lt;D.1236&gt;; else goto &lt;D.1237&gt;;
               Symbol Table
              </a>
              <a onclick='[...document.getElementsByClassName("representation_5")].forEach(function(elem, index) { if (index === 5) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Linear IR1 (-O0)
+              Linear IR (-O0)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_5")].forEach(function(elem, index) { if (index === 6) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O1)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_5")].forEach(function(elem, index) { if (index === 7) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O2)
              </a>
             </div>
             <div class="example_representations">
@@ -6928,6 +7438,176 @@ goto &lt;D.1271&gt;;
 }
 </pre>
              </div>
+             <div class="representation_5" style="display: none;">
+              <pre style="overflow-x: auto;">main ()
+{
+int D.1234;
+int i;
+i = 0;
+i = 0;
+goto &lt;D.1235&gt;;
+&lt;D.1236&gt;:
+goto &lt;D.1237&gt;;
+_0 = i;
+i = i + 1;
+&lt;D.1235&gt;:
+if (i &lt; 10) goto &lt;D.1236&gt;; else goto &lt;D.1237&gt;;
+&lt;D.1237&gt;:
+i = 0;
+goto &lt;D.1239&gt;;
+&lt;D.1240&gt;:
+i = 0;
+goto &lt;D.1242&gt;;
+&lt;D.1243&gt;:
+goto &lt;D.1243&gt;;
+_0 = i;
+i = i + 1;
+&lt;D.1242&gt;:
+if (i &lt; 10) goto &lt;D.1243&gt;; else goto &lt;D.1244&gt;;
+&lt;D.1244&gt;:
+_0 = i;
+i = i + 1;
+&lt;D.1239&gt;:
+if (i &lt; 10) goto &lt;D.1240&gt;; else goto &lt;D.1241&gt;;
+&lt;D.1241&gt;:
+i = 0;
+goto &lt;D.1243&gt;;
+&lt;D.1244&gt;:
+goto &lt;D.1244&gt;;
+_0 = i;
+i = i + 1;
+&lt;D.1243&gt;:
+if (i &lt; 10) goto &lt;D.1244&gt;; else goto &lt;D.1245&gt;;
+&lt;D.1245&gt;:
+i = 0;
+goto &lt;D.1247&gt;;
+&lt;D.1248&gt;:
+i = 0;
+goto &lt;D.1250&gt;;
+&lt;D.1251&gt;:
+goto &lt;D.1251&gt;;
+_0 = i;
+i = i + 1;
+&lt;D.1250&gt;:
+if (i &lt; 10) goto &lt;D.1251&gt;; else goto &lt;D.1252&gt;;
+&lt;D.1252&gt;:
+_0 = i;
+i = i + 1;
+&lt;D.1247&gt;:
+if (i &lt; 10) goto &lt;D.1248&gt;; else goto &lt;D.1249&gt;;
+&lt;D.1249&gt;:
+{
+int j;
+j = 0;
+goto &lt;D.1251&gt;;
+&lt;D.1252&gt;:
+goto &lt;D.1252&gt;;
+j = j;
+&lt;D.1251&gt;:
+if (j == 0) goto &lt;D.1252&gt;; else goto &lt;D.1253&gt;;
+&lt;D.1253&gt;:
+}
+&lt;D.1255&gt;:
+goto &lt;D.1255&gt;;
+goto &lt;D.1255&gt;;
+i = 0;
+&lt;D.1259&gt;:
+goto &lt;D.1259&gt;;
+goto &lt;D.1259&gt;;
+&lt;D.1263&gt;:
+goto &lt;D.1263&gt;;
+goto &lt;D.1263&gt;;
+&lt;D.1267&gt;:
+goto &lt;D.1267&gt;;
+i = i;
+goto &lt;D.1267&gt;;
+&lt;D.1271&gt;:
+goto &lt;D.1271&gt;;
+}
+</pre>
+             </div>
+             <div class="representation_5" style="display: none;">
+              <pre style="overflow-x: auto;">main ()
+{
+int D.1234;
+int i;
+i = 0;
+i = 0;
+goto &lt;D.1235&gt;;
+&lt;D.1236&gt;:
+goto &lt;D.1237&gt;;
+i = i + 1;
+&lt;D.1235&gt;:
+if (i &lt; 10) goto &lt;D.1236&gt;; else goto &lt;D.1237&gt;;
+&lt;D.1237&gt;:
+i = 0;
+goto &lt;D.1239&gt;;
+&lt;D.1240&gt;:
+i = 0;
+goto &lt;D.1242&gt;;
+&lt;D.1243&gt;:
+goto &lt;D.1243&gt;;
+i = i + 1;
+&lt;D.1242&gt;:
+if (i &lt; 10) goto &lt;D.1243&gt;; else goto &lt;D.1244&gt;;
+&lt;D.1244&gt;:
+i = i + 1;
+&lt;D.1239&gt;:
+if (i &lt; 10) goto &lt;D.1240&gt;; else goto &lt;D.1241&gt;;
+&lt;D.1241&gt;:
+i = 0;
+goto &lt;D.1243&gt;;
+&lt;D.1244&gt;:
+goto &lt;D.1244&gt;;
+i = i + 1;
+&lt;D.1243&gt;:
+if (i &lt; 10) goto &lt;D.1244&gt;; else goto &lt;D.1245&gt;;
+&lt;D.1245&gt;:
+i = 0;
+goto &lt;D.1247&gt;;
+&lt;D.1248&gt;:
+i = 0;
+goto &lt;D.1250&gt;;
+&lt;D.1251&gt;:
+goto &lt;D.1251&gt;;
+i = i + 1;
+&lt;D.1250&gt;:
+if (i &lt; 10) goto &lt;D.1251&gt;; else goto &lt;D.1252&gt;;
+&lt;D.1252&gt;:
+i = i + 1;
+&lt;D.1247&gt;:
+if (i &lt; 10) goto &lt;D.1248&gt;; else goto &lt;D.1249&gt;;
+&lt;D.1249&gt;:
+{
+int j;
+j = 0;
+goto &lt;D.1251&gt;;
+&lt;D.1252&gt;:
+goto &lt;D.1252&gt;;
+j = 0;
+&lt;D.1251&gt;:
+if (j == 0) goto &lt;D.1252&gt;; else goto &lt;D.1253&gt;;
+&lt;D.1253&gt;:
+}
+&lt;D.1255&gt;:
+goto &lt;D.1255&gt;;
+goto &lt;D.1255&gt;;
+i = 0;
+&lt;D.1259&gt;:
+goto &lt;D.1259&gt;;
+goto &lt;D.1259&gt;;
+&lt;D.1263&gt;:
+goto &lt;D.1263&gt;;
+goto &lt;D.1263&gt;;
+&lt;D.1267&gt;:
+goto &lt;D.1267&gt;;
+i = 0;
+goto &lt;D.1267&gt;;
+&lt;D.1271&gt;:
+goto &lt;D.1271&gt;;
+}
+</pre>
+             </div>
             </div>
            </dd>
            <dt>
@@ -6953,7 +7633,13 @@ goto &lt;D.1271&gt;;
               Symbol Table
              </a>
              <a onclick='[...document.getElementsByClassName("representation_6")].forEach(function(elem, index) { if (index === 5) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Linear IR1 (-O0)
+              Linear IR (-O0)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_6")].forEach(function(elem, index) { if (index === 6) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O1)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_6")].forEach(function(elem, index) { if (index === 7) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O2)
              </a>
             </div>
             <div class="example_representations">
@@ -7135,6 +7821,34 @@ i = _1;
 }
 </pre>
              </div>
+             <div class="representation_6" style="display: none;">
+              <pre style="overflow-x: auto;">return_strings (char string,int i)
+{
+int D.1234;
+D.1234 = 1;
+return D.1234;
+}
+main ()
+{
+int D.1235;
+_1 = return_strings("test", 1);
+}
+</pre>
+             </div>
+             <div class="representation_6" style="display: none;">
+              <pre style="overflow-x: auto;">return_strings (char string,int i)
+{
+int D.1234;
+D.1234 = 1;
+return D.1234;
+}
+main ()
+{
+int D.1235;
+_1 = return_strings("test", 1);
+}
+</pre>
+             </div>
             </div>
            </dd>
            <dt>
@@ -7160,7 +7874,13 @@ i = _1;
               Symbol Table
              </a>
              <a onclick='[...document.getElementsByClassName("representation_7")].forEach(function(elem, index) { if (index === 5) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Linear IR1 (-O0)
+              Linear IR (-O0)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_7")].forEach(function(elem, index) { if (index === 6) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O1)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_7")].forEach(function(elem, index) { if (index === 7) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O2)
              </a>
             </div>
             <div class="example_representations">
@@ -7271,6 +7991,24 @@ label:
 }
 </pre>
              </div>
+             <div class="representation_7" style="display: none;">
+              <pre style="overflow-x: auto;">main ()
+{
+int D.1234;
+goto label;
+label:
+}
+</pre>
+             </div>
+             <div class="representation_7" style="display: none;">
+              <pre style="overflow-x: auto;">main ()
+{
+int D.1234;
+goto label;
+label:
+}
+</pre>
+             </div>
             </div>
            </dd>
            <dt>
@@ -7296,7 +8034,13 @@ label:
               Symbol Table
              </a>
              <a onclick='[...document.getElementsByClassName("representation_8")].forEach(function(elem, index) { if (index === 5) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Linear IR1 (-O0)
+              Linear IR (-O0)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_8")].forEach(function(elem, index) { if (index === 6) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O1)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_8")].forEach(function(elem, index) { if (index === 7) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O2)
              </a>
             </div>
             <div class="example_representations">
@@ -7512,6 +8256,42 @@ return D.1235;
 }
 </pre>
              </div>
+             <div class="representation_8" style="display: none;">
+              <pre style="overflow-x: auto;">test_function (int x,int y)
+{
+int D.1234;
+D.1234 = 1;
+return D.1234;
+}
+main ()
+{
+int D.1235;
+int x;
+_1 = test_function(1, 1);
+x = _1;
+D.1235 = x;
+return D.1235;
+}
+</pre>
+             </div>
+             <div class="representation_8" style="display: none;">
+              <pre style="overflow-x: auto;">test_function (int x,int y)
+{
+int D.1234;
+D.1234 = 1;
+return D.1234;
+}
+main ()
+{
+int D.1235;
+int x;
+_1 = test_function(1, 1);
+x = _1;
+D.1235 = x;
+return D.1235;
+}
+</pre>
+             </div>
             </div>
            </dd>
            <dt>
@@ -7537,7 +8317,13 @@ return D.1235;
               Symbol Table
              </a>
              <a onclick='[...document.getElementsByClassName("representation_9")].forEach(function(elem, index) { if (index === 5) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Linear IR1 (-O0)
+              Linear IR (-O0)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_9")].forEach(function(elem, index) { if (index === 6) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O1)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_9")].forEach(function(elem, index) { if (index === 7) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O2)
              </a>
             </div>
             <div class="example_representations">
@@ -7998,6 +8784,90 @@ c = 2;
 }
 </pre>
              </div>
+             <div class="representation_9" style="display: none;">
+              <pre style="overflow-x: auto;">main ()
+{
+int D.1234;
+int i;
+int j;
+i = 1;
+j = 2;
+if (i &gt; 0) goto &lt;D.1237&gt;; else goto &lt;D.1236&gt;;
+&lt;D.1237&gt;:
+if (j &lt; i) goto &lt;D.1235&gt;; else goto &lt;D.1236&gt;;
+&lt;D.1235&gt;:
+goto &lt;D.1239&gt;;
+&lt;D.1236&gt;:
+&lt;D.1239&gt;:
+if (1 != 0) goto &lt;D.1240&gt;; else goto &lt;D.1241&gt;;
+&lt;D.1240&gt;:
+goto &lt;D.1242&gt;;
+&lt;D.1241&gt;:
+if (0 != 0) goto &lt;D.1243&gt;; else goto &lt;D.1244&gt;;
+&lt;D.1243&gt;:
+goto &lt;D.1245&gt;;
+&lt;D.1244&gt;:
+if (1 != 0) goto &lt;D.1248&gt;; else goto &lt;D.1249&gt;;
+&lt;D.1248&gt;:
+goto &lt;D.1250&gt;;
+&lt;D.1249&gt;:
+&lt;D.1250&gt;:
+&lt;D.1242&gt;:
+&lt;D.1245&gt;:
+if (1 != 0) goto &lt;D.1251&gt;; else goto &lt;D.1252&gt;;
+&lt;D.1251&gt;:
+{
+}
+goto &lt;D.1253&gt;;
+&lt;D.1252&gt;:
+{
+}
+&lt;D.1253&gt;:
+}
+</pre>
+             </div>
+             <div class="representation_9" style="display: none;">
+              <pre style="overflow-x: auto;">main ()
+{
+int D.1234;
+int i;
+int j;
+i = 1;
+j = 2;
+if (i &gt; 0) goto &lt;D.1237&gt;; else goto &lt;D.1236&gt;;
+&lt;D.1237&gt;:
+if (j &lt; i) goto &lt;D.1235&gt;; else goto &lt;D.1236&gt;;
+&lt;D.1235&gt;:
+goto &lt;D.1239&gt;;
+&lt;D.1236&gt;:
+&lt;D.1239&gt;:
+if (1 != 0) goto &lt;D.1240&gt;; else goto &lt;D.1241&gt;;
+&lt;D.1240&gt;:
+goto &lt;D.1242&gt;;
+&lt;D.1241&gt;:
+if (0 != 0) goto &lt;D.1243&gt;; else goto &lt;D.1244&gt;;
+&lt;D.1243&gt;:
+goto &lt;D.1245&gt;;
+&lt;D.1244&gt;:
+if (1 != 0) goto &lt;D.1248&gt;; else goto &lt;D.1249&gt;;
+&lt;D.1248&gt;:
+goto &lt;D.1250&gt;;
+&lt;D.1249&gt;:
+&lt;D.1250&gt;:
+&lt;D.1242&gt;:
+&lt;D.1245&gt;:
+if (1 != 0) goto &lt;D.1251&gt;; else goto &lt;D.1252&gt;;
+&lt;D.1251&gt;:
+{
+}
+goto &lt;D.1253&gt;;
+&lt;D.1252&gt;:
+{
+}
+&lt;D.1253&gt;:
+}
+</pre>
+             </div>
             </div>
            </dd>
            <dt>
@@ -8023,7 +8893,13 @@ c = 2;
               Symbol Table
              </a>
              <a onclick='[...document.getElementsByClassName("representation_10")].forEach(function(elem, index) { if (index === 5) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Linear IR1 (-O0)
+              Linear IR (-O0)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_10")].forEach(function(elem, index) { if (index === 6) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O1)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_10")].forEach(function(elem, index) { if (index === 7) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O2)
              </a>
             </div>
             <div class="example_representations">
@@ -8150,6 +9026,20 @@ string_special = "\n\t\\\'\"\%\$%&amp;*$%&amp;%*$&amp;@@   __  +=-";
 }
 </pre>
              </div>
+             <div class="representation_10" style="display: none;">
+              <pre style="overflow-x: auto;">main ()
+{
+int D.1234;
+}
+</pre>
+             </div>
+             <div class="representation_10" style="display: none;">
+              <pre style="overflow-x: auto;">main ()
+{
+int D.1234;
+}
+</pre>
+             </div>
             </div>
            </dd>
            <dt>
@@ -8175,7 +9065,13 @@ string_special = "\n\t\\\'\"\%\$%&amp;*$%&amp;%*$&amp;@@   __  +=-";
               Symbol Table
              </a>
              <a onclick='[...document.getElementsByClassName("representation_11")].forEach(function(elem, index) { if (index === 5) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Linear IR1 (-O0)
+              Linear IR (-O0)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_11")].forEach(function(elem, index) { if (index === 6) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O1)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_11")].forEach(function(elem, index) { if (index === 7) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O2)
              </a>
             </div>
             <div class="example_representations">
@@ -8456,6 +9352,20 @@ q = NULL;
 }
 </pre>
              </div>
+             <div class="representation_11" style="display: none;">
+              <pre style="overflow-x: auto;">main ()
+{
+int D.1235;
+}
+</pre>
+             </div>
+             <div class="representation_11" style="display: none;">
+              <pre style="overflow-x: auto;">main ()
+{
+int D.1235;
+}
+</pre>
+             </div>
             </div>
            </dd>
            <dt>
@@ -8481,7 +9391,13 @@ q = NULL;
               Symbol Table
              </a>
              <a onclick='[...document.getElementsByClassName("representation_12")].forEach(function(elem, index) { if (index === 5) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Linear IR1 (-O0)
+              Linear IR (-O0)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_12")].forEach(function(elem, index) { if (index === 6) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O1)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_12")].forEach(function(elem, index) { if (index === 7) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O2)
              </a>
             </div>
             <div class="example_representations">
@@ -8606,6 +9522,24 @@ return D.1234;
 }
 </pre>
              </div>
+             <div class="representation_12" style="display: none;">
+              <pre style="overflow-x: auto;">main ()
+{
+int D.1234;
+D.1234 = 500;
+return D.1234;
+}
+</pre>
+             </div>
+             <div class="representation_12" style="display: none;">
+              <pre style="overflow-x: auto;">main ()
+{
+int D.1234;
+D.1234 = 500;
+return D.1234;
+}
+</pre>
+             </div>
             </div>
            </dd>
            <dt>
@@ -8631,7 +9565,13 @@ return D.1234;
               Symbol Table
              </a>
              <a onclick='[...document.getElementsByClassName("representation_13")].forEach(function(elem, index) { if (index === 5) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Linear IR1 (-O0)
+              Linear IR (-O0)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_13")].forEach(function(elem, index) { if (index === 6) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O1)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_13")].forEach(function(elem, index) { if (index === 7) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O2)
              </a>
             </div>
             <div class="example_representations">
@@ -8914,6 +9854,58 @@ return D.1235;
 }
 </pre>
              </div>
+             <div class="representation_13" style="display: none;">
+              <pre style="overflow-x: auto;">function ()
+{
+int D.1234;
+return;
+}
+main ()
+{
+int D.1235;
+int a;
+a = NULL;
+D.1235 = 1;
+return D.1235;
+_0 = function();
+D.1235 = _0;
+return D.1235;
+_0 = 1 + 1;
+D.1235 = _0;
+return D.1235;
+_0 = 1 + 2;
+D.1235 = _0;
+return D.1235;
+D.1235 = a;
+return D.1235;
+}
+</pre>
+             </div>
+             <div class="representation_13" style="display: none;">
+              <pre style="overflow-x: auto;">function ()
+{
+int D.1234;
+return;
+}
+main ()
+{
+int D.1235;
+int a;
+a = NULL;
+D.1235 = 1;
+return D.1235;
+_0 = function();
+D.1235 = _0;
+return D.1235;
+D.1235 = 2;
+return D.1235;
+D.1235 = 3;
+return D.1235;
+D.1235 = a;
+return D.1235;
+}
+</pre>
+             </div>
             </div>
            </dd>
            <dt>
@@ -8939,7 +9931,13 @@ return D.1235;
               Symbol Table
              </a>
              <a onclick='[...document.getElementsByClassName("representation_14")].forEach(function(elem, index) { if (index === 5) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Linear IR1 (-O0)
+              Linear IR (-O0)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_14")].forEach(function(elem, index) { if (index === 6) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O1)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_14")].forEach(function(elem, index) { if (index === 7) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O2)
              </a>
             </div>
             <div class="example_representations">
@@ -9328,6 +10326,105 @@ return D.1234;
 }
 </pre>
              </div>
+             <div class="representation_14" style="display: none;">
+              <pre style="overflow-x: auto;">main ()
+{
+int D.1234;
+int i;
+i = 10;
+if (i == 12) goto &lt;D.1235&gt;; else goto &lt;D.1236&gt;;
+&lt;D.1235&gt;:
+_0 = i;
+i = i - 1;
+goto &lt;D.1236&gt;;
+goto &lt;D.1237&gt;;
+&lt;D.1236&gt;:
+if (i == 11) goto &lt;D.1238&gt;; else goto &lt;D.1239&gt;;
+&lt;D.1238&gt;:
+{
+_0 = i;
+i = i + 1;
+_0 = i;
+i = i + 1;
+goto &lt;D.1239&gt;;
+}
+goto &lt;D.1240&gt;;
+&lt;D.1239&gt;:
+if (i == 10) goto &lt;D.1241&gt;; else goto &lt;D.1242&gt;;
+&lt;D.1241&gt;:
+{
+_0 = i;
+i = i + 1;
+goto &lt;D.1242&gt;;
+}
+goto &lt;D.1243&gt;;
+&lt;D.1242&gt;:
+if (i == 9) goto &lt;D.1244&gt;; else goto &lt;D.1245&gt;;
+&lt;D.1244&gt;:
+{
+_0 = i;
+i = i + 1;
+goto &lt;D.1245&gt;;
+}
+goto &lt;D.1246&gt;;
+&lt;D.1245&gt;:
+goto &lt;D.1248&gt;;
+&lt;D.1237&gt;:
+&lt;D.1240&gt;:
+&lt;D.1243&gt;:
+&lt;D.1246&gt;:
+D.1234 = i;
+return D.1234;
+}
+</pre>
+             </div>
+             <div class="representation_14" style="display: none;">
+              <pre style="overflow-x: auto;">main ()
+{
+int D.1234;
+int i;
+i = 10;
+if (i == 12) goto &lt;D.1235&gt;; else goto &lt;D.1236&gt;;
+&lt;D.1235&gt;:
+i = i - 1;
+goto &lt;D.1236&gt;;
+goto &lt;D.1237&gt;;
+&lt;D.1236&gt;:
+if (i == 11) goto &lt;D.1238&gt;; else goto &lt;D.1239&gt;;
+&lt;D.1238&gt;:
+{
+i = i + 1;
+i = i + 1;
+goto &lt;D.1239&gt;;
+}
+goto &lt;D.1240&gt;;
+&lt;D.1239&gt;:
+if (i == 10) goto &lt;D.1241&gt;; else goto &lt;D.1242&gt;;
+&lt;D.1241&gt;:
+{
+i = i + 1;
+goto &lt;D.1242&gt;;
+}
+goto &lt;D.1243&gt;;
+&lt;D.1242&gt;:
+if (i == 9) goto &lt;D.1244&gt;; else goto &lt;D.1245&gt;;
+&lt;D.1244&gt;:
+{
+i = i + 1;
+goto &lt;D.1245&gt;;
+}
+goto &lt;D.1246&gt;;
+&lt;D.1245&gt;:
+goto &lt;D.1248&gt;;
+&lt;D.1237&gt;:
+&lt;D.1240&gt;:
+&lt;D.1243&gt;:
+&lt;D.1246&gt;:
+D.1234 = 10;
+return D.1234;
+}
+</pre>
+             </div>
             </div>
            </dd>
            <dt>
@@ -9353,7 +10450,13 @@ return D.1234;
               Symbol Table
              </a>
              <a onclick='[...document.getElementsByClassName("representation_15")].forEach(function(elem, index) { if (index === 5) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Linear IR1 (-O0)
+              Linear IR (-O0)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_15")].forEach(function(elem, index) { if (index === 6) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O1)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_15")].forEach(function(elem, index) { if (index === 7) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O2)
              </a>
             </div>
             <div class="example_representations">
@@ -9621,6 +10724,53 @@ goto &lt;D.1240&gt;;
 }
 </pre>
              </div>
+             <div class="representation_15" style="display: none;">
+              <pre style="overflow-x: auto;">main ()
+{
+int D.1234;
+int a;
+_1 = -10;
+a = _1;
+_1 = -a;
+_1 = +a;
+_0 = !2;
+if (_0 != 0) goto &lt;D.1235&gt;; else goto &lt;D.1236&gt;;
+&lt;D.1235&gt;:
+goto &lt;D.1237&gt;;
+&lt;D.1236&gt;:
+&lt;D.1237&gt;:
+_0 = ~2;
+if (_0 != 0) goto &lt;D.1238&gt;; else goto &lt;D.1239&gt;;
+&lt;D.1238&gt;:
+goto &lt;D.1240&gt;;
+&lt;D.1239&gt;:
+&lt;D.1240&gt;:
+}
+</pre>
+             </div>
+             <div class="representation_15" style="display: none;">
+              <pre style="overflow-x: auto;">main ()
+{
+int D.1234;
+int a;
+a = -10;
+_1 = 10;
+_1 = -10;
+_0 = 0;
+if (_0 != 0) goto &lt;D.1235&gt;; else goto &lt;D.1236&gt;;
+&lt;D.1235&gt;:
+goto &lt;D.1237&gt;;
+&lt;D.1236&gt;:
+&lt;D.1237&gt;:
+_0 = -3;
+if (_0 != 0) goto &lt;D.1238&gt;; else goto &lt;D.1239&gt;;
+&lt;D.1238&gt;:
+goto &lt;D.1240&gt;;
+&lt;D.1239&gt;:
+&lt;D.1240&gt;:
+}
+</pre>
+             </div>
             </div>
            </dd>
            <dt>
@@ -9646,7 +10796,13 @@ goto &lt;D.1240&gt;;
               Symbol Table
              </a>
              <a onclick='[...document.getElementsByClassName("representation_16")].forEach(function(elem, index) { if (index === 5) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
-              Linear IR1 (-O0)
+              Linear IR (-O0)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_16")].forEach(function(elem, index) { if (index === 6) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O1)
+             </a>
+             <a onclick='[...document.getElementsByClassName("representation_16")].forEach(function(elem, index) { if (index === 7) { elem.style.display = "block";} else { elem.style.display = "none";}})'>
+              Linear IR (-O2)
              </a>
             </div>
             <div class="example_representations">
@@ -9840,6 +10996,58 @@ if (1 != 0) goto &lt;D.1236&gt;; else goto &lt;D.1237&gt;;
 {
 int j;
 j = NULL;
+}
+&lt;D.1239&gt;:
+if (1 != 0) goto &lt;D.1240&gt;; else goto &lt;D.1241&gt;;
+&lt;D.1241&gt;:
+goto &lt;D.1243&gt;;
+&lt;D.1244&gt;:
+goto &lt;D.1245&gt;;
+&lt;D.1243&gt;:
+if (2 != 0) goto &lt;D.1244&gt;; else goto &lt;D.1245&gt;;
+&lt;D.1245&gt;:
+}
+</pre>
+             </div>
+             <div class="representation_16" style="display: none;">
+              <pre style="overflow-x: auto;">main ()
+{
+int D.1234;
+goto &lt;D.1235&gt;;
+&lt;D.1236&gt;:
+{
+}
+&lt;D.1235&gt;:
+if (1 != 0) goto &lt;D.1236&gt;; else goto &lt;D.1237&gt;;
+&lt;D.1237&gt;:
+&lt;D.1240&gt;:
+{
+}
+&lt;D.1239&gt;:
+if (1 != 0) goto &lt;D.1240&gt;; else goto &lt;D.1241&gt;;
+&lt;D.1241&gt;:
+goto &lt;D.1243&gt;;
+&lt;D.1244&gt;:
+goto &lt;D.1245&gt;;
+&lt;D.1243&gt;:
+if (2 != 0) goto &lt;D.1244&gt;; else goto &lt;D.1245&gt;;
+&lt;D.1245&gt;:
+}
+</pre>
+             </div>
+             <div class="representation_16" style="display: none;">
+              <pre style="overflow-x: auto;">main ()
+{
+int D.1234;
+goto &lt;D.1235&gt;;
+&lt;D.1236&gt;:
+{
+}
+&lt;D.1235&gt;:
+if (1 != 0) goto &lt;D.1236&gt;; else goto &lt;D.1237&gt;;
+&lt;D.1237&gt;:
+&lt;D.1240&gt;:
+{
 }
 &lt;D.1239&gt;:
 if (1 != 0) goto &lt;D.1240&gt;; else goto &lt;D.1241&gt;;

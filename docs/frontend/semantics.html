@@ -34,6 +34,11 @@ import re
 
 
 Node = namedtuple(&#34;Node&#34;, [&#34;Node&#34;, &#34;Scope&#34;])
+Node.__doc__ = &#34;&#34;&#34;
+A simple namedtuple to allow for better readability when performing the depth first search required for the semantic analysis.
+&#34;&#34;&#34;
+
+Node = namedtuple(&#34;Node&#34;, [&#34;Node&#34;, &#34;Scope&#34;])
 en_map = {
     0 : &#34;Variable&#34;,
     1 : &#34;Function&#34;,
@@ -65,7 +70,6 @@ class semantic():
 
         AST = self.AST
         symbols = self.symbols
-        
         ntv = [Node(AST, &#34;/&#34;)]
 
         typ = None
@@ -97,7 +101,7 @@ class semantic():
                 if cur.Node.children == []:
                     ntv = [Node(x, cur.Scope) for x in cur.Node.children if &#39;children&#39; in x.__dict__] + ntv[1:]
                     continue
-                
+
                 # Function Declaration
                 if index == 0:
                     children = cur.Node.children
@@ -329,7 +333,6 @@ class semantic():
 
         AST = self.AST
         symbols = self.symbols
-        
         ntv = [Node(AST, &#34;/&#34;)]
 
         typ = None
@@ -361,7 +364,7 @@ class semantic():
                 if cur.Node.children == []:
                     ntv = [Node(x, cur.Scope) for x in cur.Node.children if &#39;children&#39; in x.__dict__] + ntv[1:]
                     continue
-                
+
                 # Function Declaration
                 if index == 0:
                     children = cur.Node.children
@@ -584,7 +587,6 @@ class semantic():
 
     AST = self.AST
     symbols = self.symbols
-    
     ntv = [Node(AST, &#34;/&#34;)]
 
     typ = None
@@ -616,7 +618,7 @@ class semantic():
             if cur.Node.children == []:
                 ntv = [Node(x, cur.Scope) for x in cur.Node.children if &#39;children&#39; in x.__dict__] + ntv[1:]
                 continue
-            
+
             # Function Declaration
             if index == 0:
                 children = cur.Node.children
