@@ -37,7 +37,7 @@ from importlib.machinery import SourceFileLoader
 ir1 = SourceFileLoader(&#34;IR_Lv1_Builder&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/IR_Lv1_Builder.py&#34;).load_module()
 import_ir = SourceFileLoader(&#34;import_ir&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/import_ir.py&#34;).load_module()
 
-def mainAST(args,astHead,symbolTable):
+def mainAST(args, astHead = None, symbolTable = None):
     &#34;&#34;&#34;
     This is the function that when given an AST and a symbol table will produce linear intermediate representations for teh inputted program.
 
@@ -49,19 +49,36 @@ def mainAST(args,astHead,symbolTable):
     Returns:
         The lowest level of IR produced.
     &#34;&#34;&#34;
+
+    # Import IR from file
     if args.input:
+        ir = import_ir.import_ir(args.input)
+        ir.tokenize()
+        ir.parse()
+        
 
-        inp = import_ir.import_ir(args.input)
-        l1ir = inp.verify()
-
+    # Generate IR from AST and Symbol-Table
     else:
-        ir = ir1.LevelOneIR(astHead,symbolTable)
+        ir = ir1.LevelOneIR(astHead, symbolTable)
         l1ir = ir.construct()
-        ir.optimize()
+        ir.optimize(args.opt)
 
+    # Output IR to a file
+    if args.IRout:
+        write_IR_to_file(args.IRout, ir.IR)
+
+    # Output IR (first lvl optimization) to stdout 
     if args.IR1 or args.all:
         print(str(ir))
+
     pass
+
+
+def write_IR_to_file(filename, ir):
+    with open(filename, &#39;w&#39;) as f:
+        for irLine in ir:
+            for irNode in irLine.treeList:
+                f.write(str(irNode) + &#39;\n&#39;)
 
 
 if __name__ == &#34;__main__&#34;:
@@ -70,11 +87,12 @@ if __name__ == &#34;__main__&#34;:
     cmd_options.add_argument(&#39;--all&#39;,help=&#39;Prints out all intermediate representations as they are encountered in the compilation process&#39;, action=&#34;store_true&#34;)
     cmd_options.add_argument(&#39;-O&#39;, &#39;--opt&#39;, type=int, choices=range(3), default=0, help=&#39;Determines the optimization level&#39;)
     cmd_options.add_argument(&#39;-i&#39;, action=&#39;store&#39;, dest=&#34;input&#34;, type=str, help=&#34;Used to input IR from file&#34;)
+    cmd_options.add_argument(&#39;--IRout&#39;, metavar=&#39;&lt;output-filename&gt;&#39;, type=str, default=None, help=&#34;Used to output the final generated IR to a file&#34;)
     args = cmd_options.parse_args()
 
     print(args.input)
 
-    mainAST(args,astHead,symbolTable)</code></pre>
+    mainAST(args)</code></pre>
 </details>
 </section>
 <section>
@@ -85,7 +103,7 @@ if __name__ == &#34;__main__&#34;:
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="src.optimizer.optimizer.mainAST"><code class="name flex">
-<span>def <span class="ident">mainAST</span></span>(<span>args, astHead, symbolTable)</span>
+<span>def <span class="ident">mainAST</span></span>(<span>args, astHead=None, symbolTable=None)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>This is the function that when given an AST and a symbol table will produce linear intermediate representations for teh inputted program.</p>
@@ -104,7 +122,7 @@ if __name__ == &#34;__main__&#34;:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def mainAST(args,astHead,symbolTable):
+<pre><code class="python">def mainAST(args, astHead = None, symbolTable = None):
     &#34;&#34;&#34;
     This is the function that when given an AST and a symbol table will produce linear intermediate representations for teh inputted program.
 
@@ -116,19 +134,45 @@ if __name__ == &#34;__main__&#34;:
     Returns:
         The lowest level of IR produced.
     &#34;&#34;&#34;
+
+    # Import IR from file
     if args.input:
+        ir = import_ir.import_ir(args.input)
+        ir.tokenize()
+        ir.parse()
+        
 
-        inp = import_ir.import_ir(args.input)
-        l1ir = inp.verify()
-
+    # Generate IR from AST and Symbol-Table
     else:
-        ir = ir1.LevelOneIR(astHead,symbolTable)
+        ir = ir1.LevelOneIR(astHead, symbolTable)
         l1ir = ir.construct()
-        ir.optimize()
+        ir.optimize(args.opt)
 
+    # Output IR to a file
+    if args.IRout:
+        write_IR_to_file(args.IRout, ir.IR)
+
+    # Output IR (first lvl optimization) to stdout 
     if args.IR1 or args.all:
         print(str(ir))
+
     pass</code></pre>
+</details>
+</dd>
+<dt id="src.optimizer.optimizer.write_IR_to_file"><code class="name flex">
+<span>def <span class="ident">write_IR_to_file</span></span>(<span>filename, ir)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def write_IR_to_file(filename, ir):
+    with open(filename, &#39;w&#39;) as f:
+        for irLine in ir:
+            for irNode in irLine.treeList:
+                f.write(str(irNode) + &#39;\n&#39;)</code></pre>
 </details>
 </dd>
 </dl>
@@ -150,6 +194,7 @@ if __name__ == &#34;__main__&#34;:
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="src.optimizer.optimizer.mainAST" href="#src.optimizer.optimizer.mainAST">mainAST</a></code></li>
+<li><code><a title="src.optimizer.optimizer.write_IR_to_file" href="#src.optimizer.optimizer.write_IR_to_file">write_IR_to_file</a></code></li>
 </ul>
 </li>
 </ul>

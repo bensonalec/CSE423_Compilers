@@ -90,6 +90,8 @@ if __name__ == &#34;__main__&#34;:
 
     cmd_options.add_argument(&#39;-i&#39;, &#39;--input&#39;, action=&#39;store_true&#39;, help=&#34;Used to input IR from file&#34;)
 
+    cmd_options.add_argument(&#39;--IRout&#39;, metavar=&#39;&lt;output-filename&gt;&#39;, type=str, default=None, help=&#34;Used to output the final generated IR to a file&#34;)
+
     #generate arguements
     args = cmd_options.parse_args()
 

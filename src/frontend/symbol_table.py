@@ -40,7 +40,7 @@ class Entry():
 
 Node = namedtuple("Node", ["Node", "Scope"])
 Node.__doc__ = """
-A simple namedtuple to allow for better readability when performing the depth first search required for the semantic analysis.
+A simple namedtuple to allow for better readability when performing the depth first search required for the generation of the symbol table.
 """
 class symbol_table():
     """

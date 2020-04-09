@@ -1,0 +1,797 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.4" />
+<title>src.frontend.symbol_table API documentation</title>
+<meta name="description" content="The module serves to create the symbol table" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>src.frontend.symbol_table</code></h1>
+</header>
+<section id="section-intro">
+<p>The module serves to create the symbol table</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+The module serves to create the symbol table
+&#34;&#34;&#34;
+import os
+import re
+from importlib.machinery import SourceFileLoader
+from collections import namedtuple
+from inspect import getsourcefile
+
+lex = SourceFileLoader(&#34;lexer&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/lexer.py&#34;).load_module()
+ast = SourceFileLoader(&#34;AST_builder&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/AST_builder.py&#34;).load_module()
+
+en_map = {
+    0 : &#34;Variable&#34;,
+    1 : &#34;Function&#34;,
+    2 : &#34;Parameter&#34;,
+    3 : &#34;Label&#34;,
+}
+
+class Entry():
+    &#34;&#34;&#34;
+    A class that represents a singular entry in the symbol table
+    &#34;&#34;&#34;
+    def __init__(self, en_typ, nam, typ, scop, modif):
+        &#34;&#34;&#34;
+        Args:
+            en_typ: Whether the entry is a variable, function, parameter, or label.
+            nam: Name of the entry.
+            typ: The associated type of the entry such as `int`, `float` ect. For functions this represents the return type.
+            scop: The scope where the entry exists.
+            modif: The modifiers associated with the entry such as `unsigned`, `const`, `static` ect.
+        &#34;&#34;&#34;
+        self.entry_type = en_typ
+        self.name = nam
+        self.type = typ
+        self.scope = scop
+        self.references = []
+        self.modifiers = list(sorted(set(modif)))
+
+
+Node = namedtuple(&#34;Node&#34;, [&#34;Node&#34;, &#34;Scope&#34;])
+Node.__doc__ = &#34;&#34;&#34;
+A simple namedtuple to allow for better readability when performing the depth first search required for the generation of the symbol table.
+&#34;&#34;&#34;
+class symbol_table():
+    &#34;&#34;&#34;
+    A class that stores all the known and unknown symbols.
+    &#34;&#34;&#34;
+    def __init__(self,AST):
+        &#34;&#34;&#34;
+        Args:
+            AST: The head node of the abstract syntax tree.
+        &#34;&#34;&#34;
+        self.AST = AST
+
+        self.symbols = []
+        self.undefined = []
+        self.errors = []
+
+    def analyze(self):
+        &#34;&#34;&#34;
+        Analyses the abstract syntax tree to determine whether there are any undeclared references.
+        &#34;&#34;&#34;
+        ntv = [Node(self.AST, &#34;/&#34;)]
+        scopenum = 0
+        typ = None
+        b = False
+        # Simple implementation of a DFS
+        while ntv != []:
+            # Grabs the first element which will be the residual left most child
+            cur = ntv[0]
+
+            # checks whether the current node is an operation that will need to access the symbol table
+            try:
+                index = [&#34;func&#34;, &#34;decl&#34;, &#34;call&#34;, &#34;var&#34;, &#34;body&#34;].index(cur.Node.name)
+
+                #Catches edge case where var or func is used an self_defined name
+                if cur.Node.children == []:
+                    ntv = [Node(x, cur.Scope) for x in cur.Node.children if &#39;children&#39; in x.__dict__] + ntv[1:]
+                    continue
+
+
+                # Function Declaration
+                if index == 0:
+                    # If a function is declared after main without a prototype
+                    if [x for x in self.symbols if x.name == &#34;main&#34; and x.entry_type == {value: key for key, value in en_map.items()}[&#34;Function&#34;]] != [] and [x for x in self.symbols if cur.Node.children[1].name == x.name] == []:
+                        # print(f&#39;Function Not Properly Declared {cur.Node.children[0].name}&#39;)
+                        self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Function&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                    # If a function is declared befor main is declared without a prototype
+                    elif [x for x in self.symbols if x.name == &#34;main&#34; and x.entry_type == {value: key for key, value in en_map.items()}[&#34;Function&#34;]] == []:
+                        self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Function&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                        cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + &#34;/&#34;)
+                    else:
+                        cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + &#34;/&#34;)
+                #Function Prototype Declaration
+                elif index == 1:
+                    self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Function&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                    cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + &#34;/&#34;)
+                    pass
+
+
+                # Function Call
+                elif index == 2:
+                    if [x for x in self.symbols if x.entry_type == {value: key for key, value in en_map.items()}[&#34;Function&#34;] and x.name == cur.Node.children[0].name] == []:
+                        # print(f&#39;Function Undefined {cur.Node.children[0].name}&#39;)
+                        self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Function&#34;],cur.Node.children[0].name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                    else:
+                        ref = [x for x in self.symbols if en_map[x.entry_type] == &#34;Function&#34; and x.name == cur.Node.children[0].name]
+                        for i in ref:
+                            i.references.append(i)
+
+                # Initialization and Usage
+                elif index == 3:
+
+                    #declaration of variable
+                    if len(cur.Node.children) &gt; 1:
+                        #add to symbol table this should also handle function param being that they are still within the same scope as there parent function
+                        if([x for x in self.symbols if x.name == cur.Node.children[1].name and x.scope in cur.Scope] == []):
+                            if cur.Node.parent.parent.name == &#34;func&#34; or cur.Node.parent.parent.name == &#34;decl&#34;:
+                                if cur.Node.parent.name == &#34;param&#34;:
+                                    self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Parameter&#34;],cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                                else:
+                                    self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;],cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                            else:
+                                    self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;],cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                        elif(cur.Node.parent.name != &#34;param&#34;):
+                            print(f&#39;Variable Already Declared {cur.Node.children[1].name} {cur.Node.children[0].name}&#39;)
+                            self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                        elif(cur.Node.parent.name == &#34;param&#34; and [x for x in self.symbols if cur.Node.children[1].name == x.name] == []):
+                            print(f&#39;Undeclared parameter{cur.Node.children[1].name} {cur.Node.children[0].name}&#39;)
+                            self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+
+                        pass
+                    #usage of varible
+                    else:
+                        if ([x for x in self.symbols if x.name == cur.Node.children[0].name and x.scope in cur.Scope] == []):
+                            print(f&#39;Variable Undeclared {cur.Node.children[0].name}&#39;)
+                            self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;],  cur.Node.children[0].name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                        else:
+                            ref = [x for x in self.symbols if x.name == cur.Node.children[0].name and x.scope in cur.Scope]
+                            for i in ref:
+                                i.references.append(i)
+                        
+                elif index == 4:
+                    cur = cur._replace(Scope = f&#34;{cur.Scope}{scopenum}/&#34;)
+                    scopenum += 1
+
+                    #gets all labels declared in body of a function
+                    labels = [x.children[0] for x in cur.Node.children if x.name == &#34;label&#34;]
+                    if labels != []:
+
+                        #for each label in the body
+                        for i in labels:
+                            #checks if label is already in the symbol table.
+                            if [x for x in self.symbols if x.name == i.name] == []:
+                                self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Label&#34;],  i.name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                            else:
+                                self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Label&#34;],  i.name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+
+                    pass
+
+            except ValueError:
+                # This means that the token is not in that list
+                pass
+
+            # fetches the relevant children of the current node and appends the already known children to the list of residual nodes
+            ntv = [Node(x, cur.Scope) for x in cur.Node.children if &#39;children&#39; in x.__dict__] + ntv[1:]
+
+    def __str__(self):
+        li = []
+
+        known_len = [
+            max([len(x.name) for x in self.symbols] + [len(&#34;Name&#34;)]),
+            max([len(en_map[x.entry_type]) for x in self.symbols] + [len(&#34;Entry Type&#34;)]),
+            max([len(x.type) for x in self.symbols] + [len(&#34;Type&#34;)]),
+            max([len(x.scope) for x in self.symbols] + [len(&#34;Scope&#34;)]),
+            max([len(&#34;, &#34;.join(x.modifiers)) for x in self.symbols] + [len(&#34;Modifiers&#34;)]),
+        ]
+        unknown_len = [
+            max([len(x.name) for x in self.undefined] + [len(&#34;Name&#34;)]),
+            max([len(en_map[x.entry_type]) for x in self.undefined] + [len(&#34;Entry Type&#34;)]),
+            max([len(x.scope) for x in self.undefined] + [len(&#34;Scope&#34;)]),
+        ]
+
+        li.append(&#34;Known Symbols&#34;)
+        li.append(f&#34; {&#39;Name&#39;:^{known_len[0]}} | {&#39;Entry Type&#39;:^{known_len[1]}} | {&#39;Type&#39;:^{known_len[2]}} | {&#39;Scope&#39;:^{known_len[3]}} | {&#39;Modifiers&#39;:^{known_len[4]}} &#34;)
+        li.append(f&#34;-{&#39;-&#39;*known_len[0]}-+-{&#39;-&#39;*known_len[1]}-+-{&#39;-&#39;*known_len[2]}-+-{&#39;-&#39;*known_len[3]}-+-{&#39;-&#39;*known_len[4]}-&#34;)
+        for x in self.symbols:
+            li.append(f&#34; {x.name:&gt;{known_len[0]}} | {en_map[x.entry_type]:&gt;{known_len[1]}} | {x.type :&gt;{known_len[2]}} | {x.scope :&lt;{known_len[3]}} | {&#39;, &#39;.join(x.modifiers) :&gt;{known_len[4]}}&#34;)
+        li.append(&#34;&#34;)
+        li.append(&#34;Unknown Symbols&#34;)
+        li.append(f&#34; {&#39;Name&#39;:^{unknown_len[0]}} | {&#39;Entry Type&#39;:^{unknown_len[1]}} | {&#39;Type&#39;:^{unknown_len[2]}}&#34;)
+        li.append(f&#34;-{&#39;-&#39;*unknown_len[0]}-+-{&#39;-&#39;*unknown_len[1]}-+-{&#39;-&#39;*unknown_len[2]}-&#34;)
+        for x in self.undefined:
+            li.append(f&#34; {x.name:&gt;{unknown_len[0]}} | {en_map[x.entry_type]:&gt;{unknown_len[1]}} | {x.type :&gt;{unknown_len[2]}}&#34;)
+
+        return &#34;\n&#34;.join(li) + &#34;\n&#34;
+
+    def __repr__(self):
+        return &#34;\n&#34;.join(self.errors)
+
+    def print_symbol_table(self):
+        &#34;&#34;&#34;
+        Prints the known symbols in the symbol table to stdout
+        &#34;&#34;&#34;
+        # if len(self.symbols) == 0:
+        #     print (&#34;No defined symbols available&#34;)
+        #     return
+
+        col_lengths = [
+            max([len(x.name) for x in self.symbols] + [len(&#34;Name&#34;)]),
+            max([len(en_map[x.entry_type]) for x in self.symbols] + [len(&#34;Entry Type&#34;)]),
+            max([len(x.type) for x in self.symbols] + [len(&#34;Type&#34;)]),
+            max([len(x.scope) for x in self.symbols] + [len(&#34;Scope&#34;)]),
+            max([len(&#34;, &#34;.join(x.modifiers)) for x in self.symbols] + [len(&#34;Modifiers&#34;)]),
+
+        ]
+
+        print (&#34;Known Symbols&#34;)
+        print (f&#34; {&#39;Name&#39;:^{col_lengths[0]}} | {&#39;Entry Type&#39;:^{col_lengths[1]}} | {&#39;Type&#39;:^{col_lengths[2]}} | {&#39;Scope&#39;:^{col_lengths[3]}} | {&#39;Modifiers&#39;:^{col_lengths[4]}} &#34;)
+        print (f&#34;-{&#39;-&#39;*col_lengths[0]}-+-{&#39;-&#39;*col_lengths[1]}-+-{&#39;-&#39;*col_lengths[2]}-+-{&#39;-&#39;*col_lengths[3]}-+-{&#39;-&#39;*col_lengths[4]}-&#34;)
+        for x in self.symbols:
+            print(f&#34; {x.name:&gt;{col_lengths[0]}} | {en_map[x.entry_type]:&gt;{col_lengths[1]}} | {x.type :&gt;{col_lengths[2]}} | {x.scope :&lt;{col_lengths[3]}} | {&#39;, &#39;.join(x.modifiers) :&gt;{col_lengths[4]}}&#34;)
+        # print(&#34;&#34;)
+
+    def print_unknown_symbols(self):
+        &#34;&#34;&#34;
+        Prints the unknown symbols in the symbol table to stdout
+        &#34;&#34;&#34;
+        # if len(self.undefined) == 0:
+        #     print (&#34;No undefined symbols available&#34;)
+        #     return
+
+        col_lengths = [
+            max([len(x.name) for x in self.undefined] + [len(&#34;Name&#34;)]),
+            max([len(en_map[x.entry_type]) for x in self.undefined] + [len(&#34;Entry Type&#34;)]),
+            max([len(x.scope) for x in self.undefined] + [len(&#34;Scope&#34;)]),
+        ]
+
+        print (&#34;Unknown Symbols&#34;)
+        print (f&#34; {&#39;Name&#39;:^{col_lengths[0]}} | {&#39;Entry Type&#39;:^{col_lengths[1]}} | {&#39;Type&#39;:^{col_lengths[2]}}&#34;)
+        print (f&#34;-{&#39;-&#39;*col_lengths[0]}-+-{&#39;-&#39;*col_lengths[1]}-+-{&#39;-&#39;*col_lengths[2]}-&#34;)
+        for x in self.undefined:
+            print(f&#34; {x.name:&gt;{col_lengths[0]}} | {en_map[x.entry_type]:&gt;{col_lengths[1]}} | {x.type :&gt;{col_lengths[2]}}&#34;)
+        # print(&#34;&#34;)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="src.frontend.symbol_table.Entry"><code class="flex name class">
+<span>class <span class="ident">Entry</span></span>
+<span>(</span><span>en_typ, nam, typ, scop, modif)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>A class that represents a singular entry in the symbol table</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>en_typ</code></strong></dt>
+<dd>Whether the entry is a variable, function, parameter, or label.</dd>
+<dt><strong><code>nam</code></strong></dt>
+<dd>Name of the entry.</dd>
+<dt><strong><code>typ</code></strong></dt>
+<dd>The associated type of the entry such as <code>int</code>, <code>float</code> ect. For functions this represents the return type.</dd>
+<dt><strong><code>scop</code></strong></dt>
+<dd>The scope where the entry exists.</dd>
+<dt><strong><code>modif</code></strong></dt>
+<dd>The modifiers associated with the entry such as <code>unsigned</code>, <code>const</code>, <code>static</code> ect.</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Entry():
+    &#34;&#34;&#34;
+    A class that represents a singular entry in the symbol table
+    &#34;&#34;&#34;
+    def __init__(self, en_typ, nam, typ, scop, modif):
+        &#34;&#34;&#34;
+        Args:
+            en_typ: Whether the entry is a variable, function, parameter, or label.
+            nam: Name of the entry.
+            typ: The associated type of the entry such as `int`, `float` ect. For functions this represents the return type.
+            scop: The scope where the entry exists.
+            modif: The modifiers associated with the entry such as `unsigned`, `const`, `static` ect.
+        &#34;&#34;&#34;
+        self.entry_type = en_typ
+        self.name = nam
+        self.type = typ
+        self.scope = scop
+        self.references = []
+        self.modifiers = list(sorted(set(modif)))</code></pre>
+</details>
+</dd>
+<dt id="src.frontend.symbol_table.Node"><code class="flex name class">
+<span>class <span class="ident">Node</span></span>
+<span>(</span><span>Node, Scope)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>A simple namedtuple to allow for better readability when performing the depth first search required for the generation of the symbol table.</p></section>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.tuple</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="src.frontend.symbol_table.Node.Node"><code class="name">var <span class="ident">Node</span></code></dt>
+<dd>
+<section class="desc"><p>Alias for field number 0</p></section>
+</dd>
+<dt id="src.frontend.symbol_table.Node.Scope"><code class="name">var <span class="ident">Scope</span></code></dt>
+<dd>
+<section class="desc"><p>Alias for field number 1</p></section>
+</dd>
+</dl>
+</dd>
+<dt id="src.frontend.symbol_table.symbol_table"><code class="flex name class">
+<span>class <span class="ident">symbol_table</span></span>
+<span>(</span><span>AST)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>A class that stores all the known and unknown symbols.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>AST</code></strong></dt>
+<dd>The head node of the abstract syntax tree.</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class symbol_table():
+    &#34;&#34;&#34;
+    A class that stores all the known and unknown symbols.
+    &#34;&#34;&#34;
+    def __init__(self,AST):
+        &#34;&#34;&#34;
+        Args:
+            AST: The head node of the abstract syntax tree.
+        &#34;&#34;&#34;
+        self.AST = AST
+
+        self.symbols = []
+        self.undefined = []
+        self.errors = []
+
+    def analyze(self):
+        &#34;&#34;&#34;
+        Analyses the abstract syntax tree to determine whether there are any undeclared references.
+        &#34;&#34;&#34;
+        ntv = [Node(self.AST, &#34;/&#34;)]
+        scopenum = 0
+        typ = None
+        b = False
+        # Simple implementation of a DFS
+        while ntv != []:
+            # Grabs the first element which will be the residual left most child
+            cur = ntv[0]
+
+            # checks whether the current node is an operation that will need to access the symbol table
+            try:
+                index = [&#34;func&#34;, &#34;decl&#34;, &#34;call&#34;, &#34;var&#34;, &#34;body&#34;].index(cur.Node.name)
+
+                #Catches edge case where var or func is used an self_defined name
+                if cur.Node.children == []:
+                    ntv = [Node(x, cur.Scope) for x in cur.Node.children if &#39;children&#39; in x.__dict__] + ntv[1:]
+                    continue
+
+
+                # Function Declaration
+                if index == 0:
+                    # If a function is declared after main without a prototype
+                    if [x for x in self.symbols if x.name == &#34;main&#34; and x.entry_type == {value: key for key, value in en_map.items()}[&#34;Function&#34;]] != [] and [x for x in self.symbols if cur.Node.children[1].name == x.name] == []:
+                        # print(f&#39;Function Not Properly Declared {cur.Node.children[0].name}&#39;)
+                        self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Function&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                    # If a function is declared befor main is declared without a prototype
+                    elif [x for x in self.symbols if x.name == &#34;main&#34; and x.entry_type == {value: key for key, value in en_map.items()}[&#34;Function&#34;]] == []:
+                        self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Function&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                        cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + &#34;/&#34;)
+                    else:
+                        cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + &#34;/&#34;)
+                #Function Prototype Declaration
+                elif index == 1:
+                    self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Function&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                    cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + &#34;/&#34;)
+                    pass
+
+
+                # Function Call
+                elif index == 2:
+                    if [x for x in self.symbols if x.entry_type == {value: key for key, value in en_map.items()}[&#34;Function&#34;] and x.name == cur.Node.children[0].name] == []:
+                        # print(f&#39;Function Undefined {cur.Node.children[0].name}&#39;)
+                        self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Function&#34;],cur.Node.children[0].name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                    else:
+                        ref = [x for x in self.symbols if en_map[x.entry_type] == &#34;Function&#34; and x.name == cur.Node.children[0].name]
+                        for i in ref:
+                            i.references.append(i)
+
+                # Initialization and Usage
+                elif index == 3:
+
+                    #declaration of variable
+                    if len(cur.Node.children) &gt; 1:
+                        #add to symbol table this should also handle function param being that they are still within the same scope as there parent function
+                        if([x for x in self.symbols if x.name == cur.Node.children[1].name and x.scope in cur.Scope] == []):
+                            if cur.Node.parent.parent.name == &#34;func&#34; or cur.Node.parent.parent.name == &#34;decl&#34;:
+                                if cur.Node.parent.name == &#34;param&#34;:
+                                    self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Parameter&#34;],cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                                else:
+                                    self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;],cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                            else:
+                                    self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;],cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                        elif(cur.Node.parent.name != &#34;param&#34;):
+                            print(f&#39;Variable Already Declared {cur.Node.children[1].name} {cur.Node.children[0].name}&#39;)
+                            self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                        elif(cur.Node.parent.name == &#34;param&#34; and [x for x in self.symbols if cur.Node.children[1].name == x.name] == []):
+                            print(f&#39;Undeclared parameter{cur.Node.children[1].name} {cur.Node.children[0].name}&#39;)
+                            self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+
+                        pass
+                    #usage of varible
+                    else:
+                        if ([x for x in self.symbols if x.name == cur.Node.children[0].name and x.scope in cur.Scope] == []):
+                            print(f&#39;Variable Undeclared {cur.Node.children[0].name}&#39;)
+                            self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;],  cur.Node.children[0].name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                        else:
+                            ref = [x for x in self.symbols if x.name == cur.Node.children[0].name and x.scope in cur.Scope]
+                            for i in ref:
+                                i.references.append(i)
+                        
+                elif index == 4:
+                    cur = cur._replace(Scope = f&#34;{cur.Scope}{scopenum}/&#34;)
+                    scopenum += 1
+
+                    #gets all labels declared in body of a function
+                    labels = [x.children[0] for x in cur.Node.children if x.name == &#34;label&#34;]
+                    if labels != []:
+
+                        #for each label in the body
+                        for i in labels:
+                            #checks if label is already in the symbol table.
+                            if [x for x in self.symbols if x.name == i.name] == []:
+                                self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Label&#34;],  i.name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                            else:
+                                self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Label&#34;],  i.name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+
+                    pass
+
+            except ValueError:
+                # This means that the token is not in that list
+                pass
+
+            # fetches the relevant children of the current node and appends the already known children to the list of residual nodes
+            ntv = [Node(x, cur.Scope) for x in cur.Node.children if &#39;children&#39; in x.__dict__] + ntv[1:]
+
+    def __str__(self):
+        li = []
+
+        known_len = [
+            max([len(x.name) for x in self.symbols] + [len(&#34;Name&#34;)]),
+            max([len(en_map[x.entry_type]) for x in self.symbols] + [len(&#34;Entry Type&#34;)]),
+            max([len(x.type) for x in self.symbols] + [len(&#34;Type&#34;)]),
+            max([len(x.scope) for x in self.symbols] + [len(&#34;Scope&#34;)]),
+            max([len(&#34;, &#34;.join(x.modifiers)) for x in self.symbols] + [len(&#34;Modifiers&#34;)]),
+        ]
+        unknown_len = [
+            max([len(x.name) for x in self.undefined] + [len(&#34;Name&#34;)]),
+            max([len(en_map[x.entry_type]) for x in self.undefined] + [len(&#34;Entry Type&#34;)]),
+            max([len(x.scope) for x in self.undefined] + [len(&#34;Scope&#34;)]),
+        ]
+
+        li.append(&#34;Known Symbols&#34;)
+        li.append(f&#34; {&#39;Name&#39;:^{known_len[0]}} | {&#39;Entry Type&#39;:^{known_len[1]}} | {&#39;Type&#39;:^{known_len[2]}} | {&#39;Scope&#39;:^{known_len[3]}} | {&#39;Modifiers&#39;:^{known_len[4]}} &#34;)
+        li.append(f&#34;-{&#39;-&#39;*known_len[0]}-+-{&#39;-&#39;*known_len[1]}-+-{&#39;-&#39;*known_len[2]}-+-{&#39;-&#39;*known_len[3]}-+-{&#39;-&#39;*known_len[4]}-&#34;)
+        for x in self.symbols:
+            li.append(f&#34; {x.name:&gt;{known_len[0]}} | {en_map[x.entry_type]:&gt;{known_len[1]}} | {x.type :&gt;{known_len[2]}} | {x.scope :&lt;{known_len[3]}} | {&#39;, &#39;.join(x.modifiers) :&gt;{known_len[4]}}&#34;)
+        li.append(&#34;&#34;)
+        li.append(&#34;Unknown Symbols&#34;)
+        li.append(f&#34; {&#39;Name&#39;:^{unknown_len[0]}} | {&#39;Entry Type&#39;:^{unknown_len[1]}} | {&#39;Type&#39;:^{unknown_len[2]}}&#34;)
+        li.append(f&#34;-{&#39;-&#39;*unknown_len[0]}-+-{&#39;-&#39;*unknown_len[1]}-+-{&#39;-&#39;*unknown_len[2]}-&#34;)
+        for x in self.undefined:
+            li.append(f&#34; {x.name:&gt;{unknown_len[0]}} | {en_map[x.entry_type]:&gt;{unknown_len[1]}} | {x.type :&gt;{unknown_len[2]}}&#34;)
+
+        return &#34;\n&#34;.join(li) + &#34;\n&#34;
+
+    def __repr__(self):
+        return &#34;\n&#34;.join(self.errors)
+
+    def print_symbol_table(self):
+        &#34;&#34;&#34;
+        Prints the known symbols in the symbol table to stdout
+        &#34;&#34;&#34;
+        # if len(self.symbols) == 0:
+        #     print (&#34;No defined symbols available&#34;)
+        #     return
+
+        col_lengths = [
+            max([len(x.name) for x in self.symbols] + [len(&#34;Name&#34;)]),
+            max([len(en_map[x.entry_type]) for x in self.symbols] + [len(&#34;Entry Type&#34;)]),
+            max([len(x.type) for x in self.symbols] + [len(&#34;Type&#34;)]),
+            max([len(x.scope) for x in self.symbols] + [len(&#34;Scope&#34;)]),
+            max([len(&#34;, &#34;.join(x.modifiers)) for x in self.symbols] + [len(&#34;Modifiers&#34;)]),
+
+        ]
+
+        print (&#34;Known Symbols&#34;)
+        print (f&#34; {&#39;Name&#39;:^{col_lengths[0]}} | {&#39;Entry Type&#39;:^{col_lengths[1]}} | {&#39;Type&#39;:^{col_lengths[2]}} | {&#39;Scope&#39;:^{col_lengths[3]}} | {&#39;Modifiers&#39;:^{col_lengths[4]}} &#34;)
+        print (f&#34;-{&#39;-&#39;*col_lengths[0]}-+-{&#39;-&#39;*col_lengths[1]}-+-{&#39;-&#39;*col_lengths[2]}-+-{&#39;-&#39;*col_lengths[3]}-+-{&#39;-&#39;*col_lengths[4]}-&#34;)
+        for x in self.symbols:
+            print(f&#34; {x.name:&gt;{col_lengths[0]}} | {en_map[x.entry_type]:&gt;{col_lengths[1]}} | {x.type :&gt;{col_lengths[2]}} | {x.scope :&lt;{col_lengths[3]}} | {&#39;, &#39;.join(x.modifiers) :&gt;{col_lengths[4]}}&#34;)
+        # print(&#34;&#34;)
+
+    def print_unknown_symbols(self):
+        &#34;&#34;&#34;
+        Prints the unknown symbols in the symbol table to stdout
+        &#34;&#34;&#34;
+        # if len(self.undefined) == 0:
+        #     print (&#34;No undefined symbols available&#34;)
+        #     return
+
+        col_lengths = [
+            max([len(x.name) for x in self.undefined] + [len(&#34;Name&#34;)]),
+            max([len(en_map[x.entry_type]) for x in self.undefined] + [len(&#34;Entry Type&#34;)]),
+            max([len(x.scope) for x in self.undefined] + [len(&#34;Scope&#34;)]),
+        ]
+
+        print (&#34;Unknown Symbols&#34;)
+        print (f&#34; {&#39;Name&#39;:^{col_lengths[0]}} | {&#39;Entry Type&#39;:^{col_lengths[1]}} | {&#39;Type&#39;:^{col_lengths[2]}}&#34;)
+        print (f&#34;-{&#39;-&#39;*col_lengths[0]}-+-{&#39;-&#39;*col_lengths[1]}-+-{&#39;-&#39;*col_lengths[2]}-&#34;)
+        for x in self.undefined:
+            print(f&#34; {x.name:&gt;{col_lengths[0]}} | {en_map[x.entry_type]:&gt;{col_lengths[1]}} | {x.type :&gt;{col_lengths[2]}}&#34;)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="src.frontend.symbol_table.symbol_table.analyze"><code class="name flex">
+<span>def <span class="ident">analyze</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Analyses the abstract syntax tree to determine whether there are any undeclared references.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def analyze(self):
+    &#34;&#34;&#34;
+    Analyses the abstract syntax tree to determine whether there are any undeclared references.
+    &#34;&#34;&#34;
+    ntv = [Node(self.AST, &#34;/&#34;)]
+    scopenum = 0
+    typ = None
+    b = False
+    # Simple implementation of a DFS
+    while ntv != []:
+        # Grabs the first element which will be the residual left most child
+        cur = ntv[0]
+
+        # checks whether the current node is an operation that will need to access the symbol table
+        try:
+            index = [&#34;func&#34;, &#34;decl&#34;, &#34;call&#34;, &#34;var&#34;, &#34;body&#34;].index(cur.Node.name)
+
+            #Catches edge case where var or func is used an self_defined name
+            if cur.Node.children == []:
+                ntv = [Node(x, cur.Scope) for x in cur.Node.children if &#39;children&#39; in x.__dict__] + ntv[1:]
+                continue
+
+
+            # Function Declaration
+            if index == 0:
+                # If a function is declared after main without a prototype
+                if [x for x in self.symbols if x.name == &#34;main&#34; and x.entry_type == {value: key for key, value in en_map.items()}[&#34;Function&#34;]] != [] and [x for x in self.symbols if cur.Node.children[1].name == x.name] == []:
+                    # print(f&#39;Function Not Properly Declared {cur.Node.children[0].name}&#39;)
+                    self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Function&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                # If a function is declared befor main is declared without a prototype
+                elif [x for x in self.symbols if x.name == &#34;main&#34; and x.entry_type == {value: key for key, value in en_map.items()}[&#34;Function&#34;]] == []:
+                    self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Function&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                    cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + &#34;/&#34;)
+                else:
+                    cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + &#34;/&#34;)
+            #Function Prototype Declaration
+            elif index == 1:
+                self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Function&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                cur = cur._replace(Scope = cur.Scope + cur.Node.children[1].name + &#34;/&#34;)
+                pass
+
+
+            # Function Call
+            elif index == 2:
+                if [x for x in self.symbols if x.entry_type == {value: key for key, value in en_map.items()}[&#34;Function&#34;] and x.name == cur.Node.children[0].name] == []:
+                    # print(f&#39;Function Undefined {cur.Node.children[0].name}&#39;)
+                    self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Function&#34;],cur.Node.children[0].name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                else:
+                    ref = [x for x in self.symbols if en_map[x.entry_type] == &#34;Function&#34; and x.name == cur.Node.children[0].name]
+                    for i in ref:
+                        i.references.append(i)
+
+            # Initialization and Usage
+            elif index == 3:
+
+                #declaration of variable
+                if len(cur.Node.children) &gt; 1:
+                    #add to symbol table this should also handle function param being that they are still within the same scope as there parent function
+                    if([x for x in self.symbols if x.name == cur.Node.children[1].name and x.scope in cur.Scope] == []):
+                        if cur.Node.parent.parent.name == &#34;func&#34; or cur.Node.parent.parent.name == &#34;decl&#34;:
+                            if cur.Node.parent.name == &#34;param&#34;:
+                                self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Parameter&#34;],cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                            else:
+                                self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;],cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                        else:
+                                self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;],cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                    elif(cur.Node.parent.name != &#34;param&#34;):
+                        print(f&#39;Variable Already Declared {cur.Node.children[1].name} {cur.Node.children[0].name}&#39;)
+                        self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                    elif(cur.Node.parent.name == &#34;param&#34; and [x for x in self.symbols if cur.Node.children[1].name == x.name] == []):
+                        print(f&#39;Undeclared parameter{cur.Node.children[1].name} {cur.Node.children[0].name}&#39;)
+                        self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+
+                    pass
+                #usage of varible
+                else:
+                    if ([x for x in self.symbols if x.name == cur.Node.children[0].name and x.scope in cur.Scope] == []):
+                        print(f&#39;Variable Undeclared {cur.Node.children[0].name}&#39;)
+                        self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Variable&#34;],  cur.Node.children[0].name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                    else:
+                        ref = [x for x in self.symbols if x.name == cur.Node.children[0].name and x.scope in cur.Scope]
+                        for i in ref:
+                            i.references.append(i)
+                    
+            elif index == 4:
+                cur = cur._replace(Scope = f&#34;{cur.Scope}{scopenum}/&#34;)
+                scopenum += 1
+
+                #gets all labels declared in body of a function
+                labels = [x.children[0] for x in cur.Node.children if x.name == &#34;label&#34;]
+                if labels != []:
+
+                    #for each label in the body
+                    for i in labels:
+                        #checks if label is already in the symbol table.
+                        if [x for x in self.symbols if x.name == i.name] == []:
+                            self.symbols.append(Entry({value: key for key, value in en_map.items()}[&#34;Label&#34;],  i.name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+                        else:
+                            self.undefined.append(Entry({value: key for key, value in en_map.items()}[&#34;Label&#34;],  i.name, &#34;None&#34;, cur.Scope, [x.name for x in cur.Node.children[0].children]))
+
+                pass
+
+        except ValueError:
+            # This means that the token is not in that list
+            pass
+
+        # fetches the relevant children of the current node and appends the already known children to the list of residual nodes
+        ntv = [Node(x, cur.Scope) for x in cur.Node.children if &#39;children&#39; in x.__dict__] + ntv[1:]</code></pre>
+</details>
+</dd>
+<dt id="src.frontend.symbol_table.symbol_table.print_symbol_table"><code class="name flex">
+<span>def <span class="ident">print_symbol_table</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Prints the known symbols in the symbol table to stdout</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def print_symbol_table(self):
+    &#34;&#34;&#34;
+    Prints the known symbols in the symbol table to stdout
+    &#34;&#34;&#34;
+    # if len(self.symbols) == 0:
+    #     print (&#34;No defined symbols available&#34;)
+    #     return
+
+    col_lengths = [
+        max([len(x.name) for x in self.symbols] + [len(&#34;Name&#34;)]),
+        max([len(en_map[x.entry_type]) for x in self.symbols] + [len(&#34;Entry Type&#34;)]),
+        max([len(x.type) for x in self.symbols] + [len(&#34;Type&#34;)]),
+        max([len(x.scope) for x in self.symbols] + [len(&#34;Scope&#34;)]),
+        max([len(&#34;, &#34;.join(x.modifiers)) for x in self.symbols] + [len(&#34;Modifiers&#34;)]),
+
+    ]
+
+    print (&#34;Known Symbols&#34;)
+    print (f&#34; {&#39;Name&#39;:^{col_lengths[0]}} | {&#39;Entry Type&#39;:^{col_lengths[1]}} | {&#39;Type&#39;:^{col_lengths[2]}} | {&#39;Scope&#39;:^{col_lengths[3]}} | {&#39;Modifiers&#39;:^{col_lengths[4]}} &#34;)
+    print (f&#34;-{&#39;-&#39;*col_lengths[0]}-+-{&#39;-&#39;*col_lengths[1]}-+-{&#39;-&#39;*col_lengths[2]}-+-{&#39;-&#39;*col_lengths[3]}-+-{&#39;-&#39;*col_lengths[4]}-&#34;)
+    for x in self.symbols:
+        print(f&#34; {x.name:&gt;{col_lengths[0]}} | {en_map[x.entry_type]:&gt;{col_lengths[1]}} | {x.type :&gt;{col_lengths[2]}} | {x.scope :&lt;{col_lengths[3]}} | {&#39;, &#39;.join(x.modifiers) :&gt;{col_lengths[4]}}&#34;)</code></pre>
+</details>
+</dd>
+<dt id="src.frontend.symbol_table.symbol_table.print_unknown_symbols"><code class="name flex">
+<span>def <span class="ident">print_unknown_symbols</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Prints the unknown symbols in the symbol table to stdout</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def print_unknown_symbols(self):
+    &#34;&#34;&#34;
+    Prints the unknown symbols in the symbol table to stdout
+    &#34;&#34;&#34;
+    # if len(self.undefined) == 0:
+    #     print (&#34;No undefined symbols available&#34;)
+    #     return
+
+    col_lengths = [
+        max([len(x.name) for x in self.undefined] + [len(&#34;Name&#34;)]),
+        max([len(en_map[x.entry_type]) for x in self.undefined] + [len(&#34;Entry Type&#34;)]),
+        max([len(x.scope) for x in self.undefined] + [len(&#34;Scope&#34;)]),
+    ]
+
+    print (&#34;Unknown Symbols&#34;)
+    print (f&#34; {&#39;Name&#39;:^{col_lengths[0]}} | {&#39;Entry Type&#39;:^{col_lengths[1]}} | {&#39;Type&#39;:^{col_lengths[2]}}&#34;)
+    print (f&#34;-{&#39;-&#39;*col_lengths[0]}-+-{&#39;-&#39;*col_lengths[1]}-+-{&#39;-&#39;*col_lengths[2]}-&#34;)
+    for x in self.undefined:
+        print(f&#34; {x.name:&gt;{col_lengths[0]}} | {en_map[x.entry_type]:&gt;{col_lengths[1]}} | {x.type :&gt;{col_lengths[2]}}&#34;)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="src.frontend" href="index.html">src.frontend</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="src.frontend.symbol_table.Entry" href="#src.frontend.symbol_table.Entry">Entry</a></code></h4>
+</li>
+<li>
+<h4><code><a title="src.frontend.symbol_table.Node" href="#src.frontend.symbol_table.Node">Node</a></code></h4>
+<ul class="">
+<li><code><a title="src.frontend.symbol_table.Node.Node" href="#src.frontend.symbol_table.Node.Node">Node</a></code></li>
+<li><code><a title="src.frontend.symbol_table.Node.Scope" href="#src.frontend.symbol_table.Node.Scope">Scope</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="src.frontend.symbol_table.symbol_table" href="#src.frontend.symbol_table.symbol_table">symbol_table</a></code></h4>
+<ul class="">
+<li><code><a title="src.frontend.symbol_table.symbol_table.analyze" href="#src.frontend.symbol_table.symbol_table.analyze">analyze</a></code></li>
+<li><code><a title="src.frontend.symbol_table.symbol_table.print_symbol_table" href="#src.frontend.symbol_table.symbol_table.print_symbol_table">print_symbol_table</a></code></li>
+<li><code><a title="src.frontend.symbol_table.symbol_table.print_unknown_symbols" href="#src.frontend.symbol_table.symbol_table.print_unknown_symbols">print_unknown_symbols</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.4</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>
