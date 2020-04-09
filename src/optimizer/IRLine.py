@@ -51,7 +51,7 @@ class IRLine():
 
     def retrieve(self):
         """
-        Retrieves the updated tempoary variable storage and list of unavialable label names for the future.
+        Retrieves the updated tempoary variable storage and list of unavailable label names for the future.
 
         Returns:
             tvs: The current tempoary variable storage
@@ -375,6 +375,14 @@ class IRIf(IRNode):
     def __repr__(self):
         pass
     def fileInit(self,lhs,rhs,compOp,succ,fail):
+        """
+        Args:
+            lhs: left side of the comparison
+            rhs: right side of the comparison
+            compOp: comparison operator
+            succ: success label
+            fail: failure label
+        """
         self.lhs = lhs
         self.rhs = rhs
         self.comp = compOp
@@ -436,6 +444,13 @@ class IRArth(IRNode):
         pass
 
     def fileInit(self,leftHand,op,rightHand,varName):
+        """
+        Args:
+            leftHand: Left hand side of the op.
+            op: The operator of the arithmatic function
+            rightHand: Right hand side of the op.
+            varname: Name of the variable
+        """
         self.lhs = leftHand
         self.rhs = rightHand
         self.operator = op
@@ -494,8 +509,14 @@ class IRFunctionAssign(IRNode):
 
     def __str__(self):
         return f"{self.lhs} = {self.name}({', '.join(self.params)});"
-    
+
     def LineFromFile(self,lhs,func_name,params):
+        """
+        Args:
+            lhs: left hand side of the assignment.
+            func_name: name of the function call.
+            params: parameters of the function call.
+        """
         self.lhs = lhs
         self.name = func_name
         self.params = params

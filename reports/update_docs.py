@@ -64,8 +64,26 @@ def retrieve_ir1(file):
     ir = ir1.LevelOneIR(tmp[-2][0], tmp[-1][0])
     ir.construct()
 
+    return tmp + [(ir, str(ir))]
+
+def retrieve_O1(file):
+    tmp = retrieve_ir1(file)
+
+    ir = deepcopy(tmp[-1][0])
+
+    ir.optimize(1)
 
     return tmp + [(ir, str(ir))]
+
+def retrieve_O2(file):
+    tmp = retrieve_O1(file)
+
+    ir = deepcopy(tmp[-1][0])
+
+    ir.optimize(2)
+
+    return tmp + [(ir, str(ir))]
+
 
 if __name__ == "__main__":
     # Setus up /docs for the newly generated documentation.
@@ -94,11 +112,11 @@ if __name__ == "__main__":
 
     # Adds some inline styling to certain tags located within the design document.
     for th in itertools.chain(des_parser.select("th"), usr_parser.select("th")):
-        style = "padding: 10px;"
-        if 'style' in th:
-            th['style'] += style
-        else:
-            th['style'] = style
+        # style = "padding: 10px;"
+        # if 'style' in th:
+        #     th['style'] += style
+        # else:
+        #     th['style'] = style
 
         if len(th.parent.find_all("th")) == 1:
             th['colspan'] = colspan
@@ -138,6 +156,7 @@ if __name__ == "__main__":
     # Assigns IDs for the table of contents
     sections = []
     idx = -1
+    examples_id = None
 
     for idx, dd in enumerate(des_parser.select("h2"), idx + 1):
         dd['id'] = f"section_{idx}" if 'id' not in dd else dd['id']
@@ -152,8 +171,13 @@ if __name__ == "__main__":
         sections.append(um)
 
     for idx, h3 in enumerate(usr_parser.select("h3"), idx + 1):
+        if h3.string == "Examples of C Programs and their Intermediate Representations":
+            examples_id = f"#section_{idx}"
         h3['id'] = f"section_{idx}" if 'id' not in h3 else h3['id']
         sections.append(h3)
+
+    for a in des_parser.select("a"):
+        a['href'] = examples_id if a['href'] == "C_EXAMPLES" else a['href']
 
     # Generates and inserts the table of contents into the website
     for ul in page_parser.select(".toc ul"):
@@ -200,7 +224,9 @@ if __name__ == "__main__":
         ("Parse Tree", 1),
         ("Abstract Syntax Tree", 2),
         ("Symbol Table", 3),
-        ("Linear IR1 (-O0)", 4),
+        ("Linear IR (-O0)", 4),
+        ("Linear IR (-O1)", 5),
+        ("Linear IR (-O2)", 6),
     ]
 
     for program in [x for x in sorted(pathlib.Path("../test/programs").iterdir()) if x.suffix == '.c' ]:
@@ -217,7 +243,7 @@ if __name__ == "__main__":
             data.select("div")[-1].append(a)
 
         par = usr_parser.new_tag("div", attrs={'class' : "example_representations"})
-        outs = retrieve_ir1(prep.run(program.read_text(), program.resolve()))
+        outs = retrieve_O2(prep.run(program.read_text(), program.resolve()))
         outs.insert(0, ("", program.read_text()))
         for idx, arg in enumerate([""] + [x[-1] for x in comp_flags]):
             div = usr_parser.new_tag("div")

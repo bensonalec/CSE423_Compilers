@@ -8,6 +8,13 @@
     .example_buttons a {
         flex-grow: 1;
         text-align: center;
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+    thead tr th {
+        text-align: center;
+        padding-left: 5px;
+        padding-right: 5px;
     }
     tbody th, tbody td {
         border-bottom: 1px solid rgb(150, 150, 150);
@@ -19,7 +26,7 @@
         <dl>
             <dt><h3>How to use the compiler</h3></dt>
             <dd>
-                The compiler is split up into three modules, the frontend, the optimizer, and the backend. So far only the frontend is implemented, but there are two alternatives for how to execute the compiler. <code>run.py</code> is located in <code>./src</code> and provides the interface to the whole compiler. However if you desire to run the frontend by itself you can execute the file <code>frontend.py</code> located in <code>./src/frontend</code>. Both of these files will accept the following arguments:
+                The compiler is split up into three modules, the frontend, the optimizer, and the backend. So far only the frontend is implemented, but there are two alternatives for how to execute the compiler. <code>run.py</code> is located in <code>./src</code> and provides the interface to the whole compiler. However if you desire to run the frontend by itself you can execute the file <code>frontend.py</code> located in <code>./src/frontend</code>. Only <code>run.py</code> will accept the following arguments, the rest belong to their respective sections:
                 <dl>
                     <dt><code>
                         -h
@@ -80,7 +87,7 @@
                     </code> <code>[INPUT FILE]</code> or <code>
                         --input
                     </code> <code>[INPUT FILE]</code></dt>
-                    <dd>Used to input IR from file. When this option is used, there is no need for a C file to be inputted as well. The output is not optimized.</dd>
+                    <dd>Used to input IR from file. Optimizations will be applied if the optimization flag is passed in.</dd>
                     <dt><code>
                         --IRout
                     </code> <code>[OUTPUT FILE]</code></dt>
@@ -100,7 +107,6 @@
                             <th>AST Building</th>
                             <th>Semantic Analysis</th>
                             <th>Intermediate Representation</th>
-                            <th>Optimization</th>
                         </tr>
                     </thead>
                     <tfoot>
@@ -1004,8 +1010,10 @@
                 <h3>Optimization Algorithms Implemented</h3>
             </dt>
             <dd>
-                As a group we decided to implement four different optimization mechanisms as a part of three total optimization levels. <code>-O0</code> means that no optimization occurs during the compilation process. <code>-O1</code> means that there are slight optimizations done during the compilation process. <code>-O2</code> means that there are more advanced optimizations done during the compilaion process. Keep in mind that they are by no means agressive, and there is no risk of altered behavior of the program when using these optimizations.<br>
+                There are three different optimization levels implemented. <code>-O0</code> (default), <code>-O1</code>, and <code>-O2</code>.
                 <dl>
+                    <dt><code>-O0</code></dt>
+                    <dd>No optimization passes performed.</dd>
                     <dt><code>-O1</code></dt>
                     <dd>
                         <dl>
@@ -1022,6 +1030,9 @@
                             <dd>For expressions that require some sort of evaluation before the value can be used the compiler will try to evaluate the expression at compile time and replace the evaluation with the resultant value in the program.</dd>
                             <dt>Constant Propagation</dt>
                             <dd>Whenever a variable is referenced within the program, the compiler will try to replace the value of the variable with the known value of the variable wherever it deems it is safe to do so.</dd>
+                            <dt>IR Cleanup</dt>
+                            <dd>Due to the nature of the IR, after the compiler iterates through the <code>IRLine</code> objects it will perform a
+                                local reference count of the variables within the operation and remove the ones that are deemed unnecessary.</dd>
                         </dl>
                     </dd>
                 </dl>

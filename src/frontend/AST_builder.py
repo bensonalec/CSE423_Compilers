@@ -1,7 +1,9 @@
-import re
 """
 This module takes in the parse tree, and produces an Abstract Syntax Tree.This is done using a Depth First Traversal. By taking the Concrete Syntax Tree (Parse Tree)and converting it to an Abstract Syntax Tree we can begin to move towards an intermediate form.
 """
+
+import re
+
 def buildAST(parseHead):
     """
     Produces an AST given the head of the Parse Tree

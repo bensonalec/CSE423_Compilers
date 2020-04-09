@@ -67,7 +67,7 @@ class Entry():
 
 Node = namedtuple(&#34;Node&#34;, [&#34;Node&#34;, &#34;Scope&#34;])
 Node.__doc__ = &#34;&#34;&#34;
-A simple namedtuple to allow for better readability when performing the depth first search required for the semantic analysis.
+A simple namedtuple to allow for better readability when performing the depth first search required for the generation of the symbol table.
 &#34;&#34;&#34;
 class symbol_table():
     &#34;&#34;&#34;
@@ -167,7 +167,7 @@ class symbol_table():
                             ref = [x for x in self.symbols if x.name == cur.Node.children[0].name and x.scope in cur.Scope]
                             for i in ref:
                                 i.references.append(i)
-                        
+
                 elif index == 4:
                     cur = cur._replace(Scope = f&#34;{cur.Scope}{scopenum}/&#34;)
                     scopenum += 1
@@ -330,7 +330,7 @@ class symbol_table():
 <span>(</span><span>Node, Scope)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>A simple namedtuple to allow for better readability when performing the depth first search required for the semantic analysis.</p></section>
+<section class="desc"><p>A simple namedtuple to allow for better readability when performing the depth first search required for the generation of the symbol table.</p></section>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>builtins.tuple</li>
@@ -460,7 +460,7 @@ class symbol_table():
                             ref = [x for x in self.symbols if x.name == cur.Node.children[0].name and x.scope in cur.Scope]
                             for i in ref:
                                 i.references.append(i)
-                        
+
                 elif index == 4:
                     cur = cur._replace(Scope = f&#34;{cur.Scope}{scopenum}/&#34;)
                     scopenum += 1
@@ -657,7 +657,7 @@ class symbol_table():
                         ref = [x for x in self.symbols if x.name == cur.Node.children[0].name and x.scope in cur.Scope]
                         for i in ref:
                             i.references.append(i)
-                    
+
             elif index == 4:
                 cur = cur._replace(Scope = f&#34;{cur.Scope}{scopenum}/&#34;)
                 scopenum += 1

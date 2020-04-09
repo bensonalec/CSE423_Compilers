@@ -74,6 +74,12 @@ class LevelOneIR():
         return "\n".join([str(x) for x in self.IR]) + "\n"
 
     def optimize(self, opt):
+        """
+        Performs the optimizations based on the level of optimization
+
+        Args:
+            opt: The level of optimization to be performed.
+        """
         if opt > 0:
             self.remove_unused_funcs()
             self.remove_unused_vars()
@@ -139,6 +145,9 @@ class LevelOneIR():
             self.cleanup()
 
     def remove_unused_vars(self):
+        """
+        Removes unused variables based on the number of references found in the symbol table
+        """
         ir = self.IR
         scope = ""
 
@@ -177,6 +186,9 @@ class LevelOneIR():
         self.IR = final_ir
 
     def cleanup(self):
+        """
+        Cleans up the IR by looking at the considering the number of references withing the local `IRLine` object. This allows for the removal of unused tempoary variables.
+        """
 
         class ref():
             def __init__(self, init_index, init_ref_type, side):
@@ -460,6 +472,14 @@ class LevelOneIR():
         return changed, var_val
 
 def buildBoilerPlate(symTable):
+    """
+    Generates the function names and parameters from symbol table.
+
+    Args:
+        symTable: The symbol table we get from previous stages in the compiler.
+    Returns:
+        A list containing function name and parameters.
+    """
     namesandparams = []
     functionNames = [(x.name,x.type) for x in symTable.symbols if x.is_function]
     params = [(x.name,x.scope,x.type) for x in symTable.symbols if x.is_param]
@@ -717,7 +737,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 
                     else:
                         lines.append(irl.IRLine.singleEntry(irl.IRAssignment(f"D.{returnDigit}", f"{tvs[-1]}"), [labelDigit]))
-                    
+
                     lines.append(irl.IRLine.singleEntry(irl.IRReturn(f"D.{returnDigit}"), [labelDigit]))
 
                     if labelList != []:

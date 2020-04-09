@@ -40,7 +40,7 @@ class Entry():
 
 Node = namedtuple("Node", ["Node", "Scope"])
 Node.__doc__ = """
-A simple namedtuple to allow for better readability when performing the depth first search required for the semantic analysis.
+A simple namedtuple to allow for better readability when performing the depth first search required for the generation of the symbol table.
 """
 class symbol_table():
     """
@@ -140,7 +140,7 @@ class symbol_table():
                             ref = [x for x in self.symbols if x.name == cur.Node.children[0].name and x.scope in cur.Scope]
                             for i in ref:
                                 i.references.append(i)
-                        
+
                 elif index == 4:
                     cur = cur._replace(Scope = f"{cur.Scope}{scopenum}/")
                     scopenum += 1
