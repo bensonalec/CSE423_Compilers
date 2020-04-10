@@ -400,11 +400,16 @@ class IRIf(IRNode):
 
         try:
             v1 = int(v1)
-            v2 = int(v2)
-
         except ValueError:
             try:
                 v1 = float(v1)
+            except ValueError:
+                pass
+
+        try:
+            v2 = int(v2)
+        except ValueError:
+            try:
                 v2 = float(v2)
             except ValueError:
                 pass
