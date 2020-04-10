@@ -67,7 +67,7 @@ class semantic():
                 index = ["=","call","func","goto"].index(cur.Node.name)
 
                 #Catches edge case where var or func is used an self_defined name
-                if cur.Node.children == []:
+                if cur.Node.children == [] or cur.Node.parent.name == "call":
                     ntv = [Node(x, cur.Scope) for x in cur.Node.children if 'children' in x.__dict__] + ntv[1:]
                     continue
                 
