@@ -452,7 +452,7 @@ class IRIf(IRNode):
             j_op = "jg"
 
         l.extend([
-            f"{c_op} {v1} {v2};",
+            f"{c_op} {v1}, {v2};",
             f"{j_op} {self.success};",
             f"jmp {self.failure};"
         ])
@@ -512,6 +512,96 @@ class IRArth(IRNode):
 
     def __repr__(self):
         pass
+
+    def asm(self):
+        l = []
+
+        spec_op = False
+
+        v1 = self.lhs
+        v2 = self.rhs
+
+        asm_op = ""
+
+        try:
+            v1 = int(v1)
+        except ValueError:
+            try:
+                v1 = float(v1)
+            except ValueError:
+                pass
+
+        try:
+            v2 = int(v2)
+        except ValueError:
+            try:
+                v2 = float(v2)
+            except ValueError:
+                pass
+
+        if isinstance(v1, int):
+            if v1 == 0:
+                l.append(f"xor %reg_0, %reg_0;")
+            else:
+                l.append(f"mov ${v1}, %reg_0;")
+            v1 = "%%reg_0"
+            # TODO: Add support for the number to be a floating point value.
+        if isinstance(v2, int):
+            if v2 == 0:
+                l.append(f"xor %reg_1, %reg_1;")
+            else:
+                l.append(f"mov ${v2}, %reg_1;")
+            v1 = "%%reg_1"
+
+        if self.operator == "+":
+            asm_op = "add"
+        elif self.operator == "-":
+            asm_op = "sub"
+        elif self.operator == "*":
+            asm_op = "imul"
+        elif self.operator == "/":
+            l.extend([
+                f"xor %rdx, %rdx;",
+                f"mov {v1}, %rax;",
+                f"idiv {v2};",
+                f"mov %rax, %result;"
+            ])
+            spec_op = True
+        elif self.operator == "%":
+            l.extend([
+                f"xor %rdx, %rdx;",
+                f"mov {v1}, %rax;",
+                f"idiv {v2};",
+                f"mov %rdx, %result;"
+            ])
+            spec_op = True
+        elif self.operator == "<<":
+            asm_op = "sal"
+        elif self.operator == ">>":
+            asm_op = "sar"
+        elif self.operator == "|":
+            asm_op = "or"
+        elif self.operator == "&":
+            asm_op = "and"
+        elif self.operator == "^":
+            asm_op = "xor"
+        elif self.operator == "!":
+            l.extend([
+                f"xor {v1}, {v1}",
+                f"test %rdi, %rdi",
+                f"sete {v1}"
+            ])
+            spec_op = True
+        elif self.operator == "~":
+            l.append(f"not {v1};")
+            spec_op = True
+
+        if not spec_op:
+            l.append(
+                f"{asm_op} {v1}, {v2};"
+            )
+
+        return "\n".join(l)
 
     def fileInit(self,leftHand,op,rightHand,varName):
         """
