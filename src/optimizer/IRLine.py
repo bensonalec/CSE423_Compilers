@@ -7,6 +7,7 @@ from inspect import getsourcefile
 from importlib.machinery import SourceFileLoader
 
 ast = SourceFileLoader("AST_builder", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/../frontend/AST_builder.py").load_module()
+asmn = SourceFileLoader("ASMNode", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}../backend/ASMNode.py").load_module()
 
 class IRLine():
     """
@@ -303,7 +304,11 @@ class IRJump(IRNode):
         return f"{self.name}:"
 
     def __repr__(self):
-        reutrn f"{self.name}:"
+        pass
+    def asm(self):
+        #want to end up returning just the operation in a ASMNode
+        return asmn.ASMNode(f"{self.name}:",None,None)
+
 
 class IRGoTo(IRNode):
     """
