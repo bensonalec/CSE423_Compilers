@@ -307,7 +307,7 @@ class IRJump(IRNode):
         pass
     def asm(self):
         #want to end up returning just the operation in a ASMNode
-        return asmn.ASMNode(f"{self.name}:",None,None)
+        return [asmn.ASMNode(f"{self.name}:",None,None)]
 
 
 class IRGoTo(IRNode):
@@ -328,8 +328,8 @@ class IRGoTo(IRNode):
         pass
 
     def asm(self):
-        return asmn.ASMNode("jmp", self.name, None)
-
+        return [asmn.ASMNode("jmp", self.name, None)]
+        
 class IRIf(IRNode):
     """
     Intermediate representation node for an if statement. If statements are constructed to represent actual If Statements, While Loops, and For Loops in C.
@@ -423,21 +423,24 @@ class IRIf(IRNode):
                 pass
 
         if v1 == v2:
-            return f"jmp {self.success}"
+            if self.comp in ["==", "<=", ">="]:
+                return [asmn.ASMNode("jmp",self.success,None)]
+            else:
+                return [asmn.ASMNode("jmp",self.failure,None)]
         else:
             if isinstance(v1, int):
                 if v1 == 0:
-                    l.append(f"xor reg_0, reg_0;")
+                    l.append(asmn.ASMNode("xor","reg_0","reg_0"))
                 else:
-                    l.append(f"mov ${v1}, reg_0;")
+                    l.append(asmn.ASMNode("mov",f"${v1}","reg0"))
                 v1 = "reg_0"
                 # TODO: Add support for the number to be a floating point value.
             if isinstance(v2, int):
                 if v2 == 0:
-                    l.append(f"xor reg_1, reg_1;")
+                    l.append(asmn.ASNNode("xor", "reg_1", "reg_1"))
                 else:
-                    l.append(f"mov ${v2}, reg_1;")
-                v1 = "reg_1"
+                    l.append(asmn.ASMNode("mov",f"${v2}","reg1"))
+                v2 = "reg_1"
                 # TODO: Add support for the number to be a floating point value.
 
         if self.comp == "==":
@@ -460,12 +463,12 @@ class IRIf(IRNode):
             j_op = "jg"
 
         l.extend([
-            f"{c_op} {v1}, {v2};",
-            f"{j_op} {self.success};",
-            f"jmp {self.failure};"
+            asmn.ASMNode(c_op, v1, v2),
+            asmn.ASMNode(j_op,self.success,None),
+            asmn.ASMNode("jmp", self.failure, None)
         ])
 
-        return "\n".join(l)
+        return l
 
 class IRArth(IRNode):
     """
