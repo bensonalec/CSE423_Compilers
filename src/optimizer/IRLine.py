@@ -325,7 +325,10 @@ class IRGoTo(IRNode):
         return f"goto {self.name};"
 
     def __repr__(self):
-        return f"jump {self.name}"
+        pass
+
+    def asm(self):
+        return asmn.ASMNode("jmp", self.name, None)
 
 class IRIf(IRNode):
     """
