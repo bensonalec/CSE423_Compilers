@@ -501,16 +501,16 @@ class IRFunctionAssign(IRNode):
 
         asm_calls.append("push $rbp")
 
-        temp_par = self.params.split(",")
 
-        for i in range(temp_par):
-            asm_calls.append(f'push {temp_par[i].split(" ")[1]}')
+        for i in self.params:
+            asm_calls.append(f'push {i}')
+        
+        asm_calls.append(f'call {self.name}')
         
         asm_calls.append(f'pop $eax')
         #move return value.
-        asm_calls.append(f'mov $eax {self.lhs}')
-
-
+        asm_calls.append(f'mov $eax, {self.lhs}')
+        
         return "\n".join(asm_calls)
 
 
@@ -543,9 +543,8 @@ class IRFunctionDecl(IRNode):
 
         asm_calls.append(f'{self.name}:')
 
-        for i in range(len(self.param.split(",")))
+        for i in range(len(self.params.split(" ")) - 1):
             asm_calls.append(f'pop r{8 + i}')
-
 
         return "\n".join(asm_calls)
 
