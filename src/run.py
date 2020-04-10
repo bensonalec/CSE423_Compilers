@@ -8,7 +8,7 @@ from importlib.machinery import SourceFileLoader
 
 frontend = SourceFileLoader("frontend.frontend", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/frontend/frontend.py").load_module()
 optimizer = SourceFileLoader("optimizer.optimizer", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/optimizer/optimizer.py").load_module()
-
+backend = SourceFileLoader("backend.backend", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/backend/backend.py").load_module()
 def main(args):
 
     # Execution of the Frontend.
@@ -21,10 +21,10 @@ def main(args):
 
 
     # Execution of Optimization
-    optimizer.mainAST(args,ast,sym)
+    ir = optimizer.main(args,ast,sym)
 
     # Execution of Backend
-
+    backend.main(args, ir)
 
 
 
@@ -64,6 +64,8 @@ if __name__ == "__main__":
     cmd_options.add_argument('-i', '--input', action='store_true', help="Used to input IR from file")
 
     cmd_options.add_argument('--IRout', metavar='<output-filename>', type=str, default=None, help="Used to output the final generated IR to a file")
+
+    cmd_options.add_argument('-a1', '--a1',help='Prints the assembly after the first pass.',action="store_true")
 
     #generate arguements
     args = cmd_options.parse_args()
