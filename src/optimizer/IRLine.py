@@ -303,7 +303,7 @@ class IRJump(IRNode):
         return f"{self.name}:"
 
     def __repr__(self):
-        pass
+        reutrn f"{self.name}:"
 
 class IRGoTo(IRNode):
     """
