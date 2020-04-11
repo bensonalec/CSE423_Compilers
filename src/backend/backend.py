@@ -6,7 +6,7 @@ asmn = SourceFileLoader("ASMNode", f"{os.path.dirname(os.path.abspath(getsourcef
 ir1 = SourceFileLoader("IR_Lv1_Builder", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/../optimizer/IR_Lv1_Builder.py").load_module()
 
 def main( args, IR):
-	asm = [y.asm() for x in IR.IR for y in x.treeList]
+	asm = [z for x in IR.IR for y in x.treeList for z in y.asm()]
 	
 	if args.a1:
 		for i in asm:
