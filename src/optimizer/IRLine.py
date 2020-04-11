@@ -648,23 +648,20 @@ class IRSpecial(IRNode):
     def __str__(self):
         return f"{self.var} = {self.var} {operation} 1;"
 
-    def toAssembly(self):
+    def asm(self):
         """
         Constructs assembly string of a special (i.e. inc/dec) instruction
         Returns: 
-            String representing assembly code.
+            List of necessary ASMNodes representing assembly code.
         
         TODO: Change to use assembly node, work with team to figure this out.
         """
 
-        # Obviously this wouldn't work but,
-        # should I have access to some type of map/stack such as this?
-        varToRegister = {self.var: "-4(rbp)"}
+        if self.operation == "+":
+            return [asmn.ASMNode("inc","reg_0",None)]
+        elif self.operation == '-':
+            return [asmn.ASMNode("dec","reg_0",None)]
 
-        if self.operation == "+": assemblyString = f"addq $1, {varToRegister[self.var]}\n"
-        elif self.operation == '-': assemblyString = f"subq $1, {varToRegister[self.var]}\n"
-
-        return assemblyString
 
 
 class IRAssignment(IRNode):
