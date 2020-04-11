@@ -285,7 +285,7 @@ class IRNode():
     def __str__(self):
         pass
 
-    def __repr__(self):
+    def asm(self):
         pass
 
 
@@ -843,17 +843,6 @@ class IRFunctionDecl(IRNode):
 
         return size
 
-    def asm(self):
-        #function declaration
-        asm_calls = []
-
-        asm_calls.append(f'{self.name}:')
-
-        for i in range(len(self.params.split(" ")) - 1):
-            asm_calls.append(f'pop r{8 + i}')
-
-        return "\n".join(asm_calls)
-
 class IRReturn(IRNode):
     """
     Intermediate representation node for a return.
@@ -870,6 +859,15 @@ class IRReturn(IRNode):
             return f"return {self.value};"
         else:
             return f"return;"
+
+    def asm(self):
+        asml = []
+        if self.value:
+            asml.append(asmn.ASMNode("mov", self.value, "rax"))
+        asml.append(asmn.ASMNode("pop", "rbp", None))
+        asml.append(asmn.ASMNode("ret", None, None))
+
+        return asml
 
 class IRBracket(IRNode):
     """
@@ -907,8 +905,3 @@ class IRVariableInit(IRNode):
 
     def __str__(self):
         return f"{self.modifiers}{self.typ} {self.var};"
-
-
-
-
-
