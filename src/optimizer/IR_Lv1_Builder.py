@@ -506,15 +506,20 @@ def beginWrapper(function_tuple, returnDigit):
         lines: The lines of the start of the function
     """
     lines = []
-    params = ""
+    params = []
     func_type = function_tuple[0].children[0].name
     func_name = function_tuple[0].children[1].name
 
     for var in function_tuple[0].children[2].children:
         if var.name == "var":
-            params += f"{var.children[0].name} {var.children[1].name},"
 
-    lines.append(irl.IRLine.singleEntry(irl.IRFunctionDecl(func_name, params[:-1])))
+            # list of all modifiers
+            modifiers = f"{' '.join([x.name for x in var.children[0].children])}{' ' if [x.name for x in var.children[0].children] else ''}"
+            
+            # append entry for parameter
+            params.append(f"{' '.join([modifiers])}{var.children[0].name} {var.children[1].name}")
+
+    lines.append(irl.IRLine.singleEntry(irl.IRFunctionDecl(func_name, params)))
     lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=True)))
 
     if func_type != "void":

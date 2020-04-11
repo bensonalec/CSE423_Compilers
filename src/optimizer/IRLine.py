@@ -751,7 +751,81 @@ class IRFunctionDecl(IRNode):
         self.params = params
 
     def __str__(self):
-            return f"{self.name} ({self.params})"
+        return f"{self.name} ({', '.join(self.params)})"
+
+    def toAssembly(self):
+        """
+        Constructs assembly string of a function declaration
+
+        Returns: 
+            String representing assembly code.
+        
+        TODO: Change to use assembly node, work with team to figure this out.
+        """
+
+        # value: register name
+        # key: used/unused (1/0)
+        fourByteRegisters = {"rdi": 0, "rsi": 0, "rdx": 0, "rcx": 0, "r8": 0, "r9": 0}
+        eightByteRegisters = {"XMM0": 0, "XMM1": 0, "XMM2": 0, "XMM3": 0, "XMM4": 0, "XMM5": 0, "XMM6": 0, "XMM7": 0}
+        
+        depth = 0
+
+        # Function label
+        assemblyString = f"_{self.name}:\n"
+
+        # Push old base pointer on to stack
+        assemblyString += f"pushq %rbp\n"
+
+        # Set new base pointer equal to stack pointer
+        assemblyString += f"movq %rsp, %rbp\n"
+
+        # Retrieve passed in parameters
+        for var in self.params:
+
+            # caclulate mem size for the parameter
+            mem_size = self.calculateMemSize(var)
+            depth += mem_size
+
+            if mem_size == 4: 
+                source_reg = [x for x, y in fourByteRegisters.items() if y == 0][0]
+                fourByteRegisters[source_reg] = 1
+                
+                
+            elif mem_size == 8: 
+                source_reg = [x for x, y in eightByteRegisters.items() if y == 0][0]
+                eightByteRegisters[source_reg] = 1
+
+            #elif mem_size == ?:
+
+            assemblyString += f"movq %{source_reg}, -{depth}(%rbp)\n"
+
+        return assemblyString
+
+    def calculateMemSize(self, var_string):
+        """
+        Calculates the memory needed for the given variable type + modifers.
+
+        Args:
+            var_string: variable in String format with modifiers leading, 
+                        and then type (int, double, float, etc.) and then the name.
+
+        Returns: 
+            Memory size as an integer in bytes
+        """
+
+        main_type = var_string.split(' ')[-2]
+        modifiers = var_string.split(' ')[: len(var_string) - 2]
+        size = 0
+
+        # NOTE: not all types are being considered right now.
+        if main_type == "int": size += 4
+        elif main_type == "float": size += 4
+        elif main_type == "double": size += 8
+
+        # TODO: add conditionals to properly increment size variable based on the found modifiers.
+        # for modifier in modifiers: pass
+
+        return size
 
 class IRReturn(IRNode):
     """
