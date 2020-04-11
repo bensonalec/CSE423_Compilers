@@ -552,17 +552,18 @@ class IRArth(IRNode):
 
         if isinstance(v1, int):
             if v1 == 0:
-                l.append(f"xor %reg_0, %reg_0;")
+                l.append(asmn.ASMNode("xor","reg_0","reg_0"))
             else:
-                l.append(f"mov ${v1}, %reg_0;")
-            v1 = "%%reg_0"
+                l.append(asmn.ASMNode("mov",f"${v1}","reg0"))
+            v1 = "reg_0"
             # TODO: Add support for the number to be a floating point value.
         if isinstance(v2, int):
             if v2 == 0:
-                l.append(f"xor %reg_1, %reg_1;")
+                l.append(asmn.ASNNode("xor", "reg_1", "reg_1"))
             else:
-                l.append(f"mov ${v2}, %reg_1;")
-            v1 = "%%reg_1"
+                l.append(asmn.ASMNode("mov",f"${v2}","reg1"))
+            v2 = "reg_1"
+            # TODO: Add support for the number to be a floating point value.
 
         if self.operator == "+":
             asm_op = "add"
@@ -572,18 +573,18 @@ class IRArth(IRNode):
             asm_op = "imul"
         elif self.operator == "/":
             l.extend([
-                f"xor %rdx, %rdx;",
-                f"mov {v1}, %rax;",
-                f"idiv {v2};",
-                f"mov %rax, %result;"
+                asmn.ASMNode("xor","rdx","rdx"),
+                asmn.ASMNode("mov",v1,"rax"),
+                asmn.ASMNode("idiv", v2, None),
+                asmn.ASMNode("mov", "rax", "result")
             ])
             spec_op = True
         elif self.operator == "%":
             l.extend([
-                f"xor %rdx, %rdx;",
-                f"mov {v1}, %rax;",
-                f"idiv {v2};",
-                f"mov %rdx, %result;"
+                asmn.ASMNode("xor", "rdx", "rdx"),
+                asmn.ASMNode("mov", v1, "rax"),
+                asmn.ASMNode("idiv", v2, None),
+                asmn.ASMNode("mov", "rdx", "result")
             ])
             spec_op = True
         elif self.operator == "<<":
@@ -598,21 +599,23 @@ class IRArth(IRNode):
             asm_op = "xor"
         elif self.operator == "!":
             l.extend([
-                f"xor {v1}, {v1}",
-                f"test %rdi, %rdi",
-                f"sete {v1}"
+                asmn.ASMNode("xor",v1,v1),
+                asmn.ASMNode("test", "rdi", "rdi"),
+                asmn.ASMNode("sete", v1, None)
             ])
             spec_op = True
         elif self.operator == "~":
-            l.append(f"not {v1};")
+            l.append(
+                asmn.ASMNode("not", v1, None)
+                )
             spec_op = True
 
         if not spec_op:
             l.append(
-                f"{asm_op} {v1}, {v2};"
+                asmn.ASMNode(asm_op, v1, v2)
             )
 
-        return "\n".join(l)
+        return l
 
     def fileInit(self,leftHand,op,rightHand,varName):
         """
