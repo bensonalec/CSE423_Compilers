@@ -725,6 +725,26 @@ class IRFunctionAssign(IRNode):
     def __str__(self):
         return f"{self.lhs} = {self.name}({', '.join(self.params)});"
 
+    def asm(self):
+        #function assignment
+        asm_calls = []
+
+        asm_calls.append("push $rbp")
+
+
+        for i in self.params:
+            asm_calls.append(f'push {i}')
+        
+        asm_calls.append(f'call {self.name}')
+        
+        asm_calls.append(f'pop $eax')
+        #move return value.
+        asm_calls.append(f'mov $eax, {self.lhs}')
+        
+        return "\n".join(asm_calls)
+
+
+    
     def LineFromFile(self,lhs,func_name,params):
         """
         Args:
@@ -822,6 +842,17 @@ class IRFunctionDecl(IRNode):
         # for modifier in modifiers: pass
 
         return size
+
+    def asm(self):
+        #function declaration
+        asm_calls = []
+
+        asm_calls.append(f'{self.name}:')
+
+        for i in range(len(self.params.split(" ")) - 1):
+            asm_calls.append(f'pop r{8 + i}')
+
+        return "\n".join(asm_calls)
 
 class IRReturn(IRNode):
     """
