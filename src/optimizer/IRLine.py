@@ -816,6 +816,7 @@ class IRFunctionDecl(IRNode):
                 asmLs.append(asmn.ASMNode("mov", source_reg, "rbp", offset=f"-{offset}"))
             else:
                 asmLs.append(asmn.ASMNode("pop", "rbp", None, offset=f"-{offset}"))
+                # TODO: Make sure register allocation knows how many variables within a scope so it can move RSP
 
         return asmLs
 
@@ -887,6 +888,10 @@ class IRBracket(IRNode):
             return "{"
         else:
             return "}"
+
+    def asm(self):
+        pass
+        # TODO: determine how many local variables exist within the scope in order to move the stack pointer.
 
 class IRVariableInit(IRNode):
     """
