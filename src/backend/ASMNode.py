@@ -1,9 +1,11 @@
 #this file will solve all our problems. indeed.
 class ASMNode():
-    def __init__(self, command, left, right):
+    def __init__(self, command, left, right, **kwarg):
         self.command = command
         self.left = left
         self.right = right
+
+        self.offset = kwarg["offset"] if "offset" in kwarg else None
 
     def __str__(self):
         if right:

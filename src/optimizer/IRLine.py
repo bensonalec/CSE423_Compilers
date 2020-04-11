@@ -753,14 +753,12 @@ class IRFunctionDecl(IRNode):
     def __str__(self):
         return f"{self.name} ({', '.join(self.params)})"
 
-    def toAssembly(self):
+    def asm(self):
         """
-        Constructs assembly string of a function declaration
+        Constructs assembly Nodes of a function declaration
 
         Returns: 
-            String representing assembly code.
-        
-        TODO: Change to use assembly node, work with team to figure this out.
+            List of ASM Nodes representing assembly code.        
         """
 
         # value: register name
@@ -769,15 +767,13 @@ class IRFunctionDecl(IRNode):
         eightByteRegisters = {"XMM0": 0, "XMM1": 0, "XMM2": 0, "XMM3": 0, "XMM4": 0, "XMM5": 0, "XMM6": 0, "XMM7": 0}
         
         depth = 0
+        asmLs = []
 
-        # Function label
-        assemblyString = f"_{self.name}:\n"
-
-        # Push old base pointer on to stack
-        assemblyString += f"pushq %rbp\n"
-
-        # Set new base pointer equal to stack pointer
-        assemblyString += f"movq %rsp, %rbp\n"
+        asmLs.extend([
+            asmn.ASMNode(f"_{self.name}",None,None)),
+            asmn.ASMNode("push", "rbp", None)),
+            asmn.ASMNode("mov", "rsp", "rbp")
+        ])
 
         # Retrieve passed in parameters
         for var in self.params:
@@ -797,9 +793,9 @@ class IRFunctionDecl(IRNode):
 
             #elif mem_size == ?:
 
-            assemblyString += f"movq %{source_reg}, -{depth}(%rbp)\n"
+            asmLs.append(asmn.ASMNode("mov", source_reg, "rbp", offset=f"-{depth}"))
 
-        return assemblyString
+        return asmLs
 
     def calculateMemSize(self, var_string):
         """
