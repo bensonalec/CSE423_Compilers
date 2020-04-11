@@ -665,16 +665,15 @@ class IRAssignment(IRNode):
     def asm(self):
         l = []
 
-        modif = ""
         op = "mov"
         v = self.rhs
 
         try:
             v = int(self.rhs)
-            modif = "$"
 
             if v == 0:
                 op = "xor"
+                v = self.lhs
         except ValueError:
             try:
                 v = float(self.rhs)
@@ -684,8 +683,7 @@ class IRAssignment(IRNode):
             # TODO: Understand how floating point registers work while not going bald like ben.
             # TODO: Figure out whether the right hand argument of an `xor` operation can be a memory location as well as a register.
 
-        l.append(f"{op} {modif}{v}, {self.lhs};")
-        return "\n".join(l)
+        return [asmn.ASMNode(op, v, self.lhs)]
 
 class IRFunctionAssign(IRNode):
     """
