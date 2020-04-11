@@ -200,6 +200,7 @@ arithmetic_cast : OPEN_PAREN var_type CLOSE_PAREN arithmetic_unary #arithmetic_c
 arithmetic_unary : arithmetic_post #arithmetic_unary
 arithmetic_unary : INC var_access #arithmetic_unary
 arithmetic_unary : DEC var_access #arithmetic_unary
+arithmetic_unary : SUB arithmetic #arithmetic_unary
 arithmetic_unary : unary_op arithmetic_cast #arithmetic_unary
 arithmetic_unary : SIZEOF arithmetic_unary #arithmetic_unary
 arithmetic_unary : SIZEOF var_type #arithmetic_unary
