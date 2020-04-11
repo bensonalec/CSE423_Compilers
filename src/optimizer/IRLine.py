@@ -726,24 +726,27 @@ class IRFunctionAssign(IRNode):
         return f"{self.lhs} = {self.name}({', '.join(self.params)});"
 
     def asm(self):
+        fourByteRegisters = {"rdi": 0, "rsi": 0, "rdx": 0, "rcx": 0, "r8": 0, "r9": 0}
+        eightByteRegisters = {"XMM0": 0, "XMM1": 0, "XMM2": 0, "XMM3": 0, "XMM4": 0, "XMM5": 0, "XMM6": 0, "XMM7": 0}
+
         #function assignment
-        asm_calls = []
+        asm_calls = [asmn.ASMNode("push", "rbp", None)]
 
-        asm_calls.append("push $rbp")
-
-
-        for i in self.params:
-            asm_calls.append(f'push {i}')
+        for idx, param in enumerate(self.params):
+            if idx < 6:
+                # NOTE: currently we are assuming 4 byte params (integers) 
+                avail_reg = [x for x, y in fourByteRegisters.items() if y == 0][0]
+                fourByteRegisters[avail_reg][1] = 1
+                asm_calls.append(asmn.asmNode("mov", param, avail_reg))
+            else:
+                asm_calls.append(asmn.asmNode("push", param, None))
         
-        asm_calls.append(f'call {self.name}')
+        asm_calls.extend([
+            asmn.ASMNode("call", self.name, None),
+            amsn.ASMNode("mov", "rax", self.lhs)
+        ])
         
-        asm_calls.append(f'pop $eax')
-        #move return value.
-        asm_calls.append(f'mov $eax, {self.lhs}')
-        
-        return "\n".join(asm_calls)
-
-
+        return asm_calls
     
     def LineFromFile(self,lhs,func_name,params):
         """
@@ -796,24 +799,23 @@ class IRFunctionDecl(IRNode):
         ])
 
         # Retrieve passed in parameters
-        for var in self.params:
-
+        for idx, var in enumerate(self.params):
+            source_reg = None
             # caclulate mem size for the parameter
-            mem_size = self.calculateMemSize(var)
-            depth += mem_size
+            offset += self.calculateMemSize(var)
 
             if mem_size == 4: 
                 source_reg = [x for x, y in fourByteRegisters.items() if y == 0][0]
                 fourByteRegisters[source_reg] = 1
                 
-                
             elif mem_size == 8: 
                 source_reg = [x for x, y in eightByteRegisters.items() if y == 0][0]
                 eightByteRegisters[source_reg] = 1
 
-            #elif mem_size == ?:
-
-            asmLs.append(asmn.ASMNode("mov", source_reg, "rbp", offset=f"-{depth}"))
+            if idx < 6:
+                asmLs.append(asmn.ASMNode("mov", source_reg, "rbp", offset=f"-{offset}"))
+            else:
+                asmLs.append(asmn.ASMNode("pop", "rbp", None, offset=f"-{offset}"))
 
         return asmLs
 
