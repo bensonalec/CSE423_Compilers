@@ -612,6 +612,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                     tmpNode = element.children[1]
                     
                     if tmpNode.name not in ['||', '&&', "<=", "<", ">=", ">", "==", "!="] and (
+                        tmpNode.children == [] or
                         tmpNode.children[0].name not in ['||', '&&', "<=", "<", ">=", ">", "==", "!="]):
                         # We create an AST Node comparing the value to 0 if there 
                         # are no comparison/logical operators present in the condition.
@@ -684,6 +685,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 
                     tmpNode = case.children[0]
                     if tmpNode.name not in ['||', '&&', "<=", "<", ">=", ">", "==", "!="] and (
+                        tmpNode.children == [] or
                         tmpNode.children[0].name not in ['||', '&&', "<=", "<", ">=", ">", "==", "!="]):
                         # We create an AST Node comparing the value to 0 if there 
                         # are no comparison/logical operators present in the condition.
@@ -812,6 +814,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 
                 tmpNode = element.children[0]
                 if tmpNode.name not in ['||', '&&', "<=", "<", ">=", ">", "==", "!="] and (
+                    tmpNode.children == [] or
                     tmpNode.children[0].name not in ['||', '&&', "<=", "<", ">=", ">", "==", "!="]):
                     # We create an AST Node comparing the value to 0 if there 
                     # are no comparison/logical operators present in the condition.

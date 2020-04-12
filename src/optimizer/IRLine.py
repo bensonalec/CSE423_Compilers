@@ -235,6 +235,7 @@ class IRLine():
 
             tmpNode = root.children[1]
             if tmpNode.name not in self.comp_ops and tmpNode.name not in self.log_ops and (
+                tmpNode.children == [] or
                 tmpNode.children[0].name not in self.comp_ops and tmpNode.children[0].name not in self.log_ops):
 
                 tmpNode = ast.ASTNode("!=", None)
