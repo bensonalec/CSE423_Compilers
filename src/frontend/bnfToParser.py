@@ -150,7 +150,7 @@ class ParseTree():
 
             ntv = [(f"{ntv[0][0]}{'    ' if ntv[0][2] else '|   '}", x, i == len(ntv[0][1].content)-1 ) for i, x in enumerate(ntv[0][1].content)] + ntv[1:] if 'content' in ntv[0][1].__dict__ else ntv[1:]
 
-        return "\n".join([f"{x[0]}{'`-- ' if x[2] else '|-- '}{x[1].token if 'token' in x[1].__dict__ else x[1]}" for x in li]) + "\n"
+        return "\\n".join([f"{x[0]}{'`-- ' if x[2] else '|-- '}{x[1].token if 'token' in x[1].__dict__ else x[1]}" for x in li]) + "\\n"
 
     def __repr__(self):
         \"\"\"
@@ -166,7 +166,7 @@ class ParseTree():
 
             ntv = [(ntv[0][0]+1, x) for x in ntv[0][1].content if 'content' in x.__dict__] + ntv[1:]
 
-        return "\n".join([f"{x[0]} : {[y.token if 'content' in y.__dict__ else y for y in x[1]]}" for x in li])
+        return "\\n".join([f"{x[0]} : {[y.token if 'content' in y.__dict__ else y for y in x[1]]}" for x in li])
 
     def getListView(self, level):
         \"\"\"
@@ -184,7 +184,7 @@ class ParseTree():
                 li.extend(x.getListView(level+1))
 
         if level == 0:
-            return "\n".join(li)
+            return "\\n".join(li)
         return li
 
 #setup parser class
