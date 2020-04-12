@@ -610,7 +610,12 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                     lines.append(irl.IRLine.singleEntry(irl.IRJump(f"<D.{conditionLabel}>"), [labelDigit]))
 
                     tmpNode = element.children[1]
-                    if tmpNode.name not in ['||', '&&', "<=", "<", ">=", ">", "==", "!="]:
+                    
+                    if tmpNode.name not in ['||', '&&', "<=", "<", ">=", ">", "==", "!="] and (
+                        tmpNode.children[0].name not in ['||', '&&', "<=", "<", ">=", ">", "==", "!="]):
+                        # We create an AST Node comparing the value to 0 if there 
+                        # are no comparison/logical operators present in the condition.
+
                         tmpNode = ast.ASTNode("!=", None)
                         tmpNode.children.append(element.children[1])
                         tmpNode.children.append(ast.ASTNode("0", tmpNode))
@@ -678,7 +683,11 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                         break
 
                     tmpNode = case.children[0]
-                    if tmpNode.name not in ['||', '&&', "<=", "<", ">=", ">", "==", "!="]:
+                    if tmpNode.name not in ['||', '&&', "<=", "<", ">=", ">", "==", "!="] and (
+                        tmpNode.children[0].name not in ['||', '&&', "<=", "<", ">=", ">", "==", "!="]):
+                        # We create an AST Node comparing the value to 0 if there 
+                        # are no comparison/logical operators present in the condition.
+
                         tmpNode = ast.ASTNode("!=", None)
                         tmpNode.children.append(case.children[0])
                         tmpNode.children.append(ast.ASTNode("0", tmpNode))
@@ -802,10 +811,14 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                 lines.append(irl.IRLine.singleEntry(irl.IRJump(f"<D.{conditionLabel}>"), [labelDigit]))
 
                 tmpNode = element.children[0]
-                if tmpNode.name not in ['||', '&&', "<=", "<", ">=", ">", "==", "!="]:
-                        tmpNode = ast.ASTNode("!=", None)
-                        tmpNode.children.append(element.children[0])
-                        tmpNode.children.append(ast.ASTNode("0", tmpNode))
+                if tmpNode.name not in ['||', '&&', "<=", "<", ">=", ">", "==", "!="] and (
+                    tmpNode.children[0].name not in ['||', '&&', "<=", "<", ">=", ">", "==", "!="]):
+                    # We create an AST Node comparing the value to 0 if there 
+                    # are no comparison/logical operators present in the condition.
+
+                    tmpNode = ast.ASTNode("!=", None)
+                    tmpNode.children.append(element.children[0])
+                    tmpNode.children.append(ast.ASTNode("0", tmpNode))
 
                 line = irl.IRLine(tmpNode, tvs=[], success=loopStart, failure=loopEnd, labelList=[labelDigit])
                 tvs, labelList = line.retrieve()
