@@ -6,14 +6,13 @@ class ASMNode():
         self.right = right
 
         self.offset = kwarg["offset"] if "offset" in kwarg else None
+        self.leftTmp = "leftTmp" in kwarg
+        self.rightTmp = "rightTmp" in kwarg
 
     def __str__(self):
-        if right:
-            return f"{self.command} {self.left}, {self.right};"
-        elif left:
-            return f"{self.command} {self.left};"
+        if self.right:
+            return f"{self.command} {self.left}, {self.right}"
+        elif self.left:
+            return f"{self.command} {self.left}"
         else:
-            return f"{self.command};"
-
-    def __repr__(self):
-        pass
+            return f"{self.command}"

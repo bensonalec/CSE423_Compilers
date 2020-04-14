@@ -7,7 +7,7 @@ from inspect import getsourcefile
 from importlib.machinery import SourceFileLoader
 
 ast = SourceFileLoader("AST_builder", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/../frontend/AST_builder.py").load_module()
-asmn = SourceFileLoader("ASMNode", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}../backend/ASMNode.py").load_module()
+asmn = SourceFileLoader("ASMNode", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/../backend/ASMNode.py").load_module()
 
 class IRLine():
     """
@@ -303,8 +303,6 @@ class IRJump(IRNode):
     def __str__(self):
         return f"{self.name}:"
 
-    def __repr__(self):
-        pass
     def asm(self):
         #want to end up returning just the operation in a ASMNode
         return [asmn.ASMNode(f"{self.name}:",None,None)]
@@ -324,12 +322,9 @@ class IRGoTo(IRNode):
     def __str__(self):
         return f"goto {self.name};"
 
-    def __repr__(self):
-        pass
-
     def asm(self):
         return [asmn.ASMNode("jmp", self.name, None)]
-        
+
 class IRIf(IRNode):
     """
     Intermediate representation node for an if statement. If statements are constructed to represent actual If Statements, While Loops, and For Loops in C.
@@ -379,9 +374,6 @@ class IRIf(IRNode):
 
     def __str__(self):
         return f"if ({self.lhs} {self.comp} {self.rhs}) goto <D.{self.success}>; else goto <D.{self.failure}>;"
-
-    def __repr__(self):
-        pass
     def fileInit(self,lhs,rhs,compOp,succ,fail):
         """
         Args:
@@ -400,6 +392,7 @@ class IRIf(IRNode):
     def asm(self):
         l = []
 
+        i = 0
         v1 = self.lhs
         v2 = self.rhs
 
@@ -424,23 +417,23 @@ class IRIf(IRNode):
 
         if v1 == v2:
             if self.comp in ["==", "<=", ">="]:
-                return [asmn.ASMNode("jmp",self.success,None)]
+                return [asmn.ASMNode("jmp", self.success, None)]
             else:
-                return [asmn.ASMNode("jmp",self.failure,None)]
+                return [asmn.ASMNode("jmp", self.failure, None)]
         else:
             if isinstance(v1, int):
                 if v1 == 0:
-                    l.append(asmn.ASMNode("xor","reg_0","reg_0"))
+                    l.append(asmn.ASMNode("xor", None, None, leftTmp=True, rightTmp=True))
                 else:
-                    l.append(asmn.ASMNode("mov",f"${v1}","reg0"))
-                v1 = "reg_0"
+                    l.append(asmn.ASMNode("mov", f"${v1}", None, rightTmp=True))
+                v1 = None
                 # TODO: Add support for the number to be a floating point value.
             if isinstance(v2, int):
                 if v2 == 0:
-                    l.append(asmn.ASNNode("xor", "reg_1", "reg_1"))
+                    l.append(asmn.ASNNode("xor",  None, None, leftTmp=True, rightTmp=True))
                 else:
-                    l.append(asmn.ASMNode("mov",f"${v2}","reg1"))
-                v2 = "reg_1"
+                    l.append(asmn.ASMNode("mov", f"${v2}", None, rightTmp=True))
+                v2 = None
                 # TODO: Add support for the number to be a floating point value.
 
         if self.comp == "==":
@@ -463,8 +456,8 @@ class IRIf(IRNode):
             j_op = "jg"
 
         l.extend([
-            asmn.ASMNode(c_op, v1, v2),
-            asmn.ASMNode(j_op,self.success,None),
+            asmn.ASMNode(c_op, v1, v2, leftTmp=True, rightTmp=True),
+            asmn.ASMNode(j_op, self.success, None),
             asmn.ASMNode("jmp", self.failure, None)
         ])
 
@@ -521,12 +514,10 @@ class IRArth(IRNode):
         else:
             return f"{self.var} = {self.operator}{self.lhs};"
 
-    def __repr__(self):
-        pass
-
     def asm(self):
         l = []
 
+        i = 0;
         spec_op = False
 
         v1 = self.lhs
@@ -542,27 +533,28 @@ class IRArth(IRNode):
             except ValueError:
                 pass
 
-        try:
-            v2 = int(v2)
-        except ValueError:
+        if v2:
             try:
-                v2 = float(v2)
+                v2 = int(v2)
             except ValueError:
-                pass
+                try:
+                    v2 = float(v2)
+                except ValueError:
+                    pass
 
         if isinstance(v1, int):
             if v1 == 0:
-                l.append(asmn.ASMNode("xor","reg_0","reg_0"))
+                l.append(asmn.ASMNode("xor", None, None, leftTmp=True, rightTmp=True))
             else:
-                l.append(asmn.ASMNode("mov",f"${v1}","reg0"))
-            v1 = "reg_0"
+                l.append(asmn.ASMNode("mov", f"${v1}", None, rightTmp=True))
+            v1 = None
             # TODO: Add support for the number to be a floating point value.
         if isinstance(v2, int):
             if v2 == 0:
-                l.append(asmn.ASNNode("xor", "reg_1", "reg_1"))
+                l.append(asmn.ASNNode("xor",  None,  None, leftTmp=True, rightTmp=True))
             else:
-                l.append(asmn.ASMNode("mov",f"${v2}","reg1"))
-            v2 = "reg_1"
+                l.append(asmn.ASMNode("mov", f"${v2}", None, rightTmp=True))
+            v2 = None
             # TODO: Add support for the number to be a floating point value.
 
         if self.operator == "+":
@@ -573,18 +565,18 @@ class IRArth(IRNode):
             asm_op = "imul"
         elif self.operator == "/":
             l.extend([
-                asmn.ASMNode("xor","rdx","rdx"),
-                asmn.ASMNode("mov",v1,"rax"),
-                asmn.ASMNode("idiv", v2, None),
-                asmn.ASMNode("mov", "rax", "result")
+                asmn.ASMNode("xor", "rdx", "rdx"),
+                asmn.ASMNode("mov", v1, "rax", leftTmp=True),
+                asmn.ASMNode("idiv", v2, None, leftTmp=True),
+                asmn.ASMNode("mov", "rax", self.var, rightTmp=True)
             ])
             spec_op = True
         elif self.operator == "%":
             l.extend([
                 asmn.ASMNode("xor", "rdx", "rdx"),
-                asmn.ASMNode("mov", v1, "rax"),
-                asmn.ASMNode("idiv", v2, None),
-                asmn.ASMNode("mov", "rdx", "result")
+                asmn.ASMNode("mov", v1, "rax", leftTmp=True),
+                asmn.ASMNode("idiv", v2, None, leftTmp=True),
+                asmn.ASMNode("mov", "rdx", self.var, rightTmp=True)
             ])
             spec_op = True
         elif self.operator == "<<":
@@ -601,19 +593,20 @@ class IRArth(IRNode):
             l.extend([
                 asmn.ASMNode("xor",v1,v1),
                 asmn.ASMNode("test", "rdi", "rdi"),
-                asmn.ASMNode("sete", v1, None)
+                asmn.ASMNode("sete", v1, None, leftTmp=True)
             ])
             spec_op = True
         elif self.operator == "~":
             l.append(
-                asmn.ASMNode("not", v1, None)
+                asmn.ASMNode("not", v1, None, leftTmp=True)
                 )
             spec_op = True
 
         if not spec_op:
-            l.append(
-                asmn.ASMNode(asm_op, v1, v2)
-            )
+            l.extend([
+                asmn.ASMNode(asm_op, v1, v2, leftTmp=True, rightTmp=True),
+                asmn.ASMNode("mov", v2, self.var, leftTmp=True)
+            ])
 
         return l
 
@@ -651,16 +644,16 @@ class IRSpecial(IRNode):
     def asm(self):
         """
         Constructs assembly string of a special (i.e. inc/dec) instruction
-        Returns: 
+        Returns:
             List of necessary ASMNodes representing assembly code.
-        
+
         TODO: Change to use assembly node, work with team to figure this out.
         """
 
         if self.operation == "+":
-            return [asmn.ASMNode("inc","reg_0",None)]
+            return [asmn.ASMNode("inc", self.var, None)]
         elif self.operation == '-':
-            return [asmn.ASMNode("dec","reg_0",None)]
+            return [asmn.ASMNode("dec", self.var, None)]
 
 
 
@@ -734,20 +727,20 @@ class IRFunctionAssign(IRNode):
 
         for idx, param in enumerate(self.params):
             if idx < 6:
-                # NOTE: currently we are assuming 4 byte params (integers) 
+                # NOTE: currently we are assuming 4 byte params (integers)
                 avail_reg = [x for x, y in fourByteRegisters.items() if y == 0][0]
-                fourByteRegisters[avail_reg][1] = 1
-                asm_calls.append(asmn.asmNode("mov", param, avail_reg))
+                fourByteRegisters[avail_reg] = 1
+                asm_calls.append(asmn.ASMNode("mov", param, avail_reg))
             else:
-                asm_calls.append(asmn.asmNode("push", param, None))
-        
+                asm_calls.append(asmn.ASMNode("push", param, None))
+
         asm_calls.extend([
             asmn.ASMNode("call", self.name, None),
-            amsn.ASMNode("mov", "rax", self.lhs)
+            asmn.ASMNode("mov", "rax", self.lhs)
         ])
-        
+
         return asm_calls
-    
+
     def LineFromFile(self,lhs,func_name,params):
         """
         Args:
@@ -780,21 +773,21 @@ class IRFunctionDecl(IRNode):
         """
         Constructs assembly Nodes of a function declaration
 
-        Returns: 
-            List of ASM Nodes representing assembly code.        
+        Returns:
+            List of ASM Nodes representing assembly code.
         """
 
         # value: register name
         # key: used/unused (1/0)
         fourByteRegisters = {"rdi": 0, "rsi": 0, "rdx": 0, "rcx": 0, "r8": 0, "r9": 0}
         eightByteRegisters = {"XMM0": 0, "XMM1": 0, "XMM2": 0, "XMM3": 0, "XMM4": 0, "XMM5": 0, "XMM6": 0, "XMM7": 0}
-        
-        depth = 0
+
+        offset = 0
         asmLs = []
 
         asmLs.extend([
-            asmn.ASMNode(f"_{self.name}",None,None)),
-            asmn.ASMNode("push", "rbp", None)),
+            asmn.ASMNode(f"_{self.name}:",None,None),
+            asmn.ASMNode("push", "rbp", None),
             asmn.ASMNode("mov", "rsp", "rbp")
         ])
 
@@ -802,13 +795,14 @@ class IRFunctionDecl(IRNode):
         for idx, var in enumerate(self.params):
             source_reg = None
             # caclulate mem size for the parameter
-            offset += self.calculateMemSize(var)
+            mem_size = self.calculateMemSize(var)
+            offset += mem_size
 
-            if mem_size == 4: 
+            if mem_size == 4:
                 source_reg = [x for x, y in fourByteRegisters.items() if y == 0][0]
                 fourByteRegisters[source_reg] = 1
-                
-            elif mem_size == 8: 
+
+            elif mem_size == 8:
                 source_reg = [x for x, y in eightByteRegisters.items() if y == 0][0]
                 eightByteRegisters[source_reg] = 1
 
@@ -825,10 +819,10 @@ class IRFunctionDecl(IRNode):
         Calculates the memory needed for the given variable type + modifers.
 
         Args:
-            var_string: variable in String format with modifiers leading, 
+            var_string: variable in String format with modifiers leading,
                         and then type (int, double, float, etc.) and then the name.
 
-        Returns: 
+        Returns:
             Memory size as an integer in bytes
         """
 
@@ -876,12 +870,13 @@ class IRBracket(IRNode):
     """
     Intermediate representation node for a bracket
     """
-    def __init__(self, opening):
+    def __init__(self, opening, functionDecl=False):
         """
         Args:
             opening: Either True or False depending on if bracket is open/close
         """
         self.opening = opening
+        self.functionDecl = functionDecl
 
     def __str__(self):
         if self.opening == True:
@@ -890,7 +885,10 @@ class IRBracket(IRNode):
             return "}"
 
     def asm(self):
-        pass
+        if self.functionDecl:
+            return []
+        else:
+            return [asmn.ASMNode("bracket", None, None)]
         # TODO: determine how many local variables exist within the scope in order to move the stack pointer.
 
 class IRVariableInit(IRNode):
@@ -912,3 +910,6 @@ class IRVariableInit(IRNode):
 
     def __str__(self):
         return f"{self.modifiers}{self.typ} {self.var};"
+
+    def asm(self):
+        return []

@@ -60,7 +60,7 @@ class LevelOneIR():
             lines.extend(tmp_lines)
 
             # End of function wrapper, add closing bracket
-            lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=False)))
+            lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=False, functionDecl=True)))
 
             # NOTE: 'labelDigit' should be the newest and unused digit
             returnDigit = labelDigit
@@ -515,12 +515,12 @@ def beginWrapper(function_tuple, returnDigit):
 
             # list of all modifiers
             modifiers = f"{' '.join([x.name for x in var.children[0].children])}{' ' if [x.name for x in var.children[0].children] else ''}"
-            
+
             # append entry for parameter
             params.append(f"{' '.join([modifiers])}{var.children[0].name} {var.children[1].name}")
 
     lines.append(irl.IRLine.singleEntry(irl.IRFunctionDecl(func_name, params)))
-    lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=True)))
+    lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=True, functionDecl=True)))
 
     if func_type != "void":
         modifiers = f"{''.join([x.name for x in function_tuple[0].children[0].children if x.name in ['signed', 'unsigned']])}{' ' if [x.name for x in function_tuple[0].children[0].children if x.name in ['signed', 'unsigned']] else ''}"
