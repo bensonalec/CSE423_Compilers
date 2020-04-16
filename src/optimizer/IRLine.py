@@ -437,16 +437,16 @@ class IRIf(IRNode):
         else:
             if isinstance(v1, int):
                 if v1 == 0:
-                    l.append(asmn.ASMNode("xor", None, None, leftTmp=True, rightTmp=True))
+                    l.append(asmn.ASMNode("xor", None, None, leftNeedsReg=True, rightNeedsReg=True))
                 else:
-                    l.append(asmn.ASMNode("mov", f"${v1}", None, rightTmp=True))
+                    l.append(asmn.ASMNode("mov", f"${v1}", None, rightNeedsReg=True))
                 v1 = None
                 # TODO: Add support for the number to be a floating point value.
             if isinstance(v2, int):
                 if v2 == 0:
-                    l.append(asmn.ASNNode("xor",  None, None, leftTmp=True, rightTmp=True))
+                    l.append(asmn.ASNNode("xor",  None, None, leftNeedsReg=True, rightNeedsReg=True))
                 else:
-                    l.append(asmn.ASMNode("mov", f"${v2}", None, rightTmp=True))
+                    l.append(asmn.ASMNode("mov", f"${v2}", None, rightNeedsReg=True))
                 v2 = None
                 # TODO: Add support for the number to be a floating point value.
 
@@ -470,7 +470,7 @@ class IRIf(IRNode):
             j_op = "jg"
 
         l.extend([
-            asmn.ASMNode(c_op, v1, v2, leftTmp=True, rightTmp=True),
+            asmn.ASMNode(c_op, v1, v2, leftNeedsReg=True, rightNeedsReg=True),
             asmn.ASMNode(j_op, self.success, None),
             asmn.ASMNode("jmp", self.failure, None)
         ])
@@ -556,19 +556,24 @@ class IRArth(IRNode):
                 except ValueError:
                     pass
 
+        v1InReg = False
+        v2InReg = False
+
         if isinstance(v1, int):
             if v1 == 0:
-                l.append(asmn.ASMNode("xor", None, None, leftTmp=True, rightTmp=True))
+                l.append(asmn.ASMNode("xor", None, None, leftNeedsReg=True, rightNeedsReg=True))
             else:
-                l.append(asmn.ASMNode("mov", f"${v1}", None, rightTmp=True))
-            v1 = None
+                l.append(asmn.ASMNode("mov", f"${v1}", None, rightNeedsReg=True))
+            v1 = str(v1)
+            v1InReg = True
             # TODO: Add support for the number to be a floating point value.
         if isinstance(v2, int):
             if v2 == 0:
-                l.append(asmn.ASNNode("xor",  None,  None, leftTmp=True, rightTmp=True))
+                l.append(asmn.ASNNode("xor",  None,  None, leftNeedsReg=True, rightNeedsReg=True))
             else:
-                l.append(asmn.ASMNode("mov", f"${v2}", None, rightTmp=True))
-            v2 = None
+                l.append(asmn.ASMNode("mov", f"${v2}", None, rightNeedsReg=True))
+            v2 = str(v2)
+            v2InReg = True
             # TODO: Add support for the number to be a floating point value.
 
         if self.operator == "+":
@@ -580,8 +585,8 @@ class IRArth(IRNode):
         elif self.operator == "/":
             l.extend([
                 asmn.ASMNode("xor", "rdx", "rdx"),
-                asmn.ASMNode("mov", v1, "rax"),
-                asmn.ASMNode("idiv", v2, None),
+                asmn.ASMNode("mov", v1, "rax", leftNeedsReg=v1InReg),
+                asmn.ASMNode("idiv", v2, None, leftNeedsReg=v2InReg),
                 asmn.ASMNode("mov", "rax", self.var)
             ])
             spec_op = True
@@ -607,19 +612,19 @@ class IRArth(IRNode):
             l.extend([
                 asmn.ASMNode("xor",v1,v1),
                 asmn.ASMNode("test", "rdi", "rdi"),
-                asmn.ASMNode("sete", v1, None, leftTmp=True)
+                asmn.ASMNode("sete", v1, None, leftNeedsReg=True)
             ])
             spec_op = True
         elif self.operator == "~":
             l.append(
-                asmn.ASMNode("not", v1, None, leftTmp=True)
+                asmn.ASMNode("not", v1, None, leftNeedsReg=True)
                 )
             spec_op = True
 
         if not spec_op:
             l.extend([
-                asmn.ASMNode(asm_op, v1, v2, leftTmp=True, rightTmp=True),
-                asmn.ASMNode("mov", v2, self.var, leftTmp=True)
+                asmn.ASMNode(asm_op, v1, v2, leftNeedsReg=v1InReg, rightNeedsReg=True),
+                asmn.ASMNode("mov", v2, self.var, leftNeedsReg=v2InReg)
             ])
 
         return l
@@ -708,7 +713,7 @@ class IRAssignment(IRNode):
             # TODO: Understand how floating point registers work while not going bald like ben.
             # TODO: Figure out whether the right hand argument of an `xor` operation can be a memory location as well as a register.
 
-        return [asmn.ASMNode(op, v, self.lhs)]
+        return [asmn.ASMNode(op, f"{v}", self.lhs)]
 
 class IRFunctionAssign(IRNode):
     """
