@@ -160,11 +160,25 @@ class IRLine():
                     r = ast.ASTNode(node.name[:-1], p)
                     p.children.append(r)
 
+                    rc = None
+                    lc = None
+
                     # assign the variable as the left operand of the new expression
-                    r.children.append(node.children[0])
+                    if len(node.children[1].children) > 0:
+                        rc = ast.ASTNode(self.tvs.pop(), r)
+                    else:
+                        rc = node.children[1]
+
+                    # assign the variable as the left operand of the new expression
+                    if len(node.children[0].children) > 0:
+                        lc = ast.ASTNode(self.tvs.pop(), r)
+                    else:
+                        lc = node.children[0]
 
                     # assign the remaining operations as the right operand of the new expression
-                    r.children.append(node.children[1])
+
+                    r.children.append(lc)
+                    r.children.append(rc)
 
                     self.expression_breakdown(p, success, failure)
 
@@ -305,7 +319,7 @@ class IRJump(IRNode):
 
     def asm(self):
         #want to end up returning just the operation in a ASMNode
-        return [asmn.ASMNode(f"{self.name}:",None,None)]
+        return [asmn.ASMNode(f"{self.name}:",None,None,noParams=True)]
 
 
 class IRGoTo(IRNode):
@@ -566,17 +580,17 @@ class IRArth(IRNode):
         elif self.operator == "/":
             l.extend([
                 asmn.ASMNode("xor", "rdx", "rdx"),
-                asmn.ASMNode("mov", v1, "rax", leftTmp=True),
-                asmn.ASMNode("idiv", v2, None, leftTmp=True),
-                asmn.ASMNode("mov", "rax", self.var, rightTmp=True)
+                asmn.ASMNode("mov", v1, "rax"),
+                asmn.ASMNode("idiv", v2, None),
+                asmn.ASMNode("mov", "rax", self.var)
             ])
             spec_op = True
         elif self.operator == "%":
             l.extend([
                 asmn.ASMNode("xor", "rdx", "rdx"),
-                asmn.ASMNode("mov", v1, "rax", leftTmp=True),
-                asmn.ASMNode("idiv", v2, None, leftTmp=True),
-                asmn.ASMNode("mov", "rdx", self.var, rightTmp=True)
+                asmn.ASMNode("mov", v1, "rax"),
+                asmn.ASMNode("idiv", v2, None),
+                asmn.ASMNode("mov", "rdx", self.var)
             ])
             spec_op = True
         elif self.operator == "<<":
@@ -786,7 +800,7 @@ class IRFunctionDecl(IRNode):
         asmLs = []
 
         asmLs.extend([
-            asmn.ASMNode(f"_{self.name}:",None,None),
+            asmn.ASMNode(f"_{self.name}:",None,None,noParams=True),
             asmn.ASMNode("push", "rbp", None),
             asmn.ASMNode("mov", "rsp", "rbp")
         ])
@@ -862,7 +876,7 @@ class IRReturn(IRNode):
         if self.value:
             asml.append(asmn.ASMNode("mov", self.value, "rax"))
         asml.append(asmn.ASMNode("pop", "rbp", None))
-        asml.append(asmn.ASMNode("ret", None, None))
+        asml.append(asmn.ASMNode("ret", None, None,noParams=True))
 
         return asml
 
