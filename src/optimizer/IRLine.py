@@ -593,8 +593,8 @@ class IRArth(IRNode):
         elif self.operator == "%":
             l.extend([
                 asmn.ASMNode("xor", "rdx", "rdx"),
-                asmn.ASMNode("mov", v1, "rax"),
-                asmn.ASMNode("idiv", v2, None),
+                asmn.ASMNode("mov", v1, "rax", leftNeedsReg=v1InReg),
+                asmn.ASMNode("idiv", v2, None, leftNeedsReg=v2InReg),
                 asmn.ASMNode("mov", "rdx", self.var)
             ])
             spec_op = True
@@ -709,11 +709,13 @@ class IRAssignment(IRNode):
                 v = float(self.rhs)
                 modif = "$"
             except ValueError:
+                return [asmn.ASMNode(op, f"{v}", self.lhs)]
                 pass
             # TODO: Understand how floating point registers work while not going bald like ben.
             # TODO: Figure out whether the right hand argument of an `xor` operation can be a memory location as well as a register.
 
-        return [asmn.ASMNode(op, f"{v}", self.lhs)]
+        print(op, " ", f"{v}", " ", self.lhs)
+        return [asmn.ASMNode(op, f"${v}", self.lhs)]
 
 class IRFunctionAssign(IRNode):
     """
