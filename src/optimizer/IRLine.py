@@ -564,7 +564,7 @@ class IRArth(IRNode):
                 l.append(asmn.ASMNode("xor", None, None, leftNeedsReg=True, rightNeedsReg=True))
             else:
                 l.append(asmn.ASMNode("mov", f"${v1}", None, rightNeedsReg=True))
-            v1 = str(v1)
+            v1 = f"${v1}"
             v1InReg = True
             # TODO: Add support for the number to be a floating point value.
         if isinstance(v2, int):
@@ -572,7 +572,7 @@ class IRArth(IRNode):
                 l.append(asmn.ASNNode("xor",  None,  None, leftNeedsReg=True, rightNeedsReg=True))
             else:
                 l.append(asmn.ASMNode("mov", f"${v2}", None, rightNeedsReg=True))
-            v2 = str(v2)
+            v2 = f"${v2}"
             v2InReg = True
             # TODO: Add support for the number to be a floating point value.
 
