@@ -25,12 +25,14 @@ class Stack():
         """
         Inserts variable onto the current stack scope.
         """
-        if self.stk[-1]:
+        if len(self.stk) > 0:
             base_offset = self.stk[-1][1]
         else:
             base_offset = 0
             
         self.stk.append((var, base_offset + 4))
+        
+        return base_offset + 4
 
     def find_offset(self, var):
         """
@@ -38,7 +40,7 @@ class Stack():
         """
         candidates = [x[1] for x in self.stk if x[0] == var]
 
-        if candidates == []
+        if candidates == []:
             return None
 
         return candidates[0]
