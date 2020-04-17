@@ -19,11 +19,15 @@ class Allocator():
         regDir = RegisterDirectory(asm_list, stack)
         # regDir = RegisterDirectory(asm_list)
 
+        
+
         for idx, instr in enumerate(asm_list):
+            copy_list = copy(asm_list[idx])
+            case = 0
 
             # Case 0: Just the operation. (ie. labels, returns, etc..)
             if asm_list[idx].noParams:
-                print("Case 0")
+                case = 0
                 pass
 
             # Case 4: Find last 2 used registers, free left side, update right side.
@@ -50,7 +54,7 @@ class Allocator():
                 asm_list[idx].right = rightReg.name
 
                 regDir.update_reg(rightReg.name, var="")
-                print("CASE 4")
+                case = 4
                 pass
 
             # Case 1: Moving a literal to a new register
@@ -69,7 +73,7 @@ class Allocator():
                 asm_list[idx].right = newReg.name
 
                 regDir.update_reg(newReg.name, asm_list[idx].left)
-                print("CASE 1")
+                case = 1
                 pass
 
             # Case 5: After an operation like add/sub this case is for moving the answer to a tmp variable
@@ -92,7 +96,7 @@ class Allocator():
 
                 asm_list[idx].right = newReg.name
 
-                print("CASE 5")
+                case = 5
                 pass
 
             # Case 2: Moving a literal to variable.
@@ -113,7 +117,7 @@ class Allocator():
                 regDir.update_reg(newReg.name, var=asm_list[idx].right)
                 asm_list[idx].right = newReg.name
 
-                print("CASE 2")
+                case = 2
                 pass
 
             # Case 3: Performing operation on variable. Need to find register corresponding to
@@ -146,7 +150,7 @@ class Allocator():
                 asm_list[idx].right = newReg.name
 
 
-                print("CASE 3")
+                case = 3
                 pass
 
             
@@ -159,7 +163,7 @@ class Allocator():
             # right   ->  None
             #
             # elif asm_list[idx].leftNeedsReg and asm_list[idx].rightNone:
-            #     print("CASE 6")
+            #     case = 6
             #     pass
 
             # Case 7: Moving values from variable to variable.
@@ -187,7 +191,7 @@ class Allocator():
 
                 asm_list[idx].right = newReg.name
                 
-                print("CASE 7")
+                case = 7
                 pass
 
             # Case 8: left side needs variable. This is for arithmetic operations that
@@ -208,7 +212,7 @@ class Allocator():
 
                     asm_list[idx].left = newReg.name
 
-                print("CASE 8")
+                case = 8
 
 
 
@@ -227,7 +231,7 @@ class Allocator():
                 asm_list[idx].left = newReg.name
 
                 # regDir.free_reg(asm_list[idx].left)
-                print("CASE 9")
+                case = 9
                 pass
 
             # Case 10: rigt side needs register but left side is hard coded
@@ -243,7 +247,7 @@ class Allocator():
 
                 asm_list[idx].right = newReg.name
 
-                print("Case 10")
+                case = 10
 
             else:
 
@@ -258,7 +262,7 @@ class Allocator():
 
                     asm_list[idx].left = newReg.name
 
-                print("ELSE")
+                case = "E"
                 pass
 
             # We need to update the assembly list in the register directory.
@@ -266,7 +270,7 @@ class Allocator():
             # and to be aware of which index is currently being looked at.
             regDir.asm.pop(0)
 
-            print(asm_list[idx])
+            print(f"{str(asm_list[idx]):20}", f"case = {case}\t", f"{str(copy_list)}")
 
 
         return asm_list

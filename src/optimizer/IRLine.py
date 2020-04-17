@@ -579,6 +579,12 @@ class IRArth(IRNode):
         if self.operator == "+":
             asm_op = "add"
         elif self.operator == "-":
+            if v2 == None:
+                l.extend([
+                    asmn.ASMNode("neg", v1, None, leftNeedsReg=True),
+                    asmn.ASMNode("mov", v1, self.var)
+                ])
+                spec_op = True
             asm_op = "sub"
         elif self.operator == "*":
             asm_op = "imul"
@@ -616,9 +622,10 @@ class IRArth(IRNode):
             ])
             spec_op = True
         elif self.operator == "~":
-            l.append(
-                asmn.ASMNode("not", v1, None, leftNeedsReg=True)
-                )
+            l.extend([
+                asmn.ASMNode("not", v1, None, leftNeedsReg=True),
+                asmn.ASMNode("mov", v1, self.var)
+                ])
             spec_op = True
 
         if not spec_op:
