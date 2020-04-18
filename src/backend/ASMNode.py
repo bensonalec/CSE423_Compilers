@@ -13,6 +13,7 @@ class ASMNode():
         self.offset = kwarg["offset"] if "offset" in kwarg else None
         self.leftNeedsReg = kwarg["leftNeedsReg"] if "leftNeedsReg" in kwarg else False
         self.rightNeedsReg = kwarg["rightNeedsReg"] if "rightNeedsReg" in kwarg else False
+        self.dontTouch = "dontTouch" in kwarg
 
         self.noParams = "noParams" in kwarg
 
@@ -22,11 +23,8 @@ class ASMNode():
         # self.leftNeedsReg = True if self.left == None else False
         # self.rightNeedsReg = True if self.right == None else False
             
-        self.leftHasVar = True if self.left and not self.leftNeedsReg and self.left not in x86_regs and not self.leftLiteral else False
-        self.rightHasVar = True if self.right and not self.rightNeedsReg and self.right not in x86_regs and not self.rightLiteral else False
-
-        self.leftNone = True if self.left == None else False
-        self.rightNone = True if self.right == None else False
+        self.leftHasVar = True if self.left and self.left not in x86_regs else False
+        self.rightHasVar = True if self.right and self.right not in x86_regs else False
 
         
 

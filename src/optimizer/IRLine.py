@@ -590,7 +590,7 @@ class IRArth(IRNode):
             asm_op = "imul"
         elif self.operator == "/":
             l.extend([
-                asmn.ASMNode("xor", "rdx", "rdx"),
+                asmn.ASMNode("xor", "rdx", "rdx", dontTouch=True),
                 asmn.ASMNode("mov", v1, "rax", leftNeedsReg=v1InReg),
                 asmn.ASMNode("idiv", v2, None, leftNeedsReg=v2InReg),
                 asmn.ASMNode("mov", "rax", self.var)
@@ -598,7 +598,7 @@ class IRArth(IRNode):
             spec_op = True
         elif self.operator == "%":
             l.extend([
-                asmn.ASMNode("xor", "rdx", "rdx"),
+                asmn.ASMNode("xor", "rdx", "rdx", dontTouch=True),
                 asmn.ASMNode("mov", v1, "rax", leftNeedsReg=v1InReg),
                 asmn.ASMNode("idiv", v2, None, leftNeedsReg=v2InReg),
                 asmn.ASMNode("mov", "rdx", self.var)
@@ -617,7 +617,7 @@ class IRArth(IRNode):
         elif self.operator == "!":
             l.extend([
                 asmn.ASMNode("xor",v1,v1),
-                asmn.ASMNode("test", "rdi", "rdi"),
+                asmn.ASMNode("test", "rdi", "rdi", dontTouch=True),
                 asmn.ASMNode("sete", v1, None, leftNeedsReg=True)
             ])
             spec_op = True
@@ -751,7 +751,7 @@ class IRFunctionAssign(IRNode):
         eightByteRegisters = {"XMM0": 0, "XMM1": 0, "XMM2": 0, "XMM3": 0, "XMM4": 0, "XMM5": 0, "XMM6": 0, "XMM7": 0}
 
         #function assignment
-        asm_calls = [asmn.ASMNode("push", "rbp", None)]
+        asm_calls = [asmn.ASMNode("push", "rbp", None, dontTouch=True)]
 
         for idx, param in enumerate(self.params):
             if idx < 6:
@@ -763,7 +763,7 @@ class IRFunctionAssign(IRNode):
                 asm_calls.append(asmn.ASMNode("push", param, None))
 
         asm_calls.extend([
-            asmn.ASMNode("call", self.name, None),
+            asmn.ASMNode("call", self.name, None, dontTouch=True),
             asmn.ASMNode("mov", "rax", self.lhs)
         ])
 
@@ -814,9 +814,9 @@ class IRFunctionDecl(IRNode):
         asmLs = []
 
         asmLs.extend([
-            asmn.ASMNode(f"_{self.name}:",None,None,noParams=True),
-            asmn.ASMNode("push", "rbp", None),
-            asmn.ASMNode("mov", "rsp", "rbp")
+            asmn.ASMNode(f"_{self.name}:",None,None, dontTouch=True),
+            asmn.ASMNode("push", "rbp", None, dontTouch=True),
+            asmn.ASMNode("mov", "rsp", "rbp", dontTouch=True)
         ])
 
         # Retrieve passed in parameters
@@ -889,8 +889,8 @@ class IRReturn(IRNode):
         asml = []
         if self.value:
             asml.append(asmn.ASMNode("mov", self.value, "rax"))
-        asml.append(asmn.ASMNode("pop", "rbp", None))
-        asml.append(asmn.ASMNode("ret", None, None,noParams=True))
+        asml.append(asmn.ASMNode("pop", "rbp", None, dontTouch=True))
+        asml.append(asmn.ASMNode("ret", None, None, dontTouch=True))
 
         return asml
 
