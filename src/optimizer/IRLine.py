@@ -9,6 +9,9 @@ from importlib.machinery import SourceFileLoader
 ast = SourceFileLoader("AST_builder", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/../frontend/AST_builder.py").load_module()
 asmn = SourceFileLoader("ASMNode", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/../backend/ASMNode.py").load_module()
 
+global tmpVarIndex
+tmpVarIndex = 0
+
 class IRLine():
     """
     A class that contains all the intermediate representations for a given AST node. Will produce a linear representation when converted to a string
@@ -23,6 +26,7 @@ class IRLine():
             labelList: The list of used label names
             prefix: The output prefix
         """
+        
         self.astNode = node
         self.treeList = []
 
@@ -75,7 +79,7 @@ class IRLine():
             self.labelList.append(failure)
 
         ns = root.list_POT()
-
+        global tmpVarIndex
         ns = [x for x in ns if x.name in self.arth_ops or x.name in self.spec_ops or x.name in self.ass_ops or x.name in self.id_ops or x.name in self.comp_ops]
         for node in ns:
             if node.name in self.comp_ops:
@@ -89,11 +93,12 @@ class IRLine():
                 )
 
             elif node.name in self.arth_ops:
+                tmpVarIndex += 1
                 self.treeList.append(
                     IRArth(
                         node,
                         [self.tvs.pop() for x in node.children if len(x.children) != 0],
-                        self.tvs
+                        f"_{tmpVarIndex}"
                     )
                 )
 
@@ -102,14 +107,16 @@ class IRLine():
             elif node.name in self.spec_ops:
                 var = self.tvs.pop()
 
+                tmpVarIndex += 1
+
                 # Create a temporay AST to deal with storing of the current value of the variable
                 tmpNode = ast.ASTNode("=", None)
-                tmpNode.children.append(ast.ASTNode(f"_{len(self.tvs)}", tmpNode))
+                tmpNode.children.append(ast.ASTNode(f"_{tmpVarIndex}", tmpNode))
                 tmpNode.children.append(ast.ASTNode(var, tmpNode))
 
                 self.treeList.append(
                     IRAssignment(
-                        f"_{len(self.tvs)}",
+                        f"_{tmpVarIndex}",
                         var
                     )
                 )
@@ -191,11 +198,13 @@ class IRLine():
                     simpleP = [x for x in range(len(node.children[0].children)) if x not in complexP]
 
                     params = [self.tvs.pop() for x in range(len(node.children[0].children)) if x in complexP]
+                    
+                    tmpVarIndex += 1
                     self.treeList.append(
                         IRFunctionAssign(
                             node,
                             [params.pop() if x in complexP else node.children[0].children[x].name for x in range(len(node.children[0].children))],
-                            self.tvs
+                            f"_{tmpVarIndex}"
                         )
                     )
 
@@ -481,7 +490,7 @@ class IRArth(IRNode):
     """
     Intermediate representation node for an arithmetic/assignment operation.
     """
-    def __init__(self, node, ops, tvs):
+    def __init__(self, node, ops, varName):
         """
         Args:
             node: The AST node for the arithmetical expression
@@ -492,7 +501,7 @@ class IRArth(IRNode):
             pass
         else:
             self.node = node
-            self.var = f"_{len(tvs)}"
+            self.var = varName
 
             self.operator = node.name
             self.lhs = None
@@ -531,7 +540,7 @@ class IRArth(IRNode):
     def asm(self):
         l = []
 
-        i = 0;
+        i = 0
         spec_op = False
 
         v1 = self.lhs
@@ -560,20 +569,20 @@ class IRArth(IRNode):
         v2InReg = False
 
         if isinstance(v1, int):
-            if v1 == 0:
-                l.append(asmn.ASMNode("xor", None, None, leftNeedsReg=True, rightNeedsReg=True))
-            else:
-                l.append(asmn.ASMNode("mov", f"${v1}", None, rightNeedsReg=True))
+            # if v1 == 0:
+            #     l.append(asmn.ASMNode("xor", None, None, leftNeedsReg=True, rightNeedsReg=True))
+            # else:
+            #     # l.append(asmn.ASMNode("mov", f"${v1}", None, rightNeedsReg=True))
             v1 = f"${v1}"
-            v1InReg = True
+            # v1InReg = True
             # TODO: Add support for the number to be a floating point value.
         if isinstance(v2, int):
             if v2 == 0:
-                l.append(asmn.ASNNode("xor",  None,  None, leftNeedsReg=True, rightNeedsReg=True))
-            else:
-                l.append(asmn.ASMNode("mov", f"${v2}", None, rightNeedsReg=True))
+                l.append(asmn.ASNNode("xor",  self.var,  self.var, leftNeedsReg=True, rightNeedsReg=True))
+            # else:
+            #     l.append(asmn.ASMNode("mov", f"${v2}", self.var, rightNeedsReg=True))
             v2 = f"${v2}"
-            v2InReg = True
+            # v2InReg = True
             # TODO: Add support for the number to be a floating point value.
 
         if self.operator == "+":
@@ -581,33 +590,56 @@ class IRArth(IRNode):
         elif self.operator == "-":
             if v2 == None:
                 l.extend([
-                    asmn.ASMNode("neg", v1, None, leftNeedsReg=True),
+                    asmn.ASMNode("mov", v1, self.var, rightNeedsReg=True),
+                    asmn.ASMNode("neg", self.var, None, leftNeedsReg=True),
+                    # asmn.ASMNode("mov", v1, self.var, leftNeedsReg=True)
+                ])
+                spec_op = True
+            else:
+                l.extend([
+                    asmn.ASMNode("sub", v2, v1),
                     asmn.ASMNode("mov", v1, self.var)
                 ])
                 spec_op = True
-            asm_op = "sub"
         elif self.operator == "*":
             asm_op = "imul"
+            if v1.startswith("$"):
+                l.append(asmn.ASMNode("imul",self.var,self.var,aux=v1))
+                spec_op = True
         elif self.operator == "/":
+            if v2.startswith("$"):
+                l.append(asmn.ASMNode("mov", v2, None, rightNeedsReg=True))
             l.extend([
                 asmn.ASMNode("xor", "rdx", "rdx", dontTouch=True),
-                asmn.ASMNode("mov", v1, "rax", leftNeedsReg=v1InReg),
-                asmn.ASMNode("idiv", v2, None, leftNeedsReg=v2InReg),
+                asmn.ASMNode("mov", v1, "rax"),
+                asmn.ASMNode("idiv", v2, None,leftNeedsReg=True),
                 asmn.ASMNode("mov", "rax", self.var)
             ])
             spec_op = True
         elif self.operator == "%":
+            if v2.startswith("$"):
+                l.append(asmn.ASMNode("mov", v2, None, rightNeedsReg=True))
             l.extend([
                 asmn.ASMNode("xor", "rdx", "rdx", dontTouch=True),
-                asmn.ASMNode("mov", v1, "rax", leftNeedsReg=v1InReg),
-                asmn.ASMNode("idiv", v2, None, leftNeedsReg=v2InReg),
+                asmn.ASMNode("mov", v1, "rax"),
+                asmn.ASMNode("idiv", v2, None,leftNeedsReg=True),
                 asmn.ASMNode("mov", "rdx", self.var)
             ])
             spec_op = True
         elif self.operator == "<<":
             asm_op = "sal"
+            l.extend([
+                asmn.ASMNode("mov", v1, self.var, rightNeedsReg=True),
+                asmn.ASMNode("sal", v2, self.var)
+            ])
+            spec_op = True
         elif self.operator == ">>":
             asm_op = "sar"
+            l.extend([
+                asmn.ASMNode("mov", v1, self.var, rightNeedsReg=True),
+                asmn.ASMNode("sar", v2, self.var)
+            ])
+            spec_op = True
         elif self.operator == "|":
             asm_op = "or"
         elif self.operator == "&":
@@ -623,15 +655,21 @@ class IRArth(IRNode):
             spec_op = True
         elif self.operator == "~":
             l.extend([
-                asmn.ASMNode("not", v1, None, leftNeedsReg=True),
-                asmn.ASMNode("mov", v1, self.var)
+                asmn.ASMNode("mov", v1, self.var, rightNeedsReg=True),
+                asmn.ASMNode("not", self.var, None, leftNeedsReg=True),
                 ])
             spec_op = True
 
         if not spec_op:
+
+            if v2 != self.var:
+                l.append(
+                    asmn.ASMNode("mov", v2, self.var, rightNeedsReg=True)
+                )
+                v2 = self.var
+
             l.extend([
-                asmn.ASMNode(asm_op, v1, v2, leftNeedsReg=v1InReg, rightNeedsReg=True),
-                asmn.ASMNode("mov", v2, self.var, leftNeedsReg=v2InReg)
+                asmn.ASMNode(asm_op, v1, v2, rightNeedsReg=True),
             ])
 
         return l
@@ -728,7 +766,7 @@ class IRFunctionAssign(IRNode):
     """
     Intermediate representation node for a function call assignment.
     """
-    def __init__(self, node, params, tvs):
+    def __init__(self, node, params, varName):
         """
         Args:
             node: The AST node for the funtion
@@ -741,7 +779,7 @@ class IRFunctionAssign(IRNode):
             self.node = node
             self.name = self.node.children[0].name
             self.params = params
-            self.lhs = f"_{len(tvs)}"
+            self.lhs = varName
 
     def __str__(self):
         return f"{self.lhs} = {self.name}({', '.join(self.params)});"
