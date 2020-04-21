@@ -9,6 +9,7 @@ class ASMNode():
         self.command = command
         self.left = left
         self.right = right
+        self.aux = kwarg["aux"] if "aux" in kwarg else None
 
         self.offset = kwarg["offset"] if "offset" in kwarg else None
         self.leftNeedsReg = kwarg["leftNeedsReg"] if "leftNeedsReg" in kwarg else False
@@ -29,7 +30,9 @@ class ASMNode():
         
 
     def __str__(self):
-        if self.right:
+        if self.aux:
+            return f"{self.command} {self.aux}, {self.left}, {self.right}"
+        elif self.right:
             return f"{self.command} {self.left}, {self.right}"
         elif self.left:
             return f"{self.command} {self.left}"

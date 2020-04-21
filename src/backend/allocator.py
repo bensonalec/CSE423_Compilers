@@ -57,11 +57,11 @@ class Allocator():
             #
             elif instr.leftLiteral and instr.rightNeedsReg:
 
-                newReg = regDir.find_reg(instr.left)
+                newReg = regDir.find_reg(instr.right)
 
                 instr.right = newReg.name
 
-                regDir.update_reg(newReg.name, instr.left)
+                # regDir.update_reg(newReg.name, instr.left)
                 case = 1
                 pass
 
@@ -133,6 +133,12 @@ class Allocator():
                 
                 case = 7
                 pass
+
+            # New case 11 for: mov $1 rax
+            elif instr.right == "rax" and instr.leftLiteral:
+                case = 11
+                pass
+
 
             # Case 8: left side needs variable. This is for arithmetic operations that
             #         only have one operand and store the result in another register by default.
