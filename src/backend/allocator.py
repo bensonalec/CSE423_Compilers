@@ -271,7 +271,7 @@ class RegisterDirectory():
         if offset == None:
             return None
         
-        regData = self.registerData(f"{offset}(rsp)")
+        regData = self.registerData(f"{offset}(rbp)")
         regData.update(var)
 
         return regData
@@ -321,7 +321,6 @@ class RegisterDirectory():
                 self.last_used.remove(reg)
                 reg.free()
 
-
     def evict_register(self, var, index):
         """
         Evicts register that is the last used in the code ahead.
@@ -333,50 +332,75 @@ class RegisterDirectory():
 
                 left = self.var_in_reg(line.left)
                 if left:
+                    # print(f"appending {left.name} to order_used: {line.left}")
                     order_used.append(left)
 
             if line.rightHasVar:
 
                 right = self.var_in_reg(line.right)
                 if right:
+                    # print(f"appending {right.name} to order_used: {line.right}")
                     order_used.append(right)
 
-            if [x for x in order_used if x not in self.regs] == [] and order_used != []:
+            """
+                mov a rcx
+                mov b rbx
+
+                order_used = [rcx, rbx]
+                self.regs = [rsi, rcx, rbx, r8]
+
+
+            """
+
+            if [x for x in self.regs if x not in order_used] == [] and order_used != []:
                 break
 
         #gets the registers not used.
         # left_over = self.regs - order_used
-        left_over = [x for x in order_used if x not in self.regs]
+        left_over = [x for x in self.regs if x not in order_used]
+        print("new")
+        # print(left_over[-1].name)
+        for i in left_over:
+            print(i.name)
         # This means no available register
-        if left_over == []:
+        # if left_over == []:
 
+        # if order_used:
+        #     left_over.append(order_used.pop())
 
         # if order_used != []:
-            result = order_used.pop() if order_used else self.regs[-1]
+        result = left_over.pop() if left_over else self.regs[0]
 
-            stack_offset = self.stack.find_offset(result.var_value)
-            if stack_offset == None:
-                # need to insert into stack and get offset?
-                stack_offset = self.stack.insert(result.var_value)
-                pass
+        for i in left_over:
+            i.free()
 
-            # Instruction to move this register's value onto stack
-            node = asmn.ASMNode("mov", result.name, f"{stack_offset}(rsp)")
+        stack_offset = self.stack.find_offset(result.var_value)
+        if stack_offset == None:
+            # need to insert into stack and get offset?
+            stack_offset = self.stack.insert(result.var_value)
+            pass
 
-            # Insert instruction into the modified ASM list at adjusted index
-            # print(index)
-            self.newAsm.append(node)
-            # print(node)
-            # self.asm.insert(0, node)
-            # self.asm.insert(0, node)
+        # Instruction to move this register's value onto stack
+        node1 = asmn.ASMNode("mov", result.name, f"{stack_offset}(rbp)")
+        node2 = asmn.ASMNode("add", "$4", "rsp")
 
-            # self.update_reg(result.name, )
-            self.free_reg(result.name)
+        # Insert instruction into the modified ASM list at adjusted index
+        # print(index)
+        self.newAsm.append(node1)
+        self.newAsm.append(node2)
+        # print(node)
+        # self.asm.insert(0, node)
+        # self.asm.insert(0, node)
 
-        else:
-            stack_offset = self.stack.insert(var)
-            result = self.registerData(f"{stack_offset}(rsp)")
-            result.update(var)
+        result.update(var)
+        # self.update_reg(result.name, )
+        # self.free_reg(result.name)
+
+        # else:
+        #     print("we here bois")
+        #     stack_offset = self.stack.insert(var)
+        #     result = self.registerData(f"{stack_offset}(rbp)")
+        #     result.update(var)
 
         return result
 
