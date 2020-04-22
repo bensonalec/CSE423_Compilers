@@ -13,16 +13,18 @@ class Allocator():
 
     def allocateRegisters(asm_list):
 
+        newAsm_list = []
+
         # Set up directory of registers
         # We give it assembly list because we may need it to "look ahead" to get next-available-register
         stack = stk.Stack()
-        regDir = RegisterDirectory(asm_list, stack)
+        regDir = RegisterDirectory(asm_list, newAsm_list, stack)
         # regDir = RegisterDirectory(asm_list)
 
-        
+        idx = -1
 
         for instr in asm_list:
-
+            idx += 1
             copy_list = copy(instr) #DEBUGGING
             case = 0                #DEBUGGING
 
@@ -40,10 +42,10 @@ class Allocator():
             #
             elif instr.leftNeedsReg and instr.rightNeedsReg:
 
-                newReg = regDir.find_reg(instr.left)
+                newReg = regDir.find_reg(instr.left, idx)
                 instr.left = newReg.name
 
-                newReg = regDir.find_reg(instr.right)
+                newReg = regDir.find_reg(instr.right, idx)
                 instr.right = newReg.name
 
                 regDir.update_reg(newReg.name, var="")
@@ -57,7 +59,7 @@ class Allocator():
             #
             elif instr.leftLiteral and instr.rightNeedsReg:
 
-                newReg = regDir.find_reg(instr.right)
+                newReg = regDir.find_reg(instr.right, idx)
 
                 instr.right = newReg.name
 
@@ -76,7 +78,7 @@ class Allocator():
                 newReg = regDir.last_used[-1]
                 instr.left = newReg.name
 
-                newReg = regDir.find_reg(instr.right)
+                newReg = regDir.find_reg(instr.right, idx)
                 instr.right = newReg.name
 
                 case = 5
@@ -91,7 +93,7 @@ class Allocator():
             #
             elif instr.leftLiteral and instr.rightHasVar:
 
-                newReg = regDir.find_reg(instr.right)
+                newReg = regDir.find_reg(instr.right,idx)
 
                 regDir.update_reg(newReg.name, var=instr.right)
                 
@@ -108,10 +110,10 @@ class Allocator():
             #
             elif instr.leftHasVar and instr.rightNeedsReg:
 
-                newReg = regDir.find_reg(instr.left)
+                newReg = regDir.find_reg(instr.left,idx)
                 instr.left = newReg.name
 
-                newReg = regDir.find_reg(instr.right)
+                newReg = regDir.find_reg(instr.right,idx)
                 instr.right = newReg.name
 
 
@@ -125,10 +127,10 @@ class Allocator():
             #
             elif instr.leftHasVar and instr.rightHasVar:
 
-                newReg = regDir.find_reg(instr.left)
+                newReg = regDir.find_reg(instr.left,idx)
                 instr.left = newReg.name   
 
-                newReg = regDir.find_reg(instr.right)
+                newReg = regDir.find_reg(instr.right,idx)
                 instr.right = newReg.name
                 
                 case = 7
@@ -149,7 +151,7 @@ class Allocator():
 
                 if instr.left != "rbp":
 
-                    newReg = regDir.find_reg(instr.left)
+                    newReg = regDir.find_reg(instr.left, idx)
                     instr.left = newReg.name
 
                 case = "8-9"
@@ -169,7 +171,7 @@ class Allocator():
             # Case 10: rigt side needs register but left side is hard coded
             #   NOTE: inverse of Case 9...merge?
             elif instr.rightHasVar:
-                newReg = regDir.find_reg(instr.right)
+                newReg = regDir.find_reg(instr.right,idx)
                 instr.right = newReg.name
 
                 case = 10
@@ -181,12 +183,14 @@ class Allocator():
             # We need to update the assembly list in the register directory.
             # The directory used the assembly list to "look-ahead" in some cases,
             # and to be aware of which index is currently being looked at.
-            regDir.asm.pop(0)
+            #regDir.asm.pop(0)
+            newAsm_list.append(instr)
 
             print(f"{str(instr):20}", f"case = {case}\t", f"{str(copy_list)}")
+            # print(f"{str(instr):20}", f"case = {case}\t", f"{str(copy_list)}", f"index : {idx}")
+        print("")
 
-
-        return asm_list
+        return newAsm_list
 
 
 
@@ -215,9 +219,10 @@ class RegisterDirectory():
             self.var_value = None
             # self.literal_value = None
 
-    def __init__(self, asm, stack):
-        self.real_asm = asm
-        self.asm = copy(asm)
+    def __init__(self, asm, newAsm_list, stack):
+        # self.real_asm = asm
+        self.newAsm = newAsm_list
+        self.asm = asm
         self.stack = stack
         self.regs = []
         self.last_used = []
@@ -225,7 +230,7 @@ class RegisterDirectory():
         for reg in self.used_regs:
             self.regs.append(self.registerData(reg))
 
-    def find_reg(self, name):
+    def find_reg(self, name, idx):
         """
         Finds register containing the passed in variable name.
 
@@ -240,7 +245,7 @@ class RegisterDirectory():
         if newReg == None:
             newReg = self.var_in_stack(name)
             if newReg == None:
-                newReg = self.get_free(name)
+                newReg = self.get_free(name, idx)
                 if newReg == None:
                     return None
         
@@ -272,7 +277,7 @@ class RegisterDirectory():
         return regData
 
 
-    def get_free(self, var):
+    def get_free(self, var, idx):
         """
         Finds lastest register that isnt being used else performs register eviction,
         updates and returns that register.
@@ -289,7 +294,7 @@ class RegisterDirectory():
                 return self.regs[ind]
 
         # No free registers, evict register and return it
-        tmpReg = self.evict_register(var)
+        tmpReg = self.evict_register(var, idx)
         self.last_used.append(tmpReg)
         return tmpReg
 
@@ -308,7 +313,6 @@ class RegisterDirectory():
 
 
     def free_reg(self, name):
-        print("This shit is not supposed to be called")
         """
         Frees the given register searching by the given register name
         """
@@ -318,13 +322,13 @@ class RegisterDirectory():
                 reg.free()
 
 
-    def evict_register(self, var):
+    def evict_register(self, var, index):
         """
         Evicts register that is the last used in the code ahead.
         """
 
         order_used = []
-        for line in self.asm:
+        for line in self.asm[index:]:
             if line.leftHasVar:
 
                 left = self.var_in_reg(line.left)
@@ -344,31 +348,35 @@ class RegisterDirectory():
         # left_over = self.regs - order_used
         left_over = [x for x in order_used if x not in self.regs]
         # This means no available register
-        # if left_over == []:
+        if left_over == []:
 
 
         # if order_used != []:
-        #     result = order_used.pop()
+            result = order_used.pop() if order_used else self.regs[-1]
 
-        #     stack_offset = self.stack.find_offset(result.var_value)
-        #     if stack_offset == None:
-        #         # need to insert into stack and get offset?
-        #         stack_offset = self.stack.insert(result.var_value)
-        #         pass
+            stack_offset = self.stack.find_offset(result.var_value)
+            if stack_offset == None:
+                # need to insert into stack and get offset?
+                stack_offset = self.stack.insert(result.var_value)
+                pass
 
-        #     # Instruction to move this register's value onto stack
-        #     node = asmn.ASMNode("mov", result.name, f"{stack_offset}(rsp)")
+            # Instruction to move this register's value onto stack
+            node = asmn.ASMNode("mov", result.name, f"{stack_offset}(rsp)")
 
-        #     # Insert instruction into the modified ASM list at adjusted index
-        #     self.real_asm.insert(len(self.real_asm) - len(self.asm), node)
-        #     self.asm.insert(0, node)
+            # Insert instruction into the modified ASM list at adjusted index
+            # print(index)
+            self.newAsm.append(node)
+            # print(node)
+            # self.asm.insert(0, node)
+            # self.asm.insert(0, node)
 
-        #     self.update_reg(result.name, var)
+            # self.update_reg(result.name, )
+            self.free_reg(result.name)
 
-        # else:
-        stack_offset = self.stack.insert(var)
-        result = self.registerData(f"{stack_offset}(rsp)")
-        result.update(var)
+        else:
+            stack_offset = self.stack.insert(var)
+            result = self.registerData(f"{stack_offset}(rsp)")
+            result.update(var)
 
         return result
 

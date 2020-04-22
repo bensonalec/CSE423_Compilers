@@ -569,20 +569,12 @@ class IRArth(IRNode):
         v2InReg = False
 
         if isinstance(v1, int):
-            # if v1 == 0:
-            #     l.append(asmn.ASMNode("xor", None, None, leftNeedsReg=True, rightNeedsReg=True))
-            # else:
-            #     # l.append(asmn.ASMNode("mov", f"${v1}", None, rightNeedsReg=True))
             v1 = f"${v1}"
-            # v1InReg = True
             # TODO: Add support for the number to be a floating point value.
         if isinstance(v2, int):
             if v2 == 0:
                 l.append(asmn.ASNNode("xor",  self.var,  self.var, leftNeedsReg=True, rightNeedsReg=True))
-            # else:
-            #     l.append(asmn.ASMNode("mov", f"${v2}", self.var, rightNeedsReg=True))
             v2 = f"${v2}"
-            # v2InReg = True
             # TODO: Add support for the number to be a floating point value.
 
         if self.operator == "+":
@@ -604,7 +596,10 @@ class IRArth(IRNode):
         elif self.operator == "*":
             asm_op = "imul"
             if v1.startswith("$"):
-                l.append(asmn.ASMNode("imul",self.var,self.var,aux=v1))
+                l.extend([
+                    asmn.ASMNode("mov",v2,self.var),
+                    asmn.ASMNode("imul",self.var,self.var,aux=v1)
+                ])
                 spec_op = True
         elif self.operator == "/":
             if v2.startswith("$"):
