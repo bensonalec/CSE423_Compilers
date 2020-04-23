@@ -29,18 +29,26 @@ class Stack():
             base_offset = self.stk[-1][1]
         else:
             base_offset = 0
-            
-        self.stk.append((var, base_offset + 4))
-        
-        return base_offset + 4
+
+        self.stk.append((var, base_offset - 4))
+
+        return base_offset - 4
 
     def find_offset(self, var):
         """
         Finds the offset if the variable has an allocated slot on the stack. Otherwise returns None.
         """
+        print (var)
         candidates = [x[1] for x in self.stk if x[0] == var]
-
+        print (candidates)
         if candidates == []:
             return None
 
         return candidates[0]
+
+    def dist_from_base(self):
+        """
+        Finds the number of bytes between the base pointer and stack pointer
+        """
+        return len(self.stk) * 4
+
