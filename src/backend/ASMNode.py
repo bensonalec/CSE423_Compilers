@@ -5,10 +5,10 @@ x86_regs = ["rax", "rbp", "rsp", "rcx","rdx" ,"rbx" ,"rsi" ,"rdi" ,"r8", "r9" ,"
 class ASMNode():
 
     def __init__(self, command, left, right, **kwarg):
-        
+
         self.command = command
-        self.left = left
-        self.right = right
+        self.left = left if left else ""
+        self.right = right if right else ""
         self.aux = kwarg["aux"] if "aux" in kwarg else None
 
         # self.offset = kwarg["offset"] if "offset" in kwarg else None
@@ -26,11 +26,13 @@ class ASMNode():
 
         # self.leftNeedsReg = True if self.left == None else False
         # self.rightNeedsReg = True if self.right == None else False
-            
+
         self.leftHasVar = True if self.left and self.left not in x86_regs else False
         self.rightHasVar = True if self.right and self.right not in x86_regs else False
 
-        
+        # self.tmpVar = True if self.command == "mov" and self.right.startswith("tV_") else False
+
+
 
     def __str__(self):
         if self.aux:
