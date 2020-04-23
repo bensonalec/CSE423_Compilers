@@ -155,7 +155,7 @@ class Allocator():
             #         Example:
             #         idiv rsi    --- Will store result in %rax and not use %rsi again, so we free it.
             #       NOTE: similiar to Case 9/10..merge?
-            elif instr.right == None or instr.right == "rax":
+            elif instr.right == "" or instr.right == "rax":
 
                 if instr.left != "rbp":
 
@@ -197,7 +197,9 @@ class Allocator():
 
             print(f"{str(instr):20}", f"case = {case}\t", f"{str(copy_list)}")
             # print(f"{str(instr):20}", f"case = {case}\t", f"{str(copy_list)}", f"index : {idx}")
-        print("")
+        # print("")
+
+        # newAsm_list = [x for x in newAsm_list if x.left != x.right and x.command != "mov"]
 
         return newAsm_list
 
@@ -211,12 +213,13 @@ class RegisterDirectory():
 
     class registerData():
 
-        def __init__(self, register_name, offset=None):
+        def __init__(self, register_name):
 
             self.name = register_name
             self.isOpen = True
             self.var_value = None
-            self.offset = offset
+            self.offset = None
+            self.is_tmp = False
             # self.literal_value = None
 
         def update(self, var, offset):
@@ -224,11 +227,13 @@ class RegisterDirectory():
             # self.literal_value = lit
             self.isOpen = False
             self.offset = offset
+            self.is_tmp = var.startswith("tV_")
 
         def free(self):
             self.isOpen = True
             self.var_value = None
             self.offset = None
+            self.is_tmp = False
             # self.literal_value = None
 
     def __init__(self, asm, newAsm_list, stack):
@@ -305,6 +310,21 @@ class RegisterDirectory():
                 self.last_used.append(self.regs[ind])
 
                 return self.regs[ind]
+            elif (
+                self.regs[ind].is_tmp
+                    and
+                self.var_in_reg(self.asm[idx].left) != self.regs[ind]
+                    and
+                self.var_in_reg(self.asm[idx].right) != self.regs[ind]
+                    and
+                self.regs[ind] not in self.last_used[-2:]
+                ):
+                # print([x.name for x in self.last_used[-3:]])
+                self.regs[ind].update(var, None)
+                self.regs[ind].isOpen = False
+                self.last_used.append(self.regs[ind])
+
+                return self.regs[ind]
 
         # No free registers, evict register and return it
         tmpReg = self.evict_register(var, idx)
@@ -338,7 +358,6 @@ class RegisterDirectory():
         """
         Evicts register that is the last used in the code ahead.
         """
-
         order_used = []
         for line in self.asm[index:]:
             if line.leftHasVar:
@@ -355,26 +374,16 @@ class RegisterDirectory():
                     # print(f"appending {right.name} to order_used: {line.right}")
                     order_used.append(right)
 
-            """
-                mov a rcx
-                mov b rbx
-
-                order_used = [rcx, rbx]
-                self.regs = [rsi, rcx, rbx, r8]
-
-
-            """
-
             if [x for x in self.regs if x not in order_used] == [] and order_used != []:
                 break
 
         #gets the registers not used.
         # left_over = self.regs - order_used
         left_over = [x for x in self.regs if x not in order_used]
-        print("new")
-        # print(left_over[-1].name)
-        for i in left_over:
-            print(i.name)
+        # print("new")
+        # # print(left_over[-1].name)
+        # for i in left_over:
+        #     print(i.name)
         # This means no available register
         # if left_over == []:
 
