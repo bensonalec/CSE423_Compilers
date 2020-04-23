@@ -38,9 +38,9 @@ class Stack():
         """
         Finds the offset if the variable has an allocated slot on the stack. Otherwise returns None.
         """
-        print (var)
+        # print (var)
         candidates = [x[1] for x in self.stk if x[0] == var]
-        print (candidates)
+        # print (candidates)
         if candidates == []:
             return None
 
