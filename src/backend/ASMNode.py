@@ -11,7 +11,10 @@ class ASMNode():
         self.right = right
         self.aux = kwarg["aux"] if "aux" in kwarg else None
 
-        self.offset = kwarg["offset"] if "offset" in kwarg else None
+        # self.offset = kwarg["offset"] if "offset" in kwarg else None
+        self.leftOffset = kwarg["leftOffset"] if "leftOffset" in kwarg else None
+        self.rightOffset = kwarg["rightOffset"] if "rightOffset" in kwarg else None
+
         self.leftNeedsReg = kwarg["leftNeedsReg"] if "leftNeedsReg" in kwarg else False
         self.rightNeedsReg = kwarg["rightNeedsReg"] if "rightNeedsReg" in kwarg else False
         self.dontTouch = "dontTouch" in kwarg
@@ -31,10 +34,30 @@ class ASMNode():
 
     def __str__(self):
         if self.aux:
-            return f"{self.command} {self.aux}, {self.left}, {self.right}"
+            return f"{self.command} \
+{self.aux}, \
+{f'{self.leftOffset}' + '(' if self.leftOffset else ''}\
+{'%' if self.left in x86_regs else ''}\
+{self.left}\
+{')' if self.leftOffset else ''}, \
+{f'{self.rightOffset}' + '(' if self.rightOffset else ''}\
+{'%' if self.right in x86_regs else ''}\
+{self.right}\
+{')' if self.rightOffset else ''}"
         elif self.right:
-            return f"{self.command} {self.left}, {self.right}"
+            return f"{self.command} \
+{f'{self.leftOffset}' + '(' if self.leftOffset else ''}\
+{'%' if self.left in x86_regs else ''}\
+{self.left}{')' if self.leftOffset else ''}, \
+{f'{self.rightOffset}' + '(' if self.rightOffset else ''}\
+{'%' if self.right in x86_regs else ''}\
+{self.right}\
+{')' if self.rightOffset else ''}"
         elif self.left:
-            return f"{self.command} {self.left}"
+            return f"{self.command} \
+{f'{self.leftOffset}' + '(' if self.leftOffset else ''}\
+{'%' if self.left in x86_regs else ''}\
+{self.left}\
+{')' if self.leftOffset else ''}"
         else:
             return f"{self.command}"
