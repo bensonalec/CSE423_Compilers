@@ -27,7 +27,7 @@ class import_ir():
         This will tokenize the IR that has been read in.
 
         """
-        
+
         text_input = self.data.strip()
         lexer = IR_Lexer().get_lexer()
         tokens = lexer.lex(text_input)
@@ -128,7 +128,7 @@ class IR_Lexer():
         self.lexer.add("BW_AND",r"&")
         self.lexer.add("BW_OR",r"\|")
         self.lexer.add("TYPE",r"\b(auto|long double|double|float|long long( int)?|long|int|short|char|void)\b")
-        self.lexer.add("VAR_NAME",r"[a-zA-Z_]\w*")
+        self.lexer.add("VAR_NAME",r"tV_[a-zA-Z_]\w*|rV_[a-zA-Z_]\w*")
         self.lexer.add("OPEN_PAREN",r"\(")
         self.lexer.add("CLOSE_PAREN",r"\)")
         self.lexer.add("OPEN_BRACK",r"\{")
@@ -261,7 +261,7 @@ class Parser():
     """
     Definition for the Parser object, works off of rply. Contains rules for parsing a gimple IR.
     """
-    
+
     def __init__(self):
         """
         Initializes the parser and tells it the allowed tokens
@@ -280,7 +280,7 @@ class Parser():
         """
         The list of BNF functions and their behavior for the gimple IR.
         """
-        
+
         @self.pg.production('program : function_def ')
         def program___function_def_(p):
             newNode = ParseTree("PROGRAM",p)
@@ -306,7 +306,7 @@ class Parser():
             self.Head = newNode
             #first, convert parameters to a string form
             #also, get the string representation of VAR_NAME
-            
+
             tokens = []
             tokens += [x.value for x in p[2].content if isinstance(x,Token)]
             tokenSets = [x for x in p[2].content if isinstance(x,ParseTree)]
@@ -314,8 +314,8 @@ class Parser():
                 for i in tokenSets:
                     tokens += [x.value for x in i.content if isinstance(x,Token)]
                     tokenSets = [x for x in i.content if isinstance(x,ParseTree)]
-            
-            
+
+
             functioName = p[0].value
             params = " ".join(tokens)
             IRNodeToReturn = IRLine.IRFunctionDecl(functioName,params)
@@ -396,7 +396,7 @@ class Parser():
             lhs = p[2].content[0].value
             rhs = p[4].content[0].value
             op = p[3].content[0].value
-           
+
             IRNodeToBeReturned.fileInit(lhs,op,rhs,varName)
             self.ls.append(IRNodeToBeReturned)
             return newNode
@@ -451,7 +451,7 @@ class Parser():
             lhs = p[2].value
             rhs = p[4].content[0].value
             op = p[3].content[0].value
-           
+
             IRNodeToBeReturned.fileInit(lhs,op,rhs,varName)
             self.ls.append(IRNodeToBeReturned)
 
@@ -466,7 +466,7 @@ class Parser():
             lhs = p[2].content[0].value
             rhs = p[4].value
             op = p[3].content[0].value
-           
+
             IRNodeToBeReturned.fileInit(lhs,op,rhs,varName)
             self.ls.append(IRNodeToBeReturned)
 
@@ -481,7 +481,7 @@ class Parser():
             lhs = p[2].value
             rhs = p[4].value
             op = p[3].content[0].value
-           
+
             IRNodeToBeReturned.fileInit(lhs,op,rhs,varName)
             self.ls.append(IRNodeToBeReturned)
 
@@ -496,7 +496,7 @@ class Parser():
             lhs = 0
             rhs = p[3].content[0].value
             op = p[2].value
-           
+
             IRNodeToBeReturned.fileInit(lhs,op,rhs,varName)
             self.ls.append(IRNodeToBeReturned)
 
@@ -512,7 +512,7 @@ class Parser():
             lhs = 0
             rhs = p[3].value
             op = p[2].value
-           
+
             IRNodeToBeReturned.fileInit(lhs,op,rhs,varName)
             self.ls.append(IRNodeToBeReturned)
 
@@ -528,7 +528,7 @@ class Parser():
             lhs = 0
             rhs = p[3].content[0].value
             op = p[2].value
-           
+
             IRNodeToBeReturned.fileInit(lhs,op,rhs,varName)
             self.ls.append(IRNodeToBeReturned)
 
@@ -543,7 +543,7 @@ class Parser():
             lhs = 0
             rhs = p[3].value
             op = p[2].value
-           
+
             IRNodeToBeReturned.fileInit(lhs,op,rhs,varName)
             self.ls.append(IRNodeToBeReturned)
             return newNode
@@ -557,7 +557,7 @@ class Parser():
             lhs = ""
             rhs = p[3].content[0].value
             op = p[2].value
-           
+
             IRNodeToBeReturned.fileInit(lhs,op,rhs,varName)
             self.ls.append(IRNodeToBeReturned)
             return newNode
@@ -572,7 +572,7 @@ class Parser():
             lhs = ""
             rhs = p[3].content[0].value
             op = p[2].value
-           
+
             IRNodeToBeReturned.fileInit(lhs,op,rhs,varName)
             self.ls.append(IRNodeToBeReturned)
             return newNode
@@ -587,7 +587,7 @@ class Parser():
             lhs = ""
             rhs = p[3].value
             op = p[2].value
-           
+
             IRNodeToBeReturned.fileInit(lhs,op,rhs,varName)
             self.ls.append(IRNodeToBeReturned)
             return newNode
@@ -601,7 +601,7 @@ class Parser():
             lhs = ""
             rhs = p[3].value
             op = p[2].value
-           
+
             IRNodeToBeReturned.fileInit(lhs,op,rhs,varName)
             self.ls.append(IRNodeToBeReturned)
             return newNode
@@ -1040,4 +1040,4 @@ class Parser():
 
 
 
-    
+

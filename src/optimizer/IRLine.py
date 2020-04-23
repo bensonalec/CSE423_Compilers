@@ -26,7 +26,7 @@ class IRLine():
             labelList: The list of used label names
             prefix: The output prefix
         """
-        
+
         self.astNode = node
         self.treeList = []
 
@@ -98,11 +98,11 @@ class IRLine():
                     IRArth(
                         node,
                         [self.tvs.pop() for x in node.children if len(x.children) != 0],
-                        f"_{tmpVarIndex}"
+                        f"tV_{tmpVarIndex}"
                     )
                 )
 
-                self.tvs.append(self.treeList[-1].var)
+                self.tvs.append(f"tV_{tmpVarIndex}")
 
             elif node.name in self.spec_ops:
                 var = self.tvs.pop()
@@ -110,13 +110,13 @@ class IRLine():
                 tmpVarIndex += 1
 
                 # Create a temporay AST to deal with storing of the current value of the variable
-                tmpNode = ast.ASTNode("=", None)
-                tmpNode.children.append(ast.ASTNode(f"_{tmpVarIndex}", tmpNode))
-                tmpNode.children.append(ast.ASTNode(var, tmpNode))
+                # tmpNode = ast.ASTNode("=", None)
+                # tmpNode.children.append(ast.ASTNode(f"_{tmpVarIndex}", tmpNode))
+                # tmpNode.children.append(ast.ASTNode(var, tmpNode))
 
                 self.treeList.append(
                     IRAssignment(
-                        f"_{tmpVarIndex}",
+                        f"tV_{tmpVarIndex}",
                         var
                     )
                 )
@@ -135,7 +135,7 @@ class IRLine():
                         )
                     )
 
-                self.tvs.append(tmpNode.children[0].name)
+                self.tvs.append(f"tV_{tmpVarIndex}")
 
             elif node.name in self.ass_ops:
                 if self.ass_ops.index(node.name) == 0:
@@ -144,10 +144,10 @@ class IRLine():
                     # Case 1: Assignment is constant. ie. int i = 0
                     if len(node.children[1].children) == 0:
                         lhs = self.tvs.pop()
-                        rhs = node.children[1].name
+                        rhs = f"rV_{node.children[1].name}"
                     # Case 2: Assignment is complex
                     else:
-                        lhs = node.children[0].children[len(node.children[0].children)-1].name
+                        lhs = f"rV_{node.children[0].children[len(node.children[0].children)-1].name}"
                         rhs = self.tvs.pop()
 
                     self.treeList.append(
@@ -191,20 +191,20 @@ class IRLine():
 
             elif node.name in self.id_ops:
                 if node.name == "var":
-                    self.tvs.append(f"{node.children[len(node.children)-1].name}")
+                    self.tvs.append(f"rV_{node.children[len(node.children)-1].name}")
                 elif node.name == "call":
                     # list of indices that correspond to the complex parameters of the function call
                     complexP = [node.children[0].children.index(x) for x in node.children[0].children if len(x.children) > 0]
                     simpleP = [x for x in range(len(node.children[0].children)) if x not in complexP]
 
                     params = [self.tvs.pop() for x in range(len(node.children[0].children)) if x in complexP]
-                    
+
                     tmpVarIndex += 1
                     self.treeList.append(
                         IRFunctionAssign(
                             node,
                             [params.pop() if x in complexP else node.children[0].children[x].name for x in range(len(node.children[0].children))],
-                            f"_{tmpVarIndex}"
+                            f"tV_{tmpVarIndex}"
                         )
                     )
 
@@ -453,7 +453,7 @@ class IRIf(IRNode):
                 # TODO: Add support for the number to be a floating point value.
             if isinstance(v2, int):
                 if v2 == 0:
-                    l.append(asmn.ASNNode("xor",  None, None, leftNeedsReg=True, rightNeedsReg=True))
+                    l.append(asmn.ASMNode("xor",  None, None, leftNeedsReg=True, rightNeedsReg=True))
                 else:
                     l.append(asmn.ASMNode("mov", f"${v2}", None, rightNeedsReg=True))
                 v2 = None
@@ -497,7 +497,7 @@ class IRArth(IRNode):
             ops: The potential complex operands for the expression
             tvs: The tempoary variable stack
         """
-        if(node == None and ops == None and tvs == None):
+        if(node == None and ops == None):
             pass
         else:
             self.node = node
@@ -573,7 +573,7 @@ class IRArth(IRNode):
             # TODO: Add support for the number to be a floating point value.
         if isinstance(v2, int):
             if v2 == 0:
-                l.append(asmn.ASNNode("xor",  self.var,  self.var, leftNeedsReg=True, rightNeedsReg=True))
+                l.append(asmn.ASMNode("xor",  self.var,  self.var, leftNeedsReg=True, rightNeedsReg=True))
             v2 = f"${v2}"
             # TODO: Add support for the number to be a floating point value.
 
@@ -698,7 +698,7 @@ class IRSpecial(IRNode):
 
 
     def __str__(self):
-        return f"{self.var} = {self.var} {operation} 1;"
+        return f"{self.var} = {self.var} {self.operation} 1;"
 
     def asm(self):
         """
@@ -768,7 +768,7 @@ class IRFunctionAssign(IRNode):
             params: A list of parameters for the function call
             tvs: The tempoary variable stack
         """
-        if(node == None and params == None and tvs == None):
+        if(node == None and params == None):
             pass
         else:
             self.node = node

@@ -517,7 +517,7 @@ def beginWrapper(function_tuple, returnDigit):
             modifiers = f"{' '.join([x.name for x in var.children[0].children])}{' ' if [x.name for x in var.children[0].children] else ''}"
 
             # append entry for parameter
-            params.append(f"{' '.join([modifiers])}{var.children[0].name} {var.children[1].name}")
+            params.append(f"{' '.join([modifiers])}{var.children[0].name} rV_{var.children[1].name}")
 
     lines.append(irl.IRLine.singleEntry(irl.IRFunctionDecl(func_name, params)))
     lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=True, functionDecl=True)))
@@ -552,7 +552,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
         if il:
             for x in il:
                 modifiers = f"{' '.join([y.name for y in x.children[0].children])}{' ' if [y.name for y in x.children[0].children] else ''}"
-                lines.append(irl.IRLine.singleEntry(irl.IRVariableInit(modifiers, x.children[0].name, x.children[1].name), [labelDigit]))
+                lines.append(irl.IRLine.singleEntry(irl.IRVariableInit(modifiers, x.children[0].name, f"rV_{x.children[1].name}"), [labelDigit]))
 
     for element in node.children:
         try:
