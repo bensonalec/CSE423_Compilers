@@ -868,9 +868,9 @@ class IRFunctionDecl(IRNode):
                 eightByteRegisters[source_reg] = 1
 
             if idx < 6:
-                asmLs.append(asmn.ASMNode("mov", source_reg, "rbp", offset=f"-{offset}"))
+                asmLs.append(asmn.ASMNode("mov", source_reg, "rbp", rightOffset=f"-{offset}"))
             else:
-                asmLs.append(asmn.ASMNode("pop", "rbp", None, offset=f"-{offset}"))
+                asmLs.append(asmn.ASMNode("pop", "rbp", None, leftOffset=f"-{offset}"))
                 # TODO: Make sure register allocation knows how many variables within a scope so it can move RSP
 
         return asmLs

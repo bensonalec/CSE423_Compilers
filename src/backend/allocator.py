@@ -30,6 +30,10 @@ class Allocator():
 
             # Case 0: Dont touch this instruction (labels, ret, etc..)
             if instr.dontTouch:
+
+                if instr.command == "pop" and instr.left == "rbp":
+                    newAsm_list.append(asmn.ASMNode("add", f"${stack.dist_from_base()}", f"%rsp"))
+
                 #NOTE cannot continue here code needed at the end of the loop.
                 case = 0
                 pass
@@ -44,10 +48,11 @@ class Allocator():
 
                 newReg = regDir.find_reg(instr.left, idx)
                 instr.left = newReg.name
+                instr.leftOffset = newReg.offset
 
                 newReg = regDir.find_reg(instr.right, idx)
                 instr.right = newReg.name
-
+                instr.rightOffset = newReg.offset
                 regDir.update_reg(newReg.name, var="")
                 case = 4
                 pass
@@ -62,7 +67,7 @@ class Allocator():
                 newReg = regDir.find_reg(instr.right, idx)
 
                 instr.right = newReg.name
-
+                instr.rightOffset = newReg.offset
                 # regDir.update_reg(newReg.name, instr.left)
                 case = 1
                 pass
@@ -77,10 +82,11 @@ class Allocator():
                 # last used register becomes our source register
                 newReg = regDir.last_used[-1]
                 instr.left = newReg.name
+                instr.leftOffset = newReg.offset
 
                 newReg = regDir.find_reg(instr.right, idx)
                 instr.right = newReg.name
-
+                instr.rightOffset = newReg.offset
                 case = 5
                 pass
 
@@ -96,13 +102,13 @@ class Allocator():
                 newReg = regDir.find_reg(instr.right,idx)
 
                 regDir.update_reg(newReg.name, var=instr.right)
-                
-                instr.right = newReg.name
 
+                instr.right = newReg.name
+                instr.rightOffset = newReg.offset
                 case = 2
                 pass
 
-            # Case 3: 
+            # Case 3:
             # NOTE: Looks similiar to Case 4 and Case 5...could we merge them and add some conditionals?
             #
             # left    ->  _1
@@ -112,10 +118,11 @@ class Allocator():
 
                 newReg = regDir.find_reg(instr.left,idx)
                 instr.left = newReg.name
+                instr.leftOffset = newReg.offset
 
                 newReg = regDir.find_reg(instr.right,idx)
                 instr.right = newReg.name
-
+                instr.rightOffset = newReg.offset
 
                 case = 3
                 pass
@@ -128,11 +135,12 @@ class Allocator():
             elif instr.leftHasVar and instr.rightHasVar:
 
                 newReg = regDir.find_reg(instr.left,idx)
-                instr.left = newReg.name   
+                instr.left = newReg.name
+                instr.leftOffset = newReg.offset
 
                 newReg = regDir.find_reg(instr.right,idx)
                 instr.right = newReg.name
-                
+                instr.rightOffset = newReg.offset
                 case = 7
                 pass
 
@@ -153,6 +161,7 @@ class Allocator():
 
                     newReg = regDir.find_reg(instr.left, idx)
                     instr.left = newReg.name
+                    instr.leftOffset = newReg.offset
 
                 case = "8-9"
 
@@ -173,7 +182,7 @@ class Allocator():
             elif instr.rightHasVar:
                 newReg = regDir.find_reg(instr.right,idx)
                 instr.right = newReg.name
-
+                instr.rightOffset = newReg.offset
                 case = 10
 
             else:
@@ -202,21 +211,24 @@ class RegisterDirectory():
 
     class registerData():
 
-        def __init__(self, register_name):
+        def __init__(self, register_name, offset=None):
 
             self.name = register_name
             self.isOpen = True
             self.var_value = None
+            self.offset = offset
             # self.literal_value = None
 
-        def update(self, var):
+        def update(self, var, offset):
             self.var_value = var
             # self.literal_value = lit
             self.isOpen = False
+            self.offset = offset
 
         def free(self):
             self.isOpen = True
             self.var_value = None
+            self.offset = None
             # self.literal_value = None
 
     def __init__(self, asm, newAsm_list, stack):
@@ -238,7 +250,7 @@ class RegisterDirectory():
         Second, searches on stack.
         Else, allocates new register
 
-        Returns: 
+        Returns:
             new RegisterData object or None
         """
         newReg = self.var_in_reg(name)
@@ -248,7 +260,7 @@ class RegisterDirectory():
                 newReg = self.get_free(name, idx)
                 if newReg == None:
                     return None
-        
+
         return newReg
 
     def var_in_reg(self, var):
@@ -264,15 +276,16 @@ class RegisterDirectory():
 
     def var_in_stack(self, var):
         """
-        Find/Create registerData that contains stack pointer 
+        Find/Create registerData that contains stack pointer
         with offset corresponding to the passed in variable name.
         """
         offset = self.stack.find_offset(var)
         if offset == None:
             return None
-        
-        regData = self.registerData(f"{offset}(rbp)")
-        regData.update(var)
+
+        # regData = self.registerData(f"{offset}(rbp)")
+        regData = self.registerData("rbp", offset=offset)
+        regData.update(var, offset)
 
         return regData
 
@@ -287,7 +300,7 @@ class RegisterDirectory():
         for ind,reg in enumerate(self.regs):
             if self.regs[ind].isOpen == True:
 
-                self.regs[ind].update(var)
+                self.regs[ind].update(var, None)
                 self.regs[ind].isOpen = False
                 self.last_used.append(self.regs[ind])
 
@@ -306,7 +319,7 @@ class RegisterDirectory():
         """
         for reg in self.regs:
             if reg.name == name:
-                reg.update(var)
+                reg.update(var, None)
                 if reg in self.last_used:
                     self.last_used.remove(reg)
                 self.last_used.append(reg)
@@ -381,18 +394,16 @@ class RegisterDirectory():
             pass
 
         # Instruction to move this register's value onto stack
-        node1 = asmn.ASMNode("mov", result.name, f"{stack_offset}(rbp)")
-        node2 = asmn.ASMNode("add", "$4", "rsp")
 
         # Insert instruction into the modified ASM list at adjusted index
         # print(index)
-        self.newAsm.append(node1)
-        self.newAsm.append(node2)
+        self.newAsm.append(asmn.ASMNode("sub", "$4", "rsp"))
+        self.newAsm.append(asmn.ASMNode("mov", result.name, "rbp", rightOffset=stack_offset))
         # print(node)
         # self.asm.insert(0, node)
         # self.asm.insert(0, node)
 
-        result.update(var)
+        result.update(var, None)
         # self.update_reg(result.name, )
         # self.free_reg(result.name)
 
