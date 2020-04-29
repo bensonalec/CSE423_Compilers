@@ -35,9 +35,8 @@ class Allocator():
                 [stack.stk.append(x) for x in instr.stack]
 
                 # Sets up the registers with the correct values
-                for i in instr.regDir.items():
-                    print("REGDIR",i)
                 [regDir.update_reg(x, y) for x, y in instr.regDir.items()]
+                [regDir.free_reg(x) for x in ["rbx", "r12", "r13", "r14", "r15"]]
                 pass
 
 
@@ -275,6 +274,9 @@ class RegisterDirectory():
 
             return True
 
+        def __str__(self):
+            return f"{self.name} {self.isOpen} {self.var_value} {self.offset}"
+
     def __init__(self, asm, newAsm_list, stack):
         # self.real_asm = asm
         self.newAsm = newAsm_list
@@ -398,7 +400,7 @@ class RegisterDirectory():
         """
         for reg in self.regs:
             if reg.name == name:
-                self.last_used.remove(reg)
+                # self.last_used.remove(reg)
                 reg.free()
 
     def evict_register(self, var, index):
@@ -437,7 +439,12 @@ class RegisterDirectory():
         return self.swap(result, var)
 
     def swap(self, reg, var):
-        if not reg.is_tmp():
+
+        print (reg, var)
+
+        if reg.is_tmp() or reg.isOpen:
+            pass
+        else:
             rO = self.stack.find_offset(reg.var_value)
             if not rO:
                 rO = self.stack.insert(reg.var_value)

@@ -30,7 +30,7 @@ class Stack():
         else:
             base_offset = 0
 
-        # print ("inserting", (var, base_offset - 4))
+        print ("inserting", (var, base_offset - 4))
 
         self.stk.append((var, base_offset - 4))
 
@@ -40,7 +40,7 @@ class Stack():
         """
         Finds the offset if the variable has an allocated slot on the stack. Otherwise returns None.
         """
-        # print (var, self.stk)
+        print (var, self.stk)
         candidates = [x[1] for x in self.stk if x[0] == var]
         # print (candidates)
         if candidates == []:
