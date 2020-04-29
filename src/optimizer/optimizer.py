@@ -22,7 +22,7 @@ def main(args, astHead = None, symbolTable = None):
     Returns:
         The lowest level of IR produced.
     """
-
+    l1ir = None
     # Import IR from file
     if args.input:
         ir = import_ir.import_ir(args.input)
@@ -32,10 +32,16 @@ def main(args, astHead = None, symbolTable = None):
 
     # Generate IR from AST and Symbol-Table
     else:
-        ir = ir1.LevelOneIR(astHead, symbolTable)
-        l1ir = ir.construct()
-        ir.optimize(args.opt)
-
+        try:
+            ir = ir1.LevelOneIR(astHead, symbolTable)
+            l1ir = ir.construct()
+            ir.optimize(args.opt)
+        except IndexError as err:
+            print("Issue in creating IR")
+            exit()
+        if(l1ir == None):
+            print("Issue in creating IR")
+            exit()
     # Output IR to a file
     if args.IRout:
         write_IR_to_file(args.IRout, ir.IR)
