@@ -792,16 +792,22 @@ class IRFunctionAssign(IRNode):
         eightByteRegisters = {"XMM0": 0, "XMM1": 0, "XMM2": 0, "XMM3": 0, "XMM4": 0, "XMM5": 0, "XMM6": 0, "XMM7": 0}
 
         #function assignment
-        asm_calls = [asmn.ASMNode("push", "rbp", None, dontTouch=True)]
+        asm_calls = []
 
         for idx, param in enumerate(self.params):
+            try:
+                param = int(param)
+                param = f"${param}"
+            except ValueError:
+                pass
+
             if idx < 6:
                 # NOTE: currently we are assuming 4 byte params (integers)
                 avail_reg = [x for x, y in fourByteRegisters.items() if y == 0][0]
                 fourByteRegisters[avail_reg] = 1
-                asm_calls.append(asmn.ASMNode("mov", param, avail_reg))
+                asm_calls.append(asmn.ASMNode("mov", param, avail_reg, regIsParam=True))
             else:
-                asm_calls.append(asmn.ASMNode("push", param, None))
+                asm_calls.append(asmn.ASMNode("push", param, None,dontTouch=True))
 
         asm_calls.extend([
             asmn.ASMNode("call", self.name, None, dontTouch=True),
@@ -854,32 +860,55 @@ class IRFunctionDecl(IRNode):
         offset = 0
         asmLs = []
 
-        asmLs.extend([
-            asmn.ASMNode(f"_{self.name}:",None,None, dontTouch=True),
-            asmn.ASMNode("push", "rbp", None, dontTouch=True),
-            asmn.ASMNode("mov", "rsp", "rbp", dontTouch=True)
-        ])
+        regdir = {}
+        stack = []
 
-        # Retrieve passed in parameters
         for idx, var in enumerate(self.params):
-            source_reg = None
-            # caclulate mem size for the parameter
-            mem_size = self.calculateMemSize(var)
-            offset += mem_size
-
-            if mem_size == 4:
+            print ("INLINE",var.split(' ')[-1])
+            if idx < 6:
                 source_reg = [x for x, y in fourByteRegisters.items() if y == 0][0]
                 fourByteRegisters[source_reg] = 1
 
-            elif mem_size == 8:
-                source_reg = [x for x, y in eightByteRegisters.items() if y == 0][0]
-                eightByteRegisters[source_reg] = 1
-
-            if idx < 6:
-                asmLs.append(asmn.ASMNode("mov", source_reg, "rbp", rightOffset=f"-{offset}"))
+                regdir[source_reg] = var.split(' ')[-1]
             else:
-                asmLs.append(asmn.ASMNode("pop", "rbp", None, leftOffset=f"-{offset}"))
-                # TODO: Make sure register allocation knows how many variables within a scope so it can move RSP
+                stack.append((var.split(' ')[-1], offset-4))
+                offset -= 4
+
+        asmLs.extend([
+            asmn.ASMNode(f"{self.name}:",None,None, functionDecl=True, regDir=regdir, stack=stack),
+            asmn.ASMNode("push", "rbp", None, dontTouch=True),
+            asmn.ASMNode("mov", "rsp", "rbp", dontTouch=True),
+            asmn.ASMNode("push", "rbx", None, dontTouch=True),
+            asmn.ASMNode("push", "r12", None, dontTouch=True),
+            asmn.ASMNode("push", "r13", None, dontTouch=True),
+            asmn.ASMNode("push", "r14", None, dontTouch=True),
+            asmn.ASMNode("push", "r15", None, dontTouch=True),
+        ])
+
+
+
+
+        # Retrieve passed in parameters
+        # for idx, var in enumerate(self.params):
+        #     source_reg = None
+        #     # caclulate mem size for the parameter
+        #     mem_size = self.calculateMemSize(var)
+        #     offset += mem_size
+
+        #     if idx < 6:
+
+        #         if mem_size == 4:
+        #             source_reg = [x for x, y in fourByteRegisters.items() if y == 0][0]
+        #             fourByteRegisters[source_reg] = 1
+
+        #         elif mem_size == 8:
+        #             source_reg = [x for x, y in eightByteRegisters.items() if y == 0][0]
+        #             eightByteRegisters[source_reg] = 1
+
+        #         asmLs.append(asmn.ASMNode("mov", source_reg, "rbp", rightOffset=f"-{offset}"))
+        #     else:
+        #         asmLs.append(asmn.ASMNode("pop", "rbp", None, leftOffset=f"-{offset}"))
+        #         # TODO: Make sure register allocation knows how many variables within a scope so it can move RSP
 
         return asmLs
 
@@ -930,8 +959,15 @@ class IRReturn(IRNode):
         asml = []
         if self.value:
             asml.append(asmn.ASMNode("mov", self.value, "rax"))
-        asml.append(asmn.ASMNode("pop", "rbp", None, dontTouch=True))
-        asml.append(asmn.ASMNode("ret", None, None, dontTouch=True))
+        asml.extend([
+            asmn.ASMNode("pop", "r15", None, dontTouch=True),
+            asmn.ASMNode("pop", "r14", None, dontTouch=True),
+            asmn.ASMNode("pop", "r13", None, dontTouch=True),
+            asmn.ASMNode("pop", "r12", None, dontTouch=True),
+            asmn.ASMNode("pop", "rbx", None, dontTouch=True),
+            asmn.ASMNode("pop", "rbp", None, dontTouch=True),
+            asmn.ASMNode("ret", None, None, dontTouch=True)
+        ])
 
         return asml
 

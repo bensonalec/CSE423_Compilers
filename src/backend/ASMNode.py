@@ -1,6 +1,6 @@
 #this file will solve all our problems. indeed.
 
-x86_regs = ["rax", "rbp", "rsp", "rcx","rdx" ,"rbx" ,"rsi" ,"rdi" ,"r8", "r9" ,"r10" ,"r11" ,"r12","r13","r14","r15"]
+x86_regs = ["rax", "rbp", "rsp", "rcx","rdx" ,"rbx" ,"rsi" ,"rdi" ,"r8", "r9" ,"r10" ,"r11" ,"r12", "r13","r14", "r15", "al", "bpl", "spl", "cl", "dl" ,"bl" ,"sil" ,"dil" ,"r8b", "r9b" ,"r10b" ,"r11b" ,"r12b", "r13b", "r14b", "r15b"]
 
 class ASMNode():
 
@@ -18,6 +18,11 @@ class ASMNode():
         self.leftNeedsReg = kwarg["leftNeedsReg"] if "leftNeedsReg" in kwarg else False
         self.rightNeedsReg = kwarg["rightNeedsReg"] if "rightNeedsReg" in kwarg else False
         self.dontTouch = "dontTouch" in kwarg
+
+        self.regIsParam = "regIsParam" in kwarg
+        self.regDir = kwarg["regDir"] if "regDir" in kwarg else {}
+        self.stack = kwarg["stack"] if "stack" in kwarg else []
+        self.functionDecl = "functionDecl" in kwarg
 
         self.noParams = "noParams" in kwarg
 
