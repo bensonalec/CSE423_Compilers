@@ -528,7 +528,7 @@ def beginWrapper(function_tuple, returnDigit):
 
     return lines
 
-def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None):
+def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None, breakDigit=None, continueDigit=None):
     """
     Produces a linear representation of the content nested within `node`.
 
@@ -600,7 +600,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                 labelDigit += 2
 
                 # recursivly deal with the body of the loop
-                tmp, labelDigit = returnLines(element.children[3], returnDigit, labelDigit, loopStart, loopEnd)
+                tmp, labelDigit = returnLines(element.children[3], returnDigit, labelDigit, loopStart, loopEnd, breakDigit=loopEnd, continueDigit=loopStart)
                 lines.extend(tmp)
 
                 # Add the "end-of-loop" assignment/arithmetic
@@ -673,7 +673,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                             ns = True
 
                         #Get lines for the body and assign new labeldigit
-                        tmp, labelDigit = returnLines(case.children[0], returnDigit, labelDigit, success_label, failure_label)
+                        tmp, labelDigit = returnLines(case.children[0], returnDigit, labelDigit, success_label, failure_label, failureDigit, successDigit)
                         lines.extend(tmp)
 
                         if ns:
@@ -706,7 +706,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                         ns = True
 
                     #Get lines for the if body and assign new labeldigit
-                    tmp, labelDigit = returnLines(case.children[1], returnDigit,  labelDigit, success_label, failure_label)
+                    tmp, labelDigit = returnLines(case.children[1], returnDigit,  labelDigit, success_label, failure_label, failureDigit, successDigit)
                     lines.extend(tmp)
 
                     if ns:
@@ -796,7 +796,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                 labelDigit += 2
 
                 # recursivly deal with the body of the loop
-                tmp, labelDigit = returnLines(element.children[1], returnDigit, labelDigit, loopStart, loopEnd)
+                tmp, labelDigit = returnLines(element.children[1], returnDigit, labelDigit, loopStart, loopEnd, breakDigit=loopEnd, continueDigit=loopStart)
                 lines.extend(tmp)
 
                 if ns:
@@ -825,11 +825,15 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 
             elif ind == 7:
                 # Break
-                lines.append(irl.IRLine.singleEntry(irl.IRGoTo(f"<D.{failureDigit}>"), [labelDigit]))
+                # lines.append(irl.IRLine.singleEntry(irl.IRGoTo(f"<D.{failureDigit}>"), [labelDigit]))
+                if breakDigit:
+                    lines.append(irl.IRLine.singleEntry(irl.IRGoTo(f"<D.{breakDigit}>"), [labelDigit]))
 
             elif ind == 8:
                 # Continue
-                lines.append(irl.IRLine.singleEntry(irl.IRGoTo(f"<D.{successDigit}>"), [labelDigit]))
+                # lines.append(irl.IRLine.singleEntry(irl.IRGoTo(f"<D.{successDigit}>"), [labelDigit]))
+                if continueDigit:
+                    lines.append(irl.IRLine.singleEntry(irl.IRGoTo(f"<D.{continueDigit}>"), [labelDigit]))
 
             elif ind == 9:
                 # Goto
