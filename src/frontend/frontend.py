@@ -136,7 +136,6 @@ def main(args):
 
         semAnal = semantic.semantic(astree,symTab.symbols)
         semAnal.semanticAnalysis()
-
         if args.errors or args.all:
             semAnal.printSemanticErrors()
         # print(astree)
@@ -157,6 +156,9 @@ def main(args):
         exit()
     if(astree == None or symTab == None):
         print("Something unexpected happened...")
+    if(semAnal.errors != []):
+        semAnal.printSemanticErrors()
+        exit(0)
     
     return astree, symTab
 
