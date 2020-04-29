@@ -751,8 +751,9 @@ class IRAssignment(IRNode):
             v = int(self.rhs)
 
             if v == 0:
-                op = "xor"
-                v = self.lhs
+                return [asmn.ASMNode("xor", self.lhs, self.lhs)]
+            else:
+                return [asmn.ASMNode("mov", f"${v}", self.lhs)]
         except ValueError:
             try:
                 v = float(self.rhs)
@@ -762,8 +763,7 @@ class IRAssignment(IRNode):
                 pass
             # TODO: Understand how floating point registers work while not going bald like ben.
             # TODO: Figure out whether the right hand argument of an `xor` operation can be a memory location as well as a register.
-
-        return [asmn.ASMNode(op, f"${v}", self.lhs)]
+        return [asmn.ASMNode(op, f"{v}", self.lhs)]
 
 class IRFunctionAssign(IRNode):
     """
