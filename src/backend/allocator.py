@@ -63,12 +63,18 @@ class Allocator():
             # right   ->  %REG
             #
             elif instr.leftLiteral and instr.rightNeedsReg:
-
-                newReg = regDir.find_reg(instr.right, idx)
-
+                if(instr.right):
+                    newReg = regDir.find_reg(instr.right, idx)
+                else:
+                    newReg = regDir.find_reg(instr.left, idx)
+                    
+                ogRight = instr.right
                 instr.right = newReg.name
                 instr.rightOffset = newReg.offset
-                # regDir.update_reg(newReg.name, instr.left)
+                
+                if ogRight == "":
+                    regDir.update_reg(newReg.name, instr.left)
+
                 case = 1
                 pass
 
@@ -289,7 +295,7 @@ class RegisterDirectory():
             return None
 
         # regData = self.registerData(f"{offset}(rbp)")
-        regData = self.registerData("rbp", offset=offset)
+        regData = self.registerData("rbp")
         regData.update(var, offset)
 
         return regData
@@ -391,36 +397,36 @@ class RegisterDirectory():
         #     left_over.append(order_used.pop())
 
         # if order_used != []:
-        result = left_over.pop() if left_over else self.regs[0]
+        # result = left_over.pop() if left_over else self.regs[0]
 
-        for i in left_over:
-            i.free()
+        # for i in left_over:
+        #     i.free()
 
-        stack_offset = self.stack.find_offset(result.var_value)
-        if stack_offset == None:
-            # need to insert into stack and get offset?
-            stack_offset = self.stack.insert(result.var_value)
-            pass
+        # stack_offset = self.stack.find_offset(result.var_value)
+        # if stack_offset == None:
+        #     # need to insert into stack and get offset?
+        #     stack_offset = self.stack.insert(result.var_value)
+        #     pass
 
         # Instruction to move this register's value onto stack
 
         # Insert instruction into the modified ASM list at adjusted index
         # print(index)
-        self.newAsm.append(asmn.ASMNode("sub", "$4", "rsp"))
-        self.newAsm.append(asmn.ASMNode("mov", result.name, "rbp", rightOffset=stack_offset))
+        # self.newAsm.append(asmn.ASMNode("sub", "$4", "rsp"))
+        # self.newAsm.append(asmn.ASMNode("mov", result.name, "rbp", rightOffset=stack_offset))
         # print(node)
         # self.asm.insert(0, node)
         # self.asm.insert(0, node)
 
-        result.update(var, None)
+        # result.update(var, None)
         # self.update_reg(result.name, )
         # self.free_reg(result.name)
 
         # else:
         #     print("we here bois")
-        #     stack_offset = self.stack.insert(var)
-        #     result = self.registerData(f"{stack_offset}(rbp)")
-        #     result.update(var)
+        stack_offset = self.stack.insert(var)
+        result = self.registerData(f"{stack_offset}(rbp)")
+        result.update(var,stack_offset)
 
         return result
 

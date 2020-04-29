@@ -144,7 +144,7 @@ class IRLine():
                     # Case 1: Assignment is constant. ie. int i = 0
                     if len(node.children[1].children) == 0:
                         lhs = self.tvs.pop()
-                        rhs = f"rV_{node.children[1].name}"
+                        rhs = f"{node.children[1].name}"
                     # Case 2: Assignment is complex
                     else:
                         lhs = f"rV_{node.children[0].children[len(node.children[0].children)-1].name}"
@@ -328,7 +328,7 @@ class IRJump(IRNode):
 
     def asm(self):
         #want to end up returning just the operation in a ASMNode
-        return [asmn.ASMNode(f"{self.name}:",None,None,noParams=True)]
+        return [asmn.ASMNode(f"{self.name.replace('<','').replace('>','')}:",None,None,dontTouch=True)]
 
 
 class IRGoTo(IRNode):
@@ -346,7 +346,7 @@ class IRGoTo(IRNode):
         return f"goto {self.name};"
 
     def asm(self):
-        return [asmn.ASMNode("jmp", self.name, None)]
+        return [asmn.ASMNode("jmp", self.name.replace("<","").replace(">",""), None, dontTouch=True)]
 
 class IRIf(IRNode):
     """
@@ -440,23 +440,35 @@ class IRIf(IRNode):
 
         if v1 == v2:
             if self.comp in ["==", "<=", ">="]:
-                return [asmn.ASMNode("jmp", self.success, None)]
+                return [asmn.ASMNode("jmp", f"D.{self.success}", None, dontTouch=True)]
             else:
-                return [asmn.ASMNode("jmp", self.failure, None)]
+                return [asmn.ASMNode("jmp", f"D.{self.failure}", None, dontTouch=True)]
         else:
+            # if isinstance(v1, int):
+            #     v1 = f"${v1}"
+            
+            #     # TODO: Add support for the number to be a floating point value.
+            # if isinstance(v2, int):
+            #     # if v2 == 0:
+            #     #     l.append(asmn.ASMNode("xor",  self.var,  self.var, leftNeedsReg=True, rightNeedsReg=True))
+            #     v2 = f"${v2}"
+            #     # TODO: Add support for the number to be a floating point value.
+            
             if isinstance(v1, int):
                 if v1 == 0:
                     l.append(asmn.ASMNode("xor", None, None, leftNeedsReg=True, rightNeedsReg=True))
+                    v1 = None
                 else:
                     l.append(asmn.ASMNode("mov", f"${v1}", None, rightNeedsReg=True))
-                v1 = None
+                    v1 = f"${v1}"
                 # TODO: Add support for the number to be a floating point value.
             if isinstance(v2, int):
                 if v2 == 0:
                     l.append(asmn.ASMNode("xor",  None, None, leftNeedsReg=True, rightNeedsReg=True))
+                    v2 = None
                 else:
                     l.append(asmn.ASMNode("mov", f"${v2}", None, rightNeedsReg=True))
-                v2 = None
+                    v2 = f"${v2}"
                 # TODO: Add support for the number to be a floating point value.
 
         if self.comp == "==":
@@ -477,12 +489,9 @@ class IRIf(IRNode):
         elif self.comp == ">":
             c_op = "cmp"
             j_op = "jg"
-
-        l.extend([
-            asmn.ASMNode(c_op, v1, v2, leftNeedsReg=True, rightNeedsReg=True),
-            asmn.ASMNode(j_op, self.success, None),
-            asmn.ASMNode("jmp", self.failure, None)
-        ])
+        l.append(asmn.ASMNode(c_op, v1, v2, leftNeedsReg=True, rightNeedsReg=True))
+        l.append(asmn.ASMNode(j_op, f"D.{self.success}", None, dontTouch=True))
+        l.append(asmn.ASMNode("jmp", f"D.{self.failure}", None,dontTouch = True))
 
         return l
 
@@ -754,7 +763,6 @@ class IRAssignment(IRNode):
             # TODO: Understand how floating point registers work while not going bald like ben.
             # TODO: Figure out whether the right hand argument of an `xor` operation can be a memory location as well as a register.
 
-        print(op, " ", f"{v}", " ", self.lhs)
         return [asmn.ASMNode(op, f"${v}", self.lhs)]
 
 class IRFunctionAssign(IRNode):
@@ -949,7 +957,7 @@ class IRBracket(IRNode):
         if self.functionDecl:
             return []
         else:
-            return [asmn.ASMNode("bracket", None, None)]
+            return []
         # TODO: determine how many local variables exist within the scope in order to move the stack pointer.
 
 class IRVariableInit(IRNode):
