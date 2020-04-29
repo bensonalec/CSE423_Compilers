@@ -75,8 +75,8 @@ def main(args):
     if args.bnf:
         btp.main(args.bnf)
         importlib.reload(par)
-
-
+    astree = None
+    symTab = None
     try:
 
         fi = open(args.input_file, "r")
@@ -119,8 +119,9 @@ def main(args):
             print(head)
 
         # Build Abstract Syntax Tree
+        
         astree = ast.buildAST(head)
-
+        # if(astree != None):
         if args.ast or args.all:
             # Pretty print AST
             # astree.print_AST()
@@ -138,20 +139,25 @@ def main(args):
 
         if args.errors or args.all:
             semAnal.printSemanticErrors()
+        # print(astree)
+        # if(astree == None):
+        #     print("Error in input to parser")
+        #     sys.exit()
     except LexingError as err:
-        print("Received error(s) from token validation. Exiting...")
         exit()
 
     except AssertionError as err:
         # parser has it's own detailed error printing
         pg.print_error()
-        print("Received AssertionError(s) from parser, continuing with what was parsed...\n")
+        exit()
 
     except BaseException as err:
         traceback.print_exc()
         print(f"Unrecoverable exception occured. Exiting...")
         exit()
-
+    if(astree == None or symTab == None):
+        print("Something unexpected happened...")
+    
     return astree, symTab
 
 if __name__ == "__main__":
