@@ -1,346 +1,380 @@
 <section>
-<style>
-.note {
-     color: #3bb655;
- }
-.todo {
-     color: #fc2828;
- }
-</style>
-<dl>
-    <dt><h2 id="header-design">Design Document</h2></dt>
-    <dd>
-
-        <!--  Start Introduction  -->
-        <dl>
-            <dt><h3>Introduction</h3></dt>
-            <dd>
-                We are tasked with creating a compiler for a subset of the C programming language. With this challenge includes figuring out how to implement the three fundamental parts of any compiler: Frontend, Optimization, and the Backend. Our goal with this project is not only to design and implement an optimizing compiler, but to strengthen our ability to design and create software that achieves its purpose and provides adequate documentation to explain how it operates.
-            </dd>
-            <dt><h3>Language / Libraries / References</h3></dt>
-            <dd>
-                <ul>
-                    <li>Python 3.7+</li>
-                    <li> <a href="https://github.com/alex/rply">Rply</a>, Python's re-implimentation of Lex-and-Yacc</li>
-                    <li> <a href="https://github.com/pdoc3/pdoc">Pdoc3</a>, used for documentation</li>
-                    <li> <a href="https://vallentin.dev/2016/11/29/pretty-print-tree">Inspiration for pretty printing the tree</a> </li>
-                </ul>
-            </dd>
-        </dl>
-        <!--  End Introduction  -->
-
-
-
-
-        <!--  Start Architecture  -->
-        <dl>
-            <dt><h3>Architecture</h3></dt>
-            <dd>
-                Our compiler can be split into three major stages that takes
-                in a C program and converts this "High-Level" language into
-                many different forms of Intermediate Representations (IR's)
-                until it reaches the point of assembly code.
-            </dd>
-            <img id="architecture_img" src="./architecture.png" />
-        </dl>
-        <!--  End Architecture Section  -->
-
-
-
-
-
-        <!--  Start Frontend  -->
-        <dl>
-            <dt><h3>Frontend</h3></dt>
-            <dd>
-                <dl>
-                    <dt><h4>Lexer</h4></dt>
-                    <dd>
-                        Responsible for scanning and assigning tokens to
-                        different elements of our C program, this module was
-                        designed using RPLY's lexer class. By simply adding in
-                        tokens to our lexer we are able to give it a string version
-                        of our C program and get a list of all valid tokens.
+    <style>
+    .note {
+         color: #3bb655;
+     }
+    .todo {
+         color: #fc2828;
+     }
+    </style>
+    <dl>
+        <dt><h2 id="header-design">Design Document</h2></dt>
+        <dd>
+    
+            <!--  Start Introduction  -->
+            <dl>
+                <dt><h3>Introduction</h3></dt>
+                <dd>
+                    We are tasked with creating a compiler for a subset of the C programming language. With this challenge includes figuring out how to implement the three fundamental parts of any compiler: Frontend, Optimization, and the Backend. Our goal with this project is not only to design and implement an optimizing compiler, but to strengthen our ability to design and create software that achieves its purpose and provides adequate documentation to explain how it operates.
+                </dd>
+                <dt><h3>Language / Libraries / References</h3></dt>
+                <dd>
+                    <ul>
+                        <li>Python 3.7+</li>
+                        <li> <a href="https://github.com/alex/rply">Rply</a>, Python's re-implimentation of Lex-and-Yacc</li>
+                        <li> <a href="https://github.com/pdoc3/pdoc">Pdoc3</a>, used for documentation</li>
+                        <li> <a href="https://vallentin.dev/2016/11/29/pretty-print-tree">Inspiration for pretty printing the tree</a> </li>
+                    </ul>
+                </dd>
+            </dl>
+            <!--  End Introduction  -->
+    
+    
+    
+    
+            <!--  Start Architecture  -->
+            <dl>
+                <dt><h3>Architecture</h3></dt>
+                <dd>
+                    Our compiler can be split into three major stages that takes
+                    in a C program and converts this "High-Level" language into
+                    many different forms of Intermediate Representations (IR's)
+                    until it reaches the point of assembly code.
+                </dd>
+                <img id="architecture_img" src="./architecture.png" />
+            </dl>
+            <!--  End Architecture Section  -->
+    
+    
+    
+    
+    
+            <!--  Start Frontend  -->
+            <dl>
+                <dt><h3>Frontend</h3></dt>
+                <dd>
+                    <dl>
+                        <dt><h4>Lexer</h4></dt>
+                        <dd>
+                            Responsible for scanning and assigning tokens to
+                            different elements of our C program, this module was
+                            designed using RPLY's lexer class. By simply adding in
+                            tokens to our lexer we are able to give it a string version
+                            of our C program and get a list of all valid tokens.
+                            <dl>
+                                <dt><h5>Token Format / Examples</h5></dt>
+                                <dd>
+                                    <pre>Token("TOKEN_NAME", "ELEMENT")
+    
+    Token("INTEGER", "1")
+    Token("GT", ">")
+    Token("SELF_DEFINED", "some-variable-name")
+    Token("AND", "&&")
+    Token("ACCESS", "->")</pre>
+                                </dd>
+                                <dt><h5>Error Handling</h5></dt>
+                                <dd>
+                                    Currently the only known errors we can experience
+                                    while using RPLY's lexer library is when we encounter
+                                    an element that isn't recognized. By adding an <code>INVALID</code>
+                                    token type, and having it match to any string combination,
+                                    we eliminate the possibility of the imported lexer code to
+                                    fail, and are able to report any invalid tokens to the user.
+                                </dd>
+                            </dl>
+                        </dd>
+                        <dt><h4>Parser</h4></dt>
                         <dl>
-                            <dt><h5>Token Format / Examples</h5></dt>
                             <dd>
-                                <pre>Token("TOKEN_NAME", "ELEMENT")
-
-Token("INTEGER", "1")
-Token("GT", ">")
-Token("SELF_DEFINED", "some-variable-name")
-Token("AND", "&&")
-Token("ACCESS", "->")</pre>
-                            </dd>
-                            <dt><h5>Error Handling</h5></dt>
+                                This sub-module relies on RPLY's parser generator but still
+                                requires a grammar. After defining a grammar in a separate
+                                file we can construct a parser using RPLY syntax that will
+                                take in the grammar and build our Parse Tree. Currently RPLY
+                                has allowed us to impliment a "Bottom-up left-to-right" parser.
+                            <dl><dt><h5>Example of BNF grammar</h5><dd>
+                                <pre>program : definitionList #program
+    
+    definitionList : definition_terminal definitionList #definitionList
+    definitionList : definition_terminal #definitionList
+    
+    definition_terminal : functionDefinition #definition_terminal
+    definition_terminal : functionDeclaration #definition_terminal
+    definition_terminal : initialization #definition_terminal
+    definition_terminal : COMMENT #definition_terminal
+    
+    functionDefinition : func_type SELF_DEFINED OPEN_PAREN args CLOSE_PAREN block #function definition
+    functionDefinition : func_type SELF_DEFINED OPEN_PAREN CLOSE_PAREN block #function definition
+    
+    functionDeclaration : func_type SELF_DEFINED OPEN_PAREN args CLOSE_PAREN SEMICOLON #functionDeclaration
+    functionDeclaration : func_type SELF_DEFINED OPEN_PAREN CLOSE_PAREN SEMICOLON #functionDeclaration
+    
+    func_type : TYPE #func_type
+    func_type : func_modif TYPE #func_type
+    ...</pre>
+                                <a target="_blank" href="https://github.com/bensonalec/CSE423_Compilers/blob/master/src/frontend/BNF_definition">Our Full BNF</a>
+                                <p class="todo">
+                                    TODO:
+                                    <ul class="todo">
+                                        <li>We are only reporting the last successful token parsed
+                                            but not giving a detailed and more "useful" message.
+                                            We should work on this.</li>
+                                    </ul>
+                                </p>
+                            </dd></dd></dl>
+    
+                            <dt><h4>Abstract Syntax Tree Builder</h4></dt><dl>
+    
                             <dd>
-                                Currently the only known errors we can experience
-                                while using RPLY's lexer library is when we encounter
-                                an element that isn't recognized. By adding an <code>INVALID</code>
-                                token type, and having it match to any string combination,
-                                we eliminate the possibility of the imported lexer code to
-                                fail, and are able to report any invalid tokens to the user.
+                                Using the initial Parse Tree, we are able to shorten it down and "abstract" it to have
+                                a more understandable and syntax-free way to represent a C program. We currently have a single
+                                function, <code>buildAST(parseTreeHead)</code>, that constructs a series of <code>ASTNode</code> objects
+                                with references to each other. Represented in the correct way, this creates a "Tree" data type.
+    
+                                <dl>
+                                    <dt><h5>Representing a Program</h5></dt>
+                                        <dd>
+                                            Every AST produced by our compiler will start with <code>program</code> denoting the root
+                                            of the C program. Following this root, there could be a series of function prototypes, <code>decl</code>,
+                                            and function declarations, <code>func</code>. Whether it be a prototype or declaration there will always be 3
+                                            branches that describe the Type, Function-Name, and Function-Parameters. In the case of a declaration, an extra node marked <code>body</code>
+                                            will link to the actual body of the function. Other keywords such as <code>var</code> (variables), <code>call</code> (function calls), and
+                                            arithmetic operations (+, -, *, /, etc.) exist in the produced AST if such content exists in the original C program.
+                                        </dd>
+    
+                                        <dd>
+                                            Example AST representations can be found under: <a href="C_EXAMPLES">Examples of C Programs and their Intermediate Representations</a>.
+                                        </dd>
+                                </dl>
+    
                             </dd>
+                            </dl>
+    
+                            <dt><h4>Semantic Analysis</h4></dt><dl>
+    
+                            <dd>
+                                Our semantic analysis include checks for Undeclared functions/variables,
+                                type mismatch (for the possibility of types other than Int),
+                                correct number/types of function parameters.
+    
+                                <p class="note">
+                                    NOTE: There is a possibility of more stages of semantic analysis being implimented
+                                    in the future, but it would be a supplemental feature for this project.
+                                </p>
+    
+                                <dl>
+                                    <dt><h5>Symbol Table</h5></dt>
+                                        <dd>
+                                            By constructing a symbol table using our AST, it becomes a lot easier to perform analysis on the C program.
+                                            This table contains properties such as:
+                                            <ul>
+                                                <li>Name</li>
+                                                <li>Entry type ie. function, variable, label, etc.</li>
+                                                <li>Type ie. int, double, float, etc.</li>
+                                                <li>Scope</li>
+                                                <li>References in the program</li>
+                                                <li>Modifiers (if any)</li>
+                                            </ul>
+                                            Along with all the "Known" symbols we also store the "Unknown" symbols which would cause warnings to be
+                                            shown to the user.
+                                        </dd>
+                                        <dd>
+                                            Example symbol tables can be found under: <a href="C_EXAMPLES">Examples of C Programs and their Intermediate Representations</a>.
+                                        </dd>
+                                </dl>
+    
+                            </dd>
+                            </dl>
+    
+                            <!-- <dt><h4>TITLE</h4></dt><dl>
+    
+                            <dd>
+                                DESCRIPTION
+    
+                                <dl>
+                                    <dt><h5>SUB-TITLE</h5></dt>
+                                        <dd>
+                                            BODY
+                                        </dd>
+    
+                                    <dt><h5>SUB-TITLE</h5></dt>
+                                        <dd>
+                                            BODY
+                                        </dd>
+                                </dl>
+    
+                            </dd>
+                            </dl> -->
+    
                         </dl>
                     </dd>
-                    <dt><h4>Parser</h4></dt>
-                    <dl>
-                        <dd>
-                            This sub-module relies on RPLY's parser generator but still
-                            requires a grammar. After defining a grammar in a separate
-                            file we can construct a parser using RPLY syntax that will
-                            take in the grammar and build our Parse Tree. Currently RPLY
-                            has allowed us to impliment a "Bottom-up left-to-right" parser.
-                        <dl><dt><h5>Example of BNF grammar</h5><dd>
-                            <pre>program : definitionList #program
-
-definitionList : definition_terminal definitionList #definitionList
-definitionList : definition_terminal #definitionList
-
-definition_terminal : functionDefinition #definition_terminal
-definition_terminal : functionDeclaration #definition_terminal
-definition_terminal : initialization #definition_terminal
-definition_terminal : COMMENT #definition_terminal
-
-functionDefinition : func_type SELF_DEFINED OPEN_PAREN args CLOSE_PAREN block #function definition
-functionDefinition : func_type SELF_DEFINED OPEN_PAREN CLOSE_PAREN block #function definition
-
-functionDeclaration : func_type SELF_DEFINED OPEN_PAREN args CLOSE_PAREN SEMICOLON #functionDeclaration
-functionDeclaration : func_type SELF_DEFINED OPEN_PAREN CLOSE_PAREN SEMICOLON #functionDeclaration
-
-func_type : TYPE #func_type
-func_type : func_modif TYPE #func_type
-...</pre>
-                            <a target="_blank" href="https://github.com/bensonalec/CSE423_Compilers/blob/master/src/frontend/BNF_definition">Our Full BNF</a>
-                            <p class="todo">
-                                TODO:
-                                <ul class="todo">
-                                    <li>We are only reporting the last successful token parsed
-                                        but not giving a detailed and more "useful" message.
-                                        We should work on this.</li>
-                                </ul>
-                            </p>
-                        </dd></dd></dl>
-
-                        <dt><h4>Abstract Syntax Tree Builder</h4></dt><dl>
-
-                        <dd>
-                            Using the initial Parse Tree, we are able to shorten it down and "abstract" it to have
-                            a more understandable and syntax-free way to represent a C program. We currently have a single
-                            function, <code>buildAST(parseTreeHead)</code>, that constructs a series of <code>ASTNode</code> objects
-                            with references to each other. Represented in the correct way, this creates a "Tree" data type.
-
-                            <dl>
-                                <dt><h5>Representing a Program</h5></dt>
-                                    <dd>
-                                        Every AST produced by our compiler will start with <code>program</code> denoting the root
-                                        of the C program. Following this root, there could be a series of function prototypes, <code>decl</code>,
-                                        and function declarations, <code>func</code>. Whether it be a prototype or declaration there will always be 3
-                                        branches that describe the Type, Function-Name, and Function-Parameters. In the case of a declaration, an extra node marked <code>body</code>
-                                        will link to the actual body of the function. Other keywords such as <code>var</code> (variables), <code>call</code> (function calls), and
-                                        arithmetic operations (+, -, *, /, etc.) exist in the produced AST if such content exists in the original C program.
-                                    </dd>
-
-                                    <dd>
-                                        Example AST representations can be found under: <a href="C_EXAMPLES">Examples of C Programs and their Intermediate Representations</a>.
-                                    </dd>
-                            </dl>
-
-                        </dd>
-                        </dl>
-
-                        <dt><h4>Semantic Analysis</h4></dt><dl>
-
-                        <dd>
-                            Our semantic analysis include checks for Undeclared functions/variables,
-                            type mismatch (for the possibility of types other than Int),
-                            correct number/types of function parameters.
-
-                            <p class="note">
-                                NOTE: There is a possibility of more stages of semantic analysis being implimented
-                                in the future, but it would be a supplemental feature for this project.
-                            </p>
-
-                            <dl>
-                                <dt><h5>Symbol Table</h5></dt>
-                                    <dd>
-                                        By constructing a symbol table using our AST, it becomes a lot easier to perform analysis on the C program.
-                                        This table contains properties such as:
-                                        <ul>
-                                            <li>Name</li>
-                                            <li>Entry type ie. function, variable, label, etc.</li>
-                                            <li>Type ie. int, double, float, etc.</li>
-                                            <li>Scope</li>
-                                            <li>References in the program</li>
-                                            <li>Modifiers (if any)</li>
-                                        </ul>
-                                        Along with all the "Known" symbols we also store the "Unknown" symbols which would cause warnings to be
-                                        shown to the user.
-                                    </dd>
-                                    <dd>
-                                        Example symbol tables can be found under: <a href="C_EXAMPLES">Examples of C Programs and their Intermediate Representations</a>.
-                                    </dd>
-                            </dl>
-
-                        </dd>
-                        </dl>
-
-                        <!-- <dt><h4>TITLE</h4></dt><dl>
-
-                        <dd>
-                            DESCRIPTION
-
-                            <dl>
-                                <dt><h5>SUB-TITLE</h5></dt>
-                                    <dd>
-                                        BODY
-                                    </dd>
-
-                                <dt><h5>SUB-TITLE</h5></dt>
-                                    <dd>
-                                        BODY
-                                    </dd>
-                            </dl>
-
-                        </dd>
-                        </dl> -->
-
                     </dl>
-                </dd>
-                </dl>
-                <!--  End Frontend  -->
-
-
-
-
-                <!--  Start Optimization  -->
-
-                <dl>
-                    <dt><h3>Optimization</h3></dt>
-                        <dd>
-                        <dl>
-
-                            <dt><h4>Intermediate Representations</h4></dt><dl>
-
+                    <!--  End Frontend  -->
+    
+    
+    
+    
+                    <!--  Start Optimization  -->
+    
+                    <dl>
+                        <dt><h3>Optimization</h3></dt>
                             <dd>
-                                For our IR, we decided to closely mimic Gimple, the IR used by GCC. In designing it, we aimed to keep as close as possible, but with the design decisions that made out lives easier in the long run. The basis of our optimization compenent of the compiler is converting one IR, the abstract syntax tree, to another, linear, IR. The resultant IR is then used to construct the assembly code in the Backend. The compiler as a whole allows for a few methods of interaction that all result in the linear IR. Building it from the AST and the symbol table or importing it through the commandline. In addition to this, the compiler does allow for a flag to specify the level of optimization that will be performed on the input.
-
-                                <dl>
-                                    <dt><h5>IR structure</h5></dt>
-                                    <dd>
-                                        The linear IR is structured in a way that all we have to do is to interact with the concept of a singular hypothetical line in the IR. This line may or may not boil down to multiple sub-lines called <code>IRNode</code>. Each <code>IRNode</code> would represent close to one assembly instruction with a few exception. This allows us to generalize over the IR as a whole when it comes to converting it to assembly. The design decision to have different IR instructions as their individual data type (that inherit from same parent class), was to have a way of storing these instructions not as a String yet still having a way to be converted to a String for visual representation. The types of nodes that we have defined goes as follows:
-                                        <dl>
-                                            <dt>IRJump</dt>
-                                            <dd>
-                                                This node represents a label for a goto statement in the IR, for instance it’s string representation:<br>
-                                                <pre><code>label:</code></pre>
-                                            </dd>
-                                            <dt>IRGoto</dt>
-                                            <dd>
-                                                This node represents a goto statement in the IR, for instance it’s string representation:<br>
-                                                <pre><code>goto label;</code></pre>
-                                            </dd>
-                                            <dt>IRIf</dt>
-                                            <dd>
-                                                This node represents an if statement in the IR, for instance it’s string representation:<br>
-                                                <pre><code>if(a == b) goto &lt;D.1234&gt;; else goto &lt;D.1235&gt;;</code></pre>
-                                                <p class="note">
-                                                    NOTE: If the condition contains conjunctive and disjunctive operations, the expression will be split up into its subsequent parts and consider the termination conditions that can be assumed through short circuiting. As such we also implement short circuiting at a higher level rather than having to deal with it at some other point.
-                                                </p>
-                                            </dd>
-                                            <dt>IRArth</dt>
-                                            <dd>
-                                                This node represents arithmetic in the IR, for instance it’s string representation: <br>
-                                                <pre><code>i = 15 + 25;</code></pre>
-                                                <p class="note">
-                                                    NOTE: Expressions that consist of multiple operations will result in a sequence of singular binary operations that will respect the order of operations as well as the results from each respective operation. This will result in multiple <code>IRNode</code> objects which each takes care of a singular operation.
-                                                </p>
-                                            </dd>
-                                            <dt>IRSpecial</dt>
-                                            <dd>
-                                                This node represents “special” operations like incrementation and decrementation in the IR. Depending on whether it is a pre or post operation, the linear IR preserves the value in a tempoary variable so that the result stays true to that of the C language. If it is a post-incrementation, this is the IR produced: <br>
-                                                <pre><code>_0 = i;
-i = i + 1;</code></pre>
-                                            </dd>
-                                            <dt>IRAssignment</dt>
-                                            <dd>
-                                                This node represents variable assignment in the IR, for instance it’s string representation: <br>
-                                                <pre><code>x = 25;</code></pre>
-                                            </dd>
-                                            <dt>IRFunctionAssign</dt>
-                                            <dd>
-                                                This node represents a variable being assigned to the output of a function, for instance it’s string representation: <br>
-                                                <pre><code>x = sampleFunction(1, 2);</code></pre>
-                                                Just as a note, all function calls in our IR are represented this way, even functions which do not return or return null are given a variable they “return” to.
-                                            </dd>
-                                            <dt>IRFunctionDecl</dt>
-                                            <dd>
-                                                This node represents declaration of function, and the body is defined after this IR node. For instance it’s string
-                                                representation:<br>
-                                                <pre><code>main (int a, int b)</code></pre>
-                                                <p class="note">
-                                                    NOTE: Following this <code>IRLine</code> object, there will be an IRBracket object which represents the start of a scope.
-                                                </p>
-                                            </dd>
-                                            <dt>IRReturn</dt>
-                                            <dd>
-                                                This object handles return statements. Returns can return nothing or a value. for instance it’s string representation:<br>
-                                                <pre><code>return D.1235;</code></pre>
-                                            </dd>
-                                            <dt>IRBracket</dt>
-                                            <dd>
-                                                This object just holds either an opening or closing bracket. for instance it’s string representation:<br>
-                                                <code>{</code> or <code>}</code>
-                                            </dd>
-                                            <dt>IRVariableInit</dt>
-                                            <dd>
-                                                This object handles lines of the IR involving variable initialization. for instance it’s string representation: <br>
-                                                <pre><code>int a;</code></pre>
-                                                <p class="note">
-                                                    NOTE: Variable initializations are made for every variable and they cannot be done inline with assignment. When the inputted C program does do this inline, it is split up in our IR.
-                                                </p>
-                                            </dd>
-                                        </dl>
-                                    </dd>
-                                    <dt><h5>Building an IR (from AST and Symbol Table)</h5></dt>
+                            <dl>
+    
+                                <dt><h4>Intermediate Representations</h4></dt><dl>
+    
+                                <dd>
+                                    For our IR, we decided to closely mimic Gimple, the IR used by GCC. In designing it, we aimed to keep as close as possible, but with the design decisions that made out lives easier in the long run. The basis of our optimization compenent of the compiler is converting one IR, the abstract syntax tree, to another, linear, IR. The resultant IR is then used to construct the assembly code in the Backend. The compiler as a whole allows for a few methods of interaction that all result in the linear IR. Building it from the AST and the symbol table or importing it through the commandline. In addition to this, the compiler does allow for a flag to specify the level of optimization that will be performed on the input.
+    
+                                    <dl>
+                                        <dt><h5>IR structure</h5></dt>
                                         <dd>
-                                            In order to derive a linear IR from the AST and symbol table, we instatniate several <code>IRLine</code> objects which each represents some required part of the program, and individually breaks down into lower level instructions/operations than what is presented to the user in the AST. Each of these smaller building blocks can be seen above. There are cases where each <code>IRLine</code> only contains a singular building block, but in those cases there are special circumstances that require that to happen such as closing and opening of scopes through the use of the <code>IRBracket</code> class.
-                                        </dd>
-
-                                    <dt><h5>Importing an IR</h5></dt>
-                                        <dd>
-                                            The importing of an IR works very much like how the lexing and parsing of a C file. We designed our own grammar and convert the output to the same format as something that was built through the use of a valid C file. This allows us to perform the same optimizations on the imported IR as the IR that is generated from a C file.
-                                        </dd>
-
-                                    <dt><h5>Optimizing an IR</h5></dt>
-                                        <dd>
-                                            As a group we decided to implement four different optimization mechanisms as a part of three total optimization
-                                            levels. <code>-O0</code> means that no optimization occurs during the compilation process. <code>-O1</code> means
-                                            that there are slight optimizations done during the compilation process. <code>-O2</code> means that there are more
-                                            advanced optimizations done during the compilaion process. Keep in mind that they are by no means agressive, and
-                                            there is no risk of altered behavior of the program when using these optimizations.<br>
-                                            The following are the diffrent optimizations that we support:
+                                            The linear IR is structured in a way that all we have to do is to interact with the concept of a singular hypothetical line in the IR. This line may or may not boil down to multiple sub-lines called <code>IRNode</code>. Each <code>IRNode</code> would represent close to one assembly instruction with a few exception. This allows us to generalize over the IR as a whole when it comes to converting it to assembly. The design decision to have different IR instructions as their individual data type (that inherit from same parent class), was to have a way of storing these instructions not as a String yet still having a way to be converted to a String for visual representation. The types of nodes that we have defined goes as follows:
                                             <dl>
+                                                <dt>IRJump</dt>
                                                 <dd>
-                                                    Removing Unreferenced Variables<br>
-                                                    Removing Unreferenced Functions<br>
-                                                    Constant Folding<br>
-                                                    Constant Propagation<br>
-                                                    IR Cleanup
+                                                    This node represents a label for a goto statement in the IR, for instance it’s string representation:<br>
+                                                    <pre><code>label:</code></pre>
+                                                </dd>
+                                                <dt>IRGoto</dt>
+                                                <dd>
+                                                    This node represents a goto statement in the IR, for instance it’s string representation:<br>
+                                                    <pre><code>goto label;</code></pre>
+                                                </dd>
+                                                <dt>IRIf</dt>
+                                                <dd>
+                                                    This node represents an if statement in the IR, for instance it’s string representation:<br>
+                                                    <pre><code>if(a == b) goto &lt;D.1234&gt;; else goto &lt;D.1235&gt;;</code></pre>
+                                                    <p class="note">
+                                                        NOTE: If the condition contains conjunctive and disjunctive operations, the expression will be split up into its subsequent parts and consider the termination conditions that can be assumed through short circuiting. As such we also implement short circuiting at a higher level rather than having to deal with it at some other point.
+                                                    </p>
+                                                </dd>
+                                                <dt>IRArth</dt>
+                                                <dd>
+                                                    This node represents arithmetic in the IR, for instance it’s string representation: <br>
+                                                    <pre><code>i = 15 + 25;</code></pre>
+                                                    <p class="note">
+                                                        NOTE: Expressions that consist of multiple operations will result in a sequence of singular binary operations that will respect the order of operations as well as the results from each respective operation. This will result in multiple <code>IRNode</code> objects which each takes care of a singular operation.
+                                                    </p>
+                                                </dd>
+                                                <dt>IRSpecial</dt>
+                                                <dd>
+                                                    This node represents “special” operations like incrementation and decrementation in the IR. Depending on whether it is a pre or post operation, the linear IR preserves the value in a tempoary variable so that the result stays true to that of the C language. If it is a post-incrementation, this is the IR produced: <br>
+                                                    <pre><code>_0 = i;
+    i = i + 1;</code></pre>
+                                                </dd>
+                                                <dt>IRAssignment</dt>
+                                                <dd>
+                                                    This node represents variable assignment in the IR, for instance it’s string representation: <br>
+                                                    <pre><code>x = 25;</code></pre>
+                                                </dd>
+                                                <dt>IRFunctionAssign</dt>
+                                                <dd>
+                                                    This node represents a variable being assigned to the output of a function, for instance it’s string representation: <br>
+                                                    <pre><code>x = sampleFunction(1, 2);</code></pre>
+                                                    Just as a note, all function calls in our IR are represented this way, even functions which do not return or return null are given a variable they “return” to.
+                                                </dd>
+                                                <dt>IRFunctionDecl</dt>
+                                                <dd>
+                                                    This node represents declaration of function, and the body is defined after this IR node. For instance it’s string
+                                                    representation:<br>
+                                                    <pre><code>main (int a, int b)</code></pre>
+                                                    <p class="note">
+                                                        NOTE: Following this <code>IRLine</code> object, there will be an IRBracket object which represents the start of a scope.
+                                                    </p>
+                                                </dd>
+                                                <dt>IRReturn</dt>
+                                                <dd>
+                                                    This object handles return statements. Returns can return nothing or a value. for instance it’s string representation:<br>
+                                                    <pre><code>return D.1235;</code></pre>
+                                                </dd>
+                                                <dt>IRBracket</dt>
+                                                <dd>
+                                                    This object just holds either an opening or closing bracket. for instance it’s string representation:<br>
+                                                    <code>{</code> or <code>}</code>
+                                                </dd>
+                                                <dt>IRVariableInit</dt>
+                                                <dd>
+                                                    This object handles lines of the IR involving variable initialization. for instance it’s string representation: <br>
+                                                    <pre><code>int a;</code></pre>
+                                                    <p class="note">
+                                                        NOTE: Variable initializations are made for every variable and they cannot be done inline with assignment. When the inputted C program does do this inline, it is split up in our IR.
+                                                    </p>
                                                 </dd>
                                             </dl>
                                         </dd>
-                                </dl>
-
+                                        <dt><h5>Building an IR (from AST and Symbol Table)</h5></dt>
+                                            <dd>
+                                                In order to derive a linear IR from the AST and symbol table, we instatniate several <code>IRLine</code> objects which each represents some required part of the program, and individually breaks down into lower level instructions/operations than what is presented to the user in the AST. Each of these smaller building blocks can be seen above. There are cases where each <code>IRLine</code> only contains a singular building block, but in those cases there are special circumstances that require that to happen such as closing and opening of scopes through the use of the <code>IRBracket</code> class.
+                                            </dd>
+    
+                                        <dt><h5>Importing an IR</h5></dt>
+                                            <dd>
+                                                The importing of an IR works very much like how the lexing and parsing of a C file. We designed our own grammar and convert the output to the same format as something that was built through the use of a valid C file. This allows us to perform the same optimizations on the imported IR as the IR that is generated from a C file.
+                                            </dd>
+    
+                                        <dt><h5>Optimizing an IR</h5></dt>
+                                            <dd>
+                                                As a group we decided to implement four different optimization mechanisms as a part of three total optimization
+                                                levels. <code>-O0</code> means that no optimization occurs during the compilation process. <code>-O1</code> means
+                                                that there are slight optimizations done during the compilation process. <code>-O2</code> means that there are more
+                                                advanced optimizations done during the compilaion process. Keep in mind that they are by no means agressive, and
+                                                there is no risk of altered behavior of the program when using these optimizations.<br>
+                                                The following are the diffrent optimizations that we support:
+                                                <dl>
+                                                    <dd>
+                                                        Removing Unreferenced Variables<br>
+                                                        Removing Unreferenced Functions<br>
+                                                        Constant Folding<br>
+                                                        Constant Propagation<br>
+                                                        IR Cleanup
+                                                    </dd>
+                                                </dl>
+                                            </dd>
+                                    </dl>
+    
+                                </dd>
+    
+                            </dl>
                             </dd>
-
-                        </dl>
-                        </dd>
-                </dl>
-
-                <!--  End Optimization  -->
-            </dd>
-        </dl>
-    </dd>
-</dl>
-</section>
+                    </dl>
+    
+                    <!--  End Optimization  -->
+    
+                    <!-- Start Backend -->
+                    <dl>
+                        <dt><h3>Backend</h3></dt>
+                            <dd>
+                            <dl>
+    
+                                <dt><h4>Assembly Generation</h4></dt><dl>
+    
+                                <dd>
+    Since our IR was converted to a series of nodes that represent each IR line type we expect, we can leverage that same IRNode class in order to generate our initial assembly. This initial assembly still uses variable names instead of registers, and we then do proper register allocation in the next "phase". 
+    Each IRNode class has a corresponding function, called "asm", that uses the built IRNode that has already been built in our previous optimization step, and uses the information stored in it to convert it to an assembly representation. 
+    
+    In these "asm" functions we build a list of ASMNodes, another class we have defined, and return that list of ASMNodes. Then, we call the asm function on each IRNode that is produced via our optimization step, and append the list that each asm function returns to a master list. This master list is then passed into a class called allocator, that does register allocation.
+    
+                                    <dl>
+                                        <dt><h5>ASMNode</h5></dt>
+                                        <dd>
+                                        The ASMNode class creates an object with a series of variables that determine important information for the register allocation step. The class expects an op, left, right and a kwargs dictionary.  A series of useful flags are passed in as the dictionary kwargs to the initialization of an ASMNode, and then the initializaiton goes through this dictionary to set the appropriate flags for the new ASMNode. 
+    
+                                        It stores most instructions in the general form of "op left, right", and for some nodes the left and right can be none. 
+    
+                                        Some examples of flags om the class include "leftNeedsReg", which indicates that in register allocation we will need to allocate a register for the left operand of the given ASMNode, and the flag "leftIsLiteral", which indicates that the left operand of the ASMNode is a literal (i.e $4). (There are various other flags, thesea are just two examples.) 
+                                        </dd>
+                                    </dl>
+                                <dt><h4>Register Allocation</h4></dt><dl>
+    
+                                <dd>
+                                The register allocation step uses a class called "allocator" in order to go through a list of ASMNodes that is passed in, and then modify their left and right operands to be replaced by the appropriate registers where necessary. In order to do this, it separates the different scenarios where different register allocations need to be done by making a series of "cases", each of which is determined by the flags set in the ASMNode class. Then, in these cases it uses a class that represents a directory of registers, and a registerData class to determime what registers are open, and what is in those registers at what given time. As well as this, we implemented a stack class, which is used to mimic the stack in x64 assembly, and move things on, off, and determine what is where in the stack. Finally, after register allocation, the class returns a new list of ASMNodes, with some new additions that are necessary for the register allocation, and the variables in the initial list changed to the appropriate registers. 
+                                </dd>
+                            </dl>
+                            </dd>
+                    </dl>
+                </dd>
+            </dl>
+        </dd>
+    </dl>
+    </section>
+    
