@@ -12,9 +12,9 @@ class stackObj():
         self.type = kwarg["Type"]
 
         if "KnownVar" == kwarg["Type"]:
-            self.varName = kwarh["Name"]
+            self.Name = kwarg["Name"]
         elif "UnknownVar" == kwarg["Type"]:
-            self.regName = kwarg["Name"]
+            self.Name = kwarg["Name"]
             pass
         elif "BpMov" == kwarg["Type"]:
             pass
@@ -34,7 +34,6 @@ class Stack():
 
     def push(self, objType, name=""):
         obj = stackObj(Name=name, Type=objType)
-
         if objType == "BpMove":
             self.lbp = 0
         else:
@@ -47,7 +46,7 @@ class Stack():
         return self.stk.pop()
         pass
 
-    def peak(self):
+    def peek(self):
         return self.stk[-1]
 
     def find_offset(self, var, bpSkipsAllowed=0):
@@ -62,19 +61,17 @@ class Stack():
                 skipCnt += 1
                 if skipCnt > bpSkipsAllowed:
                     return None
-            elif e.name == var:
+            elif e.Name == var:
                 voi = i
 
             if voi != -1:
                 return (voi-self.lbp)*8
-
+        # return None
         print("this occured")
 
     def dist_from_base(self):
         """
         Finds the number of bytes between the base pointer and stack pointer
         """
-        for i, e in enumerate(reversed(self.stk)):
-            if e.type == "BpMov":
-                    return i * 8
+        return self.lbp * 8
 

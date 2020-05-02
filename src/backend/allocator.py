@@ -31,7 +31,7 @@ class Allocator():
             # Case functionDecl
             if instr.functionDecl:
                 # Sets up the stack with the parameters
-                stack.scope_change()
+                # stack.scope_change()
                 [stack.stk.append(x) for x in instr.stack]
 
                 # Sets up the registers with the correct values
@@ -53,17 +53,31 @@ class Allocator():
             elif instr.dontTouch:
 
                 if instr.command == "pop":
-                    tmp = stack.peek()
-                    if tmp.type == "BpMov":
-                        pass
-                    elif tmp.name != instr.left:
-                        
+
                     if instr.left == "rbp":
                         newAsm_list.append(asmn.ASMNode("add", f"${stack.dist_from_base()}", f"%rsp"))
+
+                    tmp = stack.peek()
+                    #there is a base pointer on top of the stack
+                    if tmp.type == "BpMov":
+                        pass
+                    #the item on the top of the stack is not the expected value
+                    #i.e pop a
+                    elif tmp.Name != instr.left:
+                        offset = stack.find_offset(instr.left)
+                        if offset > 0:
+                            # This really shouldnt happen although this is here to tell us that it is
+                            print ("we were here")
+                            pass
+                        else:
+                            while stack.pop().Name != instr.left:
+                                continue
+                    elif tmp.Name == instr.left:
+                        stack.pop()
                 elif instr.command == "push":
                     stack.push("UnknownVar", name=instr.left)
+                    [x.free() for x in regDir.regs if x.name == instr.left]
                 elif instr.command == "ret":
-                    stack.scope_return()
                     [x.free() for x in regDir.regs if x.name not in ["r15", "r14", "r13", "r12", "rbx"]]
                 #NOTE cannot continue here code needed at the end of the loop.
                 case = 0
@@ -342,7 +356,6 @@ class RegisterDirectory():
             return reg
 
         # print ("stack")
-
         return self.swap(reg, var)
 
         # regData = self.registerData(f"{offset}(rbp)")
@@ -444,13 +457,12 @@ class RegisterDirectory():
 
         # print (result.is_tmp(), var.startswith("tV_"))
         # print (result.name, var)
-
         return self.swap(result, var)
 
     def swap(self, reg, var):
 
         # print (reg, var)
-
+        print("DSKLSLKDDKLS","||",reg," || ", var)
         if reg.is_tmp() or reg.isOpen:
             pass
         else:
@@ -473,7 +485,7 @@ class RegisterDirectory():
             rO = self.stack.find_offset(paramReg.var_value)
             if not rO:
                 rO = self.stack.push("KnownVar", name=paramReg.var_value)
-                self.newAsm.append(asmn.ASMNode("push", paramReg.name))
+                self.newAsm.append(asmn.ASMNode("push", paramReg.name, None))
             else:
                 self.newAsm.append(asmn.ASMNode("mov", paramReg.name, "rbp", rightOffset=rO))
 

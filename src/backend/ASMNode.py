@@ -35,6 +35,8 @@ class ASMNode():
         self.leftHasVar = True if self.left and self.left not in x86_regs else False
         self.rightHasVar = True if self.right and self.right not in x86_regs else False
 
+        # self.varInStack = 
+
         # self.tmpVar = True if self.command == "mov" and self.right.startswith("tV_") else False
 
 

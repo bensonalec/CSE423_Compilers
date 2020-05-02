@@ -8,6 +8,7 @@ from importlib.machinery import SourceFileLoader
 
 ast = SourceFileLoader("AST_builder", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/../frontend/AST_builder.py").load_module()
 asmn = SourceFileLoader("ASMNode", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/../backend/ASMNode.py").load_module()
+stk = SourceFileLoader("stack", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/../backend/stack.py").load_module()
 
 global tmpVarIndex
 tmpVarIndex = 0
@@ -759,7 +760,7 @@ class IRAssignment(IRNode):
                 v = float(self.rhs)
                 modif = "$"
             except ValueError:
-                return [asmn.ASMNode(op, f"{v}", self.lhs)]
+                return [asmn.ASMNode(op, f"{v}", self.lhs,leftNeedsReg=True)]
                 pass
             # TODO: Understand how floating point registers work while not going bald like ben.
             # TODO: Figure out whether the right hand argument of an `xor` operation can be a memory location as well as a register.
@@ -857,22 +858,19 @@ class IRFunctionDecl(IRNode):
         fourByteRegisters = {"rdi": 0, "rsi": 0, "rdx": 0, "rcx": 0, "r8": 0, "r9": 0}
         eightByteRegisters = {"XMM0": 0, "XMM1": 0, "XMM2": 0, "XMM3": 0, "XMM4": 0, "XMM5": 0, "XMM6": 0, "XMM7": 0}
 
-        offset = 0
         asmLs = []
 
         regdir = {}
         stack = []
 
         for idx, var in enumerate(self.params):
-            print ("INLINE",var.split(' ')[-1])
             if idx < 6:
                 source_reg = [x for x, y in fourByteRegisters.items() if y == 0][0]
                 fourByteRegisters[source_reg] = 1
 
                 regdir[source_reg] = var.split(' ')[-1]
             else:
-                stack.append((var.split(' ')[-1], offset-4))
-                offset -= 4
+                stack.append(stk.stackObj(Type="KnownVar", Name=var.split(' ')[-1]))
 
         asmLs.extend([
             asmn.ASMNode(f"{self.name}:",None,None, functionDecl=True, regDir=regdir, stack=stack),
