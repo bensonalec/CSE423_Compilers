@@ -1,56 +1,80 @@
+class stackObj():
+    def __init__(self, **kwarg):
+        # Scenarions:
+        # Its a known variable being stored
+        # Its a register with an unknown value being stored.
+        # RBP being pushed
+
+        if "Type" not in kwarg:
+            # TODO: Throw some kind of error
+            pass
+
+        self.type = kwarg["Type"]
+
+        if "KnownVar" == kwarg["Type"]:
+            self.varName = kwarh["Name"]
+        elif "UnknownVar" == kwarg["Type"]:
+            self.regName = kwarg["Name"]
+            pass
+        elif "BpMov" == kwarg["Type"]:
+            pass
+        else:
+            # Something unexpected happened
+            pass
+
 class Stack():
     """
     Emulates the stack in order to store the locations of variables not in a register.
     The base pointer is assumed to come before the start of the list. Similarly the stack pointer points exists after the end of the list.
     """
-    scopes = []
 
     def __init__(self):
         self.stk = []
+        self.lbp = -1
 
-    def scope_change(self):
-        """
-        Call when the base pointer and stack pointer are both modified to declare a new scope
-        """
-        self.scopes.append(self.stk)
-        self.stk = []
+    def push(self, objType, name=""):
+        obj = stackObj(Name=name, Type=objType)
 
-    def scope_return(self):
-        """
-        Removes current scope and "returns" to previous stack scope.
-        """
-        self.stk = self.scopes.pop()
-
-    def insert(self, var):
-        """
-        Inserts variable onto the current stack scope.
-        """
-        if len(self.stk) > 0:
-            base_offset = self.stk[-1][1]
+        if objType == "BpMove":
+            self.lbp = 0
         else:
-            base_offset = 0
+            self.lbp += 1
+        self.stk.append(obj)
+        pass
 
-        print ("inserting", (var, base_offset - 4))
+    def pop(self):
+        self.lbp -= 1;
+        return self.stk.pop()
+        pass
 
-        self.stk.append((var, base_offset - 4))
+    def peak(self):
+        return self.stk[-1]
 
-        return base_offset - 4
-
-    def find_offset(self, var):
+    def find_offset(self, var, bpSkipsAllowed=0):
         """
         Finds the offset if the variable has an allocated slot on the stack. Otherwise returns None.
         """
-        print (var, self.stk)
-        candidates = [x[1] for x in self.stk if x[0] == var]
-        # print (candidates)
-        if candidates == []:
-            return None
+        skipCnt = -1
+        voi = -1
 
-        return candidates[0]
+        for i, e in enumerate(reversed(self.stk)):
+            if e.type == "BpMov":
+                skipCnt += 1
+                if skipCnt > bpSkipsAllowed:
+                    return None
+            elif e.name == var:
+                voi = i
+
+            if voi != -1:
+                return (voi-self.lbp)*8
+
+        print("this occured")
 
     def dist_from_base(self):
         """
         Finds the number of bytes between the base pointer and stack pointer
         """
-        return len(self.stk) * 4
+        for i, e in enumerate(reversed(self.stk)):
+            if e.type == "BpMov":
+                    return i * 8
 

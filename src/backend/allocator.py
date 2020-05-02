@@ -49,13 +49,22 @@ class Allocator():
                     regDir.paramSwap(paramReg, instr.left)
                     pass
 
-
             # Case 0: Dont touch this instruction (labels, ret, etc..)
             elif instr.dontTouch:
 
-                if instr.command == "pop" and instr.left == "rbp":
-                    newAsm_list.append(asmn.ASMNode("add", f"${stack.dist_from_base()}", f"%rsp"))
-
+                if instr.command == "pop":
+                    tmp = stack.peek()
+                    if tmp.type == "BpMov":
+                        pass
+                    elif tmp.name != instr.left:
+                        
+                    if instr.left == "rbp":
+                        newAsm_list.append(asmn.ASMNode("add", f"${stack.dist_from_base()}", f"%rsp"))
+                elif instr.command == "push":
+                    stack.push("UnknownVar", name=instr.left)
+                elif instr.command == "ret":
+                    stack.scope_return()
+                    [x.free() for x in regDir.regs if x.name not in ["r15", "r14", "r13", "r12", "rbx"]]
                 #NOTE cannot continue here code needed at the end of the loop.
                 case = 0
                 pass
@@ -332,7 +341,7 @@ class RegisterDirectory():
             reg.update(var, None)
             return reg
 
-        print ("stack")
+        # print ("stack")
 
         return self.swap(reg, var)
 
@@ -371,7 +380,7 @@ class RegisterDirectory():
                 self.regs[ind] not in self.last_used[-2:]
                 ):
                 # print("here")
-                print([x.name for x in self.last_used[-3:]])
+                # print([x.name for x in self.last_used[-3:]])
                 self.regs[ind].update(var, None)
                 self.regs[ind].isOpen = False
                 self.last_used.append(self.regs[ind])
@@ -433,24 +442,24 @@ class RegisterDirectory():
             result.update(var, None)
             return result
 
-        print (result.is_tmp(), var.startswith("tV_"))
-        print (result.name, var)
+        # print (result.is_tmp(), var.startswith("tV_"))
+        # print (result.name, var)
 
         return self.swap(result, var)
 
     def swap(self, reg, var):
 
-        print (reg, var)
+        # print (reg, var)
 
         if reg.is_tmp() or reg.isOpen:
             pass
         else:
             rO = self.stack.find_offset(reg.var_value)
             if not rO:
-                rO = self.stack.insert(reg.var_value)
-                # print(var)
-                self.newAsm.append(asmn.ASMNode("sub", "$4", "rsp"))
-            self.newAsm.append(asmn.ASMNode("mov", reg.name, "rbp", rightOffset=rO))
+                rO = self.stack.push("KnownVar", name=reg.var_value)
+                self.newAsm.append(asmn.ASMNode("push", reg.name))
+            else:
+                self.newAsm.append(asmn.ASMNode("mov", reg.name, "rbp", rightOffset=rO))
 
         offset = self.stack.find_offset(var)
         self.newAsm.append(asmn.ASMNode("mov", "rbp", reg.name, leftOffset=offset))
@@ -463,10 +472,10 @@ class RegisterDirectory():
         if not paramReg.is_tmp():
             rO = self.stack.find_offset(paramReg.var_value)
             if not rO:
-                rO = self.stack.insert(paramReg.var_value)
-                # print(var)
-                self.newAsm.append(asmn.ASMNode("sub", "$4", "rsp"))
-            self.newAsm.append(asmn.ASMNode("mov", paramReg.name, "rbp", rightOffset=rO))
+                rO = self.stack.push("KnownVar", name=paramReg.var_value)
+                self.newAsm.append(asmn.ASMNode("push", paramReg.name))
+            else:
+                self.newAsm.append(asmn.ASMNode("mov", paramReg.name, "rbp", rightOffset=rO))
 
         paramReg.update(var, None)
 
