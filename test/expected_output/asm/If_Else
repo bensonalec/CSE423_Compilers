@@ -1,0 +1,66 @@
+.file "If_Else.c"
+.text
+.globl	main
+.type	main,	@function
+main:
+mov %rsp, %rbp
+push %rbx
+push %r12
+push %r13
+push %r14
+push %r15
+mov $1, %rcx
+mov $2, %rbx
+xor %rdi, %rdi
+cmp %rcx, %rdi
+jg D.1237
+jmp D.1236
+D.1237:
+cmp %rbx, %rcx
+jl D.1235
+jmp D.1236
+D.1235:
+jmp D.1239
+D.1236:
+D.1239:
+mov $1, %rsi
+xor %rdi, %rdi
+test %rsi, %rdi
+jne D.1240
+jmp D.1241
+D.1240:
+jmp D.1242
+D.1241:
+jmp D.1244
+D.1243:
+jmp D.1245
+D.1244:
+mov $1, %rsi
+xor %rdi, %rdi
+test %rsi, %rdi
+jne D.1248
+jmp D.1249
+D.1248:
+jmp D.1250
+D.1249:
+D.1250:
+D.1242:
+D.1245:
+mov $1, %rsi
+xor %rdi, %rdi
+test %rsi, %rdi
+jne D.1251
+jmp D.1252
+D.1251:
+xor %r8, %r8
+jmp D.1253
+D.1252:
+mov $2, %r9
+D.1253:
+add $0, %rsp
+pop %r15
+pop %r14
+pop %r13
+pop %r12
+pop %rbx
+ret

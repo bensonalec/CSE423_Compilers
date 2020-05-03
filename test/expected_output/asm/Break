@@ -1,0 +1,28 @@
+.file "Break.c"
+.text
+.globl	main
+.type	main,	@function
+main:
+mov %rsp, %rbp
+push %rbx
+push %r12
+push %r13
+push %r14
+push %r15
+jmp D.1235
+D.1236:
+jmp D.1237
+D.1235:
+mov $1, %rcx
+xor %rbx, %rbx
+test %rcx, %rbx
+jne D.1236
+jmp D.1237
+D.1237:
+add $0, %rsp
+pop %r15
+pop %r14
+pop %r13
+pop %r12
+pop %rbx
+ret

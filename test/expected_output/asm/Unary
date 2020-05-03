@@ -1,0 +1,49 @@
+.file "Unary.c"
+.text
+.globl	main
+.type	main,	@function
+main:
+mov %rsp, %rbp
+push %rbx
+push %r12
+push %r13
+push %r14
+push %r15
+mov $10, %rcx
+neg %rcx
+mov %rcx, %rbx
+mov %rbx, %rdi
+neg %rdi
+mov %rdi, %rsi
+mov %rbx, %r8
+mov %r8, %r9
+mov $2, %r10
+xor %rax, %rax
+test %r10, %r10
+sete %al
+mov %rax, %r10
+xor %r11, %r11
+test %r10, %r11
+jne D.1235
+jmp D.1236
+D.1235:
+jmp D.1237
+D.1236:
+D.1237:
+mov $2, %r12
+not %r12
+xor %r11, %r11
+test %r12, %r11
+jne D.1238
+jmp D.1239
+D.1238:
+jmp D.1240
+D.1239:
+D.1240:
+add $0, %rsp
+pop %r15
+pop %r14
+pop %r13
+pop %r12
+pop %rbx
+ret
