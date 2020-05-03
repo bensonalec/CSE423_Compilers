@@ -496,30 +496,8 @@ class LevelOneIR():
 
         return changed, var_val
 
-
-=======
     def __str__(self):
         return "\n".join(self.IR) + "\n"
-
-def buildBoilerPlate(symTable):
-    namesandparams = []
-    functionNames = [(x.name,x.type) for x in symTable.symbols if x.is_function]
-    params = [(x.name,x.scope,x.type) for x in symTable.symbols if x.is_param]
-
-    for x in functionNames:
-        track = 0
-        paramsLi = []
-        for i in params:
-            if x[0] == i[1].split("/")[1]:
-                track+=1
-
-                paramsLi.append((i[2],i[0]))
-        if track == 0:
-            namesandparams.append((x[0],paramsLi,x[1]))
-        else:
-            namesandparams.append((x[0],paramsLi,x[1]))
-    return namesandparams
->>>>>>> origin/test_unification
 
 def beginWrapper(function_tuple, returnDigit):
     """
