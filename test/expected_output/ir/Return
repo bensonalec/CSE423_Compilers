@@ -6,19 +6,19 @@ return;
 main ()
 {
 int D.1235;
-int a;
-a = NULL;
+int rV_a;
+rV_a = 0;
 D.1235 = 1;
 return D.1235;
-_0 = function();
-D.1235 = _0;
+tV_1 = function();
+D.1235 = tV_1;
 return D.1235;
-_0 = 1 + 1;
-D.1235 = _0;
+tV_2 = 1 + 1;
+D.1235 = tV_2;
 return D.1235;
-_0 = 1 + 2;
-D.1235 = _0;
+tV_3 = 1 + 2;
+D.1235 = tV_3;
 return D.1235;
-D.1235 = a;
+D.1235 = rV_a;
 return D.1235;
 }

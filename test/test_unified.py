@@ -64,10 +64,10 @@ def retrieve_sym(file):
 def retrieve_sem(file):
     asTree = retrieve_ast(file)
     sym = retrieve_sym(file)
-    semanticAnal = sem.semantic(asTree,sym)
+    semanticAnal = sem.semantic(asTree,sym.symbols)
     semanticAnal.semanticAnalysis()
 
-    return semanticAnal
+    return semanticAnal.lineSemanticErrors()
 
 def retrieve_ir(file):
     astHead = retrieve_ast(file)
@@ -215,7 +215,7 @@ class SemanticTests(unittest.TestCase):
                 with self.subTest(), open(f"{C_root}/{file}", "r") as inp, open(f"{expected_path}/{file[:-2]}") as exp:
                     proc = pre.run(inp.read(), f"{C_root}/{file}")
                     sema = retrieve_sem(proc)
-                    self.assertEqual(sema.__repr__(), exp.read())
+                    self.assertEqual(sema, exp.read())
                     status = "OK"
             else:
                 status = "SKIPPED"

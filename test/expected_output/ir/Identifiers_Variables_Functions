@@ -1,4 +1,4 @@
-test_function (int x,int y)
+test_function (int rV_x, int rV_y)
 {
 int D.1234;
 D.1234 = 1;
@@ -7,9 +7,9 @@ return D.1234;
 main ()
 {
 int D.1235;
-int x;
-_1 = test_function(1, 1);
-x = _1;
-D.1235 = x;
+int rV_x;
+tV_1 = test_function(1, 1);
+rV_x = tV_1;
+D.1235 = rV_x;
 return D.1235;
 }

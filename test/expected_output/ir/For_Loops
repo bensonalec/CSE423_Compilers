@@ -1,75 +1,75 @@
 main ()
 {
 int D.1234;
-int i;
-i = 0;
-i = 0;
+int rV_i;
+rV_i = 0;
+rV_i = 0;
 goto <D.1235>;
 <D.1236>:
 goto <D.1237>;
-_0 = i;
-i = i + 1;
+tV_1 = rV_i;
+rV_i = rV_i + 1;
 <D.1235>:
-if (i < 10) goto <D.1236>; else goto <D.1237>;
+if (rV_i < 10) goto <D.1236>; else goto <D.1237>;
 <D.1237>:
-i = 0;
+rV_i = 0;
 goto <D.1239>;
 <D.1240>:
-i = 0;
+rV_i = 0;
 goto <D.1242>;
 <D.1243>:
 goto <D.1243>;
-_0 = i;
-i = i + 1;
+tV_2 = rV_i;
+rV_i = rV_i + 1;
 <D.1242>:
-if (i < 10) goto <D.1243>; else goto <D.1244>;
+if (rV_i < 10) goto <D.1243>; else goto <D.1244>;
 <D.1244>:
-_0 = i;
-i = i + 1;
+tV_3 = rV_i;
+rV_i = rV_i + 1;
 <D.1239>:
-if (i < 10) goto <D.1240>; else goto <D.1241>;
+if (rV_i < 10) goto <D.1240>; else goto <D.1241>;
 <D.1241>:
-i = 0;
+rV_i = 0;
 goto <D.1243>;
 <D.1244>:
 goto <D.1244>;
-_0 = i;
-i = i + 1;
+tV_4 = rV_i;
+rV_i = rV_i + 1;
 <D.1243>:
-if (i < 10) goto <D.1244>; else goto <D.1245>;
+if (rV_i < 10) goto <D.1244>; else goto <D.1245>;
 <D.1245>:
-i = 0;
+rV_i = 0;
 goto <D.1247>;
 <D.1248>:
-i = 0;
+rV_i = 0;
 goto <D.1250>;
 <D.1251>:
 goto <D.1251>;
-_0 = i;
-i = i + 1;
+tV_5 = rV_i;
+rV_i = rV_i + 1;
 <D.1250>:
-if (i < 10) goto <D.1251>; else goto <D.1252>;
+if (rV_i < 10) goto <D.1251>; else goto <D.1252>;
 <D.1252>:
-_0 = i;
-i = i + 1;
+tV_6 = rV_i;
+rV_i = rV_i + 1;
 <D.1247>:
-if (i < 10) goto <D.1248>; else goto <D.1249>;
+if (rV_i < 10) goto <D.1248>; else goto <D.1249>;
 <D.1249>:
 {
-int j;
-j = 0;
+int rV_j;
+rV_j = 0;
 goto <D.1251>;
 <D.1252>:
 goto <D.1252>;
-j = j;
+rV_j = rV_j;
 <D.1251>:
-if (j == 0) goto <D.1252>; else goto <D.1253>;
+if (rV_j == 0) goto <D.1252>; else goto <D.1253>;
 <D.1253>:
 }
 <D.1255>:
 goto <D.1255>;
 goto <D.1255>;
-i = 0;
+rV_i = 0;
 <D.1259>:
 goto <D.1259>;
 goto <D.1259>;
@@ -78,8 +78,9 @@ goto <D.1263>;
 goto <D.1263>;
 <D.1267>:
 goto <D.1267>;
-i = i;
+rV_i = rV_i;
 goto <D.1267>;
 <D.1271>:
 goto <D.1271>;
+return;
 }

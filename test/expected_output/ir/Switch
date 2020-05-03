@@ -1,55 +1,50 @@
 main ()
 {
 int D.1234;
-int i;
-i = 10;
-if (i == 12) goto <D.1235>; else goto <D.1236>;
+int rV_i;
+rV_i = 10;
+if (rV_i == 12) goto <D.1235>; else goto <D.1236>;
 <D.1235>:
-_0 = i;
-i = i - 1;
-goto <D.1236>;
+tV_1 = rV_i;
+rV_i = rV_i - 1;
 goto <D.1237>;
 <D.1236>:
-if (i == 11) goto <D.1238>; else goto <D.1239>;
+if (rV_i == 11) goto <D.1238>; else goto <D.1239>;
 <D.1238>:
 {
-int k;
-_0 = i;
-i = i + 1;
-_0 = i;
-i = i + 1;
-k = NULL;
-goto <D.1239>;
+int rV_k;
+tV_2 = rV_i;
+rV_i = rV_i + 1;
+tV_3 = rV_i;
+rV_i = rV_i + 1;
+rV_k = 0;
 }
 goto <D.1240>;
 <D.1239>:
-if (i == 10) goto <D.1241>; else goto <D.1242>;
+if (rV_i == 10) goto <D.1241>; else goto <D.1242>;
 <D.1241>:
 {
-int k;
-_0 = i;
-i = i + 1;
-k = NULL;
-goto <D.1242>;
+int rV_k;
+tV_4 = rV_i;
+rV_i = rV_i + 1;
+rV_k = 0;
 }
 goto <D.1243>;
 <D.1242>:
-if (i == 9) goto <D.1244>; else goto <D.1245>;
+if (rV_i == 9) goto <D.1244>; else goto <D.1245>;
 <D.1244>:
 {
-int k;
-_0 = i;
-i = i + 1;
-k = NULL;
-goto <D.1245>;
+int rV_k;
+tV_5 = rV_i;
+rV_i = rV_i + 1;
+rV_k = 0;
 }
 goto <D.1246>;
 <D.1245>:
-goto <D.1248>;
 <D.1237>:
 <D.1240>:
 <D.1243>:
 <D.1246>:
-D.1234 = i;
+D.1234 = rV_i;
 return D.1234;
 }

@@ -60,6 +60,7 @@ class LevelOneIR():
             tmp_lines , labelDigit = returnLines(i[1], returnDigit, labelDigit)
             lines.extend(tmp_lines)
 
+            # add a return statement if function didnt have one
             if not isinstance(lines[-1].treeList[-1], irl.IRReturn):
                 lines.append(irl.IRLine.singleEntry(irl.IRReturn(None)))
 
@@ -71,11 +72,10 @@ class LevelOneIR():
 
             self.IR = lines
 
+        # RESET THE FRICKING GLOBAL
+        irl.tmpVarIndex = 0
+
         return self.IR
-
-
-    def __str__(self):
-        return "\n".join([str(x) for x in self.IR]) + "\n"
 
     def optimize(self, opt):
         """
@@ -497,7 +497,7 @@ class LevelOneIR():
         return changed, var_val
 
     def __str__(self):
-        return "\n".join(self.IR) + "\n"
+        return "\n".join([str(x) for x in self.IR]) + "\n"
 
 def beginWrapper(function_tuple, returnDigit):
     """

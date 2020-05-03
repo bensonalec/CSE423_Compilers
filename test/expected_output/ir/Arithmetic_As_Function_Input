@@ -1,13 +1,14 @@
-function (int arithmetic_input)
+function (int rV_arithmetic_input)
 {
 int D.1234;
-D.1234 = arithmetic_input;
+D.1234 = rV_arithmetic_input;
 return D.1234;
 }
 main ()
 {
 int D.1235;
-int value_1;
-_1 = function(1);
-value_1 = _1;
+int rV_value_1;
+tV_1 = function(1);
+rV_value_1 = tV_1;
+return;
 }

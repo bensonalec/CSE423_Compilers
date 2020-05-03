@@ -1,10 +1,11 @@
 main ()
 {
 int D.1234;
-char string;
-char string_two;
-char string_special;
-string = "test string";
-string_two = 'test string';
-string_special = "\n\t\\\'\"\%\$%&*$%&%*$&@@   __  +=-";
+char rV_string;
+char rV_string_two;
+char rV_string_special;
+rV_string = "test string";
+rV_string_two = 'test string';
+rV_string_special = "\n\t\\\'\"\%\$%&*$%&%*$&@@   __  +=-";
+return;
 }

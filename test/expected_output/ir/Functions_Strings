@@ -1,4 +1,4 @@
-return_strings (char string,int i)
+return_strings (char rV_string, int rV_i)
 {
 int D.1234;
 D.1234 = 1;
@@ -7,7 +7,8 @@ return D.1234;
 main ()
 {
 int D.1235;
-int i;
-_1 = return_strings("test", 1);
-i = _1;
+int rV_i;
+tV_1 = return_strings("test", 1);
+rV_i = tV_1;
+return;
 }
