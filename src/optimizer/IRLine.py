@@ -464,15 +464,6 @@ class IRIf(IRNode):
             else:
                 return [asmn.ASMNode("jmp", f"D.{self.failure}", None, dontTouch=True)]
         else:
-            # if isinstance(v1, int):
-            #     v1 = f"${v1}"
-            
-            #     # TODO: Add support for the number to be a floating point value.
-            # if isinstance(v2, int):
-            #     # if v2 == 0:
-            #     #     l.append(asmn.ASMNode("xor",  self.var,  self.var, leftNeedsReg=True, rightNeedsReg=True))
-            #     v2 = f"${v2}"
-            #     # TODO: Add support for the number to be a floating point value.
             
             if isinstance(v1, int):
                 if v1 == 0:
@@ -481,7 +472,6 @@ class IRIf(IRNode):
                 else:
                     l.append(asmn.ASMNode("mov", f"${v1}", None, rightNeedsReg=True))
                     v1 = f"${v1}"
-                # TODO: Add support for the number to be a floating point value.
             if isinstance(v2, int):
                 if v2 == 0:
                     l.append(asmn.ASMNode("xor",  None, None, leftNeedsReg=True, rightNeedsReg=True))
@@ -489,7 +479,6 @@ class IRIf(IRNode):
                 else:
                     l.append(asmn.ASMNode("mov", f"${v2}", None, rightNeedsReg=True))
                     v2 = f"${v2}"
-                # TODO: Add support for the number to be a floating point value.
 
         if self.comp == "==":
             c_op = "test"
@@ -606,12 +595,10 @@ class IRArth(IRNode):
 
         if isinstance(v1, int):
             v1 = f"${v1}"
-            # TODO: Add support for the number to be a floating point value.
         if isinstance(v2, int):
             if v2 == 0:
                 l.append(asmn.ASMNode("xor",  self.var,  self.var, leftNeedsReg=True, rightNeedsReg=True))
             v2 = f"${v2}"
-            # TODO: Add support for the number to be a floating point value.
 
         if self.operator == "+":
             asm_op = "add"
@@ -930,58 +917,7 @@ class IRFunctionDecl(IRNode):
             asmn.ASMNode("push", "r15", None, dontTouch=True),
         ])
 
-
-
-
-        # Retrieve passed in parameters
-        # for idx, var in enumerate(self.params):
-        #     source_reg = None
-        #     # caclulate mem size for the parameter
-        #     mem_size = self.calculateMemSize(var)
-        #     offset += mem_size
-
-        #     if idx < 6:
-
-        #         if mem_size == 4:
-        #             source_reg = [x for x, y in fourByteRegisters.items() if y == 0][0]
-        #             fourByteRegisters[source_reg] = 1
-
-        #         elif mem_size == 8:
-        #             source_reg = [x for x, y in eightByteRegisters.items() if y == 0][0]
-        #             eightByteRegisters[source_reg] = 1
-
-        #         asmLs.append(asmn.ASMNode("mov", source_reg, "rbp", rightOffset=f"-{offset}"))
-        #     else:
-        #         asmLs.append(asmn.ASMNode("pop", "rbp", None, leftOffset=f"-{offset}"))
-        #         # TODO: Make sure register allocation knows how many variables within a scope so it can move RSP
-
         return asmLs
-
-    def calculateMemSize(self, var_string):
-        """
-        Calculates the memory needed for the given variable type + modifers.
-
-        Args:
-            var_string: variable in String format with modifiers leading,
-                        and then type (int, double, float, etc.) and then the name.
-
-        Returns:
-            Memory size as an integer in bytes
-        """
-
-        main_type = var_string.split(' ')[-2]
-        modifiers = var_string.split(' ')[: len(var_string) - 2]
-        size = 0
-
-        # NOTE: not all types are being considered right now.
-        if main_type == "int": size += 4
-        elif main_type == "float": size += 4
-        elif main_type == "double": size += 8
-
-        # TODO: add conditionals to properly increment size variable based on the found modifiers.
-        # for modifier in modifiers: pass
-
-        return size
 
 class IRReturn(IRNode):
     """

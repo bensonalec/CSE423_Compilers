@@ -35,25 +35,34 @@ def main(args, astHead = None, symbolTable = None):
         try:
             ir = ir1.LevelOneIR(astHead, symbolTable)
             l1ir = ir.construct()
-            ir.optimize(args.opt)
         except IndexError as err:
             print("Issue in creating IR")
             exit()
         if(l1ir == None):
             print("Issue in creating IR")
             exit()
+
+    ir.optimize(args.opt)
+
     # Output IR to a file
     if args.IRout:
         write_IR_to_file(args.IRout, ir.IR)
 
     # Output IR (first lvl optimization) to stdout 
-    if args.IR1 or args.all:
+    if args.ir or args.all:
         print(str(ir))
 
     return ir
 
 
 def write_IR_to_file(filename, ir):
+    """
+    Outputs IR to the given file
+
+    Args:
+        filename: The given file to write to
+        ir: List of irLines each containing irNodes with IR instructions
+    """
     with open(filename, 'w') as f:
         for irLine in ir:
             for irNode in irLine.treeList:
@@ -65,10 +74,9 @@ if __name__ == "__main__":
 
     cmd_options.add_argument('--all',help='Prints out all intermediate representations as they are encountered in the compilation process', action="store_true")
     cmd_options.add_argument('-O', '--opt', type=int, choices=range(3), default=0, help='Determines the optimization level')
+    cmd_options.add_argument('-ir',help='Output the first level of IR in the optimizer phase', action="store_true")
     cmd_options.add_argument('-i', action='store', dest="input", type=str, help="Used to input IR from file")
     cmd_options.add_argument('--IRout', metavar='<output-filename>', type=str, default=None, help="Used to output the final generated IR to a file")
+    
     args = cmd_options.parse_args()
-
-    print(args.input)
-
     mainAST(args)

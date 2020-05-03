@@ -1,6 +1,4 @@
-#this file will solve all our problems. indeed.
-
-x86_regs = ["rax", "rbp", "rsp", "rcx","rdx" ,"rbx" ,"rsi" ,"rdi" ,"r8", "r9" ,"r10" ,"r11" ,"r12", "r13","r14", "r15", "al", "bpl", "spl", "cl", "dl" ,"bl" ,"sil" ,"dil" ,"r8b", "r9b" ,"r10b" ,"r11b" ,"r12b", "r13b", "r14b", "r15b"]
+x64_regs = ["rax", "rbp", "rsp", "rcx","rdx" ,"rbx" ,"rsi" ,"rdi" ,"r8", "r9" ,"r10" ,"r11" ,"r12", "r13","r14", "r15", "al", "bpl", "spl", "cl", "dl" ,"bl" ,"sil" ,"dil" ,"r8b", "r9b" ,"r10b" ,"r11b" ,"r12b", "r13b", "r14b", "r15b"]
 
 class ASMNode():
     """
@@ -29,13 +27,17 @@ class ASMNode():
         #determine if the left operand needs a register, or if the right operand needs a register
         self.leftNeedsReg = kwarg["leftNeedsReg"] if "leftNeedsReg" in kwarg else False
         self.rightNeedsReg = kwarg["rightNeedsReg"] if "rightNeedsReg" in kwarg else False
-        #if this is found in kwarg, it means we use a specific case 
+
+        #assembly node is fully constructed and shouldnt be modified
         self.dontTouch = "dontTouch" in kwarg
 
         #determine if the register is a paramater
         self.regIsParam = "regIsParam" in kwarg
+
+        #assembly nodes like 'function declaration' store a regDir and stack for passed in parameters
         self.regDir = kwarg["regDir"] if "regDir" in kwarg else {}
         self.stack = kwarg["stack"] if "stack" in kwarg else []
+        
         #determine if the register is in a function declaration
         self.functionDecl = "functionDecl" in kwarg
 
@@ -47,9 +49,9 @@ class ASMNode():
         self.rightLiteral = True if self.right and self.right.startswith("$") else False
 
         #determine if the left has a variable
-        self.leftHasVar = True if self.left and self.left not in x86_regs else False
+        self.leftHasVar = True if self.left and self.left not in x64_regs else False
         #determine if the right has a variable
-        self.rightHasVar = True if self.right and self.right not in x86_regs else False
+        self.rightHasVar = True if self.right and self.right not in x64_regs else False
 
     def __str__(self):
         """
@@ -60,30 +62,30 @@ class ASMNode():
         """
         #determine the proper string representation of the assembly line
         if self.aux:
-            return f"{self.command} \
-{self.aux}, \
-{f'{self.leftOffset}' + '(' if self.leftOffset else ''}\
-{'%' if self.left in x86_regs else ''}\
-{self.left}\
-{')' if self.leftOffset else ''}, \
-{f'{self.rightOffset}' + '(' if self.rightOffset else ''}\
-{'%' if self.right in x86_regs else ''}\
-{self.right}\
-{')' if self.rightOffset else ''}"
+            return f"""{self.command} 
+            {self.aux},
+            {f'{self.leftOffset}' + '(' if self.leftOffset else ''}
+            {'%' if self.left in x64_regs else ''}
+            {self.left}
+            {')' if self.leftOffset else ''}, 
+            {f'{self.rightOffset}' + '(' if self.rightOffset else ''}
+            {'%' if self.right in x64_regs else ''}
+            {self.right}
+            {')' if self.rightOffset else ''}"""
         elif self.right:
-            return f"{self.command} \
-{f'{self.leftOffset}' + '(' if self.leftOffset else ''}\
-{'%' if self.left in x86_regs else ''}\
-{self.left}{')' if self.leftOffset else ''}, \
-{f'{self.rightOffset}' + '(' if self.rightOffset else ''}\
-{'%' if self.right in x86_regs else ''}\
-{self.right}\
-{')' if self.rightOffset else ''}"
+            return f"""{self.command} 
+            {f'{self.leftOffset}' + '(' if self.leftOffset else ''}
+            {'%' if self.left in x64_regs else ''}
+            {self.left}{')' if self.leftOffset else ''}, 
+            {f'{self.rightOffset}' + '(' if self.rightOffset else ''}
+            {'%' if self.right in x64_regs else ''}
+            {self.right}
+            {')' if self.rightOffset else ''}"""
         elif self.left:
-            return f"{self.command} \
-{f'{self.leftOffset}' + '(' if self.leftOffset else ''}\
-{'%' if self.left in x86_regs else ''}\
-{self.left}\
-{')' if self.leftOffset else ''}"
+            return f"""{self.command} 
+            {f'{self.leftOffset}' + '(' if self.leftOffset else ''}
+            {'%' if self.left in x64_regs else ''}
+            {self.left}
+            {')' if self.leftOffset else ''}"""
         else:
             return f"{self.command}"

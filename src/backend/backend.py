@@ -17,21 +17,33 @@ def main(args, IR):
     """
     # List of assembly instructions before given allocated registers
     asm = [z for x in IR.IR for y in x.treeList for z in y.asm()]
-
-    if args.a1:
-        for i in asm:
-            print(str(i)) 
-
-    print("")
-    print("")
           
     # Allocate registers for assembly instructions
     allocator = alloc.Allocator
     asm = allocator.allocateRegisters(asm)
 
+    # Output assembly to stdout
     if args.a1:
         for i in asm:
-            print(str(i)) 
+            print(str(i))
+
+    # Output assembly to a file
+    if args.ASMout:
+        write_assembly_to_file(args.ASMout, asm)
+
+
+def write_assembly_to_file(filename, asm):
+    """
+    Outputs assembly to the given file
+
+    Args:
+        filename: The given file to write to
+        asm: List of assembly Nodes each containing an instruction
+    """
+    with open(filename, 'w') as f:
+        for assemblyLine in asm:
+            f.write(str(assemblyLine) + '\n')
+
 
 if __name__ =="__main__":
     main()
