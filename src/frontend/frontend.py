@@ -4,6 +4,7 @@ for command line arguments that can be used to determine which portion is run.
 """
 import os
 import argparse
+import importlib
 from importlib.machinery import SourceFileLoader
 from inspect import getsourcefile
 import traceback

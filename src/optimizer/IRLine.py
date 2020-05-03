@@ -84,6 +84,16 @@ class IRLine():
         ns = [x for x in ns if x.name in self.arth_ops or x.name in self.spec_ops or x.name in self.ass_ops or x.name in self.id_ops or x.name in self.comp_ops]
         for node in ns:
             if node.name in self.comp_ops:
+                
+                if node.name in self.comp_ops and node.parent != None and node.parent.name == "!":
+                    # logical not means we need to reverse this comparison
+                    if node.name == ">": node.name = "<="
+                    elif node.name == "<": node.name = ">="
+                    elif node.name == "==": node.name = "!="
+                    elif node.name == "!=": node.name = "=="
+                    elif node.name == ">=": node.name = "<"
+                    elif node.name == "<=": node.name = ">"
+
                 self.treeList.append(
                     IRIf(
                         node,
@@ -231,7 +241,7 @@ class IRLine():
             tmp_label = max(self.labelList)
             self.labelList.append(tmp_label+1)
             tmpNode = root.children[0]
-            if tmpNode.name not in self.comp_ops and tmpNode.name not in log_ops:
+            if tmpNode.name not in self.comp_ops and tmpNode.name not in self.log_ops:
                 tmpNode = ast.ASTNode("!=", None)
                 tmpNode.children.append(root.children[0])
                 tmpNode.children.append(ast.ASTNode("0", tmpNode))
@@ -244,7 +254,10 @@ class IRLine():
             self.treeList.append(IRJump(f"<D.{tmp_label}>"))
 
             tmpNode = root.children[1]
-            if tmpNode.name not in self.comp_ops and tmpNode.name not in log_ops:
+            if tmpNode.name not in self.comp_ops and tmpNode.name not in self.log_ops and (
+                tmpNode.children == [] or
+                tmpNode.children[0].name not in self.comp_ops and tmpNode.children[0].name not in self.log_ops):
+
                 tmpNode = ast.ASTNode("!=", None)
                 tmpNode.children.append(root.children[1])
                 tmpNode.children.append(ast.ASTNode("0", tmpNode))
@@ -259,7 +272,7 @@ class IRLine():
             tmp_label = max(self.labelList)
             self.labelList.append(tmp_label+1)
             tmpNode = root.children[0]
-            if tmpNode.name not in self.comp_ops and tmpNode.name not in log_ops:
+            if tmpNode.name not in self.comp_ops and tmpNode.name not in self.log_ops:
                 tmpNode = ast.ASTNode("!=", None)
                 tmpNode.children.append(root.children[0])
                 tmpNode.children.append(ast.ASTNode("0", tmpNode))
@@ -272,7 +285,7 @@ class IRLine():
             self.treeList.append(IRJump(f"<D.{tmp_label}>"))
 
             tmpNode = root.children[1]
-            if tmpNode.name not in self.comp_ops and tmpNode.name not in log_ops:
+            if tmpNode.name not in self.comp_ops and tmpNode.name not in self.log_ops:
                 tmpNode = ast.ASTNode("!=", None)
                 tmpNode.children.append(root.children[1])
                 tmpNode.children.append(ast.ASTNode("0", tmpNode))
