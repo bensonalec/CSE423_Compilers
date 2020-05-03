@@ -1,3 +1,7 @@
+"""
+Declares the Allocator, RegisterData, and RegisterDirectory classes. Does register allocation on an ASM file that uses variable names
+"""
+
 from copy import copy
 import importlib
 import os
@@ -332,7 +336,7 @@ class RegisterDirectory():
             idx: the index of the appropraite instruction in the asm list
 
         Returns:
-            new RegisterData object or None
+            new registerData object or None
         """
 
         newReg = self.var_in_reg(name)
@@ -418,6 +422,15 @@ class RegisterDirectory():
         return None
 
     def locate_var(self, var):
+        """
+        Finds where the value is located whether it is on the stack or in a register.
+
+        Args:
+            var: value name
+
+        Returns:
+            The register name or the offset from the base pointer.
+        """
         reg = self.var_in_reg(var)
         if reg == None:
             reg = self.stack.find_offset(var)

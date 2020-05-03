@@ -124,7 +124,7 @@ class Parser():
     &#34;&#34;&#34;
     Definition for the Parser object, works off of rply. Contains rules for parsing.
     &#34;&#34;&#34;
-
+    
     def __init__(self):
         &#34;&#34;&#34;
         Initializes the parser and tells it the allowed tokens
@@ -142,7 +142,7 @@ class Parser():
         &#34;&#34;&#34;
         The list of BNF functions and their behavior
         &#34;&#34;&#34;
-
+        
         @self.pg.production(&#39;program : definitionList &#39;)
         def program(p):
             &#34;&#34;&#34;
@@ -1222,7 +1222,11 @@ class Parser():
         else:
             # Never found a token to report, need to exit
             print(&#34;ParsingError: No ParseTree obtained\n&#34;)
-            exit()</code></pre>
+            exit()
+
+
+
+    </code></pre>
 </details>
 </section>
 <section>
@@ -1424,7 +1428,7 @@ class Parser():
     &#34;&#34;&#34;
     Definition for the Parser object, works off of rply. Contains rules for parsing.
     &#34;&#34;&#34;
-
+    
     def __init__(self):
         &#34;&#34;&#34;
         Initializes the parser and tells it the allowed tokens
@@ -1442,7 +1446,7 @@ class Parser():
         &#34;&#34;&#34;
         The list of BNF functions and their behavior
         &#34;&#34;&#34;
-
+        
         @self.pg.production(&#39;program : definitionList &#39;)
         def program(p):
             &#34;&#34;&#34;
@@ -2582,7 +2586,7 @@ class Parser():
     &#34;&#34;&#34;
     The list of BNF functions and their behavior
     &#34;&#34;&#34;
-
+    
     @self.pg.production(&#39;program : definitionList &#39;)
     def program(p):
         &#34;&#34;&#34;

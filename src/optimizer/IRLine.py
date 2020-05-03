@@ -84,7 +84,7 @@ class IRLine():
         ns = [x for x in ns if x.name in self.arth_ops or x.name in self.spec_ops or x.name in self.ass_ops or x.name in self.id_ops or x.name in self.comp_ops]
         for node in ns:
             if node.name in self.comp_ops:
-                
+
                 if node.name in self.comp_ops and node.parent != None and node.parent.name == "!":
                     # logical not means we need to reverse this comparison
                     if node.name == ">": node.name = "<="
@@ -477,7 +477,7 @@ class IRIf(IRNode):
             else:
                 return [asmn.ASMNode("jmp", f"D.{self.failure}", None, dontTouch=True)]
         else:
-            
+
             if isinstance(v1, int):
                 if v1 == 0:
                     l.append(asmn.ASMNode("xor", None, None, leftNeedsReg=True, rightNeedsReg=True))
@@ -557,10 +557,9 @@ class IRArth(IRNode):
                 elif pos == [1]:
                     self.lhs = node.children[0].name
                     self.rhs = ops[0]
-                # Case 5: Its a unary operator
+                # Case 5: Its a unary operator.
                 elif pos == []:
                     self.lhs = ops[0] if ops != [] else node.children[0].name
-
 
     def __str__(self):
         if self.rhs:

@@ -1,6 +1,7 @@
 """
 This module serves as the main interface to the compiler. It connects all the parts of the compiler in such a way that all representations are handed off to the next step.
 """
+
 from inspect import getsourcefile
 import os
 import argparse
@@ -10,7 +11,12 @@ frontend = SourceFileLoader("frontend.frontend", f"{os.path.dirname(os.path.absp
 optimizer = SourceFileLoader("optimizer.optimizer", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/optimizer/optimizer.py").load_module()
 backend = SourceFileLoader("backend.backend", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/backend/backend.py").load_module()
 def main(args):
+    """
+    Main control flow for our compiler. Takes in command line arguments, and executes the frontend, optimizer, and backend in order if necessary.
 
+    Args:
+        args: The argparse object  
+    """
     try:
 
         # Execution of the Frontend.

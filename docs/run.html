@@ -28,6 +28,7 @@
 <pre><code class="python">&#34;&#34;&#34;
 This module serves as the main interface to the compiler. It connects all the parts of the compiler in such a way that all representations are handed off to the next step.
 &#34;&#34;&#34;
+
 from inspect import getsourcefile
 import os
 import argparse
@@ -35,62 +36,56 @@ from importlib.machinery import SourceFileLoader
 
 frontend = SourceFileLoader(&#34;frontend.frontend&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/frontend/frontend.py&#34;).load_module()
 optimizer = SourceFileLoader(&#34;optimizer.optimizer&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/optimizer/optimizer.py&#34;).load_module()
-
+backend = SourceFileLoader(&#34;backend.backend&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/backend/backend.py&#34;).load_module()
 def main(args):
+    &#34;&#34;&#34;
+    Main control flow for our compiler. Takes in command line arguments, and executes the frontend, optimizer, and backend in order if necessary.
 
-    # Execution of the Frontend.
-    # This returns the Abstract Syntax Tree and Symbol Table
-    if not args.input:
-        ast, sym = frontend.main(args)
-    else:
-        ast = None
-        sym = None
+    Args:
+        args: The argparse object  
+    &#34;&#34;&#34;
+    try:
 
+        # Execution of the Frontend.
+        # This returns the Abstract Syntax Tree and Symbol Table
+        if not args.input:
+            ast, sym = frontend.main(args)
+        else:
+            ast = None
+            sym = None
 
-    # Execution of Optimization
-    optimizer.mainAST(args,ast,sym)
+        # Execution of Optimization
+        ir = optimizer.main(args,ast,sym)
 
-    # Execution of Backend
+        # Execution of Backend
+        backend.main(args, ir)
 
+    except BaseException as err:
+        print(&#34;Compilation failed: &#34;, err)
+        exit(1)
 
 
 
 
 if __name__ == &#34;__main__&#34;:
+    
     #command line arguements
-
-    #decription of the compiler
     cmd_options = argparse.ArgumentParser(description=&#39;Main execution of C compiler. Can produce different representations of inputed C code. (i.e. tokens, parse tree, abstract syntax tree, etc.)&#39;)
-
     cmd_options.add_argument(&#39;--all&#39;,help=&#39;Prints out all intermediate representations as they are encountered in the compilation process&#39;, action=&#34;store_true&#34;)
-
-    #input file option
     cmd_options.add_argument(&#39;input_file&#39;, metavar=&#39;&lt;filename.c&gt;&#39;, type=str, help=&#39;Input c file.&#39;)
-
-    #Arguement to print tokens from lexer
     cmd_options.add_argument(&#39;-l&#39;,&#39;--lex&#39;, help=&#39;Prints out tokens from lexer&#39;, action=&#39;store_true&#39;)
-
-    #Prints string representation of parse tree....
     cmd_options.add_argument(&#39;-t&#39;,&#39;--tree&#39;, help=&#39;Prints string representation of parse tree.&#39;, action=&#34;store_true&#34;)
-
     cmd_options.add_argument(&#39;-p&#39;,&#39;--pretty&#39;,help=&#39;Prints a pretty verision of the tree, and does not print the tokens&#39;, action=&#34;store_true&#34;)
-
-    #Print all output from lexer, parser, etc....
-    cmd_options.add_argument(&#39;-a&#39;,&#39;--ast&#39;, help=&#39;Prints out the abstract syntax tree.&#39;, action=&#34;store_true&#34;)
-
+    cmd_options.add_argument(&#39;-ast&#39;,&#39;--ast&#39;, help=&#39;Prints out the abstract syntax tree.&#39;, action=&#34;store_true&#34;)
     cmd_options.add_argument(&#39;-s&#39;,&#39;--symbol_table&#39;, help=&#39;Prints out the known and unknown symbols encountered during semantic analysis.&#39;, action=&#34;store_true&#34;)
-
     cmd_options.add_argument(&#39;-e&#39;, &#39;--errors&#39;,help=&#39;Prints out the errors in the semantic analysis&#39;,action=&#34;store_true&#34;)
-
     cmd_options.add_argument(&#39;-b&#39;, &#39;--bnf&#39;, nargs=&#39;?&#39;, const=os.path.abspath(os.path.dirname(__file__)) + &#34;/frontend/BNF_definition&#34;, type=str, help=&#39;Rebuilds the parser using the current BNF grammar&#39;)
-
     cmd_options.add_argument(&#39;-O&#39;, &#39;--opt&#39;, type=int, choices=range(3), default=0, help=&#39;Determines the optimization level&#39;)
-
-    cmd_options.add_argument(&#39;-IR1&#39;,help=&#39;Output the first level of IR in the optimizer phase&#39;, action=&#34;store_true&#34;)
-
+    cmd_options.add_argument(&#39;-ir&#39;,help=&#39;Output the first level of IR in the optimizer phase&#39;, action=&#34;store_true&#34;)
     cmd_options.add_argument(&#39;-i&#39;, &#39;--input&#39;, action=&#39;store_true&#39;, help=&#34;Used to input IR from file&#34;)
-
+    cmd_options.add_argument(&#39;-asm&#39;, &#39;--asm&#39;, help=&#39;Prints the assembly after the first pass.&#39;, action=&#34;store_true&#34;)
     cmd_options.add_argument(&#39;--IRout&#39;, metavar=&#39;&lt;output-filename&gt;&#39;, type=str, default=None, help=&#34;Used to output the final generated IR to a file&#34;)
+    cmd_options.add_argument(&#39;--ASMout&#39;, metavar=&#39;&lt;output-filename&gt;&#39;, type=str, default=None, help=&#34;Used to output the generated assembly to a file&#34;)
 
     #generate arguements
     args = cmd_options.parse_args()
@@ -120,24 +115,42 @@ if __name__ == &#34;__main__&#34;:
 <span>def <span class="ident">main</span></span>(<span>args)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Main control flow for our compiler. Takes in command line arguments, and executes the frontend, optimizer, and backend in order if necessary.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>args</code></strong></dt>
+<dd>The argparse object</dd>
+</dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def main(args):
+    &#34;&#34;&#34;
+    Main control flow for our compiler. Takes in command line arguments, and executes the frontend, optimizer, and backend in order if necessary.
 
-    # Execution of the Frontend.
-    # This returns the Abstract Syntax Tree and Symbol Table
-    if not args.input:
-        ast, sym = frontend.main(args)
-    else:
-        ast = None
-        sym = None
+    Args:
+        args: The argparse object  
+    &#34;&#34;&#34;
+    try:
 
+        # Execution of the Frontend.
+        # This returns the Abstract Syntax Tree and Symbol Table
+        if not args.input:
+            ast, sym = frontend.main(args)
+        else:
+            ast = None
+            sym = None
 
-    # Execution of Optimization
-    optimizer.mainAST(args,ast,sym)</code></pre>
+        # Execution of Optimization
+        ir = optimizer.main(args,ast,sym)
+
+        # Execution of Backend
+        backend.main(args, ir)
+
+    except BaseException as err:
+        print(&#34;Compilation failed: &#34;, err)
+        exit(1)</code></pre>
 </details>
 </dd>
 </dl>

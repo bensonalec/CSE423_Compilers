@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.4" />
-<title>src.optimizer.optimizer API documentation</title>
-<meta name="description" content="This module serves as the main interface to the optimization process in order to streamline the compiler." />
+<title>src.backend.backend API documentation</title>
+<meta name="description" content="Serves as the main interface to the backend of the compiler. Performs instruction generation and register allocation." />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -17,96 +17,72 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>src.optimizer.optimizer</code></h1>
+<h1 class="title">Module <code>src.backend.backend</code></h1>
 </header>
 <section id="section-intro">
-<p>This module serves as the main interface to the optimization process in order to streamline the compiler.</p>
+<p>Serves as the main interface to the backend of the compiler. Performs instruction generation and register allocation.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-This module serves as the main interface to the optimization process in order to streamline the compiler.
+Serves as the main interface to the backend of the compiler. Performs instruction generation and register allocation.
 &#34;&#34;&#34;
 
 from inspect import getsourcefile
-import os
-import argparse
 from importlib.machinery import SourceFileLoader
+import os
 
-ir1 = SourceFileLoader(&#34;IR_Lv1_Builder&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/IR_Lv1_Builder.py&#34;).load_module()
-import_ir = SourceFileLoader(&#34;import_ir&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/import_ir.py&#34;).load_module()
+asmn = SourceFileLoader(&#34;ASMNode&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/ASMNode.py&#34;).load_module()
+ir1 = SourceFileLoader(&#34;IR_Lv1_Builder&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/../optimizer/IR_Lv1_Builder.py&#34;).load_module()
+alloc = SourceFileLoader(&#34;allocator&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/../backend/allocator.py&#34;).load_module()
 
-def main(args, astHead = None, symbolTable = None):
+
+def main(args, IR):
     &#34;&#34;&#34;
-    This is the function that when given an AST and a symbol table will produce linear intermediate representations for teh inputted program.
+    The main backend function, does register allocation and converts a given IR to assembly
 
     Args:
-        args: The commandline arguments that belong to the optimizer.
-        astHead: The root node of the AST.
-        symbolTable: The list of valid entries throughout the program.
-
-    Returns:
-        The lowest level of IR produced.
+        args: The command line arguments of the operation (print asm, etc.)
+        IR: The intermediary representation in a list of IRNode objects that is being converted to assembly
     &#34;&#34;&#34;
-    l1ir = None
-    # Import IR from file
-    if args.input:
-        ir = import_ir.import_ir(args.input)
-        ir.tokenize()
-        ir.parse()
-        
+    # List of assembly instructions before given allocated registers
+    asm = [z for x in IR.IR for y in x.treeList for z in y.asm()]
 
-    # Generate IR from AST and Symbol-Table
-    else:
-        try:
-            ir = ir1.LevelOneIR(astHead, symbolTable)
-            l1ir = ir.construct()
-        except IndexError as err:
-            print(&#34;Issue in creating IR&#34;)
-            exit()
-        if(l1ir == None):
-            print(&#34;Issue in creating IR&#34;)
-            exit()
+    # Allocate registers for assembly instructions
+    allocator = alloc.Allocator
+    asm = allocator.allocateRegisters(asm)
 
-    ir.optimize(args.opt)
+    asm = [
+        asmn.ASMNode(None, None, None, boilerPlate=f&#34;.file \&#34;{args.input_file.split(&#39;/&#39;)[-1]}\&#34;&#34;),
+        asmn.ASMNode( None, None,None, boilerPlate=f&#34;.text&#34;),
+    ] + asm
 
-    # Output IR to a file
-    if args.IRout:
-        write_IR_to_file(args.IRout, ir.IR)
+    # Output assembly to stdout
+    if args.asm:
+        for i in asm:
+            print(str(i))
 
-    # Output IR (first lvl optimization) to stdout 
-    if args.ir or args.all:
-        print(str(ir))
-
-    return ir
+    # Output assembly to a file
+    if args.ASMout:
+        write_assembly_to_file(args.ASMout, asm)
 
 
-def write_IR_to_file(filename, ir):
+def write_assembly_to_file(filename, asm):
     &#34;&#34;&#34;
-    Outputs IR to the given file
+    Outputs assembly to the given file
 
     Args:
         filename: The given file to write to
-        ir: List of irLines each containing irNodes with IR instructions
+        asm: List of assembly Nodes each containing an instruction
     &#34;&#34;&#34;
     with open(filename, &#39;w&#39;) as f:
-        for irLine in ir:
-            for irNode in irLine.treeList:
-                f.write(str(irNode) + &#39;\n&#39;)
+        for assemblyLine in asm:
+            f.write(str(assemblyLine) + &#39;\n&#39;)
 
 
-if __name__ == &#34;__main__&#34;:
-    cmd_options = argparse.ArgumentParser(description=&#39;Optimizer of the compiler. Can take in an AST and Symbol Table or a File with an IR&#39;)
-
-    cmd_options.add_argument(&#39;--all&#39;,help=&#39;Prints out all intermediate representations as they are encountered in the compilation process&#39;, action=&#34;store_true&#34;)
-    cmd_options.add_argument(&#39;-O&#39;, &#39;--opt&#39;, type=int, choices=range(3), default=0, help=&#39;Determines the optimization level&#39;)
-    cmd_options.add_argument(&#39;-ir&#39;,help=&#39;Output the first level of IR in the optimizer phase&#39;, action=&#34;store_true&#34;)
-    cmd_options.add_argument(&#39;-i&#39;, action=&#39;store&#39;, dest=&#34;input&#34;, type=str, help=&#34;Used to input IR from file&#34;)
-    cmd_options.add_argument(&#39;--IRout&#39;, metavar=&#39;&lt;output-filename&gt;&#39;, type=str, default=None, help=&#34;Used to output the final generated IR to a file&#34;)
-    
-    args = cmd_options.parse_args()
-    mainAST(args)</code></pre>
+if __name__ ==&#34;__main__&#34;:
+    main()</code></pre>
 </details>
 </section>
 <section>
@@ -116,99 +92,79 @@ if __name__ == &#34;__main__&#34;:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="src.optimizer.optimizer.main"><code class="name flex">
-<span>def <span class="ident">main</span></span>(<span>args, astHead=None, symbolTable=None)</span>
+<dt id="src.backend.backend.main"><code class="name flex">
+<span>def <span class="ident">main</span></span>(<span>args, IR)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>This is the function that when given an AST and a symbol table will produce linear intermediate representations for teh inputted program.</p>
+<section class="desc"><p>The main backend function, does register allocation and converts a given IR to assembly</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>args</code></strong></dt>
-<dd>The commandline arguments that belong to the optimizer.</dd>
-<dt><strong><code>astHead</code></strong></dt>
-<dd>The root node of the AST.</dd>
-<dt><strong><code>symbolTable</code></strong></dt>
-<dd>The list of valid entries throughout the program.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<p>The lowest level of IR produced.</p></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def main(args, astHead = None, symbolTable = None):
-    &#34;&#34;&#34;
-    This is the function that when given an AST and a symbol table will produce linear intermediate representations for teh inputted program.
-
-    Args:
-        args: The commandline arguments that belong to the optimizer.
-        astHead: The root node of the AST.
-        symbolTable: The list of valid entries throughout the program.
-
-    Returns:
-        The lowest level of IR produced.
-    &#34;&#34;&#34;
-    l1ir = None
-    # Import IR from file
-    if args.input:
-        ir = import_ir.import_ir(args.input)
-        ir.tokenize()
-        ir.parse()
-        
-
-    # Generate IR from AST and Symbol-Table
-    else:
-        try:
-            ir = ir1.LevelOneIR(astHead, symbolTable)
-            l1ir = ir.construct()
-        except IndexError as err:
-            print(&#34;Issue in creating IR&#34;)
-            exit()
-        if(l1ir == None):
-            print(&#34;Issue in creating IR&#34;)
-            exit()
-
-    ir.optimize(args.opt)
-
-    # Output IR to a file
-    if args.IRout:
-        write_IR_to_file(args.IRout, ir.IR)
-
-    # Output IR (first lvl optimization) to stdout 
-    if args.ir or args.all:
-        print(str(ir))
-
-    return ir</code></pre>
-</details>
-</dd>
-<dt id="src.optimizer.optimizer.write_IR_to_file"><code class="name flex">
-<span>def <span class="ident">write_IR_to_file</span></span>(<span>filename, ir)</span>
-</code></dt>
-<dd>
-<section class="desc"><p>Outputs IR to the given file</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>filename</code></strong></dt>
-<dd>The given file to write to</dd>
-<dt><strong><code>ir</code></strong></dt>
-<dd>List of irLines each containing irNodes with IR instructions</dd>
+<dd>The command line arguments of the operation (print asm, etc.)</dd>
+<dt><strong><code>IR</code></strong></dt>
+<dd>The intermediary representation in a list of IRNode objects that is being converted to assembly</dd>
 </dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def write_IR_to_file(filename, ir):
+<pre><code class="python">def main(args, IR):
     &#34;&#34;&#34;
-    Outputs IR to the given file
+    The main backend function, does register allocation and converts a given IR to assembly
+
+    Args:
+        args: The command line arguments of the operation (print asm, etc.)
+        IR: The intermediary representation in a list of IRNode objects that is being converted to assembly
+    &#34;&#34;&#34;
+    # List of assembly instructions before given allocated registers
+    asm = [z for x in IR.IR for y in x.treeList for z in y.asm()]
+
+    # Allocate registers for assembly instructions
+    allocator = alloc.Allocator
+    asm = allocator.allocateRegisters(asm)
+
+    asm = [
+        asmn.ASMNode(None, None, None, boilerPlate=f&#34;.file \&#34;{args.input_file.split(&#39;/&#39;)[-1]}\&#34;&#34;),
+        asmn.ASMNode( None, None,None, boilerPlate=f&#34;.text&#34;),
+    ] + asm
+
+    # Output assembly to stdout
+    if args.asm:
+        for i in asm:
+            print(str(i))
+
+    # Output assembly to a file
+    if args.ASMout:
+        write_assembly_to_file(args.ASMout, asm)</code></pre>
+</details>
+</dd>
+<dt id="src.backend.backend.write_assembly_to_file"><code class="name flex">
+<span>def <span class="ident">write_assembly_to_file</span></span>(<span>filename, asm)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Outputs assembly to the given file</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>filename</code></strong></dt>
+<dd>The given file to write to</dd>
+<dt><strong><code>asm</code></strong></dt>
+<dd>List of assembly Nodes each containing an instruction</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def write_assembly_to_file(filename, asm):
+    &#34;&#34;&#34;
+    Outputs assembly to the given file
 
     Args:
         filename: The given file to write to
-        ir: List of irLines each containing irNodes with IR instructions
+        asm: List of assembly Nodes each containing an instruction
     &#34;&#34;&#34;
     with open(filename, &#39;w&#39;) as f:
-        for irLine in ir:
-            for irNode in irLine.treeList:
-                f.write(str(irNode) + &#39;\n&#39;)</code></pre>
+        for assemblyLine in asm:
+            f.write(str(assemblyLine) + &#39;\n&#39;)</code></pre>
 </details>
 </dd>
 </dl>
@@ -224,13 +180,13 @@ if __name__ == &#34;__main__&#34;:
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="src.optimizer" href="index.html">src.optimizer</a></code></li>
+<li><code><a title="src.backend" href="index.html">src.backend</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="src.optimizer.optimizer.main" href="#src.optimizer.optimizer.main">main</a></code></li>
-<li><code><a title="src.optimizer.optimizer.write_IR_to_file" href="#src.optimizer.optimizer.write_IR_to_file">write_IR_to_file</a></code></li>
+<li><code><a title="src.backend.backend.main" href="#src.backend.backend.main">main</a></code></li>
+<li><code><a title="src.backend.backend.write_assembly_to_file" href="#src.backend.backend.write_assembly_to_file">write_assembly_to_file</a></code></li>
 </ul>
 </li>
 </ul>

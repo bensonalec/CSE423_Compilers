@@ -59,7 +59,7 @@ class LevelOneIR():
         Constructs the linear representation for the object.
 
         Returns:
-            IR: A collection of strings and IRLine objects which can be optimized and/or transformed into assembly.
+            IR: A collection of IRLine objects which can be optimized and/or transformed into assembly.
         &#34;&#34;&#34;
         sym = self.symTable
         ntv = self.astHead
@@ -74,6 +74,7 @@ class LevelOneIR():
                 # Each entry is the &#39;(func_node, body_node)&#39;
                 bodyList.append((x,x.children[3]))
 
+        # Digits are used for contructing unique labels
         returnDigit = 1234
         labelDigit = returnDigit + 1
         lines = []
@@ -86,19 +87,22 @@ class LevelOneIR():
             tmp_lines , labelDigit = returnLines(i[1], returnDigit, labelDigit)
             lines.extend(tmp_lines)
 
+            # add a return statement if function didnt have one
+            if not isinstance(lines[-1].treeList[-1], irl.IRReturn):
+                lines.append(irl.IRLine.singleEntry(irl.IRReturn(None)))
+
             # End of function wrapper, add closing bracket
-            lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=False)))
+            lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=False, functionDecl=True)))
 
             # NOTE: &#39;labelDigit&#39; should be the newest and unused digit
             returnDigit = labelDigit
 
             self.IR = lines
 
+        # RESET THE FRICKING GLOBAL
+        irl.tmpVarIndex = 0
+
         return self.IR
-
-
-    def __str__(self):
-        return &#34;\n&#34;.join([str(x) for x in self.IR]) + &#34;\n&#34;
 
     def optimize(self, opt):
         &#34;&#34;&#34;
@@ -112,6 +116,7 @@ class LevelOneIR():
             self.remove_unused_vars()
             pass
 
+        # constant folding/propagation
         if opt &gt; 1:
             # A dictionary containing all the values of variables that can at some point be reduced.
             self.var_values = {
@@ -346,6 +351,12 @@ class LevelOneIR():
                 line.treeList.pop(node)
 
     def remove_unused_funcs(self):
+        &#34;&#34;&#34;
+        Removes function that are not reference in the symbol table. They can be removed if not used.
+        &#34;&#34;&#34;
+
+
+
         ir = self.IR
         inFunction = False
         to_remove = []
@@ -382,6 +393,15 @@ class LevelOneIR():
         self.IR = ir
 
     def constant_folding(self,x):
+        &#34;&#34;&#34;
+        Peforms constant folding  on a given line in the IR
+
+        Args:
+            x: an IRNode object
+
+        Returns:
+            A boolean indicating whether it changed anything, and the node that has been modified
+        &#34;&#34;&#34;
         changed = False
         if isinstance(x,irl.IRArth):
             notFound = True
@@ -452,7 +472,16 @@ class LevelOneIR():
         return changed,x
 
     def constant_propagation(self, node, var_val):
+        &#34;&#34;&#34;
+        Performs constant propagation on a given IRNode if deemed possible.
 
+        Args:
+            node: The IRNode object to be considered
+            var_val: A dictionary of all the variables and their values which are deemed safe to replace
+
+        Returns:
+            The return value describes whether any propogation occurred during the function call
+        &#34;&#34;&#34;
         # NOTE: The current issue is that the propogation is goint to have to exit and re enter the function every time to achieve the following:
         # Clear the tempoary variables per line as they are re used
         # Avoid propogating too far so that assignments in the future that may happen after certain other computations and assignments propogate the correct value
@@ -476,10 +505,6 @@ class LevelOneIR():
                 node.rhs = var_val[node.rhs]
                 changed = True
 
-        elif isinstance(node, irl.IRSpecial):
-            pass
-            # Assigning a value for a post and pre increment is extremly difficult due to the fact that it regularly occurs in loops and constants arent useful there.
-
         elif isinstance(node, irl.IRAssignment):
             if node.rhs in var_val and var_val[node.rhs] != &#34;Undef&#34;:
                 node.rhs = var_val[node.rhs]
@@ -498,32 +523,8 @@ class LevelOneIR():
 
         return changed, var_val
 
-def buildBoilerPlate(symTable):
-    &#34;&#34;&#34;
-    Generates the function names and parameters from symbol table.
-
-    Args:
-        symTable: The symbol table we get from previous stages in the compiler.
-    Returns:
-        A list containing function name and parameters.
-    &#34;&#34;&#34;
-    namesandparams = []
-    functionNames = [(x.name,x.type) for x in symTable.symbols if x.is_function]
-    params = [(x.name,x.scope,x.type) for x in symTable.symbols if x.is_param]
-
-    for x in functionNames:
-        track = 0
-        paramsLi = []
-        for i in params:
-            if x[0] == i[1].split(&#34;/&#34;)[1]:
-                track+=1
-
-                paramsLi.append((i[2],i[0]))
-        if track == 0:
-            namesandparams.append((x[0],paramsLi,x[1]))
-        else:
-            namesandparams.append((x[0],paramsLi,x[1]))
-    return namesandparams
+    def __str__(self):
+        return &#34;\n&#34;.join([str(x) for x in self.IR]) + &#34;\n&#34;
 
 def beginWrapper(function_tuple, returnDigit):
     &#34;&#34;&#34;
@@ -533,16 +534,21 @@ def beginWrapper(function_tuple, returnDigit):
         lines: The lines of the start of the function
     &#34;&#34;&#34;
     lines = []
-    params = &#34;&#34;
+    params = []
     func_type = function_tuple[0].children[0].name
     func_name = function_tuple[0].children[1].name
 
     for var in function_tuple[0].children[2].children:
         if var.name == &#34;var&#34;:
-            params += f&#34;{var.children[0].name} {var.children[1].name},&#34;
 
-    lines.append(irl.IRLine.singleEntry(irl.IRFunctionDecl(func_name, params[:-1])))
-    lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=True)))
+            # list of all modifiers
+            modifiers = f&#34;{&#39; &#39;.join([x.name for x in var.children[0].children])}{&#39; &#39; if [x.name for x in var.children[0].children] else &#39;&#39;}&#34;
+
+            # append entry for parameter
+            params.append(f&#34;{&#39; &#39;.join([modifiers])}{var.children[0].name} rV_{var.children[1].name}&#34;)
+
+    lines.append(irl.IRLine.singleEntry(irl.IRFunctionDecl(func_name, params)))
+    lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=True, functionDecl=True)))
 
     if func_type != &#34;void&#34;:
         modifiers = f&#34;{&#39;&#39;.join([x.name for x in function_tuple[0].children[0].children if x.name in [&#39;signed&#39;, &#39;unsigned&#39;]])}{&#39; &#39; if [x.name for x in function_tuple[0].children[0].children if x.name in [&#39;signed&#39;, &#39;unsigned&#39;]] else &#39;&#39;}&#34;
@@ -550,7 +556,7 @@ def beginWrapper(function_tuple, returnDigit):
 
     return lines
 
-def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None):
+def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None, breakDigit=None, continueDigit=None):
     &#34;&#34;&#34;
     Produces a linear representation of the content nested within `node`.
 
@@ -560,7 +566,9 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
         labelDigit: A list of all previously used label values.
         successDigit: The label value to jump to if there is a `continue`.
         failureDigit: The label value to jump to if there is a `break`.
-        prefix: The string prefix for indenting the given line.
+        breakDigit: The label used for break statements to have a correct label so the control flow is correct.
+
+        continueDigit: The label used for a continue statement to know the &#39;ultimate&#39; success of whatever block it is in
 
     Returns:
         lines: The lines produced from the content.
@@ -574,7 +582,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
         if il:
             for x in il:
                 modifiers = f&#34;{&#39; &#39;.join([y.name for y in x.children[0].children])}{&#39; &#39; if [y.name for y in x.children[0].children] else &#39;&#39;}&#34;
-                lines.append(irl.IRLine.singleEntry(irl.IRVariableInit(modifiers, x.children[0].name, x.children[1].name), [labelDigit]))
+                lines.append(irl.IRLine.singleEntry(irl.IRVariableInit(modifiers, x.children[0].name, f&#34;rV_{x.children[1].name}&#34;), [labelDigit]))
 
     for element in node.children:
         try:
@@ -622,7 +630,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                 labelDigit += 2
 
                 # recursivly deal with the body of the loop
-                tmp, labelDigit = returnLines(element.children[3], returnDigit, labelDigit, loopStart, loopEnd)
+                tmp, labelDigit = returnLines(element.children[3], returnDigit, labelDigit, loopStart, loopEnd, breakDigit=loopEnd, continueDigit=loopStart)
                 lines.extend(tmp)
 
                 # Add the &#34;end-of-loop&#34; assignment/arithmetic
@@ -637,7 +645,13 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                     lines.append(irl.IRLine.singleEntry(irl.IRJump(f&#34;&lt;D.{conditionLabel}&gt;&#34;), [labelDigit]))
 
                     tmpNode = element.children[1]
-                    if tmpNode.name not in [&#39;||&#39;, &#39;&amp;&amp;&#39;, &#34;&lt;=&#34;, &#34;&lt;&#34;, &#34;&gt;=&#34;, &#34;&gt;&#34;, &#34;==&#34;, &#34;!=&#34;]:
+                    
+                    if tmpNode.name not in [&#39;||&#39;, &#39;&amp;&amp;&#39;, &#34;&lt;=&#34;, &#34;&lt;&#34;, &#34;&gt;=&#34;, &#34;&gt;&#34;, &#34;==&#34;, &#34;!=&#34;] and (
+                        tmpNode.children == [] or
+                        tmpNode.children[0].name not in [&#39;||&#39;, &#39;&amp;&amp;&#39;, &#34;&lt;=&#34;, &#34;&lt;&#34;, &#34;&gt;=&#34;, &#34;&gt;&#34;, &#34;==&#34;, &#34;!=&#34;]):
+                        # We create an AST Node comparing the value to 0 if there 
+                        # are no comparison/logical operators present in the condition.
+
                         tmpNode = ast.ASTNode(&#34;!=&#34;, None)
                         tmpNode.children.append(element.children[1])
                         tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
@@ -695,7 +709,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                             ns = True
 
                         #Get lines for the body and assign new labeldigit
-                        tmp, labelDigit = returnLines(case.children[0], returnDigit, labelDigit, success_label, failure_label)
+                        tmp, labelDigit = returnLines(case.children[0], returnDigit, labelDigit, success_label, failure_label, failureDigit, successDigit)
                         lines.extend(tmp)
 
                         if ns:
@@ -705,7 +719,12 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                         break
 
                     tmpNode = case.children[0]
-                    if tmpNode.name not in [&#39;||&#39;, &#39;&amp;&amp;&#39;, &#34;&lt;=&#34;, &#34;&lt;&#34;, &#34;&gt;=&#34;, &#34;&gt;&#34;, &#34;==&#34;, &#34;!=&#34;]:
+                    if tmpNode.name not in [&#39;||&#39;, &#39;&amp;&amp;&#39;, &#34;&lt;=&#34;, &#34;&lt;&#34;, &#34;&gt;=&#34;, &#34;&gt;&#34;, &#34;==&#34;, &#34;!=&#34;] and (
+                        tmpNode.children == [] or
+                        tmpNode.children[0].name not in [&#39;||&#39;, &#39;&amp;&amp;&#39;, &#34;&lt;=&#34;, &#34;&lt;&#34;, &#34;&gt;=&#34;, &#34;&gt;&#34;, &#34;==&#34;, &#34;!=&#34;]):
+                        # We create an AST Node comparing the value to 0 if there 
+                        # are no comparison/logical operators present in the condition.
+
                         tmpNode = ast.ASTNode(&#34;!=&#34;, None)
                         tmpNode.children.append(case.children[0])
                         tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
@@ -728,7 +747,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                         ns = True
 
                     #Get lines for the if body and assign new labeldigit
-                    tmp, labelDigit = returnLines(case.children[1], returnDigit,  labelDigit, success_label, failure_label)
+                    tmp, labelDigit = returnLines(case.children[1], returnDigit,  labelDigit, success_label, failure_label, failureDigit, successDigit)
                     lines.extend(tmp)
 
                     if ns:
@@ -818,7 +837,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                 labelDigit += 2
 
                 # recursivly deal with the body of the loop
-                tmp, labelDigit = returnLines(element.children[1], returnDigit, labelDigit, loopStart, loopEnd)
+                tmp, labelDigit = returnLines(element.children[1], returnDigit, labelDigit, loopStart, loopEnd, breakDigit=loopEnd, continueDigit=loopStart)
                 lines.extend(tmp)
 
                 if ns:
@@ -829,10 +848,15 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                 lines.append(irl.IRLine.singleEntry(irl.IRJump(f&#34;&lt;D.{conditionLabel}&gt;&#34;), [labelDigit]))
 
                 tmpNode = element.children[0]
-                if tmpNode.name not in [&#39;||&#39;, &#39;&amp;&amp;&#39;, &#34;&lt;=&#34;, &#34;&lt;&#34;, &#34;&gt;=&#34;, &#34;&gt;&#34;, &#34;==&#34;, &#34;!=&#34;]:
-                        tmpNode = ast.ASTNode(&#34;!=&#34;, None)
-                        tmpNode.children.append(element.children[0])
-                        tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
+                if tmpNode.name not in [&#39;||&#39;, &#39;&amp;&amp;&#39;, &#34;&lt;=&#34;, &#34;&lt;&#34;, &#34;&gt;=&#34;, &#34;&gt;&#34;, &#34;==&#34;, &#34;!=&#34;] and (
+                    tmpNode.children == [] or
+                    tmpNode.children[0].name not in [&#39;||&#39;, &#39;&amp;&amp;&#39;, &#34;&lt;=&#34;, &#34;&lt;&#34;, &#34;&gt;=&#34;, &#34;&gt;&#34;, &#34;==&#34;, &#34;!=&#34;]):
+                    # We create an AST Node comparing the value to 0 if there 
+                    # are no comparison/logical operators present in the condition.
+
+                    tmpNode = ast.ASTNode(&#34;!=&#34;, None)
+                    tmpNode.children.append(element.children[0])
+                    tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
 
                 line = irl.IRLine(tmpNode, tvs=[], success=loopStart, failure=loopEnd, labelList=[labelDigit])
                 tvs, labelList = line.retrieve()
@@ -847,11 +871,13 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 
             elif ind == 7:
                 # Break
-                lines.append(irl.IRLine.singleEntry(irl.IRGoTo(f&#34;&lt;D.{failureDigit}&gt;&#34;), [labelDigit]))
+                if breakDigit:
+                    lines.append(irl.IRLine.singleEntry(irl.IRGoTo(f&#34;&lt;D.{breakDigit}&gt;&#34;), [labelDigit]))
 
             elif ind == 8:
                 # Continue
-                lines.append(irl.IRLine.singleEntry(irl.IRGoTo(f&#34;&lt;D.{successDigit}&gt;&#34;), [labelDigit]))
+                if continueDigit:
+                    lines.append(irl.IRLine.singleEntry(irl.IRGoTo(f&#34;&lt;D.{continueDigit}&gt;&#34;), [labelDigit]))
 
             elif ind == 9:
                 # Goto
@@ -866,7 +892,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                     lines.extend(temp_lines)
 
             elif ind == 11:
-                # Special assignment? (++, --)
+                # Special assignment (++, --)
                 line = irl.IRLine(element, tvs=[])
                 tvs, labelList = line.retrieve()
                 lines.append(line)
@@ -877,7 +903,6 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 
         except Warning:
             exc_type, exc_obj, exc_tb = sys.exc_info()
-            # print(exc_type, exc_tb.tb_lineno)
             pass
 
     return lines, labelDigit</code></pre>
@@ -912,16 +937,21 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
         lines: The lines of the start of the function
     &#34;&#34;&#34;
     lines = []
-    params = &#34;&#34;
+    params = []
     func_type = function_tuple[0].children[0].name
     func_name = function_tuple[0].children[1].name
 
     for var in function_tuple[0].children[2].children:
         if var.name == &#34;var&#34;:
-            params += f&#34;{var.children[0].name} {var.children[1].name},&#34;
 
-    lines.append(irl.IRLine.singleEntry(irl.IRFunctionDecl(func_name, params[:-1])))
-    lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=True)))
+            # list of all modifiers
+            modifiers = f&#34;{&#39; &#39;.join([x.name for x in var.children[0].children])}{&#39; &#39; if [x.name for x in var.children[0].children] else &#39;&#39;}&#34;
+
+            # append entry for parameter
+            params.append(f&#34;{&#39; &#39;.join([modifiers])}{var.children[0].name} rV_{var.children[1].name}&#34;)
+
+    lines.append(irl.IRLine.singleEntry(irl.IRFunctionDecl(func_name, params)))
+    lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=True, functionDecl=True)))
 
     if func_type != &#34;void&#34;:
         modifiers = f&#34;{&#39;&#39;.join([x.name for x in function_tuple[0].children[0].children if x.name in [&#39;signed&#39;, &#39;unsigned&#39;]])}{&#39; &#39; if [x.name for x in function_tuple[0].children[0].children if x.name in [&#39;signed&#39;, &#39;unsigned&#39;]] else &#39;&#39;}&#34;
@@ -930,52 +960,8 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
     return lines</code></pre>
 </details>
 </dd>
-<dt id="src.optimizer.IR_Lv1_Builder.buildBoilerPlate"><code class="name flex">
-<span>def <span class="ident">buildBoilerPlate</span></span>(<span>symTable)</span>
-</code></dt>
-<dd>
-<section class="desc"><p>Generates the function names and parameters from symbol table.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>symTable</code></strong></dt>
-<dd>The symbol table we get from previous stages in the compiler.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<p>A list containing function name and parameters.</p></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def buildBoilerPlate(symTable):
-    &#34;&#34;&#34;
-    Generates the function names and parameters from symbol table.
-
-    Args:
-        symTable: The symbol table we get from previous stages in the compiler.
-    Returns:
-        A list containing function name and parameters.
-    &#34;&#34;&#34;
-    namesandparams = []
-    functionNames = [(x.name,x.type) for x in symTable.symbols if x.is_function]
-    params = [(x.name,x.scope,x.type) for x in symTable.symbols if x.is_param]
-
-    for x in functionNames:
-        track = 0
-        paramsLi = []
-        for i in params:
-            if x[0] == i[1].split(&#34;/&#34;)[1]:
-                track+=1
-
-                paramsLi.append((i[2],i[0]))
-        if track == 0:
-            namesandparams.append((x[0],paramsLi,x[1]))
-        else:
-            namesandparams.append((x[0],paramsLi,x[1]))
-    return namesandparams</code></pre>
-</details>
-</dd>
 <dt id="src.optimizer.IR_Lv1_Builder.returnLines"><code class="name flex">
-<span>def <span class="ident">returnLines</span></span>(<span>node, returnDigit, labelDigit, successDigit=None, failureDigit=None)</span>
+<span>def <span class="ident">returnLines</span></span>(<span>node, returnDigit, labelDigit, successDigit=None, failureDigit=None, breakDigit=None, continueDigit=None)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Produces a linear representation of the content nested within <code>node</code>.</p>
@@ -991,8 +977,10 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 <dd>The label value to jump to if there is a <code>continue</code>.</dd>
 <dt><strong><code>failureDigit</code></strong></dt>
 <dd>The label value to jump to if there is a <code>break</code>.</dd>
-<dt><strong><code>prefix</code></strong></dt>
-<dd>The string prefix for indenting the given line.</dd>
+<dt><strong><code>breakDigit</code></strong></dt>
+<dd>The label used for break statements to have a correct label so the control flow is correct.</dd>
+<dt><strong><code>continueDigit</code></strong></dt>
+<dd>The label used for a continue statement to know the 'ultimate' success of whatever block it is in</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -1005,7 +993,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None):
+<pre><code class="python">def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None, breakDigit=None, continueDigit=None):
     &#34;&#34;&#34;
     Produces a linear representation of the content nested within `node`.
 
@@ -1015,7 +1003,9 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
         labelDigit: A list of all previously used label values.
         successDigit: The label value to jump to if there is a `continue`.
         failureDigit: The label value to jump to if there is a `break`.
-        prefix: The string prefix for indenting the given line.
+        breakDigit: The label used for break statements to have a correct label so the control flow is correct.
+
+        continueDigit: The label used for a continue statement to know the &#39;ultimate&#39; success of whatever block it is in
 
     Returns:
         lines: The lines produced from the content.
@@ -1029,7 +1019,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
         if il:
             for x in il:
                 modifiers = f&#34;{&#39; &#39;.join([y.name for y in x.children[0].children])}{&#39; &#39; if [y.name for y in x.children[0].children] else &#39;&#39;}&#34;
-                lines.append(irl.IRLine.singleEntry(irl.IRVariableInit(modifiers, x.children[0].name, x.children[1].name), [labelDigit]))
+                lines.append(irl.IRLine.singleEntry(irl.IRVariableInit(modifiers, x.children[0].name, f&#34;rV_{x.children[1].name}&#34;), [labelDigit]))
 
     for element in node.children:
         try:
@@ -1077,7 +1067,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                 labelDigit += 2
 
                 # recursivly deal with the body of the loop
-                tmp, labelDigit = returnLines(element.children[3], returnDigit, labelDigit, loopStart, loopEnd)
+                tmp, labelDigit = returnLines(element.children[3], returnDigit, labelDigit, loopStart, loopEnd, breakDigit=loopEnd, continueDigit=loopStart)
                 lines.extend(tmp)
 
                 # Add the &#34;end-of-loop&#34; assignment/arithmetic
@@ -1092,7 +1082,13 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                     lines.append(irl.IRLine.singleEntry(irl.IRJump(f&#34;&lt;D.{conditionLabel}&gt;&#34;), [labelDigit]))
 
                     tmpNode = element.children[1]
-                    if tmpNode.name not in [&#39;||&#39;, &#39;&amp;&amp;&#39;, &#34;&lt;=&#34;, &#34;&lt;&#34;, &#34;&gt;=&#34;, &#34;&gt;&#34;, &#34;==&#34;, &#34;!=&#34;]:
+                    
+                    if tmpNode.name not in [&#39;||&#39;, &#39;&amp;&amp;&#39;, &#34;&lt;=&#34;, &#34;&lt;&#34;, &#34;&gt;=&#34;, &#34;&gt;&#34;, &#34;==&#34;, &#34;!=&#34;] and (
+                        tmpNode.children == [] or
+                        tmpNode.children[0].name not in [&#39;||&#39;, &#39;&amp;&amp;&#39;, &#34;&lt;=&#34;, &#34;&lt;&#34;, &#34;&gt;=&#34;, &#34;&gt;&#34;, &#34;==&#34;, &#34;!=&#34;]):
+                        # We create an AST Node comparing the value to 0 if there 
+                        # are no comparison/logical operators present in the condition.
+
                         tmpNode = ast.ASTNode(&#34;!=&#34;, None)
                         tmpNode.children.append(element.children[1])
                         tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
@@ -1150,7 +1146,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                             ns = True
 
                         #Get lines for the body and assign new labeldigit
-                        tmp, labelDigit = returnLines(case.children[0], returnDigit, labelDigit, success_label, failure_label)
+                        tmp, labelDigit = returnLines(case.children[0], returnDigit, labelDigit, success_label, failure_label, failureDigit, successDigit)
                         lines.extend(tmp)
 
                         if ns:
@@ -1160,7 +1156,12 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                         break
 
                     tmpNode = case.children[0]
-                    if tmpNode.name not in [&#39;||&#39;, &#39;&amp;&amp;&#39;, &#34;&lt;=&#34;, &#34;&lt;&#34;, &#34;&gt;=&#34;, &#34;&gt;&#34;, &#34;==&#34;, &#34;!=&#34;]:
+                    if tmpNode.name not in [&#39;||&#39;, &#39;&amp;&amp;&#39;, &#34;&lt;=&#34;, &#34;&lt;&#34;, &#34;&gt;=&#34;, &#34;&gt;&#34;, &#34;==&#34;, &#34;!=&#34;] and (
+                        tmpNode.children == [] or
+                        tmpNode.children[0].name not in [&#39;||&#39;, &#39;&amp;&amp;&#39;, &#34;&lt;=&#34;, &#34;&lt;&#34;, &#34;&gt;=&#34;, &#34;&gt;&#34;, &#34;==&#34;, &#34;!=&#34;]):
+                        # We create an AST Node comparing the value to 0 if there 
+                        # are no comparison/logical operators present in the condition.
+
                         tmpNode = ast.ASTNode(&#34;!=&#34;, None)
                         tmpNode.children.append(case.children[0])
                         tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
@@ -1183,7 +1184,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                         ns = True
 
                     #Get lines for the if body and assign new labeldigit
-                    tmp, labelDigit = returnLines(case.children[1], returnDigit,  labelDigit, success_label, failure_label)
+                    tmp, labelDigit = returnLines(case.children[1], returnDigit,  labelDigit, success_label, failure_label, failureDigit, successDigit)
                     lines.extend(tmp)
 
                     if ns:
@@ -1273,7 +1274,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                 labelDigit += 2
 
                 # recursivly deal with the body of the loop
-                tmp, labelDigit = returnLines(element.children[1], returnDigit, labelDigit, loopStart, loopEnd)
+                tmp, labelDigit = returnLines(element.children[1], returnDigit, labelDigit, loopStart, loopEnd, breakDigit=loopEnd, continueDigit=loopStart)
                 lines.extend(tmp)
 
                 if ns:
@@ -1284,10 +1285,15 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                 lines.append(irl.IRLine.singleEntry(irl.IRJump(f&#34;&lt;D.{conditionLabel}&gt;&#34;), [labelDigit]))
 
                 tmpNode = element.children[0]
-                if tmpNode.name not in [&#39;||&#39;, &#39;&amp;&amp;&#39;, &#34;&lt;=&#34;, &#34;&lt;&#34;, &#34;&gt;=&#34;, &#34;&gt;&#34;, &#34;==&#34;, &#34;!=&#34;]:
-                        tmpNode = ast.ASTNode(&#34;!=&#34;, None)
-                        tmpNode.children.append(element.children[0])
-                        tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
+                if tmpNode.name not in [&#39;||&#39;, &#39;&amp;&amp;&#39;, &#34;&lt;=&#34;, &#34;&lt;&#34;, &#34;&gt;=&#34;, &#34;&gt;&#34;, &#34;==&#34;, &#34;!=&#34;] and (
+                    tmpNode.children == [] or
+                    tmpNode.children[0].name not in [&#39;||&#39;, &#39;&amp;&amp;&#39;, &#34;&lt;=&#34;, &#34;&lt;&#34;, &#34;&gt;=&#34;, &#34;&gt;&#34;, &#34;==&#34;, &#34;!=&#34;]):
+                    # We create an AST Node comparing the value to 0 if there 
+                    # are no comparison/logical operators present in the condition.
+
+                    tmpNode = ast.ASTNode(&#34;!=&#34;, None)
+                    tmpNode.children.append(element.children[0])
+                    tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
 
                 line = irl.IRLine(tmpNode, tvs=[], success=loopStart, failure=loopEnd, labelList=[labelDigit])
                 tvs, labelList = line.retrieve()
@@ -1302,11 +1308,13 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 
             elif ind == 7:
                 # Break
-                lines.append(irl.IRLine.singleEntry(irl.IRGoTo(f&#34;&lt;D.{failureDigit}&gt;&#34;), [labelDigit]))
+                if breakDigit:
+                    lines.append(irl.IRLine.singleEntry(irl.IRGoTo(f&#34;&lt;D.{breakDigit}&gt;&#34;), [labelDigit]))
 
             elif ind == 8:
                 # Continue
-                lines.append(irl.IRLine.singleEntry(irl.IRGoTo(f&#34;&lt;D.{successDigit}&gt;&#34;), [labelDigit]))
+                if continueDigit:
+                    lines.append(irl.IRLine.singleEntry(irl.IRGoTo(f&#34;&lt;D.{continueDigit}&gt;&#34;), [labelDigit]))
 
             elif ind == 9:
                 # Goto
@@ -1321,7 +1329,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                     lines.extend(temp_lines)
 
             elif ind == 11:
-                # Special assignment? (++, --)
+                # Special assignment (++, --)
                 line = irl.IRLine(element, tvs=[])
                 tvs, labelList = line.retrieve()
                 lines.append(line)
@@ -1332,7 +1340,6 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 
         except Warning:
             exc_type, exc_obj, exc_tb = sys.exc_info()
-            # print(exc_type, exc_tb.tb_lineno)
             pass
 
     return lines, labelDigit</code></pre>
@@ -1379,7 +1386,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
         Constructs the linear representation for the object.
 
         Returns:
-            IR: A collection of strings and IRLine objects which can be optimized and/or transformed into assembly.
+            IR: A collection of IRLine objects which can be optimized and/or transformed into assembly.
         &#34;&#34;&#34;
         sym = self.symTable
         ntv = self.astHead
@@ -1394,6 +1401,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                 # Each entry is the &#39;(func_node, body_node)&#39;
                 bodyList.append((x,x.children[3]))
 
+        # Digits are used for contructing unique labels
         returnDigit = 1234
         labelDigit = returnDigit + 1
         lines = []
@@ -1406,19 +1414,22 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
             tmp_lines , labelDigit = returnLines(i[1], returnDigit, labelDigit)
             lines.extend(tmp_lines)
 
+            # add a return statement if function didnt have one
+            if not isinstance(lines[-1].treeList[-1], irl.IRReturn):
+                lines.append(irl.IRLine.singleEntry(irl.IRReturn(None)))
+
             # End of function wrapper, add closing bracket
-            lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=False)))
+            lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=False, functionDecl=True)))
 
             # NOTE: &#39;labelDigit&#39; should be the newest and unused digit
             returnDigit = labelDigit
 
             self.IR = lines
 
+        # RESET THE FRICKING GLOBAL
+        irl.tmpVarIndex = 0
+
         return self.IR
-
-
-    def __str__(self):
-        return &#34;\n&#34;.join([str(x) for x in self.IR]) + &#34;\n&#34;
 
     def optimize(self, opt):
         &#34;&#34;&#34;
@@ -1432,6 +1443,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
             self.remove_unused_vars()
             pass
 
+        # constant folding/propagation
         if opt &gt; 1:
             # A dictionary containing all the values of variables that can at some point be reduced.
             self.var_values = {
@@ -1666,6 +1678,12 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                 line.treeList.pop(node)
 
     def remove_unused_funcs(self):
+        &#34;&#34;&#34;
+        Removes function that are not reference in the symbol table. They can be removed if not used.
+        &#34;&#34;&#34;
+
+
+
         ir = self.IR
         inFunction = False
         to_remove = []
@@ -1702,6 +1720,15 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
         self.IR = ir
 
     def constant_folding(self,x):
+        &#34;&#34;&#34;
+        Peforms constant folding  on a given line in the IR
+
+        Args:
+            x: an IRNode object
+
+        Returns:
+            A boolean indicating whether it changed anything, and the node that has been modified
+        &#34;&#34;&#34;
         changed = False
         if isinstance(x,irl.IRArth):
             notFound = True
@@ -1772,7 +1799,16 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
         return changed,x
 
     def constant_propagation(self, node, var_val):
+        &#34;&#34;&#34;
+        Performs constant propagation on a given IRNode if deemed possible.
 
+        Args:
+            node: The IRNode object to be considered
+            var_val: A dictionary of all the variables and their values which are deemed safe to replace
+
+        Returns:
+            The return value describes whether any propogation occurred during the function call
+        &#34;&#34;&#34;
         # NOTE: The current issue is that the propogation is goint to have to exit and re enter the function every time to achieve the following:
         # Clear the tempoary variables per line as they are re used
         # Avoid propogating too far so that assignments in the future that may happen after certain other computations and assignments propogate the correct value
@@ -1796,10 +1832,6 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                 node.rhs = var_val[node.rhs]
                 changed = True
 
-        elif isinstance(node, irl.IRSpecial):
-            pass
-            # Assigning a value for a post and pre increment is extremly difficult due to the fact that it regularly occurs in loops and constants arent useful there.
-
         elif isinstance(node, irl.IRAssignment):
             if node.rhs in var_val and var_val[node.rhs] != &#34;Undef&#34;:
                 node.rhs = var_val[node.rhs]
@@ -1816,7 +1848,10 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                     node.params[j] = var_val[param]
                     changed = True
 
-        return changed, var_val</code></pre>
+        return changed, var_val
+
+    def __str__(self):
+        return &#34;\n&#34;.join([str(x) for x in self.IR]) + &#34;\n&#34;</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -1967,12 +2002,32 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 <span>def <span class="ident">constant_folding</span></span>(<span>self, x)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Peforms constant folding
+on a given line in the IR</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>x</code></strong></dt>
+<dd>an IRNode object</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>A</code> <code>boolean</code> <code>indicating</code> <code>whether</code> <code>it</code> <code>changed</code> <code>anything</code>, <code>and</code> <code>the</code> <code>node</code> <code>that</code> <code>has</code> <code>been</code> <code>modified</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def constant_folding(self,x):
+    &#34;&#34;&#34;
+    Peforms constant folding  on a given line in the IR
+
+    Args:
+        x: an IRNode object
+
+    Returns:
+        A boolean indicating whether it changed anything, and the node that has been modified
+    &#34;&#34;&#34;
     changed = False
     if isinstance(x,irl.IRArth):
         notFound = True
@@ -2047,13 +2102,34 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 <span>def <span class="ident">constant_propagation</span></span>(<span>self, node, var_val)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Performs constant propagation on a given IRNode if deemed possible.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node</code></strong></dt>
+<dd>The IRNode object to be considered</dd>
+<dt><strong><code>var_val</code></strong></dt>
+<dd>A dictionary of all the variables and their values which are deemed safe to replace</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>The</code> <code>return</code> <code>value</code> <code>describes</code> <code>whether</code> <code>any</code> <code>propogation</code> <code>occurred</code> <code>during</code> <code>the</code> <code>function</code> <code>call</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def constant_propagation(self, node, var_val):
+    &#34;&#34;&#34;
+    Performs constant propagation on a given IRNode if deemed possible.
 
+    Args:
+        node: The IRNode object to be considered
+        var_val: A dictionary of all the variables and their values which are deemed safe to replace
+
+    Returns:
+        The return value describes whether any propogation occurred during the function call
+    &#34;&#34;&#34;
     # NOTE: The current issue is that the propogation is goint to have to exit and re enter the function every time to achieve the following:
     # Clear the tempoary variables per line as they are re used
     # Avoid propogating too far so that assignments in the future that may happen after certain other computations and assignments propogate the correct value
@@ -2076,10 +2152,6 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
         if node.rhs in var_val and var_val[node.rhs] != &#34;Undef&#34;:
             node.rhs = var_val[node.rhs]
             changed = True
-
-    elif isinstance(node, irl.IRSpecial):
-        pass
-        # Assigning a value for a post and pre increment is extremly difficult due to the fact that it regularly occurs in loops and constants arent useful there.
 
     elif isinstance(node, irl.IRAssignment):
         if node.rhs in var_val and var_val[node.rhs] != &#34;Undef&#34;:
@@ -2108,7 +2180,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><strong><code>IR</code></strong></dt>
-<dd>A collection of strings and IRLine objects which can be optimized and/or transformed into assembly.</dd>
+<dd>A collection of IRLine objects which can be optimized and/or transformed into assembly.</dd>
 </dl></section>
 <details class="source">
 <summary>
@@ -2119,7 +2191,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
     Constructs the linear representation for the object.
 
     Returns:
-        IR: A collection of strings and IRLine objects which can be optimized and/or transformed into assembly.
+        IR: A collection of IRLine objects which can be optimized and/or transformed into assembly.
     &#34;&#34;&#34;
     sym = self.symTable
     ntv = self.astHead
@@ -2134,6 +2206,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
             # Each entry is the &#39;(func_node, body_node)&#39;
             bodyList.append((x,x.children[3]))
 
+    # Digits are used for contructing unique labels
     returnDigit = 1234
     labelDigit = returnDigit + 1
     lines = []
@@ -2146,13 +2219,20 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
         tmp_lines , labelDigit = returnLines(i[1], returnDigit, labelDigit)
         lines.extend(tmp_lines)
 
+        # add a return statement if function didnt have one
+        if not isinstance(lines[-1].treeList[-1], irl.IRReturn):
+            lines.append(irl.IRLine.singleEntry(irl.IRReturn(None)))
+
         # End of function wrapper, add closing bracket
-        lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=False)))
+        lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=False, functionDecl=True)))
 
         # NOTE: &#39;labelDigit&#39; should be the newest and unused digit
         returnDigit = labelDigit
 
         self.IR = lines
+
+    # RESET THE FRICKING GLOBAL
+    irl.tmpVarIndex = 0
 
     return self.IR</code></pre>
 </details>
@@ -2183,6 +2263,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
         self.remove_unused_vars()
         pass
 
+    # constant folding/propagation
     if opt &gt; 1:
         # A dictionary containing all the values of variables that can at some point be reduced.
         self.var_values = {
@@ -2247,12 +2328,18 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 <span>def <span class="ident">remove_unused_funcs</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Removes function that are not reference in the symbol table. They can be removed if not used.</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def remove_unused_funcs(self):
+    &#34;&#34;&#34;
+    Removes function that are not reference in the symbol table. They can be removed if not used.
+    &#34;&#34;&#34;
+
+
+
     ir = self.IR
     inFunction = False
     to_remove = []
@@ -2359,7 +2446,6 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="src.optimizer.IR_Lv1_Builder.beginWrapper" href="#src.optimizer.IR_Lv1_Builder.beginWrapper">beginWrapper</a></code></li>
-<li><code><a title="src.optimizer.IR_Lv1_Builder.buildBoilerPlate" href="#src.optimizer.IR_Lv1_Builder.buildBoilerPlate">buildBoilerPlate</a></code></li>
 <li><code><a title="src.optimizer.IR_Lv1_Builder.returnLines" href="#src.optimizer.IR_Lv1_Builder.returnLines">returnLines</a></code></li>
 </ul>
 </li>

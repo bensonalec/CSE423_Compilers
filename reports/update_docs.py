@@ -14,14 +14,15 @@ from importlib.machinery import SourceFileLoader
 
 print (pathlib.Path(__file__).parent)
 
-prep = SourceFileLoader("preprocessor", f"{pathlib.Path(__file__).parent}/../src/frontend/preprocessor.py").load_module()
-lexe = SourceFileLoader("lexer", f"{pathlib.Path(__file__).parent}/../src/frontend/lexer.py").load_module()
-pars = SourceFileLoader("parser", f"{pathlib.Path(__file__).parent}/../src/frontend/parser.py").load_module()
-astt = SourceFileLoader("AST_builder", f"{pathlib.Path(__file__).parent}/../src/frontend/AST_builder.py").load_module()
-sema = SourceFileLoader("semantics", f"{pathlib.Path(__file__).parent}/../src/frontend/semantics.py").load_module()
+prep = SourceFileLoader("preprocessor",   f"{pathlib.Path(__file__).parent}/../src/frontend/preprocessor.py").load_module()
+lexe = SourceFileLoader("lexer",          f"{pathlib.Path(__file__).parent}/../src/frontend/lexer.py").load_module()
+pars = SourceFileLoader("parser",         f"{pathlib.Path(__file__).parent}/../src/frontend/parser.py").load_module()
+astt = SourceFileLoader("AST_builder",    f"{pathlib.Path(__file__).parent}/../src/frontend/AST_builder.py").load_module()
+sema = SourceFileLoader("semantics",      f"{pathlib.Path(__file__).parent}/../src/frontend/semantics.py").load_module()
 symbol = SourceFileLoader("symbol_table", f"{pathlib.Path(__file__).parent}/../src/frontend/symbol_table.py").load_module()
-ir1 = SourceFileLoader("IR_Lv1_Builder", f"{pathlib.Path(__file__).parent}/../src/optimizer/IR_Lv1_Builder.py").load_module()
-
+ir1 = SourceFileLoader("IR_Lv1_Builder",  f"{pathlib.Path(__file__).parent}/../src/optimizer/IR_Lv1_Builder.py").load_module()
+asmn = SourceFileLoader("ASMNode",        f"{pathlib.Path(__file__).parent}/../src/backend/ASMNode.py").load_module()
+alloc = SourceFileLoader("Allocator",     f"{pathlib.Path(__file__).parent}/../src/backend/allocator.py").load_module()
 def retrieve_lex(file):
     lexer = lexe.Lexer().get_lexer()
     tokens = lexer.lex(file)
@@ -55,6 +56,8 @@ def retrieve_sym(file):
 
 def retrieve_sem(file):
     tmp = retrieve_sym(file)
+    semanticAnal = sema.semantic(tmp[-2][0],tmp[-1][0].symbols)
+    semanticAnal.semanticAnalysis()
 
     return tmp
 
@@ -78,12 +81,24 @@ def retrieve_O1(file):
 def retrieve_O2(file):
     tmp = retrieve_O1(file)
 
-    ir = deepcopy(tmp[-1][0])
+    ir = deepcopy(tmp[-2][0])
 
     ir.optimize(2)
 
     return tmp + [(ir, str(ir))]
 
+def retrieve_asm(file, name):
+    tmp = retrieve_O2(file)
+    asm = [z for x in tmp[-3][0].IR for y in x.treeList for z in y.asm()]
+    allocator = alloc.Allocator
+    asm = allocator.allocateRegisters(asm)
+
+    asm = [
+        asmn.ASMNode(None, None, None, boilerPlate=f".file \"{name}\""),
+        asmn.ASMNode( None, None,None, boilerPlate=f".text"),
+    ] + asm
+
+    return tmp + [(asm, "\n".join([str(x) for x in asm]))]
 
 if __name__ == "__main__":
     # Setus up /docs for the newly generated documentation.
@@ -227,6 +242,7 @@ if __name__ == "__main__":
         ("Linear IR (-O0)", 4),
         ("Linear IR (-O1)", 5),
         ("Linear IR (-O2)", 6),
+        ("x86-64 GAS Assembly (-O0)", 7)
     ]
 
     for program in [x for x in sorted(pathlib.Path("../test/programs").iterdir()) if x.suffix == '.c' ]:
@@ -243,7 +259,7 @@ if __name__ == "__main__":
             data.select("div")[-1].append(a)
 
         par = usr_parser.new_tag("div", attrs={'class' : "example_representations"})
-        outs = retrieve_O2(prep.run(program.read_text(), program.resolve()))
+        outs = retrieve_asm(prep.run(program.read_text(), program.resolve()), program.name)
         outs.insert(0, ("", program.read_text()))
         for idx, arg in enumerate([""] + [x[-1] for x in comp_flags]):
             div = usr_parser.new_tag("div")
