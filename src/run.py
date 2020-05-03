@@ -11,20 +11,25 @@ optimizer = SourceFileLoader("optimizer.optimizer", f"{os.path.dirname(os.path.a
 backend = SourceFileLoader("backend.backend", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/backend/backend.py").load_module()
 def main(args):
 
-    # Execution of the Frontend.
-    # This returns the Abstract Syntax Tree and Symbol Table
-    if not args.input:
-        ast, sym = frontend.main(args)
-    else:
-        ast = None
-        sym = None
+    try:
 
+        # Execution of the Frontend.
+        # This returns the Abstract Syntax Tree and Symbol Table
+        if not args.input:
+            ast, sym = frontend.main(args)
+        else:
+            ast = None
+            sym = None
 
-    # Execution of Optimization
-    ir = optimizer.main(args,ast,sym)
+        # Execution of Optimization
+        ir = optimizer.main(args,ast,sym)
 
-    # Execution of Backend
-    backend.main(args, ir)
+        # Execution of Backend
+        backend.main(args, ir)
+
+    except BaseException as err:
+        print("Compilation failed: ", err)
+        exit(1)
 
 
 

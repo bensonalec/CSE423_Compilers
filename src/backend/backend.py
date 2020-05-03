@@ -17,13 +17,13 @@ def main(args, IR):
     """
     # List of assembly instructions before given allocated registers
     asm = [z for x in IR.IR for y in x.treeList for z in y.asm()]
-          
+
     # Allocate registers for assembly instructions
     allocator = alloc.Allocator
     asm = allocator.allocateRegisters(asm)
 
     # Output assembly to stdout
-    if args.a1:
+    if args.asm:
         for i in asm:
             print(str(i))
 

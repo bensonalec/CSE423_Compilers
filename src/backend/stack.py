@@ -15,12 +15,12 @@ class stackObj():
         # RBP being pushed
 
         if "Type" not in kwarg:
-            # TODO: Throw some kind of error
-            pass
+            print ("Invalid object pushed to stack")
+            raise BaseException
 
         self.type = kwarg["Type"]
         self.Name = kwarg["Name"]
-    
+
     def __str__(self):
         return f"{self.type} {self.Name}"
 
@@ -51,7 +51,7 @@ class Stack():
             self.lbp = 0
         else:
             self.lbp += 1
-        
+
         self.stk.append(obj)
         pass
 
@@ -83,7 +83,7 @@ class Stack():
             var: The variable name that is being checked for
             bpSkipsAllowed: The number of basepointers that can be moved past, used to determine if something has a variable within scope
 
-        Returns: 
+        Returns:
             Either none or the newly calulated offset
         """
         skipCnt = -1
