@@ -1,0 +1,47 @@
+.file "While.c"
+.text
+.globl	main
+.type	main,	@function
+main:
+mov %rsp, %rbp
+push %rbx
+push %r12
+push %r13
+push %r14
+push %r15
+jmp D.1235
+D.1236:
+xor %rcx, %rcx
+D.1235:
+mov $1, %rbx
+xor %rdi, %rdi
+test %rbx, %rdi
+jne D.1236
+jmp D.1237
+D.1237:
+D.1240:
+xor %rsi, %rsi
+D.1239:
+mov $1, %rbx
+xor %rdi, %rdi
+test %rbx, %rdi
+jne D.1240
+jmp D.1241
+D.1241:
+jmp D.1243
+D.1244:
+jmp D.1245
+D.1243:
+mov $2, %r8
+xor %rdi, %rdi
+test %r8, %rdi
+jne D.1244
+jmp D.1245
+D.1245:
+add $0, %rsp
+pop %r15
+pop %r14
+pop %r13
+pop %r12
+pop %rbx
+ret

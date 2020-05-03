@@ -1,0 +1,57 @@
+.file "Boolean.c"
+.text
+.globl	main
+.type	main,	@function
+main:
+mov %rsp, %rbp
+push %rbx
+push %r12
+push %r13
+push %r14
+push %r15
+mov $1, %rcx
+xor %rbx, %rbx
+test %rcx, %rbx
+jne D.1235
+jmp D.1236
+D.1235:
+jmp D.1237
+D.1236:
+D.1237:
+jmp D.1239
+D.1238:
+jmp D.1240
+D.1239:
+D.1240:
+jmp D.1242
+D.1241:
+jmp D.1243
+D.1242:
+D.1243:
+jmp D.1244
+D.1244:
+jmp D.1246
+D.1245:
+D.1246:
+jmp D.1248
+D.1247:
+jmp D.1249
+D.1248:
+D.1249:
+jmp D.1250
+D.1250:
+jmp D.1252
+D.1251:
+D.1252:
+jmp D.1253
+D.1253:
+jmp D.1255
+D.1254:
+D.1255:
+add $0, %rsp
+pop %r15
+pop %r14
+pop %r13
+pop %r12
+pop %rbx
+ret

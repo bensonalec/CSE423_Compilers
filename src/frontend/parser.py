@@ -98,7 +98,7 @@ class Parser():
     """
     Definition for the Parser object, works off of rply. Contains rules for parsing.
     """
-
+    
     def __init__(self):
         """
         Initializes the parser and tells it the allowed tokens
@@ -116,7 +116,7 @@ class Parser():
         """
         The list of BNF functions and their behavior
         """
-
+        
         @self.pg.production('program : definitionList ')
         def program(p):
             """
@@ -1200,3 +1200,4 @@ class Parser():
 
 
 
+    

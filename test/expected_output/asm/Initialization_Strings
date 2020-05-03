@@ -1,0 +1,3 @@
+Type mismatch for string, unexpected string "test string"
+Type mismatch for string_special, unexpected string "\n\t\\\'\"\%\$%&*$%&%*$&@@   __  +=-"
+Compilation failed:  0

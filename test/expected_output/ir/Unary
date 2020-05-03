@@ -1,25 +1,26 @@
 main ()
 {
 int D.1234;
-int a;
-int b;
-int c;
-_1 = -10;
-a = _1;
-_1 = -a;
-b = _1;
-_1 = +a;
-c = _1;
-_0 = !2;
-if (_0 != 0) goto <D.1235>; else goto <D.1236>;
+int rV_a;
+int rV_b;
+int rV_c;
+tV_1 = -10;
+rV_a = tV_1;
+tV_2 = -rV_a;
+rV_b = tV_2;
+tV_3 = +rV_a;
+rV_c = tV_3;
+tV_4 = !2;
+if (tV_4 != 0) goto <D.1235>; else goto <D.1236>;
 <D.1235>:
 goto <D.1237>;
 <D.1236>:
 <D.1237>:
-_0 = ~2;
-if (_0 != 0) goto <D.1238>; else goto <D.1239>;
+tV_5 = ~2;
+if (tV_5 != 0) goto <D.1238>; else goto <D.1239>;
 <D.1238>:
 goto <D.1240>;
 <D.1239>:
 <D.1240>:
+return;
 }

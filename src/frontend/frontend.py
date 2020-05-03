@@ -4,6 +4,7 @@ for command line arguments that can be used to determine which portion is run.
 """
 import os
 import argparse
+import importlib
 from importlib.machinery import SourceFileLoader
 from inspect import getsourcefile
 import traceback
@@ -75,8 +76,8 @@ def main(args):
     if args.bnf:
         btp.main(args.bnf)
         importlib.reload(par)
-
-
+    astree = None
+    symTab = None
     try:
 
         fi = open(args.input_file, "r")
@@ -108,49 +109,56 @@ def main(args):
 
         if args.tree or args.all:
             # Represent parse tree as a list with levels
-            # print(head.getListView(0))
             print(head.__repr__)
-            # print(str(head) == head.getListView(0))
 
         if args.pretty or args.all:
             # Pretty print parse tree
-            # pprint_tree(head)
-            # head.print_ParseTree()
             print(head)
 
         # Build Abstract Syntax Tree
         astree = ast.buildAST(head)
 
+        # Pretty print AST
         if args.ast or args.all:
-            # Pretty print AST
-            # astree.print_AST()
             print(astree)
 
-        # Initialize symbol table and begin semantic analysis
+        # Initialize symbol table
         symTab = sym.symbol_table(astree)
         symTab.analyze()
 
+        # Print symbol table
         if args.symbol_table or args.all:
             print (symTab)
 
+        # Begin semantic analysis
         semAnal = semantic.semantic(astree,symTab.symbols)
         semAnal.semanticAnalysis()
 
+        # Print semantic analysis error
         if args.errors or args.all:
             semAnal.printSemanticErrors()
-    except LexingError as err:
-        print("Received error(s) from token validation. Exiting...")
-        exit()
 
+    #Check for generic error in lexer
+    except LexingError as err:
+        exit()
+    #Checkf for type assertion error
     except AssertionError as err:
         # parser has it's own detailed error printing
         pg.print_error()
-        print("Received AssertionError(s) from parser, continuing with what was parsed...\n")
-
+        exit()
+    #Check for general exception
     except BaseException as err:
         traceback.print_exc()
         print(f"Unrecoverable exception occured. Exiting...")
         exit()
+    #Check if either the AST or Sym Table did not generate
+    if(astree == None or symTab == None):
+        print("Something unexpected happened...")
+        exit(0)
+    #Check if there are any errors in semantic analysis
+    if(semAnal.errors != []):
+        semAnal.printSemanticErrors()
+        exit(0)
 
     return astree, symTab
 
@@ -161,25 +169,13 @@ if __name__ == "__main__":
     cmd_options = argparse.ArgumentParser(description='Frontend of the compiler. Can produce tokens and syntax tree')
 
     cmd_options.add_argument('--all',help='Prints out all intermediate representations as they are encountered in the compilation process', action="store_true")
-
-    #input file option
     cmd_options.add_argument('input_file', metavar='<filename.c>', type=str, help='Input c file.')
-
-    #Arguement to print tokens from lexer
     cmd_options.add_argument('-l','--lex', help='Prints out tokens from lexer', action='store_true')
-
-    #Prints string representation of parse tree....
     cmd_options.add_argument('-t','--tree', help='Prints string representation of parse tree.', action="store_true")
-
     cmd_options.add_argument('-p','--pretty',help='Prints a pretty verision of the tree, and does not print the tokens', action="store_true")
-
-    #Print all output from lexer, parser, etc....
-    cmd_options.add_argument('-a','--ast', help='Prints out the abstract syntax tree.', action="store_true")
-
+    cmd_options.add_argument('-ast','--ast', help='Prints out the abstract syntax tree.', action="store_true")
     cmd_options.add_argument('-s','--symbol_table', help='Prints out the known and unknown symbols encountered during semantic analysis.', action="store_true")
-
     cmd_options.add_argument('-b', '--bnf', nargs='?', const=os.path.realpath("./BNF_definition"), type=str, help='Rebuilds the parser using the current BNF grammar')
-
     cmd_options.add_argument('-e', '--errors',help='Prints out the errors in the semantic analysis',action="store_true")
 
     #generate arguements

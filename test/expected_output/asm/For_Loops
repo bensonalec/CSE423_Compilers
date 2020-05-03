@@ -1,0 +1,116 @@
+.file "For_Loops.c"
+.text
+.globl	main
+.type	main,	@function
+main:
+mov %rsp, %rbp
+push %rbx
+push %r12
+push %r13
+push %r14
+push %r15
+xor %rcx, %rcx
+xor %rcx, %rcx
+jmp D.1235
+D.1236:
+jmp D.1237
+mov %rcx, %rbx
+inc %rcx
+D.1235:
+mov $10, %rdi
+cmp %rcx, %rdi
+jl D.1236
+jmp D.1237
+D.1237:
+xor %rcx, %rcx
+jmp D.1239
+D.1240:
+xor %rcx, %rcx
+jmp D.1242
+D.1243:
+jmp D.1243
+mov %rcx, %rsi
+inc %rcx
+D.1242:
+mov $10, %rdi
+cmp %rcx, %rdi
+jl D.1243
+jmp D.1244
+D.1244:
+mov %rcx, %r8
+inc %rcx
+D.1239:
+mov $10, %rdi
+cmp %rcx, %rdi
+jl D.1240
+jmp D.1241
+D.1241:
+xor %rcx, %rcx
+jmp D.1243
+D.1244:
+jmp D.1244
+mov %rcx, %r9
+inc %rcx
+D.1243:
+mov $10, %rdi
+cmp %rcx, %rdi
+jl D.1244
+jmp D.1245
+D.1245:
+xor %rcx, %rcx
+jmp D.1247
+D.1248:
+xor %rcx, %rcx
+jmp D.1250
+D.1251:
+jmp D.1251
+mov %rcx, %r10
+inc %rcx
+D.1250:
+mov $10, %rdi
+cmp %rcx, %rdi
+jl D.1251
+jmp D.1252
+D.1252:
+mov %rcx, %r11
+inc %rcx
+D.1247:
+mov $10, %rdi
+cmp %rcx, %rdi
+jl D.1248
+jmp D.1249
+D.1249:
+xor %r12, %r12
+jmp D.1251
+D.1252:
+jmp D.1252
+mov %r12, %r12
+D.1251:
+xor %r13, %r13
+test %r12, %r13
+je D.1252
+jmp D.1253
+D.1253:
+D.1255:
+jmp D.1255
+jmp D.1255
+xor %rcx, %rcx
+D.1259:
+jmp D.1259
+jmp D.1259
+D.1263:
+jmp D.1263
+jmp D.1263
+D.1267:
+jmp D.1267
+mov %rcx, %rcx
+jmp D.1267
+D.1271:
+jmp D.1271
+add $0, %rsp
+pop %r15
+pop %r14
+pop %r13
+pop %r12
+pop %rbx
+ret

@@ -1,13 +1,13 @@
 main ()
 {
 int D.1234;
-int i;
-int j;
-i = 1;
-j = 2;
-if (i > 0) goto <D.1237>; else goto <D.1236>;
+int rV_i;
+int rV_j;
+rV_i = 1;
+rV_j = 2;
+if (rV_i > 0) goto <D.1237>; else goto <D.1236>;
 <D.1237>:
-if (j < i) goto <D.1235>; else goto <D.1236>;
+if (rV_j < rV_i) goto <D.1235>; else goto <D.1236>;
 <D.1235>:
 goto <D.1239>;
 <D.1236>:
@@ -30,14 +30,15 @@ goto <D.1250>;
 if (1 != 0) goto <D.1251>; else goto <D.1252>;
 <D.1251>:
 {
-int a;
-a = 0;
+int rV_a;
+rV_a = 0;
 }
 goto <D.1253>;
 <D.1252>:
 {
-int c;
-c = 2;
+int rV_c;
+rV_c = 2;
 }
 <D.1253>:
+return;
 }
