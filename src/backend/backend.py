@@ -1,3 +1,7 @@
+"""
+Serves as the main interface to the backend of the compiler. Performs instruction generation and register allocation.
+"""
+
 from inspect import getsourcefile
 from importlib.machinery import SourceFileLoader
 import os

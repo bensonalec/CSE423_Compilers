@@ -1,3 +1,7 @@
+"""
+This module controls the virtual stack necessary for keeping track of base pointer, stack pointer, and anything else that is pushed/popped onto the virtual stack. By using a virtual stack we can correctly determine offsets of values stored in memory that gets referenced.
+"""
+
 class stackObj():
     """
     The object that is put on the stack, contains the type of the object on the stack (register, base pointer, etc) and the name of the object

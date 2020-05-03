@@ -98,7 +98,7 @@ class semantic():
                 index = [&#34;=&#34;,&#34;call&#34;,&#34;func&#34;,&#34;goto&#34;].index(cur.Node.name)
 
                 #Catches edge case where var or func is used an self_defined name
-                if cur.Node.children == []:
+                if cur.Node.children == [] or cur.Node.parent.name == &#34;call&#34;:
                     ntv = [Node(x, cur.Scope) for x in cur.Node.children if &#39;children&#39; in x.__dict__] + ntv[1:]
                     continue
 
@@ -118,13 +118,14 @@ class semantic():
                             #get the expected type from symbol table
 
                             tblEntry = [x for x in symbols if x.name == var.name and funcname in x.scope]
-
+                            
                             if(expectedType == &#34;&#34;):
                                 if(len(tblEntry) == 1):
                                     #it is in the table already (good)
                                     topVar = tblEntry[0].name
                                     expectedType = tblEntry[0].type
                             else:
+                                
                                 if(expectedType != tblEntry[0].type):
                                     self.errors.append(&#34;Type mismatch for variable&#34; + &#34; &#34; + var.name)
                         #check function calls
@@ -142,7 +143,9 @@ class semantic():
                                 self.errors.append(&#34;Type mismatch for &#34; + topVar + &#34;, unexpected precision &#34; + x.name)
                         #one of the chidlren is an integer
                         elif(digCheck.match(x.name)):
-                            if(expectedType != &#34;int&#34;):
+                            if(expectedType != &#34;&#34; and expectedType != &#34;int&#34; and expectedType != &#34;float&#34; and expectedType != &#34;double&#34; and expectedType != &#34;short&#34; and expectedType != &#34;long&#34; and expectedType != &#34;char&#34;):
+                                print(expectedType, x.name)
+                                print(&#34;HERE&#34;)
                                 self.errors.append(&#34;Type mismatch for &#34; + topVar + &#34;, unexpected integer &#34; + x.name)
                         elif(charCheck.match(x.name)):
                             if(expectedType != &#34;char&#34;):
@@ -194,7 +197,7 @@ class semantic():
                                     self.errors.append(&#34;Type mismatch for &#34; + functionName + &#34;, unexpected precision &#34; + par)
                             #one of the chidlren is an integer
                             elif(digCheck.match(par)):
-                                if(expec != &#34;int&#34;):
+                                if(expectedType != &#34;int&#34; and expectedType != &#34;float&#34; and expectedType != &#34;double&#34; and expectedType != &#34;short&#34; and expectedType != &#34;long&#34; and expectedType != &#34;char&#34;):
                                     self.errors.append(&#34;Type mismatch for &#34; + functionName + &#34;, unexpected integer &#34; + par)
                             elif(charCheck.match(par)):
                                 if(expec != &#34;char&#34;):
@@ -361,7 +364,7 @@ class semantic():
                 index = [&#34;=&#34;,&#34;call&#34;,&#34;func&#34;,&#34;goto&#34;].index(cur.Node.name)
 
                 #Catches edge case where var or func is used an self_defined name
-                if cur.Node.children == []:
+                if cur.Node.children == [] or cur.Node.parent.name == &#34;call&#34;:
                     ntv = [Node(x, cur.Scope) for x in cur.Node.children if &#39;children&#39; in x.__dict__] + ntv[1:]
                     continue
 
@@ -381,13 +384,14 @@ class semantic():
                             #get the expected type from symbol table
 
                             tblEntry = [x for x in symbols if x.name == var.name and funcname in x.scope]
-
+                            
                             if(expectedType == &#34;&#34;):
                                 if(len(tblEntry) == 1):
                                     #it is in the table already (good)
                                     topVar = tblEntry[0].name
                                     expectedType = tblEntry[0].type
                             else:
+                                
                                 if(expectedType != tblEntry[0].type):
                                     self.errors.append(&#34;Type mismatch for variable&#34; + &#34; &#34; + var.name)
                         #check function calls
@@ -405,7 +409,9 @@ class semantic():
                                 self.errors.append(&#34;Type mismatch for &#34; + topVar + &#34;, unexpected precision &#34; + x.name)
                         #one of the chidlren is an integer
                         elif(digCheck.match(x.name)):
-                            if(expectedType != &#34;int&#34;):
+                            if(expectedType != &#34;&#34; and expectedType != &#34;int&#34; and expectedType != &#34;float&#34; and expectedType != &#34;double&#34; and expectedType != &#34;short&#34; and expectedType != &#34;long&#34; and expectedType != &#34;char&#34;):
+                                print(expectedType, x.name)
+                                print(&#34;HERE&#34;)
                                 self.errors.append(&#34;Type mismatch for &#34; + topVar + &#34;, unexpected integer &#34; + x.name)
                         elif(charCheck.match(x.name)):
                             if(expectedType != &#34;char&#34;):
@@ -457,7 +463,7 @@ class semantic():
                                     self.errors.append(&#34;Type mismatch for &#34; + functionName + &#34;, unexpected precision &#34; + par)
                             #one of the chidlren is an integer
                             elif(digCheck.match(par)):
-                                if(expec != &#34;int&#34;):
+                                if(expectedType != &#34;int&#34; and expectedType != &#34;float&#34; and expectedType != &#34;double&#34; and expectedType != &#34;short&#34; and expectedType != &#34;long&#34; and expectedType != &#34;char&#34;):
                                     self.errors.append(&#34;Type mismatch for &#34; + functionName + &#34;, unexpected integer &#34; + par)
                             elif(charCheck.match(par)):
                                 if(expec != &#34;char&#34;):
@@ -615,7 +621,7 @@ class semantic():
             index = [&#34;=&#34;,&#34;call&#34;,&#34;func&#34;,&#34;goto&#34;].index(cur.Node.name)
 
             #Catches edge case where var or func is used an self_defined name
-            if cur.Node.children == []:
+            if cur.Node.children == [] or cur.Node.parent.name == &#34;call&#34;:
                 ntv = [Node(x, cur.Scope) for x in cur.Node.children if &#39;children&#39; in x.__dict__] + ntv[1:]
                 continue
 
@@ -635,13 +641,14 @@ class semantic():
                         #get the expected type from symbol table
 
                         tblEntry = [x for x in symbols if x.name == var.name and funcname in x.scope]
-
+                        
                         if(expectedType == &#34;&#34;):
                             if(len(tblEntry) == 1):
                                 #it is in the table already (good)
                                 topVar = tblEntry[0].name
                                 expectedType = tblEntry[0].type
                         else:
+                            
                             if(expectedType != tblEntry[0].type):
                                 self.errors.append(&#34;Type mismatch for variable&#34; + &#34; &#34; + var.name)
                     #check function calls
@@ -659,7 +666,9 @@ class semantic():
                             self.errors.append(&#34;Type mismatch for &#34; + topVar + &#34;, unexpected precision &#34; + x.name)
                     #one of the chidlren is an integer
                     elif(digCheck.match(x.name)):
-                        if(expectedType != &#34;int&#34;):
+                        if(expectedType != &#34;&#34; and expectedType != &#34;int&#34; and expectedType != &#34;float&#34; and expectedType != &#34;double&#34; and expectedType != &#34;short&#34; and expectedType != &#34;long&#34; and expectedType != &#34;char&#34;):
+                            print(expectedType, x.name)
+                            print(&#34;HERE&#34;)
                             self.errors.append(&#34;Type mismatch for &#34; + topVar + &#34;, unexpected integer &#34; + x.name)
                     elif(charCheck.match(x.name)):
                         if(expectedType != &#34;char&#34;):
@@ -711,7 +720,7 @@ class semantic():
                                 self.errors.append(&#34;Type mismatch for &#34; + functionName + &#34;, unexpected precision &#34; + par)
                         #one of the chidlren is an integer
                         elif(digCheck.match(par)):
-                            if(expec != &#34;int&#34;):
+                            if(expectedType != &#34;int&#34; and expectedType != &#34;float&#34; and expectedType != &#34;double&#34; and expectedType != &#34;short&#34; and expectedType != &#34;long&#34; and expectedType != &#34;char&#34;):
                                 self.errors.append(&#34;Type mismatch for &#34; + functionName + &#34;, unexpected integer &#34; + par)
                         elif(charCheck.match(par)):
                             if(expec != &#34;char&#34;):

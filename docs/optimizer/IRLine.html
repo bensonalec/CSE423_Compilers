@@ -34,6 +34,11 @@ from inspect import getsourcefile
 from importlib.machinery import SourceFileLoader
 
 ast = SourceFileLoader(&#34;AST_builder&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/../frontend/AST_builder.py&#34;).load_module()
+asmn = SourceFileLoader(&#34;ASMNode&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/../backend/ASMNode.py&#34;).load_module()
+stk = SourceFileLoader(&#34;stack&#34;, f&#34;{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/../backend/stack.py&#34;).load_module()
+
+global tmpVarIndex
+tmpVarIndex = 0
 
 class IRLine():
     &#34;&#34;&#34;
@@ -49,6 +54,7 @@ class IRLine():
             labelList: The list of used label names
             prefix: The output prefix
         &#34;&#34;&#34;
+
         self.astNode = node
         self.treeList = []
 
@@ -101,10 +107,20 @@ class IRLine():
             self.labelList.append(failure)
 
         ns = root.list_POT()
-
+        global tmpVarIndex
         ns = [x for x in ns if x.name in self.arth_ops or x.name in self.spec_ops or x.name in self.ass_ops or x.name in self.id_ops or x.name in self.comp_ops]
         for node in ns:
             if node.name in self.comp_ops:
+
+                if node.name in self.comp_ops and node.parent != None and node.parent.name == &#34;!&#34;:
+                    # logical not means we need to reverse this comparison
+                    if node.name == &#34;&gt;&#34;: node.name = &#34;&lt;=&#34;
+                    elif node.name == &#34;&lt;&#34;: node.name = &#34;&gt;=&#34;
+                    elif node.name == &#34;==&#34;: node.name = &#34;!=&#34;
+                    elif node.name == &#34;!=&#34;: node.name = &#34;==&#34;
+                    elif node.name == &#34;&gt;=&#34;: node.name = &#34;&lt;&#34;
+                    elif node.name == &#34;&lt;=&#34;: node.name = &#34;&gt;&#34;
+
                 self.treeList.append(
                     IRIf(
                         node,
@@ -115,27 +131,30 @@ class IRLine():
                 )
 
             elif node.name in self.arth_ops:
+                tmpVarIndex += 1
                 self.treeList.append(
                     IRArth(
                         node,
                         [self.tvs.pop() for x in node.children if len(x.children) != 0],
-                        self.tvs
+                        f&#34;tV_{tmpVarIndex}&#34;
                     )
                 )
 
-                self.tvs.append(self.treeList[-1].var)
+                self.tvs.append(f&#34;tV_{tmpVarIndex}&#34;)
 
             elif node.name in self.spec_ops:
                 var = self.tvs.pop()
 
+                tmpVarIndex += 1
+
                 # Create a temporay AST to deal with storing of the current value of the variable
-                tmpNode = ast.ASTNode(&#34;=&#34;, None)
-                tmpNode.children.append(ast.ASTNode(f&#34;_{len(self.tvs)}&#34;, tmpNode))
-                tmpNode.children.append(ast.ASTNode(var, tmpNode))
+                # tmpNode = ast.ASTNode(&#34;=&#34;, None)
+                # tmpNode.children.append(ast.ASTNode(f&#34;_{tmpVarIndex}&#34;, tmpNode))
+                # tmpNode.children.append(ast.ASTNode(var, tmpNode))
 
                 self.treeList.append(
                     IRAssignment(
-                        f&#34;_{len(self.tvs)}&#34;,
+                        f&#34;tV_{tmpVarIndex}&#34;,
                         var
                     )
                 )
@@ -154,7 +173,7 @@ class IRLine():
                         )
                     )
 
-                self.tvs.append(tmpNode.children[0].name)
+                self.tvs.append(f&#34;tV_{tmpVarIndex}&#34;)
 
             elif node.name in self.ass_ops:
                 if self.ass_ops.index(node.name) == 0:
@@ -163,10 +182,10 @@ class IRLine():
                     # Case 1: Assignment is constant. ie. int i = 0
                     if len(node.children[1].children) == 0:
                         lhs = self.tvs.pop()
-                        rhs = node.children[1].name
+                        rhs = f&#34;{node.children[1].name}&#34;
                     # Case 2: Assignment is complex
                     else:
-                        lhs = node.children[0].children[len(node.children[0].children)-1].name
+                        lhs = f&#34;rV_{node.children[0].children[len(node.children[0].children)-1].name}&#34;
                         rhs = self.tvs.pop()
 
                     self.treeList.append(
@@ -186,28 +205,44 @@ class IRLine():
                     r = ast.ASTNode(node.name[:-1], p)
                     p.children.append(r)
 
+                    rc = None
+                    lc = None
+
                     # assign the variable as the left operand of the new expression
-                    r.children.append(node.children[0])
+                    if len(node.children[1].children) &gt; 0:
+                        rc = ast.ASTNode(self.tvs.pop(), r)
+                    else:
+                        rc = node.children[1]
+
+                    # assign the variable as the left operand of the new expression
+                    if len(node.children[0].children) &gt; 0:
+                        lc = ast.ASTNode(self.tvs.pop(), r)
+                    else:
+                        lc = node.children[0]
 
                     # assign the remaining operations as the right operand of the new expression
-                    r.children.append(node.children[1])
+
+                    r.children.append(lc)
+                    r.children.append(rc)
 
                     self.expression_breakdown(p, success, failure)
 
             elif node.name in self.id_ops:
                 if node.name == &#34;var&#34;:
-                    self.tvs.append(f&#34;{node.children[len(node.children)-1].name}&#34;)
+                    self.tvs.append(f&#34;rV_{node.children[len(node.children)-1].name}&#34;)
                 elif node.name == &#34;call&#34;:
                     # list of indices that correspond to the complex parameters of the function call
                     complexP = [node.children[0].children.index(x) for x in node.children[0].children if len(x.children) &gt; 0]
                     simpleP = [x for x in range(len(node.children[0].children)) if x not in complexP]
 
                     params = [self.tvs.pop() for x in range(len(node.children[0].children)) if x in complexP]
+
+                    tmpVarIndex += 1
                     self.treeList.append(
                         IRFunctionAssign(
                             node,
                             [params.pop() if x in complexP else node.children[0].children[x].name for x in range(len(node.children[0].children))],
-                            self.tvs
+                            f&#34;tV_{tmpVarIndex}&#34;
                         )
                     )
 
@@ -233,7 +268,7 @@ class IRLine():
             tmp_label = max(self.labelList)
             self.labelList.append(tmp_label+1)
             tmpNode = root.children[0]
-            if tmpNode.name not in self.comp_ops and tmpNode.name not in log_ops:
+            if tmpNode.name not in self.comp_ops and tmpNode.name not in self.log_ops:
                 tmpNode = ast.ASTNode(&#34;!=&#34;, None)
                 tmpNode.children.append(root.children[0])
                 tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
@@ -246,7 +281,10 @@ class IRLine():
             self.treeList.append(IRJump(f&#34;&lt;D.{tmp_label}&gt;&#34;))
 
             tmpNode = root.children[1]
-            if tmpNode.name not in self.comp_ops and tmpNode.name not in log_ops:
+            if tmpNode.name not in self.comp_ops and tmpNode.name not in self.log_ops and (
+                tmpNode.children == [] or
+                tmpNode.children[0].name not in self.comp_ops and tmpNode.children[0].name not in self.log_ops):
+
                 tmpNode = ast.ASTNode(&#34;!=&#34;, None)
                 tmpNode.children.append(root.children[1])
                 tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
@@ -261,7 +299,7 @@ class IRLine():
             tmp_label = max(self.labelList)
             self.labelList.append(tmp_label+1)
             tmpNode = root.children[0]
-            if tmpNode.name not in self.comp_ops and tmpNode.name not in log_ops:
+            if tmpNode.name not in self.comp_ops and tmpNode.name not in self.log_ops:
                 tmpNode = ast.ASTNode(&#34;!=&#34;, None)
                 tmpNode.children.append(root.children[0])
                 tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
@@ -274,7 +312,7 @@ class IRLine():
             self.treeList.append(IRJump(f&#34;&lt;D.{tmp_label}&gt;&#34;))
 
             tmpNode = root.children[1]
-            if tmpNode.name not in self.comp_ops and tmpNode.name not in log_ops:
+            if tmpNode.name not in self.comp_ops and tmpNode.name not in self.log_ops:
                 tmpNode = ast.ASTNode(&#34;!=&#34;, None)
                 tmpNode.children.append(root.children[1])
                 tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
@@ -311,7 +349,7 @@ class IRNode():
     def __str__(self):
         pass
 
-    def __repr__(self):
+    def asm(self):
         pass
 
 
@@ -329,8 +367,15 @@ class IRJump(IRNode):
     def __str__(self):
         return f&#34;{self.name}:&#34;
 
-    def __repr__(self):
-        pass
+    def asm(self):
+        &#34;&#34;&#34;
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRJump
+        &#34;&#34;&#34;
+        return [asmn.ASMNode(f&#34;{self.name.replace(&#39;&lt;&#39;,&#39;&#39;).replace(&#39;&gt;&#39;,&#39;&#39;)}:&#34;,None,None,dontTouch=True)]
+
 
 class IRGoTo(IRNode):
     &#34;&#34;&#34;
@@ -346,8 +391,15 @@ class IRGoTo(IRNode):
     def __str__(self):
         return f&#34;goto {self.name};&#34;
 
-    def __repr__(self):
-        pass
+    def asm(self):
+        &#34;&#34;&#34;
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRGoTo
+        &#34;&#34;&#34;
+
+        return [asmn.ASMNode(&#34;jmp&#34;, self.name.replace(&#34;&lt;&#34;,&#34;&#34;).replace(&#34;&gt;&#34;,&#34;&#34;), None, dontTouch=True)]
 
 class IRIf(IRNode):
     &#34;&#34;&#34;
@@ -398,9 +450,6 @@ class IRIf(IRNode):
 
     def __str__(self):
         return f&#34;if ({self.lhs} {self.comp} {self.rhs}) goto &lt;D.{self.success}&gt;; else goto &lt;D.{self.failure}&gt;;&#34;
-
-    def __repr__(self):
-        pass
     def fileInit(self,lhs,rhs,compOp,succ,fail):
         &#34;&#34;&#34;
         Args:
@@ -416,22 +465,101 @@ class IRIf(IRNode):
         self.success = succ
         self.failure = fail
 
+    def asm(self):
+        &#34;&#34;&#34;
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRIf
+        &#34;&#34;&#34;
+
+        l = []
+
+        i = 0
+        v1 = self.lhs
+        v2 = self.rhs
+
+        c_op = &#34;&#34;
+        j_op = &#34;&#34;
+
+        try:
+            v1 = int(v1)
+        except ValueError:
+            try:
+                v1 = float(v1)
+            except ValueError:
+                pass
+
+        try:
+            v2 = int(v2)
+        except ValueError:
+            try:
+                v2 = float(v2)
+            except ValueError:
+                pass
+
+        if v1 == v2:
+            if self.comp in [&#34;==&#34;, &#34;&lt;=&#34;, &#34;&gt;=&#34;]:
+                return [asmn.ASMNode(&#34;jmp&#34;, f&#34;D.{self.success}&#34;, None, dontTouch=True)]
+            else:
+                return [asmn.ASMNode(&#34;jmp&#34;, f&#34;D.{self.failure}&#34;, None, dontTouch=True)]
+        else:
+
+            if isinstance(v1, int):
+                if v1 == 0:
+                    l.append(asmn.ASMNode(&#34;xor&#34;, None, None, leftNeedsReg=True, rightNeedsReg=True))
+                    v1 = None
+                else:
+                    l.append(asmn.ASMNode(&#34;mov&#34;, f&#34;${v1}&#34;, None, rightNeedsReg=True))
+                    v1 = f&#34;${v1}&#34;
+            if isinstance(v2, int):
+                if v2 == 0:
+                    l.append(asmn.ASMNode(&#34;xor&#34;,  None, None, leftNeedsReg=True, rightNeedsReg=True))
+                    v2 = None
+                else:
+                    l.append(asmn.ASMNode(&#34;mov&#34;, f&#34;${v2}&#34;, None, rightNeedsReg=True))
+                    v2 = f&#34;${v2}&#34;
+
+        if self.comp == &#34;==&#34;:
+            c_op = &#34;test&#34;
+            j_op = &#34;je&#34;
+        elif self.comp == &#34;!=&#34;:
+            c_op = &#34;test&#34;
+            j_op = &#34;jne&#34;
+        elif self.comp == &#34;&lt;=&#34;:
+            c_op = &#34;cmp&#34;
+            j_op = &#34;jle&#34;
+        elif self.comp == &#34;&gt;=&#34;:
+            c_op = &#34;cmp&#34;
+            j_op = &#34;jge&#34;
+        elif self.comp == &#34;&lt;&#34;:
+            c_op = &#34;cmp&#34;
+            j_op = &#34;jl&#34;
+        elif self.comp == &#34;&gt;&#34;:
+            c_op = &#34;cmp&#34;
+            j_op = &#34;jg&#34;
+        l.append(asmn.ASMNode(c_op, v1, v2, leftNeedsReg=True, rightNeedsReg=True))
+        l.append(asmn.ASMNode(j_op, f&#34;D.{self.success}&#34;, None, dontTouch=True))
+        l.append(asmn.ASMNode(&#34;jmp&#34;, f&#34;D.{self.failure}&#34;, None,dontTouch = True))
+
+        return l
+
 class IRArth(IRNode):
     &#34;&#34;&#34;
     Intermediate representation node for an arithmetic/assignment operation.
     &#34;&#34;&#34;
-    def __init__(self, node, ops, tvs):
+    def __init__(self, node, ops, varName):
         &#34;&#34;&#34;
         Args:
             node: The AST node for the arithmetical expression
             ops: The potential complex operands for the expression
             tvs: The tempoary variable stack
         &#34;&#34;&#34;
-        if(node == None and ops == None and tvs == None):
+        if(node == None and ops == None):
             pass
         else:
             self.node = node
-            self.var = f&#34;_{len(tvs)}&#34;
+            self.var = varName
 
             self.operator = node.name
             self.lhs = None
@@ -456,10 +584,9 @@ class IRArth(IRNode):
                 elif pos == [1]:
                     self.lhs = node.children[0].name
                     self.rhs = ops[0]
-                # Case 5: Its a unary operator
+                # Case 5: Its a unary operator.
                 elif pos == []:
                     self.lhs = ops[0] if ops != [] else node.children[0].name
-
 
     def __str__(self):
         if self.rhs:
@@ -467,8 +594,156 @@ class IRArth(IRNode):
         else:
             return f&#34;{self.var} = {self.operator}{self.lhs};&#34;
 
-    def __repr__(self):
-        pass
+    def asm(self):
+        &#34;&#34;&#34;
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRArht node
+        &#34;&#34;&#34;
+
+        l = []
+
+        i = 0
+        spec_op = False
+
+        v1 = self.lhs
+        v2 = self.rhs
+
+        asm_op = &#34;&#34;
+
+        try:
+            v1 = int(v1)
+        except ValueError:
+            try:
+                v1 = float(v1)
+            except ValueError:
+                pass
+
+        if v2:
+            try:
+                v2 = int(v2)
+            except ValueError:
+                try:
+                    v2 = float(v2)
+                except ValueError:
+                    pass
+
+        v1InReg = False
+        v2InReg = False
+
+        if isinstance(v1, int):
+            v1 = f&#34;${v1}&#34;
+        if isinstance(v2, int):
+            if v2 == 0:
+                l.append(asmn.ASMNode(&#34;xor&#34;,  self.var,  self.var, leftNeedsReg=True, rightNeedsReg=True))
+            v2 = f&#34;${v2}&#34;
+
+        if self.operator == &#34;+&#34;:
+            asm_op = &#34;add&#34;
+            if v2 == None:
+                l.extend([
+                    asmn.ASMNode(&#34;mov&#34;, v1, self.var, rightNeedsReg=True),
+                ])
+                spec_op = True
+        elif self.operator == &#34;-&#34;:
+            if v2 == None:
+                l.extend([
+                    asmn.ASMNode(&#34;mov&#34;, v1, self.var, rightNeedsReg=True),
+                    asmn.ASMNode(&#34;neg&#34;, self.var, None, leftNeedsReg=True),
+                ])
+                spec_op = True
+            else:
+                l.extend([
+                    asmn.ASMNode(&#34;mov&#34;, v1, self.var),
+                    asmn.ASMNode(&#34;sub&#34;, v2, self.var)
+                ])
+                spec_op = True
+        elif self.operator == &#34;*&#34;:
+            asm_op = &#34;imul&#34;
+            if v1.startswith(&#34;$&#34;):
+                l.extend([
+                    asmn.ASMNode(&#34;mov&#34;,v2,self.var),
+                    asmn.ASMNode(&#34;imul&#34;,self.var,self.var,aux=v1)
+                ])
+                spec_op = True
+        elif self.operator == &#34;/&#34;:
+            if v2.startswith(&#34;$&#34;):
+                l.append(asmn.ASMNode(&#34;mov&#34;, v2, None, rightNeedsReg=True))
+            l.extend([
+                asmn.ASMNode(&#34;xor&#34;, &#34;rdx&#34;, &#34;rdx&#34;, dontTouch=True),
+                asmn.ASMNode(&#34;mov&#34;, v1, &#34;rax&#34;),
+                asmn.ASMNode(&#34;idiv&#34;, v2, None,leftNeedsReg=True),
+                asmn.ASMNode(&#34;mov&#34;, &#34;rax&#34;, self.var)
+            ])
+            spec_op = True
+        elif self.operator == &#34;%&#34;:
+            if v2.startswith(&#34;$&#34;):
+                l.append(asmn.ASMNode(&#34;mov&#34;, v2, None, rightNeedsReg=True))
+            l.extend([
+                asmn.ASMNode(&#34;xor&#34;, &#34;rdx&#34;, &#34;rdx&#34;, dontTouch=True),
+                asmn.ASMNode(&#34;mov&#34;, v1, &#34;rax&#34;),
+                asmn.ASMNode(&#34;idiv&#34;, v2, None,leftNeedsReg=True),
+                asmn.ASMNode(&#34;mov&#34;, &#34;rdx&#34;, self.var)
+            ])
+            spec_op = True
+        elif self.operator == &#34;&lt;&lt;&#34;:
+            asm_op = &#34;sal&#34;
+            l.append(asmn.ASMNode(&#34;mov&#34;, v1, self.var, rightNeedsReg=True))
+            if v2.startswith(&#34;$&#34;):
+                l.append(asmn.ASMNode(&#34;sal&#34;, v2, self.var))
+            else:
+                l.extend([
+                    asmn.ASMNode(&#34;mov&#34;, v2, &#34;rcx&#34;, dontTouch=True),
+                    asmn.ASMNode(&#34;sal&#34;, &#34;cl&#34;, self.var)
+                ])
+            spec_op = True
+        elif self.operator == &#34;&gt;&gt;&#34;:
+            asm_op = &#34;sar&#34;
+            l.append(asmn.ASMNode(&#34;mov&#34;, v1, self.var, rightNeedsReg=True))
+            if v2.startswith(&#34;$&#34;):
+                l.append(asmn.ASMNode(&#34;sar&#34;, v2, self.var))
+            else:
+                l.extend([
+                    asmn.ASMNode(&#34;mov&#34;, v2, &#34;rcx&#34;, dontTouch=True),
+                    asmn.ASMNode(&#34;sar&#34;, &#34;cl&#34;, self.var)
+                ])
+            spec_op = True
+        elif self.operator == &#34;|&#34;:
+            asm_op = &#34;or&#34;
+        elif self.operator == &#34;&amp;&#34;:
+            asm_op = &#34;and&#34;
+        elif self.operator == &#34;^&#34;:
+            asm_op = &#34;xor&#34;
+        elif self.operator == &#34;!&#34;:
+            l.extend([
+                asmn.ASMNode(&#34;mov&#34;, v1, self.var, rightNeedsReg=True),
+                asmn.ASMNode(&#34;xor&#34;, &#34;rax&#34;, &#34;rax&#34;, dontTouch=True),
+                asmn.ASMNode(&#34;test&#34;, self.var, self.var, leftNeedsReg=True, rightNeedsReg=True),
+                asmn.ASMNode(&#34;sete&#34;, &#34;al&#34;, None, dontTouch=True),
+                asmn.ASMNode(&#34;mov&#34;, &#34;rax&#34;, self.var, rightNeedsReg=True)
+            ])
+            spec_op = True
+        elif self.operator == &#34;~&#34;:
+            l.extend([
+                asmn.ASMNode(&#34;mov&#34;, v1, self.var, rightNeedsReg=True),
+                asmn.ASMNode(&#34;not&#34;, self.var, None, leftNeedsReg=True),
+                ])
+            spec_op = True
+
+        if not spec_op:
+
+            if v2 != self.var:
+                l.append(
+                    asmn.ASMNode(&#34;mov&#34;, v2, self.var, rightNeedsReg=True)
+                )
+                v2 = self.var
+
+            l.extend([
+                asmn.ASMNode(asm_op, v1, v2, rightNeedsReg=True),
+            ])
+
+        return l
 
     def fileInit(self,leftHand,op,rightHand,varName):
         &#34;&#34;&#34;
@@ -495,9 +770,25 @@ class IRSpecial(IRNode):
         &#34;&#34;&#34;
         self.node = node
         self.var = var
+        self.operation = self.node.name[0]
+
 
     def __str__(self):
-        return f&#34;{self.var} = {self.var} {self.node.name[0]} 1;&#34;
+        return f&#34;{self.var} = {self.var} {self.operation} 1;&#34;
+
+    def asm(self):
+        &#34;&#34;&#34;
+        Constructs assembly string of a special (i.e. inc/dec) instruction
+        Returns:
+            List of necessary ASMNodes representing assembly code.
+        &#34;&#34;&#34;
+
+        if self.operation == &#34;+&#34;:
+            return [asmn.ASMNode(&#34;inc&#34;, self.var, None)]
+        elif self.operation == &#39;-&#39;:
+            return [asmn.ASMNode(&#34;dec&#34;, self.var, None)]
+
+
 
 class IRAssignment(IRNode):
     &#34;&#34;&#34;
@@ -515,27 +806,95 @@ class IRAssignment(IRNode):
     def __str__(self):
         return f&#34;{self.lhs} = {self.rhs};&#34;
 
+    def asm(self):
+        &#34;&#34;&#34;
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRAssignment
+        &#34;&#34;&#34;
+        l = []
+
+        op = &#34;mov&#34;
+        v = self.rhs
+
+        try:
+            v = int(self.rhs)
+
+            if v == 0:
+                return [asmn.ASMNode(&#34;xor&#34;, self.lhs, self.lhs)]
+            else:
+                return [asmn.ASMNode(&#34;mov&#34;, f&#34;${v}&#34;, self.lhs)]
+        except ValueError:
+            try:
+                v = float(self.rhs)
+                modif = &#34;$&#34;
+            except ValueError:
+                return [asmn.ASMNode(op, f&#34;{v}&#34;, self.lhs,leftNeedsReg=True, rightNeedsReg=True)]
+                pass
+            # TODO: Understand how floating point registers work while not going bald like ben.
+        return [asmn.ASMNode(op, f&#34;{v}&#34;, self.lhs)]
+
 class IRFunctionAssign(IRNode):
     &#34;&#34;&#34;
     Intermediate representation node for a function call assignment.
     &#34;&#34;&#34;
-    def __init__(self, node, params, tvs):
+    def __init__(self, node, params, varName):
         &#34;&#34;&#34;
         Args:
             node: The AST node for the funtion
             params: A list of parameters for the function call
             tvs: The tempoary variable stack
         &#34;&#34;&#34;
-        if(node == None and params == None and tvs == None):
+        if(node == None and params == None):
             pass
         else:
             self.node = node
             self.name = self.node.children[0].name
             self.params = params
-            self.lhs = f&#34;_{len(tvs)}&#34;
+            self.lhs = varName
 
     def __str__(self):
         return f&#34;{self.lhs} = {self.name}({&#39;, &#39;.join(self.params)});&#34;
+
+    def asm(self):
+        &#34;&#34;&#34;
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRFunctionAssign
+        &#34;&#34;&#34;
+        asm_calls = []
+
+        fourByteRegisters = [&#34;rdi&#34;, &#34;rsi&#34;, &#34;rdx&#34;, &#34;rcx&#34;, &#34;r8&#34;, &#34;r9&#34;]
+
+        push_param = [x for i, x in enumerate(self.params) if i &gt;= 6]
+        reg_param = [x for i, x in enumerate(self.params) if i &lt; 6]
+        reg_param.reverse()
+
+        for x in push_param:
+            try:
+                x = f&#34;${int(x)}&#34;
+            except ValueError:
+                pass
+            asm_calls.append(asmn.ASMNode(&#34;push&#34;, x, None, leftNeedsReg=True if not x.startswith(&#34;$&#34;) else False, dontTouch=True))
+
+        while len(fourByteRegisters) &gt; len(reg_param):
+            fourByteRegisters.pop()
+
+        for x in reg_param:
+            try:
+                x = f&#34;${int(x)}&#34;
+            except ValueError:
+                pass
+            asm_calls.append(asmn.ASMNode(&#34;mov&#34;, x, fourByteRegisters.pop(), regIsParam=True, leftNeedsReg=True if not x.startswith(&#34;$&#34;) else False))
+
+        asm_calls.extend([
+            asmn.ASMNode(&#34;call&#34;, self.name, None, dontTouch=True),
+            asmn.ASMNode(&#34;mov&#34;, &#34;rax&#34;, self.lhs)
+        ])
+
+        return asm_calls
 
     def LineFromFile(self,lhs,func_name,params):
         &#34;&#34;&#34;
@@ -563,7 +922,48 @@ class IRFunctionDecl(IRNode):
         self.params = params
 
     def __str__(self):
-            return f&#34;{self.name} ({self.params})&#34;
+        return f&#34;{self.name} ({&#39;, &#39;.join(self.params)})&#34;
+
+    def asm(self):
+        &#34;&#34;&#34;
+        Constructs assembly Nodes of a function declaration
+
+        Returns:
+            List of ASM Nodes representing assembly code.
+        &#34;&#34;&#34;
+
+        # value: register name
+        # key: used/unused (1/0)
+        fourByteRegisters = {&#34;rdi&#34;: 0, &#34;rsi&#34;: 0, &#34;rdx&#34;: 0, &#34;rcx&#34;: 0, &#34;r8&#34;: 0, &#34;r9&#34;: 0}
+        eightByteRegisters = {&#34;XMM0&#34;: 0, &#34;XMM1&#34;: 0, &#34;XMM2&#34;: 0, &#34;XMM3&#34;: 0, &#34;XMM4&#34;: 0, &#34;XMM5&#34;: 0, &#34;XMM6&#34;: 0, &#34;XMM7&#34;: 0}
+
+        asmLs = []
+
+        regdir = {}
+        stack = []
+
+        for idx, var in enumerate(self.params):
+            if idx &lt; 6:
+                source_reg = [x for x, y in fourByteRegisters.items() if y == 0][0]
+                fourByteRegisters[source_reg] = 1
+
+                regdir[source_reg] = var.split(&#39; &#39;)[-1]
+            else:
+                stack.append(stk.stackObj(Type=&#34;KnownVar&#34;, Name=var.split(&#39; &#39;)[-1]))
+
+        asmLs.extend([
+            asmn.ASMNode(None, None, None,boilerPlate=f&#34;.globl\t{self.name}&#34;),
+            asmn.ASMNode(None, None, None,boilerPlate=f&#34;.type\t{self.name},\t@function&#34;),
+            asmn.ASMNode(f&#34;{self.name}:&#34;,None,None, functionDecl=True, regDir=regdir, stack=stack),
+            asmn.ASMNode(&#34;mov&#34;, &#34;rsp&#34;, &#34;rbp&#34;, dontTouch=True),
+            asmn.ASMNode(&#34;push&#34;, &#34;rbx&#34;, None, dontTouch=True),
+            asmn.ASMNode(&#34;push&#34;, &#34;r12&#34;, None, dontTouch=True),
+            asmn.ASMNode(&#34;push&#34;, &#34;r13&#34;, None, dontTouch=True),
+            asmn.ASMNode(&#34;push&#34;, &#34;r14&#34;, None, dontTouch=True),
+            asmn.ASMNode(&#34;push&#34;, &#34;r15&#34;, None, dontTouch=True),
+        ])
+
+        return asmLs
 
 class IRReturn(IRNode):
     &#34;&#34;&#34;
@@ -582,22 +982,54 @@ class IRReturn(IRNode):
         else:
             return f&#34;return;&#34;
 
+    def asm(self):
+        &#34;&#34;&#34;
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRReturn
+        &#34;&#34;&#34;
+
+        asml = []
+        if self.value:
+            asml.append(asmn.ASMNode(&#34;mov&#34;, self.value, &#34;rax&#34;))
+        asml.extend([
+            asmn.ASMNode(&#34;ret&#34;, None, None, dontTouch=True)
+        ])
+
+        return asml
+
 class IRBracket(IRNode):
     &#34;&#34;&#34;
     Intermediate representation node for a bracket
     &#34;&#34;&#34;
-    def __init__(self, opening):
+    def __init__(self, opening, functionDecl=False):
         &#34;&#34;&#34;
         Args:
             opening: Either True or False depending on if bracket is open/close
         &#34;&#34;&#34;
         self.opening = opening
+        self.functionDecl = functionDecl
 
     def __str__(self):
         if self.opening == True:
             return &#34;{&#34;
         else:
             return &#34;}&#34;
+
+    def asm(self):
+        &#34;&#34;&#34;
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRBracket
+        &#34;&#34;&#34;
+
+        if self.functionDecl:
+            return []
+        else:
+            return []
+        # TODO: determine how many local variables exist within the scope in order to move the stack pointer.
 
 class IRVariableInit(IRNode):
     &#34;&#34;&#34;
@@ -617,7 +1049,17 @@ class IRVariableInit(IRNode):
         self.var = var
 
     def __str__(self):
-        return f&#34;{self.modifiers}{self.typ} {self.var};&#34;</code></pre>
+        return f&#34;{self.modifiers}{self.typ} {self.var};&#34;
+
+    def asm(self):
+        &#34;&#34;&#34;
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRVariableInit
+        &#34;&#34;&#34;
+
+        return []</code></pre>
 </details>
 </section>
 <section>
@@ -631,7 +1073,7 @@ class IRVariableInit(IRNode):
 <dl>
 <dt id="src.optimizer.IRLine.IRArth"><code class="flex name class">
 <span>class <span class="ident">IRArth</span></span>
-<span>(</span><span>node, ops, tvs)</span>
+<span>(</span><span>node, ops, varName)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Intermediate representation node for an arithmetic/assignment operation.</p>
@@ -652,18 +1094,18 @@ class IRVariableInit(IRNode):
     &#34;&#34;&#34;
     Intermediate representation node for an arithmetic/assignment operation.
     &#34;&#34;&#34;
-    def __init__(self, node, ops, tvs):
+    def __init__(self, node, ops, varName):
         &#34;&#34;&#34;
         Args:
             node: The AST node for the arithmetical expression
             ops: The potential complex operands for the expression
             tvs: The tempoary variable stack
         &#34;&#34;&#34;
-        if(node == None and ops == None and tvs == None):
+        if(node == None and ops == None):
             pass
         else:
             self.node = node
-            self.var = f&#34;_{len(tvs)}&#34;
+            self.var = varName
 
             self.operator = node.name
             self.lhs = None
@@ -688,10 +1130,9 @@ class IRVariableInit(IRNode):
                 elif pos == [1]:
                     self.lhs = node.children[0].name
                     self.rhs = ops[0]
-                # Case 5: Its a unary operator
+                # Case 5: Its a unary operator.
                 elif pos == []:
                     self.lhs = ops[0] if ops != [] else node.children[0].name
-
 
     def __str__(self):
         if self.rhs:
@@ -699,8 +1140,156 @@ class IRVariableInit(IRNode):
         else:
             return f&#34;{self.var} = {self.operator}{self.lhs};&#34;
 
-    def __repr__(self):
-        pass
+    def asm(self):
+        &#34;&#34;&#34;
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRArht node
+        &#34;&#34;&#34;
+
+        l = []
+
+        i = 0
+        spec_op = False
+
+        v1 = self.lhs
+        v2 = self.rhs
+
+        asm_op = &#34;&#34;
+
+        try:
+            v1 = int(v1)
+        except ValueError:
+            try:
+                v1 = float(v1)
+            except ValueError:
+                pass
+
+        if v2:
+            try:
+                v2 = int(v2)
+            except ValueError:
+                try:
+                    v2 = float(v2)
+                except ValueError:
+                    pass
+
+        v1InReg = False
+        v2InReg = False
+
+        if isinstance(v1, int):
+            v1 = f&#34;${v1}&#34;
+        if isinstance(v2, int):
+            if v2 == 0:
+                l.append(asmn.ASMNode(&#34;xor&#34;,  self.var,  self.var, leftNeedsReg=True, rightNeedsReg=True))
+            v2 = f&#34;${v2}&#34;
+
+        if self.operator == &#34;+&#34;:
+            asm_op = &#34;add&#34;
+            if v2 == None:
+                l.extend([
+                    asmn.ASMNode(&#34;mov&#34;, v1, self.var, rightNeedsReg=True),
+                ])
+                spec_op = True
+        elif self.operator == &#34;-&#34;:
+            if v2 == None:
+                l.extend([
+                    asmn.ASMNode(&#34;mov&#34;, v1, self.var, rightNeedsReg=True),
+                    asmn.ASMNode(&#34;neg&#34;, self.var, None, leftNeedsReg=True),
+                ])
+                spec_op = True
+            else:
+                l.extend([
+                    asmn.ASMNode(&#34;mov&#34;, v1, self.var),
+                    asmn.ASMNode(&#34;sub&#34;, v2, self.var)
+                ])
+                spec_op = True
+        elif self.operator == &#34;*&#34;:
+            asm_op = &#34;imul&#34;
+            if v1.startswith(&#34;$&#34;):
+                l.extend([
+                    asmn.ASMNode(&#34;mov&#34;,v2,self.var),
+                    asmn.ASMNode(&#34;imul&#34;,self.var,self.var,aux=v1)
+                ])
+                spec_op = True
+        elif self.operator == &#34;/&#34;:
+            if v2.startswith(&#34;$&#34;):
+                l.append(asmn.ASMNode(&#34;mov&#34;, v2, None, rightNeedsReg=True))
+            l.extend([
+                asmn.ASMNode(&#34;xor&#34;, &#34;rdx&#34;, &#34;rdx&#34;, dontTouch=True),
+                asmn.ASMNode(&#34;mov&#34;, v1, &#34;rax&#34;),
+                asmn.ASMNode(&#34;idiv&#34;, v2, None,leftNeedsReg=True),
+                asmn.ASMNode(&#34;mov&#34;, &#34;rax&#34;, self.var)
+            ])
+            spec_op = True
+        elif self.operator == &#34;%&#34;:
+            if v2.startswith(&#34;$&#34;):
+                l.append(asmn.ASMNode(&#34;mov&#34;, v2, None, rightNeedsReg=True))
+            l.extend([
+                asmn.ASMNode(&#34;xor&#34;, &#34;rdx&#34;, &#34;rdx&#34;, dontTouch=True),
+                asmn.ASMNode(&#34;mov&#34;, v1, &#34;rax&#34;),
+                asmn.ASMNode(&#34;idiv&#34;, v2, None,leftNeedsReg=True),
+                asmn.ASMNode(&#34;mov&#34;, &#34;rdx&#34;, self.var)
+            ])
+            spec_op = True
+        elif self.operator == &#34;&lt;&lt;&#34;:
+            asm_op = &#34;sal&#34;
+            l.append(asmn.ASMNode(&#34;mov&#34;, v1, self.var, rightNeedsReg=True))
+            if v2.startswith(&#34;$&#34;):
+                l.append(asmn.ASMNode(&#34;sal&#34;, v2, self.var))
+            else:
+                l.extend([
+                    asmn.ASMNode(&#34;mov&#34;, v2, &#34;rcx&#34;, dontTouch=True),
+                    asmn.ASMNode(&#34;sal&#34;, &#34;cl&#34;, self.var)
+                ])
+            spec_op = True
+        elif self.operator == &#34;&gt;&gt;&#34;:
+            asm_op = &#34;sar&#34;
+            l.append(asmn.ASMNode(&#34;mov&#34;, v1, self.var, rightNeedsReg=True))
+            if v2.startswith(&#34;$&#34;):
+                l.append(asmn.ASMNode(&#34;sar&#34;, v2, self.var))
+            else:
+                l.extend([
+                    asmn.ASMNode(&#34;mov&#34;, v2, &#34;rcx&#34;, dontTouch=True),
+                    asmn.ASMNode(&#34;sar&#34;, &#34;cl&#34;, self.var)
+                ])
+            spec_op = True
+        elif self.operator == &#34;|&#34;:
+            asm_op = &#34;or&#34;
+        elif self.operator == &#34;&amp;&#34;:
+            asm_op = &#34;and&#34;
+        elif self.operator == &#34;^&#34;:
+            asm_op = &#34;xor&#34;
+        elif self.operator == &#34;!&#34;:
+            l.extend([
+                asmn.ASMNode(&#34;mov&#34;, v1, self.var, rightNeedsReg=True),
+                asmn.ASMNode(&#34;xor&#34;, &#34;rax&#34;, &#34;rax&#34;, dontTouch=True),
+                asmn.ASMNode(&#34;test&#34;, self.var, self.var, leftNeedsReg=True, rightNeedsReg=True),
+                asmn.ASMNode(&#34;sete&#34;, &#34;al&#34;, None, dontTouch=True),
+                asmn.ASMNode(&#34;mov&#34;, &#34;rax&#34;, self.var, rightNeedsReg=True)
+            ])
+            spec_op = True
+        elif self.operator == &#34;~&#34;:
+            l.extend([
+                asmn.ASMNode(&#34;mov&#34;, v1, self.var, rightNeedsReg=True),
+                asmn.ASMNode(&#34;not&#34;, self.var, None, leftNeedsReg=True),
+                ])
+            spec_op = True
+
+        if not spec_op:
+
+            if v2 != self.var:
+                l.append(
+                    asmn.ASMNode(&#34;mov&#34;, v2, self.var, rightNeedsReg=True)
+                )
+                v2 = self.var
+
+            l.extend([
+                asmn.ASMNode(asm_op, v1, v2, rightNeedsReg=True),
+            ])
+
+        return l
 
     def fileInit(self,leftHand,op,rightHand,varName):
         &#34;&#34;&#34;
@@ -721,6 +1310,172 @@ class IRVariableInit(IRNode):
 </ul>
 <h3>Methods</h3>
 <dl>
+<dt id="src.optimizer.IRLine.IRArth.asm"><code class="name flex">
+<span>def <span class="ident">asm</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Generates assembly representation of this node, using the variable names instead of registers</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>The</code> <code>assembly</code> <code>representation</code> of <code>an</code> <code>IRArht</code> <code>node</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def asm(self):
+    &#34;&#34;&#34;
+    Generates assembly representation of this node, using the variable names instead of registers
+
+    Returns:
+        The assembly representation of an IRArht node
+    &#34;&#34;&#34;
+
+    l = []
+
+    i = 0
+    spec_op = False
+
+    v1 = self.lhs
+    v2 = self.rhs
+
+    asm_op = &#34;&#34;
+
+    try:
+        v1 = int(v1)
+    except ValueError:
+        try:
+            v1 = float(v1)
+        except ValueError:
+            pass
+
+    if v2:
+        try:
+            v2 = int(v2)
+        except ValueError:
+            try:
+                v2 = float(v2)
+            except ValueError:
+                pass
+
+    v1InReg = False
+    v2InReg = False
+
+    if isinstance(v1, int):
+        v1 = f&#34;${v1}&#34;
+    if isinstance(v2, int):
+        if v2 == 0:
+            l.append(asmn.ASMNode(&#34;xor&#34;,  self.var,  self.var, leftNeedsReg=True, rightNeedsReg=True))
+        v2 = f&#34;${v2}&#34;
+
+    if self.operator == &#34;+&#34;:
+        asm_op = &#34;add&#34;
+        if v2 == None:
+            l.extend([
+                asmn.ASMNode(&#34;mov&#34;, v1, self.var, rightNeedsReg=True),
+            ])
+            spec_op = True
+    elif self.operator == &#34;-&#34;:
+        if v2 == None:
+            l.extend([
+                asmn.ASMNode(&#34;mov&#34;, v1, self.var, rightNeedsReg=True),
+                asmn.ASMNode(&#34;neg&#34;, self.var, None, leftNeedsReg=True),
+            ])
+            spec_op = True
+        else:
+            l.extend([
+                asmn.ASMNode(&#34;mov&#34;, v1, self.var),
+                asmn.ASMNode(&#34;sub&#34;, v2, self.var)
+            ])
+            spec_op = True
+    elif self.operator == &#34;*&#34;:
+        asm_op = &#34;imul&#34;
+        if v1.startswith(&#34;$&#34;):
+            l.extend([
+                asmn.ASMNode(&#34;mov&#34;,v2,self.var),
+                asmn.ASMNode(&#34;imul&#34;,self.var,self.var,aux=v1)
+            ])
+            spec_op = True
+    elif self.operator == &#34;/&#34;:
+        if v2.startswith(&#34;$&#34;):
+            l.append(asmn.ASMNode(&#34;mov&#34;, v2, None, rightNeedsReg=True))
+        l.extend([
+            asmn.ASMNode(&#34;xor&#34;, &#34;rdx&#34;, &#34;rdx&#34;, dontTouch=True),
+            asmn.ASMNode(&#34;mov&#34;, v1, &#34;rax&#34;),
+            asmn.ASMNode(&#34;idiv&#34;, v2, None,leftNeedsReg=True),
+            asmn.ASMNode(&#34;mov&#34;, &#34;rax&#34;, self.var)
+        ])
+        spec_op = True
+    elif self.operator == &#34;%&#34;:
+        if v2.startswith(&#34;$&#34;):
+            l.append(asmn.ASMNode(&#34;mov&#34;, v2, None, rightNeedsReg=True))
+        l.extend([
+            asmn.ASMNode(&#34;xor&#34;, &#34;rdx&#34;, &#34;rdx&#34;, dontTouch=True),
+            asmn.ASMNode(&#34;mov&#34;, v1, &#34;rax&#34;),
+            asmn.ASMNode(&#34;idiv&#34;, v2, None,leftNeedsReg=True),
+            asmn.ASMNode(&#34;mov&#34;, &#34;rdx&#34;, self.var)
+        ])
+        spec_op = True
+    elif self.operator == &#34;&lt;&lt;&#34;:
+        asm_op = &#34;sal&#34;
+        l.append(asmn.ASMNode(&#34;mov&#34;, v1, self.var, rightNeedsReg=True))
+        if v2.startswith(&#34;$&#34;):
+            l.append(asmn.ASMNode(&#34;sal&#34;, v2, self.var))
+        else:
+            l.extend([
+                asmn.ASMNode(&#34;mov&#34;, v2, &#34;rcx&#34;, dontTouch=True),
+                asmn.ASMNode(&#34;sal&#34;, &#34;cl&#34;, self.var)
+            ])
+        spec_op = True
+    elif self.operator == &#34;&gt;&gt;&#34;:
+        asm_op = &#34;sar&#34;
+        l.append(asmn.ASMNode(&#34;mov&#34;, v1, self.var, rightNeedsReg=True))
+        if v2.startswith(&#34;$&#34;):
+            l.append(asmn.ASMNode(&#34;sar&#34;, v2, self.var))
+        else:
+            l.extend([
+                asmn.ASMNode(&#34;mov&#34;, v2, &#34;rcx&#34;, dontTouch=True),
+                asmn.ASMNode(&#34;sar&#34;, &#34;cl&#34;, self.var)
+            ])
+        spec_op = True
+    elif self.operator == &#34;|&#34;:
+        asm_op = &#34;or&#34;
+    elif self.operator == &#34;&amp;&#34;:
+        asm_op = &#34;and&#34;
+    elif self.operator == &#34;^&#34;:
+        asm_op = &#34;xor&#34;
+    elif self.operator == &#34;!&#34;:
+        l.extend([
+            asmn.ASMNode(&#34;mov&#34;, v1, self.var, rightNeedsReg=True),
+            asmn.ASMNode(&#34;xor&#34;, &#34;rax&#34;, &#34;rax&#34;, dontTouch=True),
+            asmn.ASMNode(&#34;test&#34;, self.var, self.var, leftNeedsReg=True, rightNeedsReg=True),
+            asmn.ASMNode(&#34;sete&#34;, &#34;al&#34;, None, dontTouch=True),
+            asmn.ASMNode(&#34;mov&#34;, &#34;rax&#34;, self.var, rightNeedsReg=True)
+        ])
+        spec_op = True
+    elif self.operator == &#34;~&#34;:
+        l.extend([
+            asmn.ASMNode(&#34;mov&#34;, v1, self.var, rightNeedsReg=True),
+            asmn.ASMNode(&#34;not&#34;, self.var, None, leftNeedsReg=True),
+            ])
+        spec_op = True
+
+    if not spec_op:
+
+        if v2 != self.var:
+            l.append(
+                asmn.ASMNode(&#34;mov&#34;, v2, self.var, rightNeedsReg=True)
+            )
+            v2 = self.var
+
+        l.extend([
+            asmn.ASMNode(asm_op, v1, v2, rightNeedsReg=True),
+        ])
+
+    return l</code></pre>
+</details>
+</dd>
 <dt id="src.optimizer.IRLine.IRArth.fileInit"><code class="name flex">
 <span>def <span class="ident">fileInit</span></span>(<span>self, leftHand, op, rightHand, varName)</span>
 </code></dt>
@@ -787,16 +1542,92 @@ class IRVariableInit(IRNode):
         self.rhs = rhs
 
     def __str__(self):
-        return f&#34;{self.lhs} = {self.rhs};&#34;</code></pre>
+        return f&#34;{self.lhs} = {self.rhs};&#34;
+
+    def asm(self):
+        &#34;&#34;&#34;
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRAssignment
+        &#34;&#34;&#34;
+        l = []
+
+        op = &#34;mov&#34;
+        v = self.rhs
+
+        try:
+            v = int(self.rhs)
+
+            if v == 0:
+                return [asmn.ASMNode(&#34;xor&#34;, self.lhs, self.lhs)]
+            else:
+                return [asmn.ASMNode(&#34;mov&#34;, f&#34;${v}&#34;, self.lhs)]
+        except ValueError:
+            try:
+                v = float(self.rhs)
+                modif = &#34;$&#34;
+            except ValueError:
+                return [asmn.ASMNode(op, f&#34;{v}&#34;, self.lhs,leftNeedsReg=True, rightNeedsReg=True)]
+                pass
+            # TODO: Understand how floating point registers work while not going bald like ben.
+        return [asmn.ASMNode(op, f&#34;{v}&#34;, self.lhs)]</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="src.optimizer.IRLine.IRNode" href="#src.optimizer.IRLine.IRNode">IRNode</a></li>
 </ul>
+<h3>Methods</h3>
+<dl>
+<dt id="src.optimizer.IRLine.IRAssignment.asm"><code class="name flex">
+<span>def <span class="ident">asm</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Generates assembly representation of this node, using the variable names instead of registers</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>The</code> <code>assembly</code> <code>representation</code> of <code>an</code> <a title="src.optimizer.IRLine.IRAssignment" href="#src.optimizer.IRLine.IRAssignment"><code>IRAssignment</code></a></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def asm(self):
+    &#34;&#34;&#34;
+    Generates assembly representation of this node, using the variable names instead of registers
+
+    Returns:
+        The assembly representation of an IRAssignment
+    &#34;&#34;&#34;
+    l = []
+
+    op = &#34;mov&#34;
+    v = self.rhs
+
+    try:
+        v = int(self.rhs)
+
+        if v == 0:
+            return [asmn.ASMNode(&#34;xor&#34;, self.lhs, self.lhs)]
+        else:
+            return [asmn.ASMNode(&#34;mov&#34;, f&#34;${v}&#34;, self.lhs)]
+    except ValueError:
+        try:
+            v = float(self.rhs)
+            modif = &#34;$&#34;
+        except ValueError:
+            return [asmn.ASMNode(op, f&#34;{v}&#34;, self.lhs,leftNeedsReg=True, rightNeedsReg=True)]
+            pass
+        # TODO: Understand how floating point registers work while not going bald like ben.
+    return [asmn.ASMNode(op, f&#34;{v}&#34;, self.lhs)]</code></pre>
+</details>
+</dd>
+</dl>
 </dd>
 <dt id="src.optimizer.IRLine.IRBracket"><code class="flex name class">
 <span>class <span class="ident">IRBracket</span></span>
-<span>(</span><span>opening)</span>
+<span>(</span><span>opening, functionDecl=False)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Intermediate representation node for a bracket</p>
@@ -813,27 +1644,72 @@ class IRVariableInit(IRNode):
     &#34;&#34;&#34;
     Intermediate representation node for a bracket
     &#34;&#34;&#34;
-    def __init__(self, opening):
+    def __init__(self, opening, functionDecl=False):
         &#34;&#34;&#34;
         Args:
             opening: Either True or False depending on if bracket is open/close
         &#34;&#34;&#34;
         self.opening = opening
+        self.functionDecl = functionDecl
 
     def __str__(self):
         if self.opening == True:
             return &#34;{&#34;
         else:
-            return &#34;}&#34;</code></pre>
+            return &#34;}&#34;
+
+    def asm(self):
+        &#34;&#34;&#34;
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRBracket
+        &#34;&#34;&#34;
+
+        if self.functionDecl:
+            return []
+        else:
+            return []</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="src.optimizer.IRLine.IRNode" href="#src.optimizer.IRLine.IRNode">IRNode</a></li>
 </ul>
+<h3>Methods</h3>
+<dl>
+<dt id="src.optimizer.IRLine.IRBracket.asm"><code class="name flex">
+<span>def <span class="ident">asm</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Generates assembly representation of this node, using the variable names instead of registers</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>The</code> <code>assembly</code> <code>representation</code> of <code>an</code> <a title="src.optimizer.IRLine.IRBracket" href="#src.optimizer.IRLine.IRBracket"><code>IRBracket</code></a></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def asm(self):
+    &#34;&#34;&#34;
+    Generates assembly representation of this node, using the variable names instead of registers
+
+    Returns:
+        The assembly representation of an IRBracket
+    &#34;&#34;&#34;
+
+    if self.functionDecl:
+        return []
+    else:
+        return []</code></pre>
+</details>
+</dd>
+</dl>
 </dd>
 <dt id="src.optimizer.IRLine.IRFunctionAssign"><code class="flex name class">
 <span>class <span class="ident">IRFunctionAssign</span></span>
-<span>(</span><span>node, params, tvs)</span>
+<span>(</span><span>node, params, varName)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Intermediate representation node for a function call assignment.</p>
@@ -854,23 +1730,62 @@ class IRVariableInit(IRNode):
     &#34;&#34;&#34;
     Intermediate representation node for a function call assignment.
     &#34;&#34;&#34;
-    def __init__(self, node, params, tvs):
+    def __init__(self, node, params, varName):
         &#34;&#34;&#34;
         Args:
             node: The AST node for the funtion
             params: A list of parameters for the function call
             tvs: The tempoary variable stack
         &#34;&#34;&#34;
-        if(node == None and params == None and tvs == None):
+        if(node == None and params == None):
             pass
         else:
             self.node = node
             self.name = self.node.children[0].name
             self.params = params
-            self.lhs = f&#34;_{len(tvs)}&#34;
+            self.lhs = varName
 
     def __str__(self):
         return f&#34;{self.lhs} = {self.name}({&#39;, &#39;.join(self.params)});&#34;
+
+    def asm(self):
+        &#34;&#34;&#34;
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRFunctionAssign
+        &#34;&#34;&#34;
+        asm_calls = []
+
+        fourByteRegisters = [&#34;rdi&#34;, &#34;rsi&#34;, &#34;rdx&#34;, &#34;rcx&#34;, &#34;r8&#34;, &#34;r9&#34;]
+
+        push_param = [x for i, x in enumerate(self.params) if i &gt;= 6]
+        reg_param = [x for i, x in enumerate(self.params) if i &lt; 6]
+        reg_param.reverse()
+
+        for x in push_param:
+            try:
+                x = f&#34;${int(x)}&#34;
+            except ValueError:
+                pass
+            asm_calls.append(asmn.ASMNode(&#34;push&#34;, x, None, leftNeedsReg=True if not x.startswith(&#34;$&#34;) else False, dontTouch=True))
+
+        while len(fourByteRegisters) &gt; len(reg_param):
+            fourByteRegisters.pop()
+
+        for x in reg_param:
+            try:
+                x = f&#34;${int(x)}&#34;
+            except ValueError:
+                pass
+            asm_calls.append(asmn.ASMNode(&#34;mov&#34;, x, fourByteRegisters.pop(), regIsParam=True, leftNeedsReg=True if not x.startswith(&#34;$&#34;) else False))
+
+        asm_calls.extend([
+            asmn.ASMNode(&#34;call&#34;, self.name, None, dontTouch=True),
+            asmn.ASMNode(&#34;mov&#34;, &#34;rax&#34;, self.lhs)
+        ])
+
+        return asm_calls
 
     def LineFromFile(self,lhs,func_name,params):
         &#34;&#34;&#34;
@@ -918,6 +1833,60 @@ class IRVariableInit(IRNode):
     self.params = params</code></pre>
 </details>
 </dd>
+<dt id="src.optimizer.IRLine.IRFunctionAssign.asm"><code class="name flex">
+<span>def <span class="ident">asm</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Generates assembly representation of this node, using the variable names instead of registers</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>The</code> <code>assembly</code> <code>representation</code> of <code>an</code> <a title="src.optimizer.IRLine.IRFunctionAssign" href="#src.optimizer.IRLine.IRFunctionAssign"><code>IRFunctionAssign</code></a></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def asm(self):
+    &#34;&#34;&#34;
+    Generates assembly representation of this node, using the variable names instead of registers
+
+    Returns:
+        The assembly representation of an IRFunctionAssign
+    &#34;&#34;&#34;
+    asm_calls = []
+
+    fourByteRegisters = [&#34;rdi&#34;, &#34;rsi&#34;, &#34;rdx&#34;, &#34;rcx&#34;, &#34;r8&#34;, &#34;r9&#34;]
+
+    push_param = [x for i, x in enumerate(self.params) if i &gt;= 6]
+    reg_param = [x for i, x in enumerate(self.params) if i &lt; 6]
+    reg_param.reverse()
+
+    for x in push_param:
+        try:
+            x = f&#34;${int(x)}&#34;
+        except ValueError:
+            pass
+        asm_calls.append(asmn.ASMNode(&#34;push&#34;, x, None, leftNeedsReg=True if not x.startswith(&#34;$&#34;) else False, dontTouch=True))
+
+    while len(fourByteRegisters) &gt; len(reg_param):
+        fourByteRegisters.pop()
+
+    for x in reg_param:
+        try:
+            x = f&#34;${int(x)}&#34;
+        except ValueError:
+            pass
+        asm_calls.append(asmn.ASMNode(&#34;mov&#34;, x, fourByteRegisters.pop(), regIsParam=True, leftNeedsReg=True if not x.startswith(&#34;$&#34;) else False))
+
+    asm_calls.extend([
+        asmn.ASMNode(&#34;call&#34;, self.name, None, dontTouch=True),
+        asmn.ASMNode(&#34;mov&#34;, &#34;rax&#34;, self.lhs)
+    ])
+
+    return asm_calls</code></pre>
+</details>
+</dd>
 </dl>
 </dd>
 <dt id="src.optimizer.IRLine.IRFunctionDecl"><code class="flex name class">
@@ -951,12 +1920,109 @@ class IRVariableInit(IRNode):
         self.params = params
 
     def __str__(self):
-            return f&#34;{self.name} ({self.params})&#34;</code></pre>
+        return f&#34;{self.name} ({&#39;, &#39;.join(self.params)})&#34;
+
+    def asm(self):
+        &#34;&#34;&#34;
+        Constructs assembly Nodes of a function declaration
+
+        Returns:
+            List of ASM Nodes representing assembly code.
+        &#34;&#34;&#34;
+
+        # value: register name
+        # key: used/unused (1/0)
+        fourByteRegisters = {&#34;rdi&#34;: 0, &#34;rsi&#34;: 0, &#34;rdx&#34;: 0, &#34;rcx&#34;: 0, &#34;r8&#34;: 0, &#34;r9&#34;: 0}
+        eightByteRegisters = {&#34;XMM0&#34;: 0, &#34;XMM1&#34;: 0, &#34;XMM2&#34;: 0, &#34;XMM3&#34;: 0, &#34;XMM4&#34;: 0, &#34;XMM5&#34;: 0, &#34;XMM6&#34;: 0, &#34;XMM7&#34;: 0}
+
+        asmLs = []
+
+        regdir = {}
+        stack = []
+
+        for idx, var in enumerate(self.params):
+            if idx &lt; 6:
+                source_reg = [x for x, y in fourByteRegisters.items() if y == 0][0]
+                fourByteRegisters[source_reg] = 1
+
+                regdir[source_reg] = var.split(&#39; &#39;)[-1]
+            else:
+                stack.append(stk.stackObj(Type=&#34;KnownVar&#34;, Name=var.split(&#39; &#39;)[-1]))
+
+        asmLs.extend([
+            asmn.ASMNode(None, None, None,boilerPlate=f&#34;.globl\t{self.name}&#34;),
+            asmn.ASMNode(None, None, None,boilerPlate=f&#34;.type\t{self.name},\t@function&#34;),
+            asmn.ASMNode(f&#34;{self.name}:&#34;,None,None, functionDecl=True, regDir=regdir, stack=stack),
+            asmn.ASMNode(&#34;mov&#34;, &#34;rsp&#34;, &#34;rbp&#34;, dontTouch=True),
+            asmn.ASMNode(&#34;push&#34;, &#34;rbx&#34;, None, dontTouch=True),
+            asmn.ASMNode(&#34;push&#34;, &#34;r12&#34;, None, dontTouch=True),
+            asmn.ASMNode(&#34;push&#34;, &#34;r13&#34;, None, dontTouch=True),
+            asmn.ASMNode(&#34;push&#34;, &#34;r14&#34;, None, dontTouch=True),
+            asmn.ASMNode(&#34;push&#34;, &#34;r15&#34;, None, dontTouch=True),
+        ])
+
+        return asmLs</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="src.optimizer.IRLine.IRNode" href="#src.optimizer.IRLine.IRNode">IRNode</a></li>
 </ul>
+<h3>Methods</h3>
+<dl>
+<dt id="src.optimizer.IRLine.IRFunctionDecl.asm"><code class="name flex">
+<span>def <span class="ident">asm</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Constructs assembly Nodes of a function declaration</p>
+<h2 id="returns">Returns</h2>
+<p>List of ASM Nodes representing assembly code.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def asm(self):
+    &#34;&#34;&#34;
+    Constructs assembly Nodes of a function declaration
+
+    Returns:
+        List of ASM Nodes representing assembly code.
+    &#34;&#34;&#34;
+
+    # value: register name
+    # key: used/unused (1/0)
+    fourByteRegisters = {&#34;rdi&#34;: 0, &#34;rsi&#34;: 0, &#34;rdx&#34;: 0, &#34;rcx&#34;: 0, &#34;r8&#34;: 0, &#34;r9&#34;: 0}
+    eightByteRegisters = {&#34;XMM0&#34;: 0, &#34;XMM1&#34;: 0, &#34;XMM2&#34;: 0, &#34;XMM3&#34;: 0, &#34;XMM4&#34;: 0, &#34;XMM5&#34;: 0, &#34;XMM6&#34;: 0, &#34;XMM7&#34;: 0}
+
+    asmLs = []
+
+    regdir = {}
+    stack = []
+
+    for idx, var in enumerate(self.params):
+        if idx &lt; 6:
+            source_reg = [x for x, y in fourByteRegisters.items() if y == 0][0]
+            fourByteRegisters[source_reg] = 1
+
+            regdir[source_reg] = var.split(&#39; &#39;)[-1]
+        else:
+            stack.append(stk.stackObj(Type=&#34;KnownVar&#34;, Name=var.split(&#39; &#39;)[-1]))
+
+    asmLs.extend([
+        asmn.ASMNode(None, None, None,boilerPlate=f&#34;.globl\t{self.name}&#34;),
+        asmn.ASMNode(None, None, None,boilerPlate=f&#34;.type\t{self.name},\t@function&#34;),
+        asmn.ASMNode(f&#34;{self.name}:&#34;,None,None, functionDecl=True, regDir=regdir, stack=stack),
+        asmn.ASMNode(&#34;mov&#34;, &#34;rsp&#34;, &#34;rbp&#34;, dontTouch=True),
+        asmn.ASMNode(&#34;push&#34;, &#34;rbx&#34;, None, dontTouch=True),
+        asmn.ASMNode(&#34;push&#34;, &#34;r12&#34;, None, dontTouch=True),
+        asmn.ASMNode(&#34;push&#34;, &#34;r13&#34;, None, dontTouch=True),
+        asmn.ASMNode(&#34;push&#34;, &#34;r14&#34;, None, dontTouch=True),
+        asmn.ASMNode(&#34;push&#34;, &#34;r15&#34;, None, dontTouch=True),
+    ])
+
+    return asmLs</code></pre>
+</details>
+</dd>
+</dl>
 </dd>
 <dt id="src.optimizer.IRLine.IRGoTo"><code class="flex name class">
 <span>class <span class="ident">IRGoTo</span></span>
@@ -987,13 +2053,48 @@ class IRVariableInit(IRNode):
     def __str__(self):
         return f&#34;goto {self.name};&#34;
 
-    def __repr__(self):
-        pass</code></pre>
+    def asm(self):
+        &#34;&#34;&#34;
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRGoTo
+        &#34;&#34;&#34;
+
+        return [asmn.ASMNode(&#34;jmp&#34;, self.name.replace(&#34;&lt;&#34;,&#34;&#34;).replace(&#34;&gt;&#34;,&#34;&#34;), None, dontTouch=True)]</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="src.optimizer.IRLine.IRNode" href="#src.optimizer.IRLine.IRNode">IRNode</a></li>
 </ul>
+<h3>Methods</h3>
+<dl>
+<dt id="src.optimizer.IRLine.IRGoTo.asm"><code class="name flex">
+<span>def <span class="ident">asm</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Generates assembly representation of this node, using the variable names instead of registers</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>The</code> <code>assembly</code> <code>representation</code> of <code>an</code> <a title="src.optimizer.IRLine.IRGoTo" href="#src.optimizer.IRLine.IRGoTo"><code>IRGoTo</code></a></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def asm(self):
+    &#34;&#34;&#34;
+    Generates assembly representation of this node, using the variable names instead of registers
+
+    Returns:
+        The assembly representation of an IRGoTo
+    &#34;&#34;&#34;
+
+    return [asmn.ASMNode(&#34;jmp&#34;, self.name.replace(&#34;&lt;&#34;,&#34;&#34;).replace(&#34;&gt;&#34;,&#34;&#34;), None, dontTouch=True)]</code></pre>
+</details>
+</dd>
+</dl>
 </dd>
 <dt id="src.optimizer.IRLine.IRIf"><code class="flex name class">
 <span>class <span class="ident">IRIf</span></span>
@@ -1065,9 +2166,6 @@ class IRVariableInit(IRNode):
 
     def __str__(self):
         return f&#34;if ({self.lhs} {self.comp} {self.rhs}) goto &lt;D.{self.success}&gt;; else goto &lt;D.{self.failure}&gt;;&#34;
-
-    def __repr__(self):
-        pass
     def fileInit(self,lhs,rhs,compOp,succ,fail):
         &#34;&#34;&#34;
         Args:
@@ -1081,7 +2179,86 @@ class IRVariableInit(IRNode):
         self.rhs = rhs
         self.comp = compOp
         self.success = succ
-        self.failure = fail</code></pre>
+        self.failure = fail
+
+    def asm(self):
+        &#34;&#34;&#34;
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRIf
+        &#34;&#34;&#34;
+
+        l = []
+
+        i = 0
+        v1 = self.lhs
+        v2 = self.rhs
+
+        c_op = &#34;&#34;
+        j_op = &#34;&#34;
+
+        try:
+            v1 = int(v1)
+        except ValueError:
+            try:
+                v1 = float(v1)
+            except ValueError:
+                pass
+
+        try:
+            v2 = int(v2)
+        except ValueError:
+            try:
+                v2 = float(v2)
+            except ValueError:
+                pass
+
+        if v1 == v2:
+            if self.comp in [&#34;==&#34;, &#34;&lt;=&#34;, &#34;&gt;=&#34;]:
+                return [asmn.ASMNode(&#34;jmp&#34;, f&#34;D.{self.success}&#34;, None, dontTouch=True)]
+            else:
+                return [asmn.ASMNode(&#34;jmp&#34;, f&#34;D.{self.failure}&#34;, None, dontTouch=True)]
+        else:
+
+            if isinstance(v1, int):
+                if v1 == 0:
+                    l.append(asmn.ASMNode(&#34;xor&#34;, None, None, leftNeedsReg=True, rightNeedsReg=True))
+                    v1 = None
+                else:
+                    l.append(asmn.ASMNode(&#34;mov&#34;, f&#34;${v1}&#34;, None, rightNeedsReg=True))
+                    v1 = f&#34;${v1}&#34;
+            if isinstance(v2, int):
+                if v2 == 0:
+                    l.append(asmn.ASMNode(&#34;xor&#34;,  None, None, leftNeedsReg=True, rightNeedsReg=True))
+                    v2 = None
+                else:
+                    l.append(asmn.ASMNode(&#34;mov&#34;, f&#34;${v2}&#34;, None, rightNeedsReg=True))
+                    v2 = f&#34;${v2}&#34;
+
+        if self.comp == &#34;==&#34;:
+            c_op = &#34;test&#34;
+            j_op = &#34;je&#34;
+        elif self.comp == &#34;!=&#34;:
+            c_op = &#34;test&#34;
+            j_op = &#34;jne&#34;
+        elif self.comp == &#34;&lt;=&#34;:
+            c_op = &#34;cmp&#34;
+            j_op = &#34;jle&#34;
+        elif self.comp == &#34;&gt;=&#34;:
+            c_op = &#34;cmp&#34;
+            j_op = &#34;jge&#34;
+        elif self.comp == &#34;&lt;&#34;:
+            c_op = &#34;cmp&#34;
+            j_op = &#34;jl&#34;
+        elif self.comp == &#34;&gt;&#34;:
+            c_op = &#34;cmp&#34;
+            j_op = &#34;jg&#34;
+        l.append(asmn.ASMNode(c_op, v1, v2, leftNeedsReg=True, rightNeedsReg=True))
+        l.append(asmn.ASMNode(j_op, f&#34;D.{self.success}&#34;, None, dontTouch=True))
+        l.append(asmn.ASMNode(&#34;jmp&#34;, f&#34;D.{self.failure}&#34;, None,dontTouch = True))
+
+        return l</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -1089,6 +2266,100 @@ class IRVariableInit(IRNode):
 </ul>
 <h3>Methods</h3>
 <dl>
+<dt id="src.optimizer.IRLine.IRIf.asm"><code class="name flex">
+<span>def <span class="ident">asm</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Generates assembly representation of this node, using the variable names instead of registers</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>The</code> <code>assembly</code> <code>representation</code> of <code>an</code> <a title="src.optimizer.IRLine.IRIf" href="#src.optimizer.IRLine.IRIf"><code>IRIf</code></a></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def asm(self):
+    &#34;&#34;&#34;
+    Generates assembly representation of this node, using the variable names instead of registers
+
+    Returns:
+        The assembly representation of an IRIf
+    &#34;&#34;&#34;
+
+    l = []
+
+    i = 0
+    v1 = self.lhs
+    v2 = self.rhs
+
+    c_op = &#34;&#34;
+    j_op = &#34;&#34;
+
+    try:
+        v1 = int(v1)
+    except ValueError:
+        try:
+            v1 = float(v1)
+        except ValueError:
+            pass
+
+    try:
+        v2 = int(v2)
+    except ValueError:
+        try:
+            v2 = float(v2)
+        except ValueError:
+            pass
+
+    if v1 == v2:
+        if self.comp in [&#34;==&#34;, &#34;&lt;=&#34;, &#34;&gt;=&#34;]:
+            return [asmn.ASMNode(&#34;jmp&#34;, f&#34;D.{self.success}&#34;, None, dontTouch=True)]
+        else:
+            return [asmn.ASMNode(&#34;jmp&#34;, f&#34;D.{self.failure}&#34;, None, dontTouch=True)]
+    else:
+
+        if isinstance(v1, int):
+            if v1 == 0:
+                l.append(asmn.ASMNode(&#34;xor&#34;, None, None, leftNeedsReg=True, rightNeedsReg=True))
+                v1 = None
+            else:
+                l.append(asmn.ASMNode(&#34;mov&#34;, f&#34;${v1}&#34;, None, rightNeedsReg=True))
+                v1 = f&#34;${v1}&#34;
+        if isinstance(v2, int):
+            if v2 == 0:
+                l.append(asmn.ASMNode(&#34;xor&#34;,  None, None, leftNeedsReg=True, rightNeedsReg=True))
+                v2 = None
+            else:
+                l.append(asmn.ASMNode(&#34;mov&#34;, f&#34;${v2}&#34;, None, rightNeedsReg=True))
+                v2 = f&#34;${v2}&#34;
+
+    if self.comp == &#34;==&#34;:
+        c_op = &#34;test&#34;
+        j_op = &#34;je&#34;
+    elif self.comp == &#34;!=&#34;:
+        c_op = &#34;test&#34;
+        j_op = &#34;jne&#34;
+    elif self.comp == &#34;&lt;=&#34;:
+        c_op = &#34;cmp&#34;
+        j_op = &#34;jle&#34;
+    elif self.comp == &#34;&gt;=&#34;:
+        c_op = &#34;cmp&#34;
+        j_op = &#34;jge&#34;
+    elif self.comp == &#34;&lt;&#34;:
+        c_op = &#34;cmp&#34;
+        j_op = &#34;jl&#34;
+    elif self.comp == &#34;&gt;&#34;:
+        c_op = &#34;cmp&#34;
+        j_op = &#34;jg&#34;
+    l.append(asmn.ASMNode(c_op, v1, v2, leftNeedsReg=True, rightNeedsReg=True))
+    l.append(asmn.ASMNode(j_op, f&#34;D.{self.success}&#34;, None, dontTouch=True))
+    l.append(asmn.ASMNode(&#34;jmp&#34;, f&#34;D.{self.failure}&#34;, None,dontTouch = True))
+
+    return l</code></pre>
+</details>
+</dd>
 <dt id="src.optimizer.IRLine.IRIf.fileInit"><code class="name flex">
 <span>def <span class="ident">fileInit</span></span>(<span>self, lhs, rhs, compOp, succ, fail)</span>
 </code></dt>
@@ -1157,13 +2428,46 @@ class IRVariableInit(IRNode):
     def __str__(self):
         return f&#34;{self.name}:&#34;
 
-    def __repr__(self):
-        pass</code></pre>
+    def asm(self):
+        &#34;&#34;&#34;
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRJump
+        &#34;&#34;&#34;
+        return [asmn.ASMNode(f&#34;{self.name.replace(&#39;&lt;&#39;,&#39;&#39;).replace(&#39;&gt;&#39;,&#39;&#39;)}:&#34;,None,None,dontTouch=True)]</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="src.optimizer.IRLine.IRNode" href="#src.optimizer.IRLine.IRNode">IRNode</a></li>
 </ul>
+<h3>Methods</h3>
+<dl>
+<dt id="src.optimizer.IRLine.IRJump.asm"><code class="name flex">
+<span>def <span class="ident">asm</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Generates assembly representation of this node, using the variable names instead of registers</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>The</code> <code>assembly</code> <code>representation</code> of <code>an</code> <a title="src.optimizer.IRLine.IRJump" href="#src.optimizer.IRLine.IRJump"><code>IRJump</code></a></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def asm(self):
+    &#34;&#34;&#34;
+    Generates assembly representation of this node, using the variable names instead of registers
+
+    Returns:
+        The assembly representation of an IRJump
+    &#34;&#34;&#34;
+    return [asmn.ASMNode(f&#34;{self.name.replace(&#39;&lt;&#39;,&#39;&#39;).replace(&#39;&gt;&#39;,&#39;&#39;)}:&#34;,None,None,dontTouch=True)]</code></pre>
+</details>
+</dd>
+</dl>
 </dd>
 <dt id="src.optimizer.IRLine.IRLine"><code class="flex name class">
 <span>class <span class="ident">IRLine</span></span>
@@ -1204,6 +2508,7 @@ class IRVariableInit(IRNode):
             labelList: The list of used label names
             prefix: The output prefix
         &#34;&#34;&#34;
+
         self.astNode = node
         self.treeList = []
 
@@ -1256,10 +2561,20 @@ class IRVariableInit(IRNode):
             self.labelList.append(failure)
 
         ns = root.list_POT()
-
+        global tmpVarIndex
         ns = [x for x in ns if x.name in self.arth_ops or x.name in self.spec_ops or x.name in self.ass_ops or x.name in self.id_ops or x.name in self.comp_ops]
         for node in ns:
             if node.name in self.comp_ops:
+
+                if node.name in self.comp_ops and node.parent != None and node.parent.name == &#34;!&#34;:
+                    # logical not means we need to reverse this comparison
+                    if node.name == &#34;&gt;&#34;: node.name = &#34;&lt;=&#34;
+                    elif node.name == &#34;&lt;&#34;: node.name = &#34;&gt;=&#34;
+                    elif node.name == &#34;==&#34;: node.name = &#34;!=&#34;
+                    elif node.name == &#34;!=&#34;: node.name = &#34;==&#34;
+                    elif node.name == &#34;&gt;=&#34;: node.name = &#34;&lt;&#34;
+                    elif node.name == &#34;&lt;=&#34;: node.name = &#34;&gt;&#34;
+
                 self.treeList.append(
                     IRIf(
                         node,
@@ -1270,27 +2585,30 @@ class IRVariableInit(IRNode):
                 )
 
             elif node.name in self.arth_ops:
+                tmpVarIndex += 1
                 self.treeList.append(
                     IRArth(
                         node,
                         [self.tvs.pop() for x in node.children if len(x.children) != 0],
-                        self.tvs
+                        f&#34;tV_{tmpVarIndex}&#34;
                     )
                 )
 
-                self.tvs.append(self.treeList[-1].var)
+                self.tvs.append(f&#34;tV_{tmpVarIndex}&#34;)
 
             elif node.name in self.spec_ops:
                 var = self.tvs.pop()
 
+                tmpVarIndex += 1
+
                 # Create a temporay AST to deal with storing of the current value of the variable
-                tmpNode = ast.ASTNode(&#34;=&#34;, None)
-                tmpNode.children.append(ast.ASTNode(f&#34;_{len(self.tvs)}&#34;, tmpNode))
-                tmpNode.children.append(ast.ASTNode(var, tmpNode))
+                # tmpNode = ast.ASTNode(&#34;=&#34;, None)
+                # tmpNode.children.append(ast.ASTNode(f&#34;_{tmpVarIndex}&#34;, tmpNode))
+                # tmpNode.children.append(ast.ASTNode(var, tmpNode))
 
                 self.treeList.append(
                     IRAssignment(
-                        f&#34;_{len(self.tvs)}&#34;,
+                        f&#34;tV_{tmpVarIndex}&#34;,
                         var
                     )
                 )
@@ -1309,7 +2627,7 @@ class IRVariableInit(IRNode):
                         )
                     )
 
-                self.tvs.append(tmpNode.children[0].name)
+                self.tvs.append(f&#34;tV_{tmpVarIndex}&#34;)
 
             elif node.name in self.ass_ops:
                 if self.ass_ops.index(node.name) == 0:
@@ -1318,10 +2636,10 @@ class IRVariableInit(IRNode):
                     # Case 1: Assignment is constant. ie. int i = 0
                     if len(node.children[1].children) == 0:
                         lhs = self.tvs.pop()
-                        rhs = node.children[1].name
+                        rhs = f&#34;{node.children[1].name}&#34;
                     # Case 2: Assignment is complex
                     else:
-                        lhs = node.children[0].children[len(node.children[0].children)-1].name
+                        lhs = f&#34;rV_{node.children[0].children[len(node.children[0].children)-1].name}&#34;
                         rhs = self.tvs.pop()
 
                     self.treeList.append(
@@ -1341,28 +2659,44 @@ class IRVariableInit(IRNode):
                     r = ast.ASTNode(node.name[:-1], p)
                     p.children.append(r)
 
+                    rc = None
+                    lc = None
+
                     # assign the variable as the left operand of the new expression
-                    r.children.append(node.children[0])
+                    if len(node.children[1].children) &gt; 0:
+                        rc = ast.ASTNode(self.tvs.pop(), r)
+                    else:
+                        rc = node.children[1]
+
+                    # assign the variable as the left operand of the new expression
+                    if len(node.children[0].children) &gt; 0:
+                        lc = ast.ASTNode(self.tvs.pop(), r)
+                    else:
+                        lc = node.children[0]
 
                     # assign the remaining operations as the right operand of the new expression
-                    r.children.append(node.children[1])
+
+                    r.children.append(lc)
+                    r.children.append(rc)
 
                     self.expression_breakdown(p, success, failure)
 
             elif node.name in self.id_ops:
                 if node.name == &#34;var&#34;:
-                    self.tvs.append(f&#34;{node.children[len(node.children)-1].name}&#34;)
+                    self.tvs.append(f&#34;rV_{node.children[len(node.children)-1].name}&#34;)
                 elif node.name == &#34;call&#34;:
                     # list of indices that correspond to the complex parameters of the function call
                     complexP = [node.children[0].children.index(x) for x in node.children[0].children if len(x.children) &gt; 0]
                     simpleP = [x for x in range(len(node.children[0].children)) if x not in complexP]
 
                     params = [self.tvs.pop() for x in range(len(node.children[0].children)) if x in complexP]
+
+                    tmpVarIndex += 1
                     self.treeList.append(
                         IRFunctionAssign(
                             node,
                             [params.pop() if x in complexP else node.children[0].children[x].name for x in range(len(node.children[0].children))],
-                            self.tvs
+                            f&#34;tV_{tmpVarIndex}&#34;
                         )
                     )
 
@@ -1388,7 +2722,7 @@ class IRVariableInit(IRNode):
             tmp_label = max(self.labelList)
             self.labelList.append(tmp_label+1)
             tmpNode = root.children[0]
-            if tmpNode.name not in self.comp_ops and tmpNode.name not in log_ops:
+            if tmpNode.name not in self.comp_ops and tmpNode.name not in self.log_ops:
                 tmpNode = ast.ASTNode(&#34;!=&#34;, None)
                 tmpNode.children.append(root.children[0])
                 tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
@@ -1401,7 +2735,10 @@ class IRVariableInit(IRNode):
             self.treeList.append(IRJump(f&#34;&lt;D.{tmp_label}&gt;&#34;))
 
             tmpNode = root.children[1]
-            if tmpNode.name not in self.comp_ops and tmpNode.name not in log_ops:
+            if tmpNode.name not in self.comp_ops and tmpNode.name not in self.log_ops and (
+                tmpNode.children == [] or
+                tmpNode.children[0].name not in self.comp_ops and tmpNode.children[0].name not in self.log_ops):
+
                 tmpNode = ast.ASTNode(&#34;!=&#34;, None)
                 tmpNode.children.append(root.children[1])
                 tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
@@ -1416,7 +2753,7 @@ class IRVariableInit(IRNode):
             tmp_label = max(self.labelList)
             self.labelList.append(tmp_label+1)
             tmpNode = root.children[0]
-            if tmpNode.name not in self.comp_ops and tmpNode.name not in log_ops:
+            if tmpNode.name not in self.comp_ops and tmpNode.name not in self.log_ops:
                 tmpNode = ast.ASTNode(&#34;!=&#34;, None)
                 tmpNode.children.append(root.children[0])
                 tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
@@ -1429,7 +2766,7 @@ class IRVariableInit(IRNode):
             self.treeList.append(IRJump(f&#34;&lt;D.{tmp_label}&gt;&#34;))
 
             tmpNode = root.children[1]
-            if tmpNode.name not in self.comp_ops and tmpNode.name not in log_ops:
+            if tmpNode.name not in self.comp_ops and tmpNode.name not in self.log_ops:
                 tmpNode = ast.ASTNode(&#34;!=&#34;, None)
                 tmpNode.children.append(root.children[1])
                 tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
@@ -1532,7 +2869,7 @@ def singleEntry(irNode, labelDigit=None, prefix=&#34;&#34;):
         tmp_label = max(self.labelList)
         self.labelList.append(tmp_label+1)
         tmpNode = root.children[0]
-        if tmpNode.name not in self.comp_ops and tmpNode.name not in log_ops:
+        if tmpNode.name not in self.comp_ops and tmpNode.name not in self.log_ops:
             tmpNode = ast.ASTNode(&#34;!=&#34;, None)
             tmpNode.children.append(root.children[0])
             tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
@@ -1545,7 +2882,10 @@ def singleEntry(irNode, labelDigit=None, prefix=&#34;&#34;):
         self.treeList.append(IRJump(f&#34;&lt;D.{tmp_label}&gt;&#34;))
 
         tmpNode = root.children[1]
-        if tmpNode.name not in self.comp_ops and tmpNode.name not in log_ops:
+        if tmpNode.name not in self.comp_ops and tmpNode.name not in self.log_ops and (
+            tmpNode.children == [] or
+            tmpNode.children[0].name not in self.comp_ops and tmpNode.children[0].name not in self.log_ops):
+
             tmpNode = ast.ASTNode(&#34;!=&#34;, None)
             tmpNode.children.append(root.children[1])
             tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
@@ -1560,7 +2900,7 @@ def singleEntry(irNode, labelDigit=None, prefix=&#34;&#34;):
         tmp_label = max(self.labelList)
         self.labelList.append(tmp_label+1)
         tmpNode = root.children[0]
-        if tmpNode.name not in self.comp_ops and tmpNode.name not in log_ops:
+        if tmpNode.name not in self.comp_ops and tmpNode.name not in self.log_ops:
             tmpNode = ast.ASTNode(&#34;!=&#34;, None)
             tmpNode.children.append(root.children[0])
             tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
@@ -1573,7 +2913,7 @@ def singleEntry(irNode, labelDigit=None, prefix=&#34;&#34;):
         self.treeList.append(IRJump(f&#34;&lt;D.{tmp_label}&gt;&#34;))
 
         tmpNode = root.children[1]
-        if tmpNode.name not in self.comp_ops and tmpNode.name not in log_ops:
+        if tmpNode.name not in self.comp_ops and tmpNode.name not in self.log_ops:
             tmpNode = ast.ASTNode(&#34;!=&#34;, None)
             tmpNode.children.append(root.children[1])
             tmpNode.children.append(ast.ASTNode(&#34;0&#34;, tmpNode))
@@ -1617,10 +2957,20 @@ def singleEntry(irNode, labelDigit=None, prefix=&#34;&#34;):
         self.labelList.append(failure)
 
     ns = root.list_POT()
-
+    global tmpVarIndex
     ns = [x for x in ns if x.name in self.arth_ops or x.name in self.spec_ops or x.name in self.ass_ops or x.name in self.id_ops or x.name in self.comp_ops]
     for node in ns:
         if node.name in self.comp_ops:
+
+            if node.name in self.comp_ops and node.parent != None and node.parent.name == &#34;!&#34;:
+                # logical not means we need to reverse this comparison
+                if node.name == &#34;&gt;&#34;: node.name = &#34;&lt;=&#34;
+                elif node.name == &#34;&lt;&#34;: node.name = &#34;&gt;=&#34;
+                elif node.name == &#34;==&#34;: node.name = &#34;!=&#34;
+                elif node.name == &#34;!=&#34;: node.name = &#34;==&#34;
+                elif node.name == &#34;&gt;=&#34;: node.name = &#34;&lt;&#34;
+                elif node.name == &#34;&lt;=&#34;: node.name = &#34;&gt;&#34;
+
             self.treeList.append(
                 IRIf(
                     node,
@@ -1631,27 +2981,30 @@ def singleEntry(irNode, labelDigit=None, prefix=&#34;&#34;):
             )
 
         elif node.name in self.arth_ops:
+            tmpVarIndex += 1
             self.treeList.append(
                 IRArth(
                     node,
                     [self.tvs.pop() for x in node.children if len(x.children) != 0],
-                    self.tvs
+                    f&#34;tV_{tmpVarIndex}&#34;
                 )
             )
 
-            self.tvs.append(self.treeList[-1].var)
+            self.tvs.append(f&#34;tV_{tmpVarIndex}&#34;)
 
         elif node.name in self.spec_ops:
             var = self.tvs.pop()
 
+            tmpVarIndex += 1
+
             # Create a temporay AST to deal with storing of the current value of the variable
-            tmpNode = ast.ASTNode(&#34;=&#34;, None)
-            tmpNode.children.append(ast.ASTNode(f&#34;_{len(self.tvs)}&#34;, tmpNode))
-            tmpNode.children.append(ast.ASTNode(var, tmpNode))
+            # tmpNode = ast.ASTNode(&#34;=&#34;, None)
+            # tmpNode.children.append(ast.ASTNode(f&#34;_{tmpVarIndex}&#34;, tmpNode))
+            # tmpNode.children.append(ast.ASTNode(var, tmpNode))
 
             self.treeList.append(
                 IRAssignment(
-                    f&#34;_{len(self.tvs)}&#34;,
+                    f&#34;tV_{tmpVarIndex}&#34;,
                     var
                 )
             )
@@ -1670,7 +3023,7 @@ def singleEntry(irNode, labelDigit=None, prefix=&#34;&#34;):
                     )
                 )
 
-            self.tvs.append(tmpNode.children[0].name)
+            self.tvs.append(f&#34;tV_{tmpVarIndex}&#34;)
 
         elif node.name in self.ass_ops:
             if self.ass_ops.index(node.name) == 0:
@@ -1679,10 +3032,10 @@ def singleEntry(irNode, labelDigit=None, prefix=&#34;&#34;):
                 # Case 1: Assignment is constant. ie. int i = 0
                 if len(node.children[1].children) == 0:
                     lhs = self.tvs.pop()
-                    rhs = node.children[1].name
+                    rhs = f&#34;{node.children[1].name}&#34;
                 # Case 2: Assignment is complex
                 else:
-                    lhs = node.children[0].children[len(node.children[0].children)-1].name
+                    lhs = f&#34;rV_{node.children[0].children[len(node.children[0].children)-1].name}&#34;
                     rhs = self.tvs.pop()
 
                 self.treeList.append(
@@ -1702,28 +3055,44 @@ def singleEntry(irNode, labelDigit=None, prefix=&#34;&#34;):
                 r = ast.ASTNode(node.name[:-1], p)
                 p.children.append(r)
 
+                rc = None
+                lc = None
+
                 # assign the variable as the left operand of the new expression
-                r.children.append(node.children[0])
+                if len(node.children[1].children) &gt; 0:
+                    rc = ast.ASTNode(self.tvs.pop(), r)
+                else:
+                    rc = node.children[1]
+
+                # assign the variable as the left operand of the new expression
+                if len(node.children[0].children) &gt; 0:
+                    lc = ast.ASTNode(self.tvs.pop(), r)
+                else:
+                    lc = node.children[0]
 
                 # assign the remaining operations as the right operand of the new expression
-                r.children.append(node.children[1])
+
+                r.children.append(lc)
+                r.children.append(rc)
 
                 self.expression_breakdown(p, success, failure)
 
         elif node.name in self.id_ops:
             if node.name == &#34;var&#34;:
-                self.tvs.append(f&#34;{node.children[len(node.children)-1].name}&#34;)
+                self.tvs.append(f&#34;rV_{node.children[len(node.children)-1].name}&#34;)
             elif node.name == &#34;call&#34;:
                 # list of indices that correspond to the complex parameters of the function call
                 complexP = [node.children[0].children.index(x) for x in node.children[0].children if len(x.children) &gt; 0]
                 simpleP = [x for x in range(len(node.children[0].children)) if x not in complexP]
 
                 params = [self.tvs.pop() for x in range(len(node.children[0].children)) if x in complexP]
+
+                tmpVarIndex += 1
                 self.treeList.append(
                     IRFunctionAssign(
                         node,
                         [params.pop() if x in complexP else node.children[0].children[x].name for x in range(len(node.children[0].children))],
-                        self.tvs
+                        f&#34;tV_{tmpVarIndex}&#34;
                     )
                 )
 
@@ -1778,7 +3147,7 @@ def singleEntry(irNode, labelDigit=None, prefix=&#34;&#34;):
     def __str__(self):
         pass
 
-    def __repr__(self):
+    def asm(self):
         pass</code></pre>
 </details>
 <h3>Subclasses</h3>
@@ -1795,6 +3164,22 @@ def singleEntry(irNode, labelDigit=None, prefix=&#34;&#34;):
 <li><a title="src.optimizer.IRLine.IRSpecial" href="#src.optimizer.IRLine.IRSpecial">IRSpecial</a></li>
 <li><a title="src.optimizer.IRLine.IRVariableInit" href="#src.optimizer.IRLine.IRVariableInit">IRVariableInit</a></li>
 </ul>
+<h3>Methods</h3>
+<dl>
+<dt id="src.optimizer.IRLine.IRNode.asm"><code class="name flex">
+<span>def <span class="ident">asm</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def asm(self):
+    pass</code></pre>
+</details>
+</dd>
+</dl>
 </dd>
 <dt id="src.optimizer.IRLine.IRReturn"><code class="flex name class">
 <span>class <span class="ident">IRReturn</span></span>
@@ -1826,12 +3211,64 @@ def singleEntry(irNode, labelDigit=None, prefix=&#34;&#34;):
         if self.value:
             return f&#34;return {self.value};&#34;
         else:
-            return f&#34;return;&#34;</code></pre>
+            return f&#34;return;&#34;
+
+    def asm(self):
+        &#34;&#34;&#34;
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRReturn
+        &#34;&#34;&#34;
+
+        asml = []
+        if self.value:
+            asml.append(asmn.ASMNode(&#34;mov&#34;, self.value, &#34;rax&#34;))
+        asml.extend([
+            asmn.ASMNode(&#34;ret&#34;, None, None, dontTouch=True)
+        ])
+
+        return asml</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="src.optimizer.IRLine.IRNode" href="#src.optimizer.IRLine.IRNode">IRNode</a></li>
 </ul>
+<h3>Methods</h3>
+<dl>
+<dt id="src.optimizer.IRLine.IRReturn.asm"><code class="name flex">
+<span>def <span class="ident">asm</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Generates assembly representation of this node, using the variable names instead of registers</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>The</code> <code>assembly</code> <code>representation</code> of <code>an</code> <a title="src.optimizer.IRLine.IRReturn" href="#src.optimizer.IRLine.IRReturn"><code>IRReturn</code></a></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def asm(self):
+    &#34;&#34;&#34;
+    Generates assembly representation of this node, using the variable names instead of registers
+
+    Returns:
+        The assembly representation of an IRReturn
+    &#34;&#34;&#34;
+
+    asml = []
+    if self.value:
+        asml.append(asmn.ASMNode(&#34;mov&#34;, self.value, &#34;rax&#34;))
+    asml.extend([
+        asmn.ASMNode(&#34;ret&#34;, None, None, dontTouch=True)
+    ])
+
+    return asml</code></pre>
+</details>
+</dd>
+</dl>
 </dd>
 <dt id="src.optimizer.IRLine.IRSpecial"><code class="flex name class">
 <span>class <span class="ident">IRSpecial</span></span>
@@ -1862,14 +3299,55 @@ def singleEntry(irNode, labelDigit=None, prefix=&#34;&#34;):
         &#34;&#34;&#34;
         self.node = node
         self.var = var
+        self.operation = self.node.name[0]
+
 
     def __str__(self):
-        return f&#34;{self.var} = {self.var} {self.node.name[0]} 1;&#34;</code></pre>
+        return f&#34;{self.var} = {self.var} {self.operation} 1;&#34;
+
+    def asm(self):
+        &#34;&#34;&#34;
+        Constructs assembly string of a special (i.e. inc/dec) instruction
+        Returns:
+            List of necessary ASMNodes representing assembly code.
+        &#34;&#34;&#34;
+
+        if self.operation == &#34;+&#34;:
+            return [asmn.ASMNode(&#34;inc&#34;, self.var, None)]
+        elif self.operation == &#39;-&#39;:
+            return [asmn.ASMNode(&#34;dec&#34;, self.var, None)]</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="src.optimizer.IRLine.IRNode" href="#src.optimizer.IRLine.IRNode">IRNode</a></li>
 </ul>
+<h3>Methods</h3>
+<dl>
+<dt id="src.optimizer.IRLine.IRSpecial.asm"><code class="name flex">
+<span>def <span class="ident">asm</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Constructs assembly string of a special (i.e. inc/dec) instruction</p>
+<h2 id="returns">Returns</h2>
+<p>List of necessary ASMNodes representing assembly code.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def asm(self):
+    &#34;&#34;&#34;
+    Constructs assembly string of a special (i.e. inc/dec) instruction
+    Returns:
+        List of necessary ASMNodes representing assembly code.
+    &#34;&#34;&#34;
+
+    if self.operation == &#34;+&#34;:
+        return [asmn.ASMNode(&#34;inc&#34;, self.var, None)]
+    elif self.operation == &#39;-&#39;:
+        return [asmn.ASMNode(&#34;dec&#34;, self.var, None)]</code></pre>
+</details>
+</dd>
+</dl>
 </dd>
 <dt id="src.optimizer.IRLine.IRVariableInit"><code class="flex name class">
 <span>class <span class="ident">IRVariableInit</span></span>
@@ -1903,12 +3381,50 @@ var:</p></section>
         self.var = var
 
     def __str__(self):
-        return f&#34;{self.modifiers}{self.typ} {self.var};&#34;</code></pre>
+        return f&#34;{self.modifiers}{self.typ} {self.var};&#34;
+
+    def asm(self):
+        &#34;&#34;&#34;
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRVariableInit
+        &#34;&#34;&#34;
+
+        return []</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="src.optimizer.IRLine.IRNode" href="#src.optimizer.IRLine.IRNode">IRNode</a></li>
 </ul>
+<h3>Methods</h3>
+<dl>
+<dt id="src.optimizer.IRLine.IRVariableInit.asm"><code class="name flex">
+<span>def <span class="ident">asm</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Generates assembly representation of this node, using the variable names instead of registers</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>The</code> <code>assembly</code> <code>representation</code> of <code>an</code> <a title="src.optimizer.IRLine.IRVariableInit" href="#src.optimizer.IRLine.IRVariableInit"><code>IRVariableInit</code></a></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def asm(self):
+    &#34;&#34;&#34;
+    Generates assembly representation of this node, using the variable names instead of registers
+
+    Returns:
+        The assembly representation of an IRVariableInit
+    &#34;&#34;&#34;
+
+    return []</code></pre>
+</details>
+</dd>
+</dl>
 </dd>
 </dl>
 </section>
@@ -1929,35 +3445,53 @@ var:</p></section>
 <li>
 <h4><code><a title="src.optimizer.IRLine.IRArth" href="#src.optimizer.IRLine.IRArth">IRArth</a></code></h4>
 <ul class="">
+<li><code><a title="src.optimizer.IRLine.IRArth.asm" href="#src.optimizer.IRLine.IRArth.asm">asm</a></code></li>
 <li><code><a title="src.optimizer.IRLine.IRArth.fileInit" href="#src.optimizer.IRLine.IRArth.fileInit">fileInit</a></code></li>
 </ul>
 </li>
 <li>
 <h4><code><a title="src.optimizer.IRLine.IRAssignment" href="#src.optimizer.IRLine.IRAssignment">IRAssignment</a></code></h4>
+<ul class="">
+<li><code><a title="src.optimizer.IRLine.IRAssignment.asm" href="#src.optimizer.IRLine.IRAssignment.asm">asm</a></code></li>
+</ul>
 </li>
 <li>
 <h4><code><a title="src.optimizer.IRLine.IRBracket" href="#src.optimizer.IRLine.IRBracket">IRBracket</a></code></h4>
+<ul class="">
+<li><code><a title="src.optimizer.IRLine.IRBracket.asm" href="#src.optimizer.IRLine.IRBracket.asm">asm</a></code></li>
+</ul>
 </li>
 <li>
 <h4><code><a title="src.optimizer.IRLine.IRFunctionAssign" href="#src.optimizer.IRLine.IRFunctionAssign">IRFunctionAssign</a></code></h4>
 <ul class="">
 <li><code><a title="src.optimizer.IRLine.IRFunctionAssign.LineFromFile" href="#src.optimizer.IRLine.IRFunctionAssign.LineFromFile">LineFromFile</a></code></li>
+<li><code><a title="src.optimizer.IRLine.IRFunctionAssign.asm" href="#src.optimizer.IRLine.IRFunctionAssign.asm">asm</a></code></li>
 </ul>
 </li>
 <li>
 <h4><code><a title="src.optimizer.IRLine.IRFunctionDecl" href="#src.optimizer.IRLine.IRFunctionDecl">IRFunctionDecl</a></code></h4>
+<ul class="">
+<li><code><a title="src.optimizer.IRLine.IRFunctionDecl.asm" href="#src.optimizer.IRLine.IRFunctionDecl.asm">asm</a></code></li>
+</ul>
 </li>
 <li>
 <h4><code><a title="src.optimizer.IRLine.IRGoTo" href="#src.optimizer.IRLine.IRGoTo">IRGoTo</a></code></h4>
+<ul class="">
+<li><code><a title="src.optimizer.IRLine.IRGoTo.asm" href="#src.optimizer.IRLine.IRGoTo.asm">asm</a></code></li>
+</ul>
 </li>
 <li>
 <h4><code><a title="src.optimizer.IRLine.IRIf" href="#src.optimizer.IRLine.IRIf">IRIf</a></code></h4>
 <ul class="">
+<li><code><a title="src.optimizer.IRLine.IRIf.asm" href="#src.optimizer.IRLine.IRIf.asm">asm</a></code></li>
 <li><code><a title="src.optimizer.IRLine.IRIf.fileInit" href="#src.optimizer.IRLine.IRIf.fileInit">fileInit</a></code></li>
 </ul>
 </li>
 <li>
 <h4><code><a title="src.optimizer.IRLine.IRJump" href="#src.optimizer.IRLine.IRJump">IRJump</a></code></h4>
+<ul class="">
+<li><code><a title="src.optimizer.IRLine.IRJump.asm" href="#src.optimizer.IRLine.IRJump.asm">asm</a></code></li>
+</ul>
 </li>
 <li>
 <h4><code><a title="src.optimizer.IRLine.IRLine" href="#src.optimizer.IRLine.IRLine">IRLine</a></code></h4>
@@ -1970,15 +3504,27 @@ var:</p></section>
 </li>
 <li>
 <h4><code><a title="src.optimizer.IRLine.IRNode" href="#src.optimizer.IRLine.IRNode">IRNode</a></code></h4>
+<ul class="">
+<li><code><a title="src.optimizer.IRLine.IRNode.asm" href="#src.optimizer.IRLine.IRNode.asm">asm</a></code></li>
+</ul>
 </li>
 <li>
 <h4><code><a title="src.optimizer.IRLine.IRReturn" href="#src.optimizer.IRLine.IRReturn">IRReturn</a></code></h4>
+<ul class="">
+<li><code><a title="src.optimizer.IRLine.IRReturn.asm" href="#src.optimizer.IRLine.IRReturn.asm">asm</a></code></li>
+</ul>
 </li>
 <li>
 <h4><code><a title="src.optimizer.IRLine.IRSpecial" href="#src.optimizer.IRLine.IRSpecial">IRSpecial</a></code></h4>
+<ul class="">
+<li><code><a title="src.optimizer.IRLine.IRSpecial.asm" href="#src.optimizer.IRLine.IRSpecial.asm">asm</a></code></li>
+</ul>
 </li>
 <li>
 <h4><code><a title="src.optimizer.IRLine.IRVariableInit" href="#src.optimizer.IRLine.IRVariableInit">IRVariableInit</a></code></h4>
+<ul class="">
+<li><code><a title="src.optimizer.IRLine.IRVariableInit.asm" href="#src.optimizer.IRLine.IRVariableInit.asm">asm</a></code></li>
+</ul>
 </li>
 </ul>
 </li>

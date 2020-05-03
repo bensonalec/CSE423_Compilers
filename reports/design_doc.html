@@ -10,7 +10,7 @@
     <dl>
         <dt><h2 id="header-design">Design Document</h2></dt>
         <dd>
-    
+
             <!--  Start Introduction  -->
             <dl>
                 <dt><h3>Introduction</h3></dt>
@@ -24,14 +24,15 @@
                         <li> <a href="https://github.com/alex/rply">Rply</a>, Python's re-implimentation of Lex-and-Yacc</li>
                         <li> <a href="https://github.com/pdoc3/pdoc">Pdoc3</a>, used for documentation</li>
                         <li> <a href="https://vallentin.dev/2016/11/29/pretty-print-tree">Inspiration for pretty printing the tree</a> </li>
+                        <li> <a href="https://stackoverflow.com/questions/50726304/simple-example-of-not-instruction-in-x86-asm">Inspiration for how to deal with logical not at the assembly stage</a></li>
                     </ul>
                 </dd>
             </dl>
             <!--  End Introduction  -->
-    
-    
-    
-    
+
+
+
+
             <!--  Start Architecture  -->
             <dl>
                 <dt><h3>Architecture</h3></dt>
@@ -39,16 +40,16 @@
                     Our compiler can be split into three major stages that takes
                     in a C program and converts this "High-Level" language into
                     many different forms of Intermediate Representations (IR's)
-                    until it reaches the point of assembly code.
+                    until it reaches the point of assembly code. Our compiler compiles to GAS syntax amd64 assembly, and uses x86-64 calling conventions.
                 </dd>
                 <img id="architecture_img" src="./architecture.png" />
             </dl>
             <!--  End Architecture Section  -->
-    
-    
-    
-    
-    
+
+
+
+
+
             <!--  Start Frontend  -->
             <dl>
                 <dt><h3>Frontend</h3></dt>
@@ -65,7 +66,7 @@
                                 <dt><h5>Token Format / Examples</h5></dt>
                                 <dd>
                                     <pre>Token("TOKEN_NAME", "ELEMENT")
-    
+
     Token("INTEGER", "1")
     Token("GT", ">")
     Token("SELF_DEFINED", "some-variable-name")
@@ -93,21 +94,21 @@
                                 has allowed us to impliment a "Bottom-up left-to-right" parser.
                             <dl><dt><h5>Example of BNF grammar</h5><dd>
                                 <pre>program : definitionList #program
-    
+
     definitionList : definition_terminal definitionList #definitionList
     definitionList : definition_terminal #definitionList
-    
+
     definition_terminal : functionDefinition #definition_terminal
     definition_terminal : functionDeclaration #definition_terminal
     definition_terminal : initialization #definition_terminal
     definition_terminal : COMMENT #definition_terminal
-    
+
     functionDefinition : func_type SELF_DEFINED OPEN_PAREN args CLOSE_PAREN block #function definition
     functionDefinition : func_type SELF_DEFINED OPEN_PAREN CLOSE_PAREN block #function definition
-    
+
     functionDeclaration : func_type SELF_DEFINED OPEN_PAREN args CLOSE_PAREN SEMICOLON #functionDeclaration
     functionDeclaration : func_type SELF_DEFINED OPEN_PAREN CLOSE_PAREN SEMICOLON #functionDeclaration
-    
+
     func_type : TYPE #func_type
     func_type : func_modif TYPE #func_type
     ...</pre>
@@ -117,19 +118,19 @@
                                     <ul class="todo">
                                         <li>We are only reporting the last successful token parsed
                                             but not giving a detailed and more "useful" message.
-                                            We should work on this.</li>
+                                            </li>
                                     </ul>
                                 </p>
                             </dd></dd></dl>
-    
+
                             <dt><h4>Abstract Syntax Tree Builder</h4></dt><dl>
-    
+
                             <dd>
                                 Using the initial Parse Tree, we are able to shorten it down and "abstract" it to have
                                 a more understandable and syntax-free way to represent a C program. We currently have a single
                                 function, <code>buildAST(parseTreeHead)</code>, that constructs a series of <code>ASTNode</code> objects
                                 with references to each other. Represented in the correct way, this creates a "Tree" data type.
-    
+
                                 <dl>
                                     <dt><h5>Representing a Program</h5></dt>
                                         <dd>
@@ -140,27 +141,27 @@
                                             will link to the actual body of the function. Other keywords such as <code>var</code> (variables), <code>call</code> (function calls), and
                                             arithmetic operations (+, -, *, /, etc.) exist in the produced AST if such content exists in the original C program.
                                         </dd>
-    
+
                                         <dd>
                                             Example AST representations can be found under: <a href="C_EXAMPLES">Examples of C Programs and their Intermediate Representations</a>.
                                         </dd>
                                 </dl>
-    
+
                             </dd>
                             </dl>
-    
+
                             <dt><h4>Semantic Analysis</h4></dt><dl>
-    
+
                             <dd>
                                 Our semantic analysis include checks for Undeclared functions/variables,
                                 type mismatch (for the possibility of types other than Int),
                                 correct number/types of function parameters.
-    
+
                                 <p class="note">
                                     NOTE: There is a possibility of more stages of semantic analysis being implimented
                                     in the future, but it would be a supplemental feature for this project.
                                 </p>
-    
+
                                 <dl>
                                     <dt><h5>Symbol Table</h5></dt>
                                         <dd>
@@ -181,50 +182,50 @@
                                             Example symbol tables can be found under: <a href="C_EXAMPLES">Examples of C Programs and their Intermediate Representations</a>.
                                         </dd>
                                 </dl>
-    
+
                             </dd>
                             </dl>
-    
+
                             <!-- <dt><h4>TITLE</h4></dt><dl>
-    
+
                             <dd>
                                 DESCRIPTION
-    
+
                                 <dl>
                                     <dt><h5>SUB-TITLE</h5></dt>
                                         <dd>
                                             BODY
                                         </dd>
-    
+
                                     <dt><h5>SUB-TITLE</h5></dt>
                                         <dd>
                                             BODY
                                         </dd>
                                 </dl>
-    
+
                             </dd>
                             </dl> -->
-    
+
                         </dl>
                     </dd>
                     </dl>
                     <!--  End Frontend  -->
-    
-    
-    
-    
+
+
+
+
                     <!--  Start Optimization  -->
-    
+
                     <dl>
                         <dt><h3>Optimization</h3></dt>
                             <dd>
                             <dl>
-    
+
                                 <dt><h4>Intermediate Representations</h4></dt><dl>
-    
+
                                 <dd>
                                     For our IR, we decided to closely mimic Gimple, the IR used by GCC. In designing it, we aimed to keep as close as possible, but with the design decisions that made out lives easier in the long run. The basis of our optimization compenent of the compiler is converting one IR, the abstract syntax tree, to another, linear, IR. The resultant IR is then used to construct the assembly code in the Backend. The compiler as a whole allows for a few methods of interaction that all result in the linear IR. Building it from the AST and the symbol table or importing it through the commandline. In addition to this, the compiler does allow for a flag to specify the level of optimization that will be performed on the input.
-    
+
                                     <dl>
                                         <dt><h5>IR structure</h5></dt>
                                         <dd>
@@ -297,21 +298,21 @@
                                                     This object handles lines of the IR involving variable initialization. for instance it’s string representation: <br>
                                                     <pre><code>int a;</code></pre>
                                                     <p class="note">
-                                                        NOTE: Variable initializations are made for every variable and they cannot be done inline with assignment. When the inputted C program does do this inline, it is split up in our IR.
+                                                        NOTE: Variable initializations are made for every variable and they cannot be done inline with assignment. When the inputted C program does this in one line, it is split up in our IR.
                                                     </p>
                                                 </dd>
                                             </dl>
                                         </dd>
                                         <dt><h5>Building an IR (from AST and Symbol Table)</h5></dt>
                                             <dd>
-                                                In order to derive a linear IR from the AST and symbol table, we instatniate several <code>IRLine</code> objects which each represents some required part of the program, and individually breaks down into lower level instructions/operations than what is presented to the user in the AST. Each of these smaller building blocks can be seen above. There are cases where each <code>IRLine</code> only contains a singular building block, but in those cases there are special circumstances that require that to happen such as closing and opening of scopes through the use of the <code>IRBracket</code> class.
+                                                In order to derive a linear IR from the AST and symbol table, we instantiate several <code>IRLine</code> objects which each represents some required part of the program, and individually breaks down into lower level instructions/operations than what is presented to the user in the AST. Each of these smaller building blocks can be seen above. There are cases where each <code>IRLine</code> only contains a singular building block, but in those cases there are special circumstances that require that to happen such as closing and opening of scopes through the use of the <code>IRBracket</code> class.
                                             </dd>
-    
+
                                         <dt><h5>Importing an IR</h5></dt>
                                             <dd>
                                                 The importing of an IR works very much like how the lexing and parsing of a C file. We designed our own grammar and convert the output to the same format as something that was built through the use of a valid C file. This allows us to perform the same optimizations on the imported IR as the IR that is generated from a C file.
                                             </dd>
-    
+
                                         <dt><h5>Optimizing an IR</h5></dt>
                                             <dd>
                                                 As a group we decided to implement four different optimization mechanisms as a part of three total optimization
@@ -319,7 +320,7 @@
                                                 that there are slight optimizations done during the compilation process. <code>-O2</code> means that there are more
                                                 advanced optimizations done during the compilaion process. Keep in mind that they are by no means agressive, and
                                                 there is no risk of altered behavior of the program when using these optimizations.<br>
-                                                The following are the diffrent optimizations that we support:
+                                                The following are the different optimizations that we support:
                                                 <dl>
                                                     <dd>
                                                         Removing Unreferenced Variables<br>
@@ -331,45 +332,103 @@
                                                 </dl>
                                             </dd>
                                     </dl>
-    
+
                                 </dd>
-    
+
                             </dl>
                             </dd>
                     </dl>
-    
+
                     <!--  End Optimization  -->
-    
+
                     <!-- Start Backend -->
                     <dl>
                         <dt><h3>Backend</h3></dt>
                             <dd>
                             <dl>
-                                Our compiler compiles to GAS syntax AMD64 assembly, and uses x86-64 calling conventions. In order to generate assembly, we use two "phases", Assembly Generation and Register Allocation. 
+
                                 <dt><h4>Assembly Generation</h4></dt><dl>
-    
+
                                 <dd>
-    Since our IR was converted to a series of nodes that represent each IR line type we expect, we can leverage that same IRNode class in order to generate our initial assembly. This initial assembly still uses variable names instead of registers, and we then do proper register allocation in the next "phase". 
-    Each IRNode class has a corresponding function, called "asm", that uses the built IRNode that has already been built in our previous optimization step, and uses the information stored in it to convert it to an assembly representation. 
-    
+    Since our IR was converted to a series of nodes that represent each IR line type we expect, we can leverage that same IRNode class in order to generate our initial assembly. This initial assembly still uses variable names instead of registers, and we then do proper register allocation in the next "phase".
+    Each IRNode class has a corresponding function, called "asm", that uses the built IRNode that has already been built in our previous optimization step, and uses the information stored in it to convert it to an assembly representation.
+
     In these "asm" functions we build a list of ASMNodes, another class we have defined, and return that list of ASMNodes. Then, we call the asm function on each IRNode that is produced via our optimization step, and append the list that each asm function returns to a master list. This master list is then passed into a class called allocator, that does register allocation.
-    
+
                                     <dl>
                                         <dt><h5>ASMNode</h5></dt>
                                         <dd>
-                                        The ASMNode class creates an object with a series of variables that determine important information for the register allocation step. The class expects an op, left, right and a kwargs dictionary.  A series of useful flags are passed in as the dictionary kwargs to the initialization of an ASMNode, and then the initializaiton goes through this dictionary to set the appropriate flags for the new ASMNode. 
-    
-                                        It stores most instructions in the general form of "op left, right", and for some nodes the left and right can be none. 
-    
-                                        Some examples of flags om the class include "leftNeedsReg", which indicates that in register allocation we will need to allocate a register for the left operand of the given ASMNode, and the flag "leftIsLiteral", which indicates that the left operand of the ASMNode is a literal (i.e $4). (There are various other flags, thesea are just two examples.) 
+                                        The ASMNode class creates an object with a series of variables that determine important information for the register allocation step. The class expects an op, left, right and a kwargs dictionary.  A series of useful flags are passed in as the dictionary kwargs to the initialization of an ASMNode, and then the initializaiton goes through this dictionary to set the appropriate flags for the new ASMNode.
+
+                                        It stores most instructions in the general form of "op left, right", and for some nodes the left and right can be none.
+
+                                        Some examples of flags om the class include "leftNeedsReg", which indicates that in register allocation we will need to allocate a register for the left operand of the given ASMNode, and the flag "leftIsLiteral", which indicates that the left operand of the ASMNode is a literal (i.e $4). (There are various other flags, thesea are just two examples.)
                                         </dd>
                                     </dl>
                                 <dt><h4>Register Allocation</h4></dt><dl>
-    
+
                                 <dd>
-                                The register allocation step uses a class called "allocator" in order to go through a list of ASMNodes that is passed in, and then modify their left and right operands to be replaced by the appropriate registers where necessary. In order to do this, it separates the different scenarios where different register allocations need to be done by making a series of "cases", each of which is determined by the flags set in the ASMNode class. Then, in these cases it uses a class that represents a directory of registers, and a registerData class to determime what registers are open, and what is in those registers at what given time. As well as this, we implemented a stack class, which is used to mimic the stack in x64 assembly, and move things on, off, and determine what is where in the stack. Finally, after register allocation, the class returns a new list of ASMNodes, with some new additions that are necessary for the register allocation, and the variables in the initial list changed to the appropriate registers. 
+                                The register allocation step uses a class called "allocator" in order to go through a list of ASMNodes that is passed in, and then modify their left and right operands to be replaced by the appropriate registers where necessary. In order to do this, it separates the different scenarios where different register allocations need to be done by making a series of "cases", each of which is determined by the flags set in the ASMNode class. Then, in these cases it uses a class that represents a directory of registers, and a registerData class to determime what registers are open, and what is in those registers at what given time. As well as this, we implemented a stack class, which is used to mimic the stack in x64 assembly, and move things on, off, and determine what is where in the stack. Finally, after register allocation, the class returns a new list of ASMNodes, with some new additions that are necessary for the register allocation, and the variables in the initial list changed to the appropriate registers. We attempt to follow an optimal register allocation algorithm, with some strange (but functioning) results sometimes.
                                 </dd>
                             </dl>
+                            </dd>
+
+                            <dd>
+                                <dl>
+                                    <dt><h4>Instruction Set</h4></dt><dl></dl>
+                                    <dd>
+                                        <dl>
+                                            <dt><h5>Assignment Instructions</h5></dt>
+                                            <dd>
+                                                <ul>
+                                                    <li>mov</li>
+                                                    <li>pop</li>
+                                                    <li>push</li>
+                                                </ul>
+                                            </dd>
+                                            <dt><h5>Arithmetic and Bitwise Instruction</h5></dt>
+                                            <dd>
+                                                <ul>
+                                                    <li>add</li>
+                                                    <li>sub</li>
+                                                    <li>imul</li>
+                                                    <li>idiv</li>
+                                                    <li>sar</li>
+                                                    <li>sal</li>
+                                                    <li>not</li>
+                                                    <li>or</li>
+                                                    <li>and</li>
+                                                    <li>xor</li>
+                                                    <li>neg</li>
+                                                    <li>inc</li>
+                                                    <li>dec</li>
+                                                </ul>
+                                            </dd>
+                                            <dt><h5>Control Flow</h5></dt>
+                                            <dd>
+                                                <ul>
+                                                    <li>jne</li>
+                                                    <li>je</li>
+                                                    <li>jle</li>
+                                                    <li>jge</li>
+                                                    <li>jl</li>
+                                                    <li>jg</li>
+                                                    <li>test</li>
+                                                    <li>sete</li>
+                                                    <li>cmp</li>
+                                                </ul>
+                                            </dd>
+                                            <dt><h5>Misc Instructions</h5></dt>
+                                            <dd>
+                                                <ul>
+                                                    <li>jmp</li>
+                                                    <li>ret</li>
+                                                    <li>call</li>
+                                                </ul>
+                                            </dd>
+                                        </dl>
+                                    </dd>
+                                </dl>
                             </dd>
                     </dl>
                 </dd>
@@ -377,4 +436,4 @@
         </dd>
     </dl>
     </section>
-    
+
