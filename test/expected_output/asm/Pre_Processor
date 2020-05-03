@@ -1,0 +1,20 @@
+.file "Pre_Processor.c"
+.text
+.globl	main
+.type	main,	@function
+main:
+mov %rsp, %rbp
+push %rbx
+push %r12
+push %r13
+push %r14
+push %r15
+mov $500, %rcx
+mov %rcx, %rax
+add $0, %rsp
+pop %r15
+pop %r14
+pop %r13
+pop %r12
+pop %rbx
+ret

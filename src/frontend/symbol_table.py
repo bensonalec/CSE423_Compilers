@@ -84,7 +84,6 @@ class symbol_table():
                 if index == 0:
                     # If a function is declared after main without a prototype
                     if [x for x in self.symbols if x.name == "main" and x.entry_type == {value: key for key, value in en_map.items()}["Function"]] != [] and [x for x in self.symbols if cur.Node.children[1].name == x.name] == []:
-                        # print(f'Function Not Properly Declared {cur.Node.children[0].name}')
                         self.undefined.append(Entry({value: key for key, value in en_map.items()}["Function"], cur.Node.children[1].name, cur.Node.children[0].name, cur.Scope, [x.name for x in cur.Node.children[0].children]))
                     # If a function is declared befor main is declared without a prototype
                     elif [x for x in self.symbols if x.name == "main" and x.entry_type == {value: key for key, value in en_map.items()}["Function"]] == []:
@@ -102,7 +101,6 @@ class symbol_table():
                 # Function Call
                 elif index == 2:
                     if [x for x in self.symbols if x.entry_type == {value: key for key, value in en_map.items()}["Function"] and x.name == cur.Node.children[0].name] == []:
-                        # print(f'Function Undefined {cur.Node.children[0].name}')
                         self.undefined.append(Entry({value: key for key, value in en_map.items()}["Function"],cur.Node.children[0].name, "None", cur.Scope, [x.name for x in cur.Node.children[0].children]))
                     else:
                         ref = [x for x in self.symbols if en_map[x.entry_type] == "Function" and x.name == cur.Node.children[0].name]
@@ -203,9 +201,6 @@ class symbol_table():
         """
         Prints the known symbols in the symbol table to stdout
         """
-        # if len(self.symbols) == 0:
-        #     print ("No defined symbols available")
-        #     return
 
         col_lengths = [
             max([len(x.name) for x in self.symbols] + [len("Name")]),
@@ -221,15 +216,11 @@ class symbol_table():
         print (f"-{'-'*col_lengths[0]}-+-{'-'*col_lengths[1]}-+-{'-'*col_lengths[2]}-+-{'-'*col_lengths[3]}-+-{'-'*col_lengths[4]}-")
         for x in self.symbols:
             print(f" {x.name:>{col_lengths[0]}} | {en_map[x.entry_type]:>{col_lengths[1]}} | {x.type :>{col_lengths[2]}} | {x.scope :<{col_lengths[3]}} | {', '.join(x.modifiers) :>{col_lengths[4]}}")
-        # print("")
 
     def print_unknown_symbols(self):
         """
         Prints the unknown symbols in the symbol table to stdout
         """
-        # if len(self.undefined) == 0:
-        #     print ("No undefined symbols available")
-        #     return
 
         col_lengths = [
             max([len(x.name) for x in self.undefined] + [len("Name")]),
@@ -242,4 +233,3 @@ class symbol_table():
         print (f"-{'-'*col_lengths[0]}-+-{'-'*col_lengths[1]}-+-{'-'*col_lengths[2]}-")
         for x in self.undefined:
             print(f" {x.name:>{col_lengths[0]}} | {en_map[x.entry_type]:>{col_lengths[1]}} | {x.type :>{col_lengths[2]}}")
-        # print("")

@@ -1,0 +1,79 @@
+.file "Return.c"
+.text
+.globl	function
+.type	function,	@function
+function:
+mov %rsp, %rbp
+push %rbx
+push %r12
+push %r13
+push %r14
+push %r15
+add $0, %rsp
+pop %r15
+pop %r14
+pop %r13
+pop %r12
+pop %rbx
+ret
+.globl	main
+.type	main,	@function
+main:
+mov %rsp, %rbp
+push %rbx
+push %r12
+push %r13
+push %r14
+push %r15
+xor %rcx, %rcx
+mov $1, %rbx
+mov %rbx, %rax
+add $0, %rsp
+pop %r15
+pop %r14
+pop %r13
+pop %r12
+pop %rbx
+ret
+call function
+mov %rax, %rdi
+mov %rdi, %rbx
+mov %rbx, %rax
+add $0, %rsp
+pop %r15
+pop %r14
+pop %r13
+pop %r12
+pop %rbx
+ret
+mov $1, %rsi
+add $1, %rsi
+mov %rsi, %rbx
+mov %rbx, %rax
+add $0, %rsp
+pop %r15
+pop %r14
+pop %r13
+pop %r12
+pop %rbx
+ret
+mov $2, %r8
+add $1, %r8
+mov %r8, %rbx
+mov %rbx, %rax
+add $0, %rsp
+pop %r15
+pop %r14
+pop %r13
+pop %r12
+pop %rbx
+ret
+mov %rcx, %rbx
+mov %rbx, %rax
+add $0, %rsp
+pop %r15
+pop %r14
+pop %r13
+pop %r12
+pop %rbx
+ret

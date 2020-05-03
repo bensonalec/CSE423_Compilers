@@ -19,31 +19,31 @@
             |   |   |-- int
             |   |   |   `-- register
             |   |   `-- x
-            |   `-- NULL
+            |   `-- 0
             |-- =
             |   |-- var
             |   |   |-- short
             |   |   |   `-- signed
             |   |   `-- t
-            |   `-- NULL
+            |   `-- 0
             |-- =
             |   |-- var
             |   |   |-- long
             |   |   |   `-- const
             |   |   `-- rrr
-            |   `-- NULL
+            |   `-- 0
             |-- =
             |   |-- var
             |   |   |-- float
             |   |   |   `-- volatile
             |   |   `-- qqq
-            |   `-- NULL
+            |   `-- 0
             |-- =
             |   |-- var
             |   |   |-- double
             |   |   |   `-- static
             |   |   `-- aaa
-            |   `-- NULL
+            |   `-- 0
             |-- =
             |   |-- var
             |   |   |-- int
@@ -55,4 +55,4 @@
                 |   |-- int
                 |   |   `-- extern
                 |   `-- q
-                `-- NULL
+                `-- 0

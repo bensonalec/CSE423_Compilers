@@ -1,0 +1,43 @@
+.file "Assignment.c"
+.text
+.globl	function
+.type	function,	@function
+function:
+mov %rsp, %rbp
+push %rbx
+push %r12
+push %r13
+push %r14
+push %r15
+mov $1, %rcx
+mov %rcx, %rax
+add $0, %rsp
+pop %r15
+pop %r14
+pop %r13
+pop %r12
+pop %rbx
+ret
+.globl	main
+.type	main,	@function
+main:
+mov %rsp, %rbp
+push %rbx
+push %r12
+push %r13
+push %r14
+push %r15
+mov $1, %rcx
+mov $1, %rbx
+add $1, %rbx
+mov %rbx, %rdi
+call function
+mov %rax, %rsi
+mov %rsi, %r8
+add $0, %rsp
+pop %r15
+pop %r14
+pop %r13
+pop %r12
+pop %rbx
+ret

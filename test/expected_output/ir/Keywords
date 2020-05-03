@@ -7,18 +7,19 @@ return D.1234;
 main ()
 {
 int D.1235;
-register int x;
-signed short t;
-const long rrr;
-volatile float qqq;
-static double aaa;
-unsigned int y;
-extern int q;
-x = NULL;
-t = NULL;
-rrr = NULL;
-qqq = NULL;
-aaa = NULL;
-y = NULL;
-q = NULL;
+register int rV_x;
+signed short rV_t;
+const long rV_rrr;
+volatile float rV_qqq;
+static double rV_aaa;
+unsigned int rV_y;
+extern int rV_q;
+rV_x = 0;
+rV_t = 0;
+rV_rrr = 0;
+rV_qqq = 0;
+rV_aaa = 0;
+rV_y = NULL;
+rV_q = 0;
+return;
 }

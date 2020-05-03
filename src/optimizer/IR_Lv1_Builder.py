@@ -32,7 +32,7 @@ class LevelOneIR():
         Constructs the linear representation for the object.
 
         Returns:
-            IR: A collection of strings and IRLine objects which can be optimized and/or transformed into assembly.
+            IR: A collection of IRLine objects which can be optimized and/or transformed into assembly.
         """
         sym = self.symTable
         ntv = self.astHead
@@ -47,6 +47,7 @@ class LevelOneIR():
                 # Each entry is the '(func_node, body_node)'
                 bodyList.append((x,x.children[3]))
 
+        # Digits are used for contructing unique labels
         returnDigit = 1234
         labelDigit = returnDigit + 1
         lines = []
@@ -59,19 +60,22 @@ class LevelOneIR():
             tmp_lines , labelDigit = returnLines(i[1], returnDigit, labelDigit)
             lines.extend(tmp_lines)
 
+            # add a return statement if function didnt have one
+            if not isinstance(lines[-1].treeList[-1], irl.IRReturn):
+                lines.append(irl.IRLine.singleEntry(irl.IRReturn(None)))
+
             # End of function wrapper, add closing bracket
-            lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=False)))
+            lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=False, functionDecl=True)))
 
             # NOTE: 'labelDigit' should be the newest and unused digit
             returnDigit = labelDigit
 
             self.IR = lines
 
+        # RESET THE FRICKING GLOBAL
+        irl.tmpVarIndex = 0
+
         return self.IR
-
-
-    def __str__(self):
-        return "\n".join([str(x) for x in self.IR]) + "\n"
 
     def optimize(self, opt):
         """
@@ -85,6 +89,7 @@ class LevelOneIR():
             self.remove_unused_vars()
             pass
 
+        # constant folding/propagation
         if opt > 1:
             # A dictionary containing all the values of variables that can at some point be reduced.
             self.var_values = {
@@ -319,6 +324,12 @@ class LevelOneIR():
                 line.treeList.pop(node)
 
     def remove_unused_funcs(self):
+        """
+        Removes function that are not reference in the symbol table. They can be removed if not used.
+        """
+
+
+
         ir = self.IR
         inFunction = False
         to_remove = []
@@ -355,6 +366,15 @@ class LevelOneIR():
         self.IR = ir
 
     def constant_folding(self,x):
+        """
+        Peforms constant folding  on a given line in the IR
+
+        Args:
+            x: an IRNode object
+
+        Returns:
+            A boolean indicating whether it changed anything, and the node that has been modified
+        """
         changed = False
         if isinstance(x,irl.IRArth):
             notFound = True
@@ -425,7 +445,16 @@ class LevelOneIR():
         return changed,x
 
     def constant_propagation(self, node, var_val):
+        """
+        Performs constant propagation on a given IRNode if deemed possible.
 
+        Args:
+            node: The IRNode object to be considered
+            var_val: A dictionary of all the variables and their values which are deemed safe to replace
+
+        Returns:
+            The return value describes whether any propogation occurred during the function call
+        """
         # NOTE: The current issue is that the propogation is goint to have to exit and re enter the function every time to achieve the following:
         # Clear the tempoary variables per line as they are re used
         # Avoid propogating too far so that assignments in the future that may happen after certain other computations and assignments propogate the correct value
@@ -449,10 +478,6 @@ class LevelOneIR():
                 node.rhs = var_val[node.rhs]
                 changed = True
 
-        elif isinstance(node, irl.IRSpecial):
-            pass
-            # Assigning a value for a post and pre increment is extremly difficult due to the fact that it regularly occurs in loops and constants arent useful there.
-
         elif isinstance(node, irl.IRAssignment):
             if node.rhs in var_val and var_val[node.rhs] != "Undef":
                 node.rhs = var_val[node.rhs]
@@ -471,32 +496,8 @@ class LevelOneIR():
 
         return changed, var_val
 
-def buildBoilerPlate(symTable):
-    """
-    Generates the function names and parameters from symbol table.
-
-    Args:
-        symTable: The symbol table we get from previous stages in the compiler.
-    Returns:
-        A list containing function name and parameters.
-    """
-    namesandparams = []
-    functionNames = [(x.name,x.type) for x in symTable.symbols if x.is_function]
-    params = [(x.name,x.scope,x.type) for x in symTable.symbols if x.is_param]
-
-    for x in functionNames:
-        track = 0
-        paramsLi = []
-        for i in params:
-            if x[0] == i[1].split("/")[1]:
-                track+=1
-
-                paramsLi.append((i[2],i[0]))
-        if track == 0:
-            namesandparams.append((x[0],paramsLi,x[1]))
-        else:
-            namesandparams.append((x[0],paramsLi,x[1]))
-    return namesandparams
+    def __str__(self):
+        return "\n".join([str(x) for x in self.IR]) + "\n"
 
 def beginWrapper(function_tuple, returnDigit):
     """
@@ -506,16 +507,21 @@ def beginWrapper(function_tuple, returnDigit):
         lines: The lines of the start of the function
     """
     lines = []
-    params = ""
+    params = []
     func_type = function_tuple[0].children[0].name
     func_name = function_tuple[0].children[1].name
 
     for var in function_tuple[0].children[2].children:
         if var.name == "var":
-            params += f"{var.children[0].name} {var.children[1].name},"
 
-    lines.append(irl.IRLine.singleEntry(irl.IRFunctionDecl(func_name, params[:-1])))
-    lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=True)))
+            # list of all modifiers
+            modifiers = f"{' '.join([x.name for x in var.children[0].children])}{' ' if [x.name for x in var.children[0].children] else ''}"
+
+            # append entry for parameter
+            params.append(f"{' '.join([modifiers])}{var.children[0].name} rV_{var.children[1].name}")
+
+    lines.append(irl.IRLine.singleEntry(irl.IRFunctionDecl(func_name, params)))
+    lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=True, functionDecl=True)))
 
     if func_type != "void":
         modifiers = f"{''.join([x.name for x in function_tuple[0].children[0].children if x.name in ['signed', 'unsigned']])}{' ' if [x.name for x in function_tuple[0].children[0].children if x.name in ['signed', 'unsigned']] else ''}"
@@ -523,7 +529,7 @@ def beginWrapper(function_tuple, returnDigit):
 
     return lines
 
-def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None):
+def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None, breakDigit=None, continueDigit=None):
     """
     Produces a linear representation of the content nested within `node`.
 
@@ -533,7 +539,9 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
         labelDigit: A list of all previously used label values.
         successDigit: The label value to jump to if there is a `continue`.
         failureDigit: The label value to jump to if there is a `break`.
-        prefix: The string prefix for indenting the given line.
+        breakDigit: The label used for break statements to have a correct label so the control flow is correct.
+
+        continueDigit: The label used for a continue statement to know the 'ultimate' success of whatever block it is in
 
     Returns:
         lines: The lines produced from the content.
@@ -547,7 +555,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
         if il:
             for x in il:
                 modifiers = f"{' '.join([y.name for y in x.children[0].children])}{' ' if [y.name for y in x.children[0].children] else ''}"
-                lines.append(irl.IRLine.singleEntry(irl.IRVariableInit(modifiers, x.children[0].name, x.children[1].name), [labelDigit]))
+                lines.append(irl.IRLine.singleEntry(irl.IRVariableInit(modifiers, x.children[0].name, f"rV_{x.children[1].name}"), [labelDigit]))
 
     for element in node.children:
         try:
@@ -595,7 +603,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                 labelDigit += 2
 
                 # recursivly deal with the body of the loop
-                tmp, labelDigit = returnLines(element.children[3], returnDigit, labelDigit, loopStart, loopEnd)
+                tmp, labelDigit = returnLines(element.children[3], returnDigit, labelDigit, loopStart, loopEnd, breakDigit=loopEnd, continueDigit=loopStart)
                 lines.extend(tmp)
 
                 # Add the "end-of-loop" assignment/arithmetic
@@ -674,7 +682,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                             ns = True
 
                         #Get lines for the body and assign new labeldigit
-                        tmp, labelDigit = returnLines(case.children[0], returnDigit, labelDigit, success_label, failure_label)
+                        tmp, labelDigit = returnLines(case.children[0], returnDigit, labelDigit, success_label, failure_label, failureDigit, successDigit)
                         lines.extend(tmp)
 
                         if ns:
@@ -712,7 +720,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                         ns = True
 
                     #Get lines for the if body and assign new labeldigit
-                    tmp, labelDigit = returnLines(case.children[1], returnDigit,  labelDigit, success_label, failure_label)
+                    tmp, labelDigit = returnLines(case.children[1], returnDigit,  labelDigit, success_label, failure_label, failureDigit, successDigit)
                     lines.extend(tmp)
 
                     if ns:
@@ -802,7 +810,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                 labelDigit += 2
 
                 # recursivly deal with the body of the loop
-                tmp, labelDigit = returnLines(element.children[1], returnDigit, labelDigit, loopStart, loopEnd)
+                tmp, labelDigit = returnLines(element.children[1], returnDigit, labelDigit, loopStart, loopEnd, breakDigit=loopEnd, continueDigit=loopStart)
                 lines.extend(tmp)
 
                 if ns:
@@ -836,11 +844,13 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 
             elif ind == 7:
                 # Break
-                lines.append(irl.IRLine.singleEntry(irl.IRGoTo(f"<D.{failureDigit}>"), [labelDigit]))
+                if breakDigit:
+                    lines.append(irl.IRLine.singleEntry(irl.IRGoTo(f"<D.{breakDigit}>"), [labelDigit]))
 
             elif ind == 8:
                 # Continue
-                lines.append(irl.IRLine.singleEntry(irl.IRGoTo(f"<D.{successDigit}>"), [labelDigit]))
+                if continueDigit:
+                    lines.append(irl.IRLine.singleEntry(irl.IRGoTo(f"<D.{continueDigit}>"), [labelDigit]))
 
             elif ind == 9:
                 # Goto
@@ -855,7 +865,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
                     lines.extend(temp_lines)
 
             elif ind == 11:
-                # Special assignment? (++, --)
+                # Special assignment (++, --)
                 line = irl.IRLine(element, tvs=[])
                 tvs, labelList = line.retrieve()
                 lines.append(line)
@@ -866,7 +876,6 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None)
 
         except Warning:
             exc_type, exc_obj, exc_tb = sys.exc_info()
-            # print(exc_type, exc_tb.tb_lineno)
             pass
 
     return lines, labelDigit

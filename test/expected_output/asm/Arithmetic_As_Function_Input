@@ -1,0 +1,40 @@
+.file "Arithmetic_As_Function_Input.c"
+.text
+.globl	function
+.type	function,	@function
+function:
+mov %rsp, %rbp
+push %rbx
+push %r12
+push %r13
+push %r14
+push %r15
+mov %rdi, %rcx
+mov %rcx, %rax
+add $0, %rsp
+pop %r15
+pop %r14
+pop %r13
+pop %r12
+pop %rbx
+ret
+.globl	main
+.type	main,	@function
+main:
+mov %rsp, %rbp
+push %rbx
+push %r12
+push %r13
+push %r14
+push %r15
+mov $1, %rdi
+call function
+mov %rax, %rcx
+mov %rcx, %rbx
+add $0, %rsp
+pop %r15
+pop %r14
+pop %r13
+pop %r12
+pop %rbx
+ret

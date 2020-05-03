@@ -40,7 +40,7 @@ def buildAST(parseHead):
 
             # Check if there is a value to initialize the variable to
             if not [x for x in c[0].content if 'value' in x.__dict__ and x.value == "="]:
-                ASTcurrent.children.append(ASTNode("NULL", ASTcurrent.parent))
+                ASTcurrent.children.append(ASTNode("0", ASTcurrent.parent))
 
             expansion = [(x, ASTcurrent.children[0]) for x in c[0].content if 'content' in x.__dict__ and x.token == "var_type"]
             expansion += [(x, ASTcurrent) for x in c[0].content if 'content' in x.__dict__ and x.token != "var_type"]

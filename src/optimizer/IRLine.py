@@ -7,6 +7,11 @@ from inspect import getsourcefile
 from importlib.machinery import SourceFileLoader
 
 ast = SourceFileLoader("AST_builder", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/../frontend/AST_builder.py").load_module()
+asmn = SourceFileLoader("ASMNode", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/../backend/ASMNode.py").load_module()
+stk = SourceFileLoader("stack", f"{os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))}/../backend/stack.py").load_module()
+
+global tmpVarIndex
+tmpVarIndex = 0
 
 class IRLine():
     """
@@ -22,6 +27,7 @@ class IRLine():
             labelList: The list of used label names
             prefix: The output prefix
         """
+
         self.astNode = node
         self.treeList = []
 
@@ -74,7 +80,7 @@ class IRLine():
             self.labelList.append(failure)
 
         ns = root.list_POT()
-
+        global tmpVarIndex
         ns = [x for x in ns if x.name in self.arth_ops or x.name in self.spec_ops or x.name in self.ass_ops or x.name in self.id_ops or x.name in self.comp_ops]
         for node in ns:
             if node.name in self.comp_ops:
@@ -98,32 +104,30 @@ class IRLine():
                 )
 
             elif node.name in self.arth_ops:
-                
-                if node.name == "!" and node.children[0].name in self.comp_ops:
-                    # Need to skip this logical operation, the comparison will then be reversed when it is caught.
-                    continue
-
+                tmpVarIndex += 1
                 self.treeList.append(
                     IRArth(
                         node,
                         [self.tvs.pop() for x in node.children if len(x.children) != 0],
-                        self.tvs
+                        f"tV_{tmpVarIndex}"
                     )
                 )
 
-                self.tvs.append(self.treeList[-1].var)
+                self.tvs.append(f"tV_{tmpVarIndex}")
 
             elif node.name in self.spec_ops:
                 var = self.tvs.pop()
 
+                tmpVarIndex += 1
+
                 # Create a temporay AST to deal with storing of the current value of the variable
-                tmpNode = ast.ASTNode("=", None)
-                tmpNode.children.append(ast.ASTNode(f"_{len(self.tvs)}", tmpNode))
-                tmpNode.children.append(ast.ASTNode(var, tmpNode))
+                # tmpNode = ast.ASTNode("=", None)
+                # tmpNode.children.append(ast.ASTNode(f"_{tmpVarIndex}", tmpNode))
+                # tmpNode.children.append(ast.ASTNode(var, tmpNode))
 
                 self.treeList.append(
                     IRAssignment(
-                        f"_{len(self.tvs)}",
+                        f"tV_{tmpVarIndex}",
                         var
                     )
                 )
@@ -142,7 +146,7 @@ class IRLine():
                         )
                     )
 
-                self.tvs.append(tmpNode.children[0].name)
+                self.tvs.append(f"tV_{tmpVarIndex}")
 
             elif node.name in self.ass_ops:
                 if self.ass_ops.index(node.name) == 0:
@@ -151,10 +155,10 @@ class IRLine():
                     # Case 1: Assignment is constant. ie. int i = 0
                     if len(node.children[1].children) == 0:
                         lhs = self.tvs.pop()
-                        rhs = node.children[1].name
+                        rhs = f"{node.children[1].name}"
                     # Case 2: Assignment is complex
                     else:
-                        lhs = node.children[0].children[len(node.children[0].children)-1].name
+                        lhs = f"rV_{node.children[0].children[len(node.children[0].children)-1].name}"
                         rhs = self.tvs.pop()
 
                     self.treeList.append(
@@ -174,28 +178,44 @@ class IRLine():
                     r = ast.ASTNode(node.name[:-1], p)
                     p.children.append(r)
 
+                    rc = None
+                    lc = None
+
                     # assign the variable as the left operand of the new expression
-                    r.children.append(node.children[0])
+                    if len(node.children[1].children) > 0:
+                        rc = ast.ASTNode(self.tvs.pop(), r)
+                    else:
+                        rc = node.children[1]
+
+                    # assign the variable as the left operand of the new expression
+                    if len(node.children[0].children) > 0:
+                        lc = ast.ASTNode(self.tvs.pop(), r)
+                    else:
+                        lc = node.children[0]
 
                     # assign the remaining operations as the right operand of the new expression
-                    r.children.append(node.children[1])
+
+                    r.children.append(lc)
+                    r.children.append(rc)
 
                     self.expression_breakdown(p, success, failure)
 
             elif node.name in self.id_ops:
                 if node.name == "var":
-                    self.tvs.append(f"{node.children[len(node.children)-1].name}")
+                    self.tvs.append(f"rV_{node.children[len(node.children)-1].name}")
                 elif node.name == "call":
                     # list of indices that correspond to the complex parameters of the function call
                     complexP = [node.children[0].children.index(x) for x in node.children[0].children if len(x.children) > 0]
                     simpleP = [x for x in range(len(node.children[0].children)) if x not in complexP]
 
                     params = [self.tvs.pop() for x in range(len(node.children[0].children)) if x in complexP]
+
+                    tmpVarIndex += 1
                     self.treeList.append(
                         IRFunctionAssign(
                             node,
                             [params.pop() if x in complexP else node.children[0].children[x].name for x in range(len(node.children[0].children))],
-                            self.tvs
+                            f"tV_{tmpVarIndex}"
                         )
                     )
 
@@ -302,7 +322,7 @@ class IRNode():
     def __str__(self):
         pass
 
-    def __repr__(self):
+    def asm(self):
         pass
 
 
@@ -320,8 +340,15 @@ class IRJump(IRNode):
     def __str__(self):
         return f"{self.name}:"
 
-    def __repr__(self):
-        pass
+    def asm(self):
+        """
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRJump
+        """
+        return [asmn.ASMNode(f"{self.name.replace('<','').replace('>','')}:",None,None,dontTouch=True)]
+
 
 class IRGoTo(IRNode):
     """
@@ -337,8 +364,15 @@ class IRGoTo(IRNode):
     def __str__(self):
         return f"goto {self.name};"
 
-    def __repr__(self):
-        pass
+    def asm(self):
+        """
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRGoTo
+        """
+
+        return [asmn.ASMNode("jmp", self.name.replace("<","").replace(">",""), None, dontTouch=True)]
 
 class IRIf(IRNode):
     """
@@ -389,9 +423,6 @@ class IRIf(IRNode):
 
     def __str__(self):
         return f"if ({self.lhs} {self.comp} {self.rhs}) goto <D.{self.success}>; else goto <D.{self.failure}>;"
-
-    def __repr__(self):
-        pass
     def fileInit(self,lhs,rhs,compOp,succ,fail):
         """
         Args:
@@ -407,22 +438,101 @@ class IRIf(IRNode):
         self.success = succ
         self.failure = fail
 
+    def asm(self):
+        """
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRIf
+        """
+
+        l = []
+
+        i = 0
+        v1 = self.lhs
+        v2 = self.rhs
+
+        c_op = ""
+        j_op = ""
+
+        try:
+            v1 = int(v1)
+        except ValueError:
+            try:
+                v1 = float(v1)
+            except ValueError:
+                pass
+
+        try:
+            v2 = int(v2)
+        except ValueError:
+            try:
+                v2 = float(v2)
+            except ValueError:
+                pass
+
+        if v1 == v2:
+            if self.comp in ["==", "<=", ">="]:
+                return [asmn.ASMNode("jmp", f"D.{self.success}", None, dontTouch=True)]
+            else:
+                return [asmn.ASMNode("jmp", f"D.{self.failure}", None, dontTouch=True)]
+        else:
+            
+            if isinstance(v1, int):
+                if v1 == 0:
+                    l.append(asmn.ASMNode("xor", None, None, leftNeedsReg=True, rightNeedsReg=True))
+                    v1 = None
+                else:
+                    l.append(asmn.ASMNode("mov", f"${v1}", None, rightNeedsReg=True))
+                    v1 = f"${v1}"
+            if isinstance(v2, int):
+                if v2 == 0:
+                    l.append(asmn.ASMNode("xor",  None, None, leftNeedsReg=True, rightNeedsReg=True))
+                    v2 = None
+                else:
+                    l.append(asmn.ASMNode("mov", f"${v2}", None, rightNeedsReg=True))
+                    v2 = f"${v2}"
+
+        if self.comp == "==":
+            c_op = "test"
+            j_op = "je"
+        elif self.comp == "!=":
+            c_op = "test"
+            j_op = "jne"
+        elif self.comp == "<=":
+            c_op = "cmp"
+            j_op = "jle"
+        elif self.comp == ">=":
+            c_op = "cmp"
+            j_op = "jge"
+        elif self.comp == "<":
+            c_op = "cmp"
+            j_op = "jl"
+        elif self.comp == ">":
+            c_op = "cmp"
+            j_op = "jg"
+        l.append(asmn.ASMNode(c_op, v1, v2, leftNeedsReg=True, rightNeedsReg=True))
+        l.append(asmn.ASMNode(j_op, f"D.{self.success}", None, dontTouch=True))
+        l.append(asmn.ASMNode("jmp", f"D.{self.failure}", None,dontTouch = True))
+
+        return l
+
 class IRArth(IRNode):
     """
     Intermediate representation node for an arithmetic/assignment operation.
     """
-    def __init__(self, node, ops, tvs):
+    def __init__(self, node, ops, varName):
         """
         Args:
             node: The AST node for the arithmetical expression
             ops: The potential complex operands for the expression
             tvs: The tempoary variable stack
         """
-        if(node == None and ops == None and tvs == None):
+        if(node == None and ops == None):
             pass
         else:
             self.node = node
-            self.var = f"_{len(tvs)}"
+            self.var = varName
 
             self.operator = node.name
             self.lhs = None
@@ -458,8 +568,156 @@ class IRArth(IRNode):
         else:
             return f"{self.var} = {self.operator}{self.lhs};"
 
-    def __repr__(self):
-        pass
+    def asm(self):
+        """
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRArht node
+        """
+
+        l = []
+
+        i = 0
+        spec_op = False
+
+        v1 = self.lhs
+        v2 = self.rhs
+
+        asm_op = ""
+
+        try:
+            v1 = int(v1)
+        except ValueError:
+            try:
+                v1 = float(v1)
+            except ValueError:
+                pass
+
+        if v2:
+            try:
+                v2 = int(v2)
+            except ValueError:
+                try:
+                    v2 = float(v2)
+                except ValueError:
+                    pass
+
+        v1InReg = False
+        v2InReg = False
+
+        if isinstance(v1, int):
+            v1 = f"${v1}"
+        if isinstance(v2, int):
+            if v2 == 0:
+                l.append(asmn.ASMNode("xor",  self.var,  self.var, leftNeedsReg=True, rightNeedsReg=True))
+            v2 = f"${v2}"
+
+        if self.operator == "+":
+            asm_op = "add"
+            if v2 == None:
+                l.extend([
+                    asmn.ASMNode("mov", v1, self.var, rightNeedsReg=True),
+                ])
+                spec_op = True
+        elif self.operator == "-":
+            if v2 == None:
+                l.extend([
+                    asmn.ASMNode("mov", v1, self.var, rightNeedsReg=True),
+                    asmn.ASMNode("neg", self.var, None, leftNeedsReg=True),
+                ])
+                spec_op = True
+            else:
+                l.extend([
+                    asmn.ASMNode("mov", v1, self.var),
+                    asmn.ASMNode("sub", v2, self.var)
+                ])
+                spec_op = True
+        elif self.operator == "*":
+            asm_op = "imul"
+            if v1.startswith("$"):
+                l.extend([
+                    asmn.ASMNode("mov",v2,self.var),
+                    asmn.ASMNode("imul",self.var,self.var,aux=v1)
+                ])
+                spec_op = True
+        elif self.operator == "/":
+            if v2.startswith("$"):
+                l.append(asmn.ASMNode("mov", v2, None, rightNeedsReg=True))
+            l.extend([
+                asmn.ASMNode("xor", "rdx", "rdx", dontTouch=True),
+                asmn.ASMNode("mov", v1, "rax"),
+                asmn.ASMNode("idiv", v2, None,leftNeedsReg=True),
+                asmn.ASMNode("mov", "rax", self.var)
+            ])
+            spec_op = True
+        elif self.operator == "%":
+            if v2.startswith("$"):
+                l.append(asmn.ASMNode("mov", v2, None, rightNeedsReg=True))
+            l.extend([
+                asmn.ASMNode("xor", "rdx", "rdx", dontTouch=True),
+                asmn.ASMNode("mov", v1, "rax"),
+                asmn.ASMNode("idiv", v2, None,leftNeedsReg=True),
+                asmn.ASMNode("mov", "rdx", self.var)
+            ])
+            spec_op = True
+        elif self.operator == "<<":
+            asm_op = "sal"
+            l.append(asmn.ASMNode("mov", v1, self.var, rightNeedsReg=True))
+            if v2.startswith("$"):
+                l.append(asmn.ASMNode("sal", v2, self.var))
+            else:
+                l.extend([
+                    asmn.ASMNode("mov", v2, "rcx", dontTouch=True),
+                    asmn.ASMNode("sal", "cl", self.var)
+                ])
+            spec_op = True
+        elif self.operator == ">>":
+            asm_op = "sar"
+            l.append(asmn.ASMNode("mov", v1, self.var, rightNeedsReg=True))
+            if v2.startswith("$"):
+                l.append(asmn.ASMNode("sar", v2, self.var))
+            else:
+                l.extend([
+                    asmn.ASMNode("mov", v2, "rcx", dontTouch=True),
+                    asmn.ASMNode("sar", "cl", self.var)
+                ])
+            spec_op = True
+        elif self.operator == "|":
+            asm_op = "or"
+        elif self.operator == "&":
+            asm_op = "and"
+        elif self.operator == "^":
+            asm_op = "xor"
+        elif self.operator == "!":
+            l.extend([
+                asmn.ASMNode("mov", v1, self.var, rightNeedsReg=True),
+                asmn.ASMNode("xor", "rax", "rax", dontTouch=True),
+                asmn.ASMNode("test", self.var, self.var, leftNeedsReg=True, rightNeedsReg=True),
+                asmn.ASMNode("sete", "al", None, dontTouch=True),
+                asmn.ASMNode("mov", "rax", self.var, rightNeedsReg=True)
+            ])
+            spec_op = True
+        elif self.operator == "~":
+            l.extend([
+                asmn.ASMNode("mov", v1, self.var, rightNeedsReg=True),
+                asmn.ASMNode("not", self.var, None, leftNeedsReg=True),
+                ])
+            spec_op = True
+
+        if not spec_op:
+
+            if v2 != self.var:
+                l.append(
+                    asmn.ASMNode("mov", v2, self.var, rightNeedsReg=True)
+                )
+                v2 = self.var
+
+            l.extend([
+                asmn.ASMNode(asm_op, v1, v2, rightNeedsReg=True),
+            ])
+
+        return l
 
     def fileInit(self,leftHand,op,rightHand,varName):
         """
@@ -486,9 +744,25 @@ class IRSpecial(IRNode):
         """
         self.node = node
         self.var = var
+        self.operation = self.node.name[0]
+
 
     def __str__(self):
-        return f"{self.var} = {self.var} {self.node.name[0]} 1;"
+        return f"{self.var} = {self.var} {self.operation} 1;"
+
+    def asm(self):
+        """
+        Constructs assembly string of a special (i.e. inc/dec) instruction
+        Returns:
+            List of necessary ASMNodes representing assembly code.
+        """
+
+        if self.operation == "+":
+            return [asmn.ASMNode("inc", self.var, None)]
+        elif self.operation == '-':
+            return [asmn.ASMNode("dec", self.var, None)]
+
+
 
 class IRAssignment(IRNode):
     """
@@ -506,27 +780,95 @@ class IRAssignment(IRNode):
     def __str__(self):
         return f"{self.lhs} = {self.rhs};"
 
+    def asm(self):
+        """
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRAssignment
+        """
+        l = []
+
+        op = "mov"
+        v = self.rhs
+
+        try:
+            v = int(self.rhs)
+
+            if v == 0:
+                return [asmn.ASMNode("xor", self.lhs, self.lhs)]
+            else:
+                return [asmn.ASMNode("mov", f"${v}", self.lhs)]
+        except ValueError:
+            try:
+                v = float(self.rhs)
+                modif = "$"
+            except ValueError:
+                return [asmn.ASMNode(op, f"{v}", self.lhs,leftNeedsReg=True, rightNeedsReg=True)]
+                pass
+            # TODO: Understand how floating point registers work while not going bald like ben.
+        return [asmn.ASMNode(op, f"{v}", self.lhs)]
+
 class IRFunctionAssign(IRNode):
     """
     Intermediate representation node for a function call assignment.
     """
-    def __init__(self, node, params, tvs):
+    def __init__(self, node, params, varName):
         """
         Args:
             node: The AST node for the funtion
             params: A list of parameters for the function call
             tvs: The tempoary variable stack
         """
-        if(node == None and params == None and tvs == None):
+        if(node == None and params == None):
             pass
         else:
             self.node = node
             self.name = self.node.children[0].name
             self.params = params
-            self.lhs = f"_{len(tvs)}"
+            self.lhs = varName
 
     def __str__(self):
         return f"{self.lhs} = {self.name}({', '.join(self.params)});"
+
+    def asm(self):
+        """
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRFunctionAssign
+        """
+        asm_calls = []
+
+        fourByteRegisters = ["rdi", "rsi", "rdx", "rcx", "r8", "r9"]
+
+        push_param = [x for i, x in enumerate(self.params) if i >= 6]
+        reg_param = [x for i, x in enumerate(self.params) if i < 6]
+        reg_param.reverse()
+
+        for x in push_param:
+            try:
+                x = f"${int(x)}"
+            except ValueError:
+                pass
+            asm_calls.append(asmn.ASMNode("push", x, None, leftNeedsReg=True if not x.startswith("$") else False, dontTouch=True))
+
+        while len(fourByteRegisters) > len(reg_param):
+            fourByteRegisters.pop()
+
+        for x in reg_param:
+            try:
+                x = f"${int(x)}"
+            except ValueError:
+                pass
+            asm_calls.append(asmn.ASMNode("mov", x, fourByteRegisters.pop(), regIsParam=True, leftNeedsReg=True if not x.startswith("$") else False))
+
+        asm_calls.extend([
+            asmn.ASMNode("call", self.name, None, dontTouch=True),
+            asmn.ASMNode("mov", "rax", self.lhs)
+        ])
+
+        return asm_calls
 
     def LineFromFile(self,lhs,func_name,params):
         """
@@ -554,7 +896,48 @@ class IRFunctionDecl(IRNode):
         self.params = params
 
     def __str__(self):
-            return f"{self.name} ({self.params})"
+        return f"{self.name} ({', '.join(self.params)})"
+
+    def asm(self):
+        """
+        Constructs assembly Nodes of a function declaration
+
+        Returns:
+            List of ASM Nodes representing assembly code.
+        """
+
+        # value: register name
+        # key: used/unused (1/0)
+        fourByteRegisters = {"rdi": 0, "rsi": 0, "rdx": 0, "rcx": 0, "r8": 0, "r9": 0}
+        eightByteRegisters = {"XMM0": 0, "XMM1": 0, "XMM2": 0, "XMM3": 0, "XMM4": 0, "XMM5": 0, "XMM6": 0, "XMM7": 0}
+
+        asmLs = []
+
+        regdir = {}
+        stack = []
+
+        for idx, var in enumerate(self.params):
+            if idx < 6:
+                source_reg = [x for x, y in fourByteRegisters.items() if y == 0][0]
+                fourByteRegisters[source_reg] = 1
+
+                regdir[source_reg] = var.split(' ')[-1]
+            else:
+                stack.append(stk.stackObj(Type="KnownVar", Name=var.split(' ')[-1]))
+
+        asmLs.extend([
+            asmn.ASMNode(None, None, None,boilerPlate=f".globl\t{self.name}"),
+            asmn.ASMNode(None, None, None,boilerPlate=f".type\t{self.name},\t@function"),
+            asmn.ASMNode(f"{self.name}:",None,None, functionDecl=True, regDir=regdir, stack=stack),
+            asmn.ASMNode("mov", "rsp", "rbp", dontTouch=True),
+            asmn.ASMNode("push", "rbx", None, dontTouch=True),
+            asmn.ASMNode("push", "r12", None, dontTouch=True),
+            asmn.ASMNode("push", "r13", None, dontTouch=True),
+            asmn.ASMNode("push", "r14", None, dontTouch=True),
+            asmn.ASMNode("push", "r15", None, dontTouch=True),
+        ])
+
+        return asmLs
 
 class IRReturn(IRNode):
     """
@@ -573,22 +956,54 @@ class IRReturn(IRNode):
         else:
             return f"return;"
 
+    def asm(self):
+        """
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRReturn
+        """
+
+        asml = []
+        if self.value:
+            asml.append(asmn.ASMNode("mov", self.value, "rax"))
+        asml.extend([
+            asmn.ASMNode("ret", None, None, dontTouch=True)
+        ])
+
+        return asml
+
 class IRBracket(IRNode):
     """
     Intermediate representation node for a bracket
     """
-    def __init__(self, opening):
+    def __init__(self, opening, functionDecl=False):
         """
         Args:
             opening: Either True or False depending on if bracket is open/close
         """
         self.opening = opening
+        self.functionDecl = functionDecl
 
     def __str__(self):
         if self.opening == True:
             return "{"
         else:
             return "}"
+
+    def asm(self):
+        """
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRBracket
+        """
+
+        if self.functionDecl:
+            return []
+        else:
+            return []
+        # TODO: determine how many local variables exist within the scope in order to move the stack pointer.
 
 class IRVariableInit(IRNode):
     """
@@ -610,7 +1025,12 @@ class IRVariableInit(IRNode):
     def __str__(self):
         return f"{self.modifiers}{self.typ} {self.var};"
 
+    def asm(self):
+        """
+        Generates assembly representation of this node, using the variable names instead of registers
 
+        Returns:
+            The assembly representation of an IRVariableInit
+        """
 
-
-
+        return []

@@ -1,0 +1,164 @@
+.file "Arithmetic.c"
+.text
+.globl	main
+.type	main,	@function
+main:
+mov %rsp, %rbp
+push %rbx
+push %r12
+push %r13
+push %r14
+push %r15
+mov $2, %rcx
+add $1, %rcx
+mov $3, %rbx
+add %rcx, %rbx
+mov %rbx, %rdi
+mov $78, %rsi
+imul $56,%rsi, %rsi
+mov $5, %r8
+imul %rsi, %r8
+mov $20, %r9
+xor %rdx, %rdx
+mov %r8, %rax
+idiv %r9
+mov %rax, %r10
+mov %r10, %r11
+sub $3, %r11
+mov %r11, %r12
+mov $2, %r13
+xor %rdx, %rdx
+mov $56, %rax
+idiv %r13
+mov %rdx, %r14
+mov %r14, %r15
+mov $10, %rcx
+neg %rcx
+mov %rcx, %rbx
+mov %r12, %rcx
+and %rdi, %rcx
+mov %rcx, %rsi
+mov %r12, %rcx
+or %rdi, %rcx
+mov %rcx, %r8
+mov %r12, %rcx
+xor %rdi, %rcx
+mov %rcx, %r9
+mov %rdi, %rcx
+not %rcx
+mov %rcx, %r10
+mov %r12, %rcx
+not %rcx
+mov %rcx, %r11
+mov %r15, %rcx
+not %rcx
+mov %rcx, %r13
+mov %rbx, %rcx
+not %rcx
+mov %rcx, %r14
+mov %rdi, %rcx
+or %r13, %rcx
+push %rbx
+mov %rcx, %rbx
+sub $97, %rbx
+mov %rbx, %rdi
+mov %r9, %rcx
+add %r11, %rcx
+mov $40, %rbx
+add %rcx, %rbx
+mov %rbx, %rcx
+add %r12, %rcx
+mov %rcx, %r12
+mov %r9, %rcx
+add %r12, %rcx
+mov %rcx, %rbx
+sar $12, %rbx
+mov %r15, %rcx
+sub %rbx, %rcx
+mov %rcx, %r15
+mov %r15, %rcx
+add %r13, %rcx
+mov %rcx, %rbx
+sub $25, %rbx
+mov %rbx, %rcx
+push %rdi
+mov -40(%rbp), %rdi
+imul %rdi, %rcx
+mov %rcx, %rdi
+mov %r11, %rcx
+neg %rcx
+mov %r15, %rbx
+sal %cl, %rbx
+mov $37, %rcx
+or %rbx, %rcx
+xor %rdx, %rdx
+mov %rsi, %rax
+idiv %rcx
+mov %rax, %rbx
+mov %rbx, %rsi
+mov -48(%rbp), %rcx
+mov %rcx, %rbx
+or %r12, %rbx
+push %rsi
+mov $42, %rsi
+imul %rbx, %rsi
+xor %rdx, %rdx
+mov %r8, %rax
+idiv %rsi
+mov %rdx, %rbx
+mov %rbx, %r8
+mov %rcx, %rbx
+neg %rbx
+mov %rbx, %rsi
+mov %rcx, -48(%rbp)
+mov %r12, %rcx
+sar %cl, %rsi
+mov $19, %rcx
+xor %rsi, %rcx
+mov %r9, %rbx
+sal %cl, %rbx
+mov %rbx, %r9
+xor %rdx, %rdx
+mov %r15, %rax
+idiv %r9
+mov %rax, %rcx
+mov $19, %rbx
+add %rcx, %rbx
+mov %r10, %rcx
+mov %rbx, %rcx
+sar %cl, %rcx
+mov %rcx, %r10
+mov %r12, %rcx
+xor %rdi, %rcx
+mov $20, %rbx
+xor %rdx, %rdx
+mov %rcx, %rax
+idiv %rbx
+mov %rax, %rsi
+mov %rsi, %rcx
+or %r11, %rcx
+mov %rcx, %r11
+mov -48(%rbp), %rbx
+mov %rbx, %rcx
+add %r15, %rcx
+mov %rcx, %rsi
+sar $12, %rsi
+mov %rsi, %rcx
+and %r13, %rcx
+mov %rcx, %r13
+xor %rdx, %rdx
+mov %rbx, %rax
+idiv %r8
+mov %rdx, %rcx
+mov %rcx, %rsi
+sal $20, %rsi
+mov %rsi, %rcx
+xor %r14, %rcx
+mov %rcx, %r14
+add $24, %rsp
+pop %r15
+pop %r14
+pop %r13
+pop %r12
+pop %rbx
+ret
