@@ -10,9 +10,19 @@ stk = SourceFileLoader("stack", f"{os.path.dirname(os.path.abspath(getsourcefile
 
 
 class Allocator():
-
+    """
+    The class that allocates registers properly for a given list of assembly strings
+    """
     def allocateRegisters(asm_list):
+        """
+        Takes in a list of asm strings using variable names, converts these to use proper register allocation
 
+        Args:
+            asm_list: A list of ASMNode objects, where each string in the list is an assembly command that uses variables instead of registers
+
+        Returns:
+            A list of strings, where each string is an assembly line with proper register allocation
+        """
         newAsm_list = []
 
         # Set up directory of registers
@@ -28,57 +38,85 @@ class Allocator():
             copy_list = copy(instr) #DEBUGGING
             case = 0                #DEBUGGING
 
-            # Case functionDecl
+            #In order to accurately allocate registers based on a given situation, we define various cases that have different needs for allocation
+
             if instr.functionDecl:
+                # Clear the stack
+                stack.stk.clear()
+                stack.push("BpMov", name="rbp")
+                [x.free() for x in regDir.regs if x.name not in ["r15", "r14", "r13", "r12", "rbx"]]
+
                 # Sets up the stack with the parameters
                 # stack.scope_change()
                 [stack.stk.append(x) for x in instr.stack]
 
                 # Sets up the registers with the correct values
                 [regDir.update_reg(x, y) for x, y in instr.regDir.items()]
-                [regDir.free_reg(x) for x in ["rbx", "r12", "r13", "r14", "r15"]]
+                # [regDir.free_reg(x) for x in ["rbx", "r12", "r13", "r14", "r15"]]
+                # [x.free() for x in regDir.regs if x.name not in ["r15", "r14", "r13", "r12", "rbx"]]
                 pass
+                case = 12
 
 
             # Case regIsParam
             elif instr.regIsParam:
+
+                # if not instr.left.startswith("$"):
+                    # newReg = regDir.find_reg(instr.left, idx)
+                tmp = regDir.locate_var(instr.left)
+                if isinstance(tmp, int):
+                    # variable is stored on the stack
+                    tmp = regDir.reg_in_use(instr.right)
+                    if not tmp.is_tmp():
+                        regDir.regToStack(tmp)
+                    regDir.stackToReg(tmp, instr.left)
+                    continue
+                elif tmp:
+                    # variable is stored in a register
+                    instr.left = tmp.name
+                    pass
+                else:
+                    # variable is a constant
+                    pass
+                
+
                 paramReg = regDir.reg_in_use(instr.right)
 
                 # if register already in use
-                if paramReg:
-                    regDir.paramSwap(paramReg, instr.left)
+                if paramReg and not paramReg.is_tmp():
+                    regDir.regToStack(paramReg)
                     pass
+                case = 11
 
             # Case 0: Dont touch this instruction (labels, ret, etc..)
             elif instr.dontTouch:
 
                 if instr.command == "pop":
-
-                    if instr.left == "rbp":
-                        newAsm_list.append(asmn.ASMNode("add", f"${stack.dist_from_base()}", f"%rsp"))
-
-                    tmp = stack.peek()
-                    #there is a base pointer on top of the stack
-                    if tmp.type == "BpMov":
-                        pass
-                    #the item on the top of the stack is not the expected value
-                    #i.e pop a
-                    elif tmp.Name != instr.left:
-                        offset = stack.find_offset(instr.left)
-                        if offset > 0:
-                            # This really shouldnt happen although this is here to tell us that it is
-                            print ("we were here")
-                            pass
-                        else:
-                            while stack.pop().Name != instr.left:
-                                continue
-                    elif tmp.Name == instr.left:
-                        stack.pop()
+                    stack.pop()
                 elif instr.command == "push":
-                    stack.push("UnknownVar", name=instr.left)
-                    [x.free() for x in regDir.regs if x.name == instr.left]
+                    if instr.leftNeedsReg:
+                        reg = regDir.find_reg(instr.left, idx)
+                        stack.push("KnownVar", name=instr.left)
+                        instr.left = reg.name
+                    elif not instr.left.startswith("$"):
+                        stack.push("UnknownVar", name=instr.left)
+                        [x.free() for x in regDir.regs if x.name == instr.left]
                 elif instr.command == "ret":
-                    [x.free() for x in regDir.regs if x.name not in ["r15", "r14", "r13", "r12", "rbx"]]
+
+                    r15 = stack.find_offset("r15", 0) - 8
+                    diff = stack.dist_from_base()
+
+                    # print (stack, stack.peek(), r15, diff)
+
+                    # before pop rbp 
+                    newAsm_list.extend([
+                        asmn.ASMNode("add", f"${diff + r15}", f"%rsp"),
+                        asmn.ASMNode("pop", "r15", None),
+                        asmn.ASMNode("pop", "r14", None),
+                        asmn.ASMNode("pop", "r13", None),
+                        asmn.ASMNode("pop", "r12", None),
+                        asmn.ASMNode("pop", "rbx", None),
+                    ])
                 #NOTE cannot continue here code needed at the end of the loop.
                 case = 0
                 pass
@@ -93,12 +131,11 @@ class Allocator():
 
                 newReg = regDir.find_reg(instr.left, idx)
                 instr.left = newReg.name
-                instr.leftOffset = newReg.offset
 
                 newReg = regDir.find_reg(instr.right, idx)
                 instr.right = newReg.name
-                instr.rightOffset = newReg.offset
-                regDir.update_reg(newReg.name, var="")
+                # print(newReg.var_value)
+                # regDir.update_reg(newReg.name, var="")
                 case = 4
                 pass
 
@@ -115,11 +152,10 @@ class Allocator():
 
                 ogRight = instr.right
                 instr.right = newReg.name
-                instr.rightOffset = newReg.offset
 
-                if ogRight == "":
-                    regDir.update_reg(newReg.name, instr.left)
-
+                # if ogRight == "":
+                    # regDir.update_reg(newReg.name, instr.left)
+                # print("BOI PUTTING ON 20lbs", newReg.var_value)
                 case = 1
                 pass
 
@@ -133,11 +169,9 @@ class Allocator():
                 # last used register becomes our source register
                 newReg = regDir.last_used[-1]
                 instr.left = newReg.name
-                instr.leftOffset = newReg.offset
 
                 newReg = regDir.find_reg(instr.right, idx)
                 instr.right = newReg.name
-                instr.rightOffset = newReg.offset
                 case = 5
                 pass
 
@@ -152,10 +186,9 @@ class Allocator():
 
                 newReg = regDir.find_reg(instr.right,idx)
 
-                regDir.update_reg(newReg.name, var=instr.right)
+                # regDir.update_reg(newReg.name, var=instr.right)
 
                 instr.right = newReg.name
-                instr.rightOffset = newReg.offset
                 case = 2
                 pass
 
@@ -169,11 +202,9 @@ class Allocator():
 
                 newReg = regDir.find_reg(instr.left,idx)
                 instr.left = newReg.name
-                instr.leftOffset = newReg.offset
 
                 newReg = regDir.find_reg(instr.right,idx)
                 instr.right = newReg.name
-                instr.rightOffset = newReg.offset
 
                 case = 3
                 pass
@@ -187,11 +218,9 @@ class Allocator():
 
                 newReg = regDir.find_reg(instr.left,idx)
                 instr.left = newReg.name
-                instr.leftOffset = newReg.offset
 
                 newReg = regDir.find_reg(instr.right,idx)
                 instr.right = newReg.name
-                instr.rightOffset = newReg.offset
                 case = 7
                 pass
 
@@ -212,7 +241,6 @@ class Allocator():
 
                     newReg = regDir.find_reg(instr.left, idx)
                     instr.left = newReg.name
-                    instr.leftOffset = newReg.offset
 
                 case = "8-9"
 
@@ -233,7 +261,6 @@ class Allocator():
             elif instr.rightHasVar:
                 newReg = regDir.find_reg(instr.right,idx)
                 instr.right = newReg.name
-                instr.rightOffset = newReg.offset
                 case = 10
             else:
                 case = "E"
@@ -241,13 +268,13 @@ class Allocator():
 
 
             # Ensures that shifting only uses the lower byte of the appropriate register
-            if instr.command in ["sal", "sar"]:
-                if instr.left.endswith("x"):
-                    instr.left = f"{instr.left[1]}l"
-                elif instr.left.endswith("i") or instr.left.endswith("p"):
-                    instr.left = f"{instr.left[1:]}l"
-                elif instr.left.startswith("r"):
-                    instr.left = f"{instr.left}b"
+            # if instr.command in ["sal", "sar"]:
+            #     if instr.left.endswith("x"):
+            #         instr.left = f"{instr.left[1]}l"
+            #     elif instr.left.endswith("i") or instr.left.endswith("p"):
+            #         instr.left = f"{instr.left[1:]}l"
+            #     elif instr.left.startswith("r"):
+            #         instr.left = f"{instr.left}b"
 
             # We need to update the assembly list in the register directory.
             # The directory used the assembly list to "look-ahead" in some cases,
@@ -264,43 +291,81 @@ class Allocator():
         return newAsm_list
 
 
+class registerData():
+    """
+    The register class, essentially represents a register in our codebase
+    """
+
+    def __init__(self, register_name):
+        """
+        Initialzies the registerData object
+
+        Args:
+            register_name: The name of the register (i.e rbx, rax, etc.)
+        """
+        self.name = register_name
+        self.isOpen = True
+        self.var_value = None
+        # self.literal_value = None
+
+    def update(self, var):
+        """
+        Updates the variable that is currently in a register (i.e sets rbx to be holding a variable named i)
+
+        Args:
+            var: The variable placed into the register object
+        """
+
+        self.var_value = var
+        self.isOpen = False
+
+    def free(self):
+        """
+        Frees a register, essentially clears out it's values and then makes it available to be allocated to
+        """
+        self.isOpen = True
+        self.var_value = None
+
+    def is_tmp(self):
+        """
+        Determines whether a register contains a temporary variable (a variable that is created in our IR, rather than initially in the inputted c file)
+
+        Returns:
+            A boolean, where False means it is not holding a temporary variable, and where True means it is holding a temp variable
+        """
+
+        if self.var_value:
+            return self.var_value.startswith("tV_") or self.var_value.startswith("$")
+
+        return True
+
+    def __str__(self):
+        """
+        Defines the string representation of a registerData node
+
+        Returns:
+            A string representation of registerData, in the form: | name isOpen var_value offset |
+        """
+
+        return f"|{self.name} {self.isOpen} {self.var_value}|"
 
 class RegisterDirectory():
-
+    """
+    The directory of registers, holds register objects and can determine what's in use, free, etc.
+    """
     used_regs = ["rcx","rbx","rdi","rsi","r8","r9","r10","r11","r12","r13","r14","r15"] #these are the total registers used.
 
-    class registerData():
-
-        def __init__(self, register_name):
-
-            self.name = register_name
-            self.isOpen = True
-            self.var_value = None
-            self.offset = None
-            # self.literal_value = None
-
-        def update(self, var, offset):
-            self.var_value = var
-            # self.literal_value = lit
-            self.isOpen = False
-            self.offset = offset
-
-        def free(self):
-            self.isOpen = True
-            self.var_value = None
-            self.offset = None
-            # self.literal_value = None
-
-        def is_tmp(self):
-            if self.var_value:
-                return self.var_value.startswith("tV_")
-
-            return True
-
-        def __str__(self):
-            return f"{self.name} {self.isOpen} {self.var_value} {self.offset}"
-
     def __init__(self, asm, newAsm_list, stack):
+        """
+        Initializes the register directory object, creates registerData objects for the various registers we use and appends them to our list of registers
+
+        Args:
+            asm: the initial list of asm that the allocator starts with
+            newAsm_list: the list of asm strings
+            stack: An object of the stack class
+
+        """
+
         # self.real_asm = asm
         self.newAsm = newAsm_list
         self.asm = asm
@@ -308,10 +373,11 @@ class RegisterDirectory():
         self.regs = []
         self.last_used = []
 
+        #create register objects for each register we will be using
         for reg in self.used_regs:
-            self.regs.append(self.registerData(reg))
+            self.regs.append(registerData(reg))
 
-    def find_reg(self, name, idx):
+    def find_reg(self, name, idx, dont_use=[]):
         """
         Finds register containing the passed in variable name.
 
@@ -319,16 +385,24 @@ class RegisterDirectory():
         Second, searches on stack.
         Else, allocates new register
 
+        Args:
+            name: the name of the variable being looked for
+            idx: the index of the appropraite instruction in the asm list
+
         Returns:
             new RegisterData object or None
         """
+
         newReg = self.var_in_reg(name)
         if newReg == None:
-            newReg = self.get_free(name, idx)
+            newReg = self.get_free(name, idx, dont_use)
             if newReg == None:
-                # print("HERERE")
-                return self.evict_register(name, idx)
-            return self.var_in_stack(name, newReg)
+                newReg = self.evict_register(name, idx, dont_use)
+            else:
+                newreg = self.var_in_stack(name, newReg)
+
+        self.last_used.append(newReg)
+        newReg.update(name)
 
         return newReg
 
@@ -336,7 +410,11 @@ class RegisterDirectory():
         """
         Find register containing passed in variable name.
 
-        Returns either the node or None
+        Args: 
+            var: the variable name that is being looked for in the registers
+
+        Returns:
+            either the register that stores this variable, or None
         """
         for reg in self.regs:
             if var == reg.var_value:
@@ -347,39 +425,39 @@ class RegisterDirectory():
         """
         Find/Create registerData that contains stack pointer
         with offset corresponding to the passed in variable name.
+
+        Args:
+            var: the variable name being looked for
+            reg: the register that is storing that variable
+
+        Returns:
+            The register that is being updated
+
         """
-        # print("HERER", var, reg.name)
         offset = self.stack.find_offset(var)
         if offset == None:
-            # print("offset not found")
-            reg.update(var, None)
+            # reg.update(var)
             return reg
 
-        # print ("stack")
-        return self.swap(reg, var)
-
-        # regData = self.registerData(f"{offset}(rbp)")
-        # regData = self.registerData("rbp")
-        # regData.update(var, offset)
-
-        # return regData
+        return self.stackToReg(reg, var)
 
 
-    def get_free(self, var, idx):
+    def get_free(self, var, idx, dont_use):
         """
         Finds lastest register that isnt being used else performs register eviction,
         updates and returns that register.
+
+        Args:
+            var: The variable name that is being freed
+            idx: The index of the appropriate instruction in the asm list
+
         """
 
         #Search for free register.
         for ind,reg in enumerate(self.regs):
-            # print (self.regs[ind].name, [x.name for x in self.last_used[-2:]])
             if self.regs[ind].isOpen == True:
 
-                self.regs[ind].update(var, None)
                 self.regs[ind].isOpen = False
-                self.last_used.append(self.regs[ind])
-
                 return self.regs[ind]
 
         for ind,reg in enumerate(self.regs):
@@ -388,59 +466,77 @@ class RegisterDirectory():
                     and
                 self.var_in_reg(self.asm[idx].left) != self.regs[ind]
                     and
-                # self.var_in_reg(self.asm[idx].right) == self.regs[ind]
-                    # and
                 self.regs[ind] not in self.last_used[-2:]
+                    and
+                self.regs[ind].name not in dont_use
                 ):
-                # print("here")
-                # print([x.name for x in self.last_used[-3:]])
-                self.regs[ind].update(var, None)
                 self.regs[ind].isOpen = False
-                self.last_used.append(self.regs[ind])
 
                 return self.regs[ind]
 
         return None
 
+    def locate_var(self, var):
+        reg = self.var_in_reg(var)
+        if reg == None:
+            reg = self.stack.find_offset(var)
 
+        return reg
 
     def update_reg(self, name, var):
         """
         Updates the given register using the name, isopen, var_value_value.
+
+        Args:
+            name: The name of the register that is being updated
+            var: The name of the variable that is being used to update
         """
         for reg in self.regs:
             if reg.name == name:
-                reg.update(var, None)
-                if reg in self.last_used:
-                    self.last_used.remove(reg)
-                self.last_used.append(reg)
+                reg.update(var)
+                # if reg in self.last_used:
+                #     self.last_used.remove(reg)
+                break
 
 
     def free_reg(self, name):
         """
         Frees the given register searching by the given register name
+
+        Args:
+            name: The name of the register being freed (i.e rbx, rax, etc.)
         """
         for reg in self.regs:
             if reg.name == name:
                 # self.last_used.remove(reg)
                 reg.free()
+                break
 
-    def evict_register(self, var, index):
+    def evict_register(self, var, index, dont_use):
+        print("in evict")
         """
         Evicts register that is the last used in the code ahead.
+
+        Args:
+            var: The name of the variable that is being stored
+            index: The index of the item in the asm list
+
+        Returns:
+            The register that is being modified
         """
-        order_used = []
+        #determine the order registers are used in
+        order_used = copy(self.last_used[-2:])
         for line in self.asm[index:]:
             if line.leftHasVar:
 
                 left = self.var_in_reg(line.left)
-                if left:
+                if left and left not in order_used:
                     order_used.append(left)
 
             if line.rightHasVar:
 
                 right = self.var_in_reg(line.right)
-                if right:
+                if right and right not in order_used:
                     order_used.append(right)
 
             if [x for x in self.regs if x not in order_used] == [] and order_used != []:
@@ -448,54 +544,75 @@ class RegisterDirectory():
 
         #gets the registers not used.
         left_over = [x for x in self.regs if x not in order_used]
-
-        result = left_over.pop() if left_over else self.regs[0]
+        
+        result = None
+        try:
+            result = left_over.pop()
+        except IndexError:
+            i = 0
+            while self.regs[i] in self.last_used[-2:] or self.regs[i].name in dont_use:
+                i += 1
+            result = self.regs[i]
+        # result = left_over.pop() if left_over else self.regs[0]
+        
 
         if result.is_tmp() and (var.startswith("$") or var.startswith("tV_")):
-            result.update(var, None)
+            # result.update(var)
             return result
 
-        # print (result.is_tmp(), var.startswith("tV_"))
-        # print (result.name, var)
-        return self.swap(result, var)
-
-    def swap(self, reg, var):
-
-        # print (reg, var)
-        print("DSKLSLKDDKLS","||",reg," || ", var)
-        if reg.is_tmp() or reg.isOpen:
-            pass
+        if not result.is_tmp():
+            self.regToStack(result)
+        
+        if self.stack.find_offset(var):
+            return self.stackToReg(result, var)
         else:
-            rO = self.stack.find_offset(reg.var_value)
-            if not rO:
-                rO = self.stack.push("KnownVar", name=reg.var_value)
-                self.newAsm.append(asmn.ASMNode("push", reg.name))
-            else:
-                self.newAsm.append(asmn.ASMNode("mov", reg.name, "rbp", rightOffset=rO))
+            return result
+
+
+    def regToStack(self, reg):
+        """
+        Moves a register to the stack
+
+        Args:
+            reg: The registerData object that is being moved to the stack
+        """
+        #if the register is not containing a temporary variable
+        # if not reg.is_tmp():
+        rO = self.stack.find_offset(reg.var_value)
+        if not rO:
+            rO = self.stack.push("KnownVar", name=reg.var_value)
+            self.newAsm.append(asmn.ASMNode("push", reg.name, None))
+        else:
+            self.newAsm.append(asmn.ASMNode("mov", reg.name, "rbp", rightOffset=rO))
+        reg.free()
+
+
+    def stackToReg(self, reg, var):
+        """
+        Moves an object on the stack to a register
+
+        Args:
+            reg: The register that is being moved to
+            var: The variable that is being looked for
+
+        Returns:
+            The reigster after the variable has been moved to it from the stack
+        """
 
         offset = self.stack.find_offset(var)
         self.newAsm.append(asmn.ASMNode("mov", "rbp", reg.name, leftOffset=offset))
-
-        reg.update(var, None)
-
+        # reg.update(var)
         return reg
-
-    def paramSwap(self, paramReg, var):
-        if not paramReg.is_tmp():
-            rO = self.stack.find_offset(paramReg.var_value)
-            if not rO:
-                rO = self.stack.push("KnownVar", name=paramReg.var_value)
-                self.newAsm.append(asmn.ASMNode("push", paramReg.name, None))
-            else:
-                self.newAsm.append(asmn.ASMNode("mov", paramReg.name, "rbp", rightOffset=rO))
-
-        paramReg.update(var, None)
-
-        return paramReg
 
     def reg_in_use(self, reg_name):
         """
         Determines if register is in use.
+        
+        Args:
+            reg_name: The name of the register that is being used
+
+        Returns:
+            Either None or the register that is being updated to
         """
         for reg in self.regs:
             if reg.name == reg_name:
@@ -503,251 +620,3 @@ class RegisterDirectory():
                     return None
                 else:
                     return reg
-
-
-
-# class RegisterDirectory():
-
-#     used_regs = ["rcx","rbx","rsi","r8","r9","r10","r11","r12","r13","r14","r15"] #these are the total registers used.
-
-#     class registerData():
-
-#         def __init__(self, register_name):
-
-#             self.name = register_name
-#             self.isOpen = True
-#             self.var_value = None
-#             self.offset = None
-#             self.is_tmp = False
-#             # self.literal_value = None
-
-#         def update(self, var, offset):
-#             self.var_value = var
-#             # self.literal_value = lit
-#             self.isOpen = False
-#             self.offset = offset
-#             self.is_tmp = var.startswith("tV_")
-
-#         def free(self):
-#             self.isOpen = True
-#             self.var_value = None
-#             self.offset = None
-#             self.is_tmp = False
-#             # self.literal_value = None
-
-#     def __init__(self, asm, newAsm_list, stack):
-#         # self.real_asm = asm
-#         self.newAsm = newAsm_list
-#         self.asm = asm
-#         self.stack = stack
-#         self.regs = []
-#         self.last_used = []
-
-#         for reg in self.used_regs:
-#             self.regs.append(self.registerData(reg))
-
-#     def find_reg(self, name, idx):
-#         """
-#         Finds register containing the passed in variable name.
-
-#         First, searches local registers.
-#         Second, searches on stack.
-#         Else, allocates new register
-
-#         Returns:
-#             new RegisterData object or None
-#         """
-#         newReg = self.var_in_reg(name)
-#         if newReg == None:
-#             newReg = self.var_in_stack(name)
-#             if newReg == None:
-#                 newReg = self.get_free(name, idx)
-#                 if newReg == None:
-#                     return None
-
-#         return newReg
-
-#     def var_in_reg(self, var):
-#         """
-#         Find register containing passed in variable name.
-
-#         Returns either the node or None
-#         """
-#         for reg in self.regs:
-#             if var == reg.var_value:
-#                 return reg
-#         return None
-
-#     def var_in_stack(self, var):
-#         """
-#         Find/Create registerData that contains stack pointer
-#         with offset corresponding to the passed in variable name.
-#         """
-#         offset = self.stack.find_offset(var)
-#         if offset == None:
-#             return None
-
-#         # regData = self.registerData(f"{offset}(rbp)")
-#         regData = self.registerData("rbp")
-#         regData.update(var, offset)
-
-#         return regData
-
-
-#     def get_free(self, var, idx):
-#         """
-#         Finds lastest register that isnt being used else performs register eviction,
-#         updates and returns that register.
-#         """
-
-#         #Search for free register.
-#         for ind,reg in enumerate(self.regs):
-#             if self.regs[ind].isOpen == True:
-
-#                 self.regs[ind].update(var, None)
-#                 self.regs[ind].isOpen = False
-#                 self.last_used.append(self.regs[ind])
-
-#                 return self.regs[ind]
-#             elif (
-#                 self.regs[ind].is_tmp
-#                     and
-#                 self.var_in_reg(self.asm[idx].left) != self.regs[ind]
-#                     and
-#                 self.var_in_reg(self.asm[idx].right) != self.regs[ind]
-#                     and
-#                 self.regs[ind] not in self.last_used[-2:]
-#                 ):
-#                 # print([x.name for x in self.last_used[-3:]])
-#                 self.regs[ind].update(var, None)
-#                 self.regs[ind].isOpen = False
-#                 self.last_used.append(self.regs[ind])
-
-#                 return self.regs[ind]
-
-#         # No free registers, evict register and return it
-#         tmpReg = self.evict_register(var, idx)
-#         self.last_used.append(tmpReg)
-#         return tmpReg
-
-
-
-#     def update_reg(self, name, var):
-#         """
-#         Updates the given register using the name, isopen, var_value_value.
-#         """
-#         for reg in self.regs:
-#             if reg.name == name:
-#                 reg.update(var, None)
-#                 if reg in self.last_used:
-#                     self.last_used.remove(reg)
-#                 self.last_used.append(reg)
-
-    # def reg_in_use(self, reg_name):
-    #     """
-    #     Determines if register is in use.
-    #     """
-    #     for reg in self.regs:
-    #         if reg.name == reg_name:
-    #             if reg.var_value == None:
-    #                 return False
-    #             else:
-    #                 return True
-
-
-#     def free_reg(self, name):
-#         """
-#         Frees the given register searching by the given register name
-#         """
-#         for reg in self.regs:
-#             if reg.name == name:
-#                 self.last_used.remove(reg)
-#                 reg.free()
-
-#     def evict_register(self, var, index):
-#         """
-#         Evicts register that is the last used in the code ahead.
-#         """
-#         order_used = []
-#         for line in self.asm[index:]:
-#             if line.leftHasVar:
-
-#                 left = self.var_in_reg(line.left)
-#                 if left:
-#                     # print(f"appending {left.name} to order_used: {line.left}")
-#                     order_used.append(left)
-
-#             if line.rightHasVar:
-
-#                 right = self.var_in_reg(line.right)
-#                 if right:
-#                     # print(f"appending {right.name} to order_used: {line.right}")
-#                     order_used.append(right)
-
-#             if [x for x in self.regs if x not in order_used] == [] and order_used != []:
-#                 break
-
-#         #gets the registers not used.
-#         # left_over = self.regs - order_used
-#         left_over = [x for x in self.regs if x not in order_used]
-#         # print("new")
-#         # # print(left_over[-1].name)
-#         # for i in left_over:
-#         #     print(i.name)
-#         # This means no available register
-#         # if left_over == []:
-
-#         # if order_used:
-#         #     left_over.append(order_used.pop())
-
-#         # if order_used != []:
-#         # result = left_over.pop() if left_over else self.regs[0]
-
-#         # for i in left_over:
-#         #     i.free()
-
-#         # stack_offset = self.stack.find_offset(result.var_value)
-#         # if stack_offset == None:
-#         #     # need to insert into stack and get offset?
-#         #     stack_offset = self.stack.insert(result.var_value)
-#         #     pass
-
-#         # Instruction to move this register's value onto stack
-
-#         # Insert instruction into the modified ASM list at adjusted index
-#         # print(index)
-#         # self.newAsm.append(asmn.ASMNode("sub", "$4", "rsp"))
-#         # self.newAsm.append(asmn.ASMNode("mov", result.name, "rbp", rightOffset=stack_offset))
-#         # print(node)
-#         # self.asm.insert(0, node)
-#         # self.asm.insert(0, node)
-
-#         # result.update(var, None)
-#         # self.update_reg(result.name, )
-#         # self.free_reg(result.name)
-
-#         # else:
-#         #     print("we here bois")
-#         stack_offset = self.stack.insert(var)
-#         result = self.registerData(f"{stack_offset}(rbp)")
-#         result.update(var,stack_offset)
-
-#         return result
-
-
-
-
-
-
-
-#         # # We have some registers that will not be used again.
-#         # else:
-
-#         #     # NOTE: May need to free leftover regs not sure yet.
-#         #     result = left_over.pop()
-#         #     self.update_reg(result.name, var)
-#         #     return result
-
-
-
-

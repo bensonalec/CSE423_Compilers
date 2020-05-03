@@ -328,7 +328,12 @@ class IRJump(IRNode):
         return f"{self.name}:"
 
     def asm(self):
-        #want to end up returning just the operation in a ASMNode
+        """
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRJump
+        """
         return [asmn.ASMNode(f"{self.name.replace('<','').replace('>','')}:",None,None,dontTouch=True)]
 
 
@@ -347,6 +352,13 @@ class IRGoTo(IRNode):
         return f"goto {self.name};"
 
     def asm(self):
+        """
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRGoTo
+        """
+
         return [asmn.ASMNode("jmp", self.name.replace("<","").replace(">",""), None, dontTouch=True)]
 
 class IRIf(IRNode):
@@ -414,6 +426,13 @@ class IRIf(IRNode):
         self.failure = fail
 
     def asm(self):
+        """
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRIf
+        """
+
         l = []
 
         i = 0
@@ -548,6 +567,13 @@ class IRArth(IRNode):
             return f"{self.var} = {self.operator}{self.lhs};"
 
     def asm(self):
+        """
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRArht node
+        """
+
         l = []
 
         i = 0
@@ -589,18 +615,22 @@ class IRArth(IRNode):
 
         if self.operator == "+":
             asm_op = "add"
+            if v2 == None:
+                l.extend([
+                    asmn.ASMNode("mov", v1, self.var, rightNeedsReg=True),
+                ])
+                spec_op = True
         elif self.operator == "-":
             if v2 == None:
                 l.extend([
                     asmn.ASMNode("mov", v1, self.var, rightNeedsReg=True),
                     asmn.ASMNode("neg", self.var, None, leftNeedsReg=True),
-                    # asmn.ASMNode("mov", v1, self.var, leftNeedsReg=True)
                 ])
                 spec_op = True
             else:
                 l.extend([
-                    asmn.ASMNode("sub", v2, v1),
-                    asmn.ASMNode("mov", v1, self.var)
+                    asmn.ASMNode("mov", v1, self.var),
+                    asmn.ASMNode("sub", v2, self.var)
                 ])
                 spec_op = True
         elif self.operator == "*":
@@ -653,9 +683,11 @@ class IRArth(IRNode):
             asm_op = "xor"
         elif self.operator == "!":
             l.extend([
-                asmn.ASMNode("xor",v1,v1),
-                asmn.ASMNode("test", "rdi", "rdi", dontTouch=True),
-                asmn.ASMNode("sete", v1, None, leftNeedsReg=True)
+                asmn.ASMNode("mov", v1, self.var, rightNeedsReg=True),
+                asmn.ASMNode("xor", "rax", "rax", dontTouch=True),
+                asmn.ASMNode("test", self.var, self.var, leftNeedsReg=True, rightNeedsReg=True),
+                asmn.ASMNode("sete", "al", None, dontTouch=True),
+                asmn.ASMNode("mov", "rax", self.var, rightNeedsReg=True)
             ])
             spec_op = True
         elif self.operator == "~":
@@ -743,6 +775,12 @@ class IRAssignment(IRNode):
         return f"{self.lhs} = {self.rhs};"
 
     def asm(self):
+        """
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRAssignment
+        """
         l = []
 
         op = "mov"
@@ -760,7 +798,7 @@ class IRAssignment(IRNode):
                 v = float(self.rhs)
                 modif = "$"
             except ValueError:
-                return [asmn.ASMNode(op, f"{v}", self.lhs,leftNeedsReg=True)]
+                return [asmn.ASMNode(op, f"{v}", self.lhs,leftNeedsReg=True, rightNeedsReg=True)]
                 pass
             # TODO: Understand how floating point registers work while not going bald like ben.
             # TODO: Figure out whether the right hand argument of an `xor` operation can be a memory location as well as a register.
@@ -789,26 +827,36 @@ class IRFunctionAssign(IRNode):
         return f"{self.lhs} = {self.name}({', '.join(self.params)});"
 
     def asm(self):
-        fourByteRegisters = {"rdi": 0, "rsi": 0, "rdx": 0, "rcx": 0, "r8": 0, "r9": 0}
-        eightByteRegisters = {"XMM0": 0, "XMM1": 0, "XMM2": 0, "XMM3": 0, "XMM4": 0, "XMM5": 0, "XMM6": 0, "XMM7": 0}
+        """
+        Generates assembly representation of this node, using the variable names instead of registers
 
-        #function assignment
+        Returns:
+            The assembly representation of an IRFunctionAssign
+        """
         asm_calls = []
 
-        for idx, param in enumerate(self.params):
+        fourByteRegisters = ["rdi", "rsi", "rdx", "rcx", "r8", "r9"]
+
+        push_param = [x for i, x in enumerate(self.params) if i >= 6]
+        reg_param = [x for i, x in enumerate(self.params) if i < 6]
+        reg_param.reverse()
+
+        for x in push_param:
             try:
-                param = int(param)
-                param = f"${param}"
+                x = f"${int(x)}"
             except ValueError:
                 pass
+            asm_calls.append(asmn.ASMNode("push", x, None, leftNeedsReg=True if not x.startswith("$") else False, dontTouch=True))
 
-            if idx < 6:
-                # NOTE: currently we are assuming 4 byte params (integers)
-                avail_reg = [x for x, y in fourByteRegisters.items() if y == 0][0]
-                fourByteRegisters[avail_reg] = 1
-                asm_calls.append(asmn.ASMNode("mov", param, avail_reg, regIsParam=True))
-            else:
-                asm_calls.append(asmn.ASMNode("push", param, None,dontTouch=True))
+        while len(fourByteRegisters) > len(reg_param):
+            fourByteRegisters.pop()
+
+        for x in reg_param:
+            try:
+                x = f"${int(x)}"
+            except ValueError:
+                pass
+            asm_calls.append(asmn.ASMNode("mov", x, fourByteRegisters.pop(), regIsParam=True, leftNeedsReg=True if not x.startswith("$") else False))
 
         asm_calls.extend([
             asmn.ASMNode("call", self.name, None, dontTouch=True),
@@ -874,7 +922,6 @@ class IRFunctionDecl(IRNode):
 
         asmLs.extend([
             asmn.ASMNode(f"{self.name}:",None,None, functionDecl=True, regDir=regdir, stack=stack),
-            asmn.ASMNode("push", "rbp", None, dontTouch=True),
             asmn.ASMNode("mov", "rsp", "rbp", dontTouch=True),
             asmn.ASMNode("push", "rbx", None, dontTouch=True),
             asmn.ASMNode("push", "r12", None, dontTouch=True),
@@ -954,16 +1001,17 @@ class IRReturn(IRNode):
             return f"return;"
 
     def asm(self):
+        """
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRReturn
+        """
+
         asml = []
         if self.value:
             asml.append(asmn.ASMNode("mov", self.value, "rax"))
         asml.extend([
-            asmn.ASMNode("pop", "r15", None, dontTouch=True),
-            asmn.ASMNode("pop", "r14", None, dontTouch=True),
-            asmn.ASMNode("pop", "r13", None, dontTouch=True),
-            asmn.ASMNode("pop", "r12", None, dontTouch=True),
-            asmn.ASMNode("pop", "rbx", None, dontTouch=True),
-            asmn.ASMNode("pop", "rbp", None, dontTouch=True),
             asmn.ASMNode("ret", None, None, dontTouch=True)
         ])
 
@@ -988,6 +1036,13 @@ class IRBracket(IRNode):
             return "}"
 
     def asm(self):
+        """
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRBracket
+        """
+
         if self.functionDecl:
             return []
         else:
@@ -1015,4 +1070,11 @@ class IRVariableInit(IRNode):
         return f"{self.modifiers}{self.typ} {self.var};"
 
     def asm(self):
+        """
+        Generates assembly representation of this node, using the variable names instead of registers
+
+        Returns:
+            The assembly representation of an IRVariableInit
+        """
+
         return []
