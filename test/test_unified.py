@@ -93,155 +93,155 @@ def retrieve_asm(file, name):
     return asm
 
 
-# class PreprocessorTests(unittest.TestCase):
+class PreprocessorTests(unittest.TestCase):
 
-#     maxDiff = None
+    maxDiff = None
 
-#     def test(self):
-#         self.skip = []
-#         expected_path = os.path.abspath("./expected_output/preprocessor")
-#         print("")
-#         for file in [x for x in sorted(os.listdir(C_root)) if x.endswith('.c')]:
-#             status = "FAIL"
-#             if file not in self.skip:
+    def test(self):
+        self.skip = []
+        expected_path = os.path.abspath("./expected_output/preprocessor")
+        print("")
+        for file in [x for x in sorted(os.listdir(C_root)) if x.endswith('.c')]:
+            status = "FAIL"
+            if file not in self.skip:
 
-#                 with self.subTest(), open(f"{C_root}/{file}", "r") as inp, open(f"{expected_path}/{file[:-2]}") as exp:
-#                     self.assertEqual(pre.run(inp.read(), f"{C_root}/{file}"), exp.read())
-#                     status = "OK"
-#             else:
-#                 status = "SKIPPED"
+                with self.subTest(), open(f"{C_root}/{file}", "r") as inp, open(f"{expected_path}/{file[:-2]}") as exp:
+                    self.assertEqual(pre.run(inp.read(), f"{C_root}/{file}"), exp.read())
+                    status = "OK"
+            else:
+                status = "SKIPPED"
 
-#             output("Preprocessor", file, status)
+            output("Preprocessor", file, status)
 
-# class LexerTests(unittest.TestCase):
+class LexerTests(unittest.TestCase):
 
-#     maxDiff = None
+    maxDiff = None
 
-#     def test(self):
-#         self.skip = []
-#         expected_path = os.path.abspath("./expected_output/lexer")
-#         print("")
-#         for file in [x for x in sorted(os.listdir(C_root)) if x.endswith('.c')]:
-#             status = "FAIL"
-#             if file not in self.skip:
+    def test(self):
+        self.skip = []
+        expected_path = os.path.abspath("./expected_output/lexer")
+        print("")
+        for file in [x for x in sorted(os.listdir(C_root)) if x.endswith('.c')]:
+            status = "FAIL"
+            if file not in self.skip:
 
-#                 with self.subTest(), open(f"{C_root}/{file}", "r") as inp, open(f"{expected_path}/{file[:-2]}") as exp:
-#                     proc = pre.run(inp.read(), f"{C_root}/{file}")
-#                     tok = retrieve_lex(proc)
-#                     self.assertEqual(lex.tokensToString(tok), exp.read())
-#                     status = "OK"
-#             else:
-#                 status = "SKIPPED"
+                with self.subTest(), open(f"{C_root}/{file}", "r") as inp, open(f"{expected_path}/{file[:-2]}") as exp:
+                    proc = pre.run(inp.read(), f"{C_root}/{file}")
+                    tok = retrieve_lex(proc)
+                    self.assertEqual(lex.tokensToString(tok), exp.read())
+                    status = "OK"
+            else:
+                status = "SKIPPED"
 
-#             output("Lexer", file, status)
+            output("Lexer", file, status)
 
-# class ParserTests(unittest.TestCase):
+class ParserTests(unittest.TestCase):
 
-#     maxDiff = None
+    maxDiff = None
 
-#     def test(self):
-#         self.skip = []
-#         expected_path = os.path.abspath("./expected_output/parser")
-#         print("")
-#         for file in [x for x in sorted(os.listdir(C_root)) if x.endswith('.c')]:
-#             status = "FAIL"
-#             if file not in self.skip:
+    def test(self):
+        self.skip = []
+        expected_path = os.path.abspath("./expected_output/parser")
+        print("")
+        for file in [x for x in sorted(os.listdir(C_root)) if x.endswith('.c')]:
+            status = "FAIL"
+            if file not in self.skip:
 
-#                 with self.subTest(), open(f"{C_root}/{file}", "r") as inp, open(f"{expected_path}/{file[:-2]}") as exp:
-#                     proc = pre.run(inp.read(), f"{C_root}/{file}")
-#                     pars = retrieve_par(proc)
-#                     self.assertEqual(pars.__repr__(), exp.read())
-#                     status = "OK"
-#             else:
-#                 status = "SKIPPED"
+                with self.subTest(), open(f"{C_root}/{file}", "r") as inp, open(f"{expected_path}/{file[:-2]}") as exp:
+                    proc = pre.run(inp.read(), f"{C_root}/{file}")
+                    pars = retrieve_par(proc)
+                    self.assertEqual(pars.__repr__(), exp.read())
+                    status = "OK"
+            else:
+                status = "SKIPPED"
 
-#             output("Parser", file, status)
+            output("Parser", file, status)
 
-# class ASTTests(unittest.TestCase):
+class ASTTests(unittest.TestCase):
 
-#     maxDiff = None
+    maxDiff = None
 
-#     def test(self):
-#         self.skip = []
-#         expected_path = os.path.abspath("./expected_output/ast")
-#         print("")
-#         for file in [x for x in sorted(os.listdir(C_root)) if x.endswith('.c')]:
-#             status = "FAIL"
-#             if file not in self.skip:
+    def test(self):
+        self.skip = []
+        expected_path = os.path.abspath("./expected_output/ast")
+        print("")
+        for file in [x for x in sorted(os.listdir(C_root)) if x.endswith('.c')]:
+            status = "FAIL"
+            if file not in self.skip:
 
-#                 with self.subTest(), open(f"{C_root}/{file}", "r") as inp, open(f"{expected_path}/{file[:-2]}") as exp:
-#                     proc = pre.run(inp.read(), f"{C_root}/{file}")
-#                     asttree = retrieve_ast(proc)
-#                     self.assertEqual(str(asttree), exp.read())
-#                     status = "OK"
-#             else:
-#                 status = "SKIPPED"
+                with self.subTest(), open(f"{C_root}/{file}", "r") as inp, open(f"{expected_path}/{file[:-2]}") as exp:
+                    proc = pre.run(inp.read(), f"{C_root}/{file}")
+                    asttree = retrieve_ast(proc)
+                    self.assertEqual(str(asttree), exp.read())
+                    status = "OK"
+            else:
+                status = "SKIPPED"
 
-#             output("AST", file, status)
+            output("AST", file, status)
 
-# class SymbolTableTests(unittest.TestCase):
+class SymbolTableTests(unittest.TestCase):
 
-#     maxDiff = None
+    maxDiff = None
 
-#     def test(self):
-#         self.skip = ["Functions_Strings.c", "Initialization_Strings.c"]
-#         expected_path = os.path.abspath("./expected_output/symboltable")
-#         print("")
-#         for file in [x for x in sorted(os.listdir(C_root)) if x.endswith('.c')]:
-#             status = "FAIL"
-#             if file not in self.skip:
+    def test(self):
+        self.skip = ["Functions_Strings.c", "Initialization_Strings.c"]
+        expected_path = os.path.abspath("./expected_output/symboltable")
+        print("")
+        for file in [x for x in sorted(os.listdir(C_root)) if x.endswith('.c')]:
+            status = "FAIL"
+            if file not in self.skip:
 
-#                 with self.subTest(), open(f"{C_root}/{file}", "r") as inp, open(f"{expected_path}/{file[:-2]}") as exp:
-#                     proc = pre.run(inp.read(), f"{C_root}/{file}")
-#                     symb = retrieve_sym(proc)
-#                     self.assertEqual(str(symb), exp.read())
-#                     status = "OK"
-#             else:
-#                 status = "SKIPPED"
+                with self.subTest(), open(f"{C_root}/{file}", "r") as inp, open(f"{expected_path}/{file[:-2]}") as exp:
+                    proc = pre.run(inp.read(), f"{C_root}/{file}")
+                    symb = retrieve_sym(proc)
+                    self.assertEqual(str(symb), exp.read())
+                    status = "OK"
+            else:
+                status = "SKIPPED"
 
-#             output("Symbol Table", file, status)
+            output("Symbol Table", file, status)
 
-# class SemanticTests(unittest.TestCase):
+class SemanticTests(unittest.TestCase):
 
-#     maxDiff = None
+    maxDiff = None
 
-#     def test(self):
-#         self.skip = ["Initialization_Strings.c","Functions_Strings.c"]
-#         expected_path = os.path.abspath("./expected_output/semantic")
-#         print("")
-#         for file in [x for x in sorted(os.listdir(C_root)) if x.endswith('.c')]:
-#             status = "FAIL"
-#             if file not in self.skip:
-#                 with self.subTest(), open(f"{C_root}/{file}", "r") as inp, open(f"{expected_path}/{file[:-2]}") as exp:
-#                     proc = pre.run(inp.read(), f"{C_root}/{file}")
-#                     sema = retrieve_sem(proc)
-#                     self.assertEqual(sema.__repr__(), exp.read())
-#                     status = "OK"
-#             else:
-#                 status = "SKIPPED"
+    def test(self):
+        self.skip = ["Initialization_Strings.c","Functions_Strings.c"]
+        expected_path = os.path.abspath("./expected_output/semantic")
+        print("")
+        for file in [x for x in sorted(os.listdir(C_root)) if x.endswith('.c')]:
+            status = "FAIL"
+            if file not in self.skip:
+                with self.subTest(), open(f"{C_root}/{file}", "r") as inp, open(f"{expected_path}/{file[:-2]}") as exp:
+                    proc = pre.run(inp.read(), f"{C_root}/{file}")
+                    sema = retrieve_sem(proc)
+                    self.assertEqual(sema.__repr__(), exp.read())
+                    status = "OK"
+            else:
+                status = "SKIPPED"
 
-#             output("Semantic", file, status)
+            output("Semantic", file, status)
 
-# class IRTests(unittest.TestCase):
+class IRTests(unittest.TestCase):
 
-#     maxDiff = None
+    maxDiff = None
 
-#     def test(self):
-#         self.skip = ["Initialization_Strings.c","Functions_Strings.c"]
-#         expected_path = os.path.abspath("./expected_output/ir")
-#         print("")
-#         for file in [x for x in sorted(os.listdir(C_root)) if x.endswith('.c')]:
-#             status = "FAIL"
-#             if file not in self.skip:
-#                 with self.subTest(), open(f"{C_root}/{file}", "r") as inp, open(f"{expected_path}/{file[:-2]}") as exp:
-#                     proc = pre.run(inp.read(), f"{C_root}/{file}")
-#                     l1ir = retrieve_ir(proc)
-#                     self.assertEqual(str(l1ir), exp.read())
-#                     status = "OK"
-#             else:
-#                 status = "SKIPPED"
+    def test(self):
+        self.skip = ["Initialization_Strings.c","Functions_Strings.c"]
+        expected_path = os.path.abspath("./expected_output/ir")
+        print("")
+        for file in [x for x in sorted(os.listdir(C_root)) if x.endswith('.c')]:
+            status = "FAIL"
+            if file not in self.skip:
+                with self.subTest(), open(f"{C_root}/{file}", "r") as inp, open(f"{expected_path}/{file[:-2]}") as exp:
+                    proc = pre.run(inp.read(), f"{C_root}/{file}")
+                    l1ir = retrieve_ir(proc)
+                    self.assertEqual(str(l1ir), exp.read())
+                    status = "OK"
+            else:
+                status = "SKIPPED"
 
-#             output("IR", file, status)
+            output("IR", file, status)
 
 class ASMTests(unittest.TestCase):
 
