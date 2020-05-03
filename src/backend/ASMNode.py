@@ -62,30 +62,30 @@ class ASMNode():
         """
         #determine the proper string representation of the assembly line
         if self.aux:
-            return f"""{self.command} 
-            {self.aux},
-            {f'{self.leftOffset}' + '(' if self.leftOffset else ''}
-            {'%' if self.left in x64_regs else ''}
-            {self.left}
-            {')' if self.leftOffset else ''}, 
-            {f'{self.rightOffset}' + '(' if self.rightOffset else ''}
-            {'%' if self.right in x64_regs else ''}
-            {self.right}
-            {')' if self.rightOffset else ''}"""
+            return f"""{self.command} \
+{self.aux},\
+{f'{self.leftOffset}' + '(' if self.leftOffset else ''}\
+{'%' if self.left in x64_regs else ''}\
+{self.left}\
+{')' if self.leftOffset else ''}, \
+{f'{self.rightOffset}' + '(' if self.rightOffset else ''}\
+{'%' if self.right in x64_regs else ''}\
+{self.right}\
+{')' if self.rightOffset else ''}"""
         elif self.right:
-            return f"""{self.command} 
-            {f'{self.leftOffset}' + '(' if self.leftOffset else ''}
-            {'%' if self.left in x64_regs else ''}
-            {self.left}{')' if self.leftOffset else ''}, 
-            {f'{self.rightOffset}' + '(' if self.rightOffset else ''}
-            {'%' if self.right in x64_regs else ''}
-            {self.right}
-            {')' if self.rightOffset else ''}"""
+            return f"""{self.command} \
+{f'{self.leftOffset}' + '(' if self.leftOffset else ''}\
+{'%' if self.left in x64_regs else ''}\
+{self.left}{')' if self.leftOffset else ''}, \
+{f'{self.rightOffset}' + '(' if self.rightOffset else ''}\
+{'%' if self.right in x64_regs else ''}\
+{self.right}\
+{')' if self.rightOffset else ''}"""
         elif self.left:
-            return f"""{self.command} 
-            {f'{self.leftOffset}' + '(' if self.leftOffset else ''}
-            {'%' if self.left in x64_regs else ''}
-            {self.left}
-            {')' if self.leftOffset else ''}"""
+            return f"""{self.command} \
+{f'{self.leftOffset}' + '(' if self.leftOffset else ''}\
+{'%' if self.left in x64_regs else ''}\
+{self.left}\
+{')' if self.leftOffset else ''}"""
         else:
             return f"{self.command}"
