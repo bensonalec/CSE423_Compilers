@@ -650,17 +650,25 @@ class IRArth(IRNode):
             spec_op = True
         elif self.operator == "<<":
             asm_op = "sal"
-            l.extend([
-                asmn.ASMNode("mov", v1, self.var, rightNeedsReg=True),
-                asmn.ASMNode("sal", v2, self.var)
-            ])
+            l.append(asmn.ASMNode("mov", v1, self.var, rightNeedsReg=True))
+            if v2.startswith("$"):
+                l.append(asmn.ASMNode("sal", v2, self.var))
+            else:
+                l.extend([
+                    asmn.ASMNode("mov", v2, "rcx", dontTouch=True),
+                    asmn.ASMNode("sal", "cl", self.var)
+                ])
             spec_op = True
         elif self.operator == ">>":
             asm_op = "sar"
-            l.extend([
-                asmn.ASMNode("mov", v1, self.var, rightNeedsReg=True),
-                asmn.ASMNode("sar", v2, self.var)
-            ])
+            l.append(asmn.ASMNode("mov", v1, self.var, rightNeedsReg=True))
+            if v2.startswith("$"):
+                l.append(asmn.ASMNode("sar", v2, self.var))
+            else:
+                l.extend([
+                    asmn.ASMNode("mov", v2, "rcx", dontTouch=True),
+                    asmn.ASMNode("sar", "cl", self.var)
+                ])
             spec_op = True
         elif self.operator == "|":
             asm_op = "or"
@@ -734,8 +742,6 @@ class IRSpecial(IRNode):
         Constructs assembly string of a special (i.e. inc/dec) instruction
         Returns:
             List of necessary ASMNodes representing assembly code.
-
-        TODO: Change to use assembly node, work with team to figure this out.
         """
 
         if self.operation == "+":
@@ -788,7 +794,6 @@ class IRAssignment(IRNode):
                 return [asmn.ASMNode(op, f"{v}", self.lhs,leftNeedsReg=True, rightNeedsReg=True)]
                 pass
             # TODO: Understand how floating point registers work while not going bald like ben.
-            # TODO: Figure out whether the right hand argument of an `xor` operation can be a memory location as well as a register.
         return [asmn.ASMNode(op, f"{v}", self.lhs)]
 
 class IRFunctionAssign(IRNode):
@@ -908,6 +913,8 @@ class IRFunctionDecl(IRNode):
                 stack.append(stk.stackObj(Type="KnownVar", Name=var.split(' ')[-1]))
 
         asmLs.extend([
+            asmn.ASMNode(None, None, None,boilerPlate=f".globl\t{self.name}"),
+            asmn.ASMNode(None, None, None,boilerPlate=f".type\t{self.name},\t@function"),
             asmn.ASMNode(f"{self.name}:",None,None, functionDecl=True, regDir=regdir, stack=stack),
             asmn.ASMNode("mov", "rsp", "rbp", dontTouch=True),
             asmn.ASMNode("push", "rbx", None, dontTouch=True),

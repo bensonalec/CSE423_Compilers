@@ -36,8 +36,12 @@ class Allocator():
 
             #In order to accurately allocate registers based on a given situation, we define various cases that have different needs for allocation
 
+            # Case: boiler plate assembly lines
+            if instr.boilerPlate:
+                pass
+
             # Case: function declaration
-            if instr.functionDecl:
+            elif instr.functionDecl:
                 # Clear the stack
                 stack.stk.clear()
                 stack.push("BpMov", name="rbp")
@@ -103,8 +107,31 @@ class Allocator():
                         asmn.ASMNode("pop", "r12", None),
                         asmn.ASMNode("pop", "rbx", None),
                     ])
-                #NOTE cannot continue here code needed at the end of the loop.
-                pass
+
+                elif instr.right == "rcx" and not instr.left.startswith("$"):
+
+                    tmp = regDir.locate_var(instr.left)
+
+                    if isinstance(tmp, int):
+                        # variable is stored on the stack
+                        tmp = regDir.reg_in_use(instr.right)
+                        if not tmp.is_tmp():
+                            regDir.regToStack(tmp)
+                        regDir.stackToReg(tmp, instr.left)
+                        continue
+                    elif tmp:
+                        if tmp.name == "rcx":
+                            continue
+                        # variable is stored in a register
+                        instr.left = tmp.name
+                        pass
+                    else:
+                        # variable is a constant
+                        pass
+
+                    tmp = regDir.reg_in_use(instr.right)
+                    if not tmp.is_tmp():
+                        regDir.regToStack(tmp)
 
             # Case: Operation with two registers.
             elif instr.leftNeedsReg and instr.rightNeedsReg:
@@ -188,13 +215,17 @@ class Allocator():
 
 
             # Ensures that shifting only uses the lower byte of the appropriate register
-            if instr.command in ["sal", "sar"]:
-                if instr.left.endswith("x"):
-                    instr.left = f"{instr.left[1]}l"
-                elif instr.left.endswith("i") or instr.left.endswith("p"):
-                    instr.left = f"{instr.left[1:]}l"
-                elif instr.left.startswith("r"):
-                    instr.left = f"{instr.left}b"
+            # if instr.command in ["sal", "sar"]:
+            #     if instr.left.endswith("x"):
+            #         instr.left = f"{instr.left[1]}l"
+            #     elif instr.left.endswith("i") or instr.left.endswith("p"):
+            #         instr.left = f"{instr.left[1:]}l"
+            #     elif instr.left.startswith("r"):
+            #         instr.left = f"{instr.left}b"
+
+                # tmp = instr.left
+                # instr.left = instr.right
+                # instr.right = tmp
 
             # We need to update the assembly list in the register directory.
             # The directory used the assembly list to "look-ahead" in some cases,

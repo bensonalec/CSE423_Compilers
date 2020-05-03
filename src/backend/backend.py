@@ -22,6 +22,11 @@ def main(args, IR):
     allocator = alloc.Allocator
     asm = allocator.allocateRegisters(asm)
 
+    asm = [
+        asmn.ASMNode(None, None, None, boilerPlate=f".file \"{args.input_file.split('/')[-1]}\""),
+        asmn.ASMNode( None, None,None, boilerPlate=f".text"),
+    ] + asm
+
     # Output assembly to stdout
     if args.asm:
         for i in asm:

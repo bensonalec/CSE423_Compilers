@@ -60,6 +60,9 @@ class LevelOneIR():
             tmp_lines , labelDigit = returnLines(i[1], returnDigit, labelDigit)
             lines.extend(tmp_lines)
 
+            if not isinstance(lines[-1].treeList[-1], irl.IRReturn):
+                lines.append(irl.IRLine.singleEntry(irl.IRReturn(None)))
+
             # End of function wrapper, add closing bracket
             lines.append(irl.IRLine.singleEntry(irl.IRBracket(opening=False, functionDecl=True)))
 
@@ -535,6 +538,7 @@ def returnLines(node,returnDigit,labelDigit,successDigit=None,failureDigit=None,
         successDigit: The label value to jump to if there is a `continue`.
         failureDigit: The label value to jump to if there is a `break`.
         breakDigit: The label used for break statements to have a correct label so the control flow is correct.
+
         continueDigit: The label used for a continue statement to know the 'ultimate' success of whatever block it is in
 
     Returns:

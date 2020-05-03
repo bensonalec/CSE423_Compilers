@@ -37,7 +37,7 @@ class ASMNode():
         #assembly nodes like 'function declaration' store a regDir and stack for passed in parameters
         self.regDir = kwarg["regDir"] if "regDir" in kwarg else {}
         self.stack = kwarg["stack"] if "stack" in kwarg else []
-        
+
         #determine if the register is in a function declaration
         self.functionDecl = "functionDecl" in kwarg
 
@@ -52,6 +52,8 @@ class ASMNode():
         self.leftHasVar = True if self.left and self.left not in x64_regs else False
         #determine if the right has a variable
         self.rightHasVar = True if self.right and self.right not in x64_regs else False
+
+        self.boilerPlate = kwarg["boilerPlate"] if "boilerPlate" in kwarg else None
 
     def __str__(self):
         """
@@ -87,5 +89,7 @@ class ASMNode():
 {'%' if self.left in x64_regs else ''}\
 {self.left}\
 {')' if self.leftOffset else ''}"""
+        elif self.boilerPlate:
+            return f"""{self.boilerPlate}"""
         else:
             return f"{self.command}"
