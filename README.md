@@ -1,4 +1,4 @@
-# CSE423_Compilers
+# CCBWIPFSR-C-Compiler (C Compiler But Written In Python For Some Reason...)
 Alexander Benson, Jacob Garcia, Ole Jeger Hoffstuen, Keaton Jones
 
 CSE 423 Compilers Repository
